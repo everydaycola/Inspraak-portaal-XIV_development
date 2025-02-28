@@ -12,13 +12,40 @@ public class PanelManager : ISubManager
         _repo = repo;
     }
 
-    public void addPanel(Panel panel)
+    public void AddPanel(Panel panel)
     {
-        _repo.createPanel(panel);
+        _repo.CreatePanel(panel);
     }
 
-    public Panel getPanel(Guid id)
+    public Panel GetPanel(Guid id)
     {
         return _repo.readPanel(id);
+    }
+
+    public void RemovePanel(Panel panel)
+    {
+        _repo.DeletePanel(panel);
+    }
+
+    public void AddPanelMember(PanelMember member)
+    {
+        if (_repo.readPanel(member.Panel.Id)!=null)
+        {
+            _repo.CreatePanelMember(member);   
+        }
+        else
+        {
+            throw new Exception("Panel with id " + member.Panel.Id +" does not exist");
+        }
+    }
+
+    public PanelMember GetPanelMember(Guid id)
+    {
+        return _repo.ReadPanelMember(id);
+    }
+    
+    public void RemovePanelMember(PanelMember member)
+    {
+        _repo.DeletePanelMember(member);
     }
 }
