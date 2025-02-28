@@ -1,0 +1,18 @@
+services:
+  postgres_citizenpanel_db:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_DB: 'CitizenPanel_DB'
+      POSTGRES_USER: 'user'
+      POSTGRES_PASSWORD: 'password'
+    ports:
+      - '5432:5432'
+    networks:
+      - backend
+    volumes:
+      - ./citizenpanel/postgres/data:/var/lib/postgresql/data
+
+networks:
+  backend:
+    name: citizenpanel-backend-network
+    driver: bridge
