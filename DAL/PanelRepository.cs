@@ -22,7 +22,7 @@ public class PanelRepository : ISubRepository
         _context.SaveChanges();
     }
 
-    public void RemovePanel(Panel panel)
+    public void DeletePanel(Panel panel)
     {
         _context.Panels.Remove(panel);
         _context.SaveChanges();
@@ -44,7 +44,7 @@ public class PanelRepository : ISubRepository
         return _context.PanelMembers.First(p => p.Id == id);
     }
 
-    public void RemovePanelMember(PanelMember member)
+    public void DeletePanelMember(PanelMember member)
     {
         _context.PanelMembers.Remove(member);
         _context.SaveChanges();
