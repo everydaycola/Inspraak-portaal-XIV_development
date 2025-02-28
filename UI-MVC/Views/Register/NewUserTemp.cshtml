@@ -1,0 +1,18 @@
+﻿@{
+ViewBag.Title = "title";
+Layout = "_Layout";
+}
+
+<h2 class="text-warning">!!! temporary page !!!</h2>
+
+<form asp-action="Index" method="get">
+    <div class="mb-3">
+        <label for="TempUserId" class="form-label">User id</label>
+        <input type="text" class="form-control" id="TempUserId" name="UserId">
+    </div>
+    <div class="mb-3">
+        <label for="TempPanelId" class="form-label">Panel id</label>
+        <input type="text" class="form-control" id="TempPanelId" name="PanelId">
+    </div>
+    <button type="submit" class="btn btn-primary">Submit</button>
+</form>
