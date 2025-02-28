@@ -6,6 +6,7 @@ namespace DAL.EF;
 public class CitizenPanelDbContext : DbContext
 {
     public DbSet<Panel> Panels { get; set; }
+    public DbSet<PanelMember> PanelMembers { get; set; }
 
     public CitizenPanelDbContext(DbContextOptions options) : base(options)
     {
@@ -22,6 +23,9 @@ public class CitizenPanelDbContext : DbContext
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
+        modelBuilder.Entity<PanelMember>()
+            .HasOne(p => p.Panel)
+            .WithMany(p => p.PanelMembers);
     }
 
     public bool CreateDatabase(bool dropDatabase)

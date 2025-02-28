@@ -16,11 +16,38 @@ public class PanelRepository : ISubRepository
     {
         return _context.Panels.First(p => p.Id == id);
     }
-    public void createPanel(Panel panel)
+    public void CreatePanel(Panel panel)
     {
         _context.Panels.Add(panel);
         _context.SaveChanges();
     }
+
+    public void RemovePanel(Panel panel)
+    {
+        _context.Panels.Remove(panel);
+        _context.SaveChanges();
+    }
+
+    public Panel ReadPanel(Guid id)
+    {
+        return _context.Panels.First(p => p.Id == id);
+    }
     
+    public void CreatePanelMember(PanelMember panelMember)
+    {
+        _context.PanelMembers.Add(panelMember);
+        _context.SaveChanges();
+    }
+
+    public PanelMember ReadPanelMember(Guid id)
+    {
+        return _context.PanelMembers.First(p => p.Id == id);
+    }
+
+    public void RemovePanelMember(PanelMember member)
+    {
+        _context.PanelMembers.Remove(member);
+        _context.SaveChanges();
+    }
     
 }
