@@ -1,12 +1,13 @@
 ﻿using BL;
+using Domain.CitizenPanel;
 
 namespace UI_CA;
 
 public class ConsoleUi
 {
-    private readonly IManager _manager;
+    private readonly PanelManager _manager;
 
-    public ConsoleUi(IManager manager)
+    public ConsoleUi(PanelManager manager)
     {
         _manager = manager;
     }
@@ -21,7 +22,8 @@ public class ConsoleUi
                           "===========================\n" +
                           "0) quit\n" +
                           "1) Create a new panel\n" +
-                          "Choice (0-1): ");
+                          "2) Create a default test panel\n" +
+                          "Choice (0-2): ");
             var userChoice = Console.ReadLine();
 
             if (!int.TryParse(userChoice, out choice))
@@ -37,13 +39,16 @@ public class ConsoleUi
 
         Console.WriteLine("Goodbye!");
     }
-    
+
     private void Redirect(int? choice)
     {
         switch (choice)
         {
             case 1:
                 CreatePanel();
+                break;
+            case 2:
+                CreateDefaultPanel();
                 break;
             case 0:
                 // main while loop will end
@@ -54,58 +59,57 @@ public class ConsoleUi
         }
     }
 
+    private void CreateDefaultPanel()
+    {
+        var distribution =
+            new Dictionary<string, Dictionary<string, double>>()
+            {
+                {
+                    "sex", new Dictionary<string, double>()
+                    {
+                        { "m", 0.4 },
+                        { "v", 0.6 }
+                    }
+                },
+                {
+                    "leef", new Dictionary<string, double>()
+                    {
+                        { "20", 0.2 },
+                        { "30", 0.6 },
+                        { "40", 0.2 }
+                    }
+                }
+            };
+        
+        Console.WriteLine("\nCriteria Percentages:");
+        foreach (var criteria in distribution)
+        {
+            Console.WriteLine($"Criteria: {criteria.Key}");
+            foreach (var category in criteria.Value)
+            {
+                Console.WriteLine($"  Category: {category.Key}, Percentage: {category.Value}%");
+            }
+        }
+
+        _manager.AddPanel("Default Panel", 150, distribution);
+    }
+
     private void CreatePanel()
     {
+        var name = AskString("enter a panel name:");
+        var size = AskInt("enter a panel size:");
         var criteriaPercentages = new Dictionary<string, Dictionary<string, double>>();
-        var TOLERANCE = 0.001;
 
         while (true)
         {
-            Console.WriteLine("Enter criteria name (or type 'done' to finish):");
-            string criteriaName = Console.ReadLine();
+            var criteriaName = AskString("Enter criteria name (or type 'done' to finish):");
 
-            if (criteriaName.ToLower() == "done")
+            if (criteriaName.ToLower().Equals("done"))
             {
                 break;
             }
 
-            var categoryPercentages = new Dictionary<string, double>();
-            double totalPercentage = 0;
-
-            while (true)
-            {
-                Console.WriteLine($"Enter category name for '{criteriaName}' (or type 'done' to finish):");
-                var categoryName = Console.ReadLine();
-
-                if (categoryName.ToLower() == "done")
-                {
-                    break;
-                }
-
-                double percentage;
-                while (true)
-                {
-                    Console.WriteLine($"Enter percentage for '{categoryName}':");
-                    if (double.TryParse(Console.ReadLine(), out percentage) && percentage >= 0)
-                    {
-                        break;
-                    }
-                    else
-                    {
-                        Console.WriteLine("Invalid percentage. Please enter a non-negative number.");
-                    }
-                }
-
-                categoryPercentages[categoryName] = percentage;
-                totalPercentage += percentage;
-            }
-            
-            if (Math.Abs(totalPercentage - 100) > TOLERANCE)
-            {
-                Console.WriteLine($"Warning: Total percentage for '{criteriaName}' is {totalPercentage}%, not 100%.");
-            }
-
-            criteriaPercentages[criteriaName] = categoryPercentages;
+            criteriaPercentages[criteriaName] = CriteriaMaker(criteriaName);
         }
 
         Console.WriteLine("\nCriteria Percentages:");
@@ -118,14 +122,96 @@ public class ConsoleUi
             }
         }
 
-        //Example of accessing the dictionary
-        if(criteriaPercentages.ContainsKey("ExampleCriteria"))
+        _manager.AddPanel(name, size, criteriaPercentages);
+    }
+
+
+    private string AskString(string name)
+    {
+        while (true)
         {
-            if(criteriaPercentages["ExampleCriteria"].ContainsKey("ExampleCategory"))
+            Console.WriteLine(name);
+            var answer = Console.ReadLine();
+
+            if (answer != null)
             {
-                Console.WriteLine($"\nExampleCriteria/ExampleCategory percentage: {criteriaPercentages["ExampleCriteria"]["ExampleCategory"]}");
+                return answer;
             }
+
+            Console.WriteLine("Please enter a name.");
         }
     }
-    
+
+    private int AskInt(string question)
+    {
+        int result;
+        while (true)
+        {
+            if (int.TryParse(AskString(question), out result))
+            {
+                return result;
+            }
+
+            Console.WriteLine("Please enter a valid integer.");
+        }
+    }
+
+    private double AskDouble(string question)
+    {
+        while (true)
+        {
+            if (double.TryParse(AskString(question), out var result))
+            {
+                return result;
+            }
+
+            Console.WriteLine("Please enter a valid integer.");
+        }
+    }
+
+
+    private Dictionary<string, double> CriteriaMaker(string criteriaName)
+    {
+        var categoryPercentages = new Dictionary<string, double>();
+        double totalPercentage = 0;
+        const double tolerance = 1;
+
+        while (true)
+        {
+            var categoryName = AskString($"Enter category name for '{criteriaName}' (or type 'done' to finish):");
+
+            if (categoryName.ToLower().Equals("done"))
+            {
+                break;
+            }
+
+            double percentage;
+            while (true)
+            {
+                percentage = AskDouble($"Enter percentage for '{categoryName}':") / 100;
+
+                if (percentage < 0)
+                {
+                    Console.WriteLine("Invalid percentage. Please enter a non-negative number.");
+                    continue;
+                }
+
+                if (percentage > 1 - totalPercentage + tolerance)
+                {
+                    Console.WriteLine("total percetage ïs greater than 100%, enter a different number.\n" +
+                                      $"prev total: {totalPercentage * 100}\n" +
+                                      $"new value: {percentage * 100}\n" +
+                                      $"new total{(totalPercentage + percentage) * 100}");
+                    continue;
+                }
+
+                break;
+            }
+
+            categoryPercentages[categoryName] = percentage;
+            totalPercentage += percentage;
+        }
+
+        return categoryPercentages;
+    }
 }
