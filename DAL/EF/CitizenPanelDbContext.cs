@@ -26,6 +26,8 @@ public class CitizenPanelDbContext : DbContext
         modelBuilder.Entity<PanelMember>()
             .HasOne(p => p.Panel)
             .WithMany(p => p.PanelMembers);
+        // modelBuilder.Entity<PanelMember>()
+        //     .OwnsMany(p => p.Criteria);
     }
 
     public bool CreateDatabase(bool dropDatabase)

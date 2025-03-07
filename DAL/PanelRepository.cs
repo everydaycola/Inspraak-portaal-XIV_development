@@ -12,9 +12,9 @@ public class PanelRepository : ISubRepository
         this._context = context;
     }
 
-    public Panel readPanel(Guid id)
+    public Panel ReadPanel(Guid id)
     {
-        return _context.Panels.First(p => p.Id == id);
+        return _context.Panels.Find(id);
     }
     public void CreatePanel(Panel panel)
     {
@@ -27,11 +27,6 @@ public class PanelRepository : ISubRepository
         _context.Panels.Remove(panel);
         _context.SaveChanges();
     }
-
-    public Panel ReadPanel(Guid id)
-    {
-        return _context.Panels.First(p => p.Id == id);
-    }
     
     public void CreatePanelMember(PanelMember panelMember)
     {
@@ -41,7 +36,7 @@ public class PanelRepository : ISubRepository
 
     public PanelMember ReadPanelMember(Guid id)
     {
-        return _context.PanelMembers.First(p => p.Id == id);
+        return _context.PanelMembers.Find(id);
     }
 
     public void DeletePanelMember(PanelMember member)

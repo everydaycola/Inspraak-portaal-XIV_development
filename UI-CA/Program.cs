@@ -1,18 +1,27 @@
 ﻿using BL;
 using DAL;
 using DAL.EF;
-using Domain.CitizenPanel;
 using Microsoft.EntityFrameworkCore;
+using UI_CA;
 
 //CODE TOT TEST ENTITYFRAMEWORK CONNECTION.
-/*var optionsBuilder = new DbContextOptionsBuilder<CitizenPanelDbContext>();
+var optionsBuilder = new DbContextOptionsBuilder<CitizenPanelDbContext>();
 optionsBuilder.UseNpgsql("Host=localhost;Database=CitizenPanel_DB;Username=user;Password=password;");
-CitizenPanelDbContext cpdc = new CitizenPanelDbContext(optionsBuilder.Options);
+var cpdc = new CitizenPanelDbContext(optionsBuilder.Options);
+
+// for dev work?
+if (cpdc.CreateDatabase(dropDatabase: true))
+{
+    DataSeeder.Seed(cpdc);
+}
+
+// // for real work? 
+// cpdc.CreateDatabase(false);
+
 PanelRepository pr = new PanelRepository(cpdc);
 PanelManager pm = new PanelManager(pr);
+ConsoleUi consoleUi = new ConsoleUi(pm);
+consoleUi.Start();
 
-cpdc.CreateDatabase(false);
 
-Panel panel = new Panel("TestPanel");
-pm.addPanel(panel);
-*/
+
