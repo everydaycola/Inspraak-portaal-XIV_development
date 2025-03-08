@@ -29,6 +29,7 @@ public class PanelManager : ISubManager
     
     public void AddPanel(string name, int size, Dictionary<string, Dictionary<string, double>> distribution)
     {
+        const double tolerance = 0.0001;
         var panel = new Panel(name);
         var members = new List<PanelMember>();
         for (int i = 0; i < size; i++)
@@ -56,7 +57,7 @@ public class PanelManager : ISubManager
             
             while (memberEnumerator.MoveNext())
             {
-                if (percentDone > catPercentDone + distribution[key][categoryEnumerator.Current] )
+                if (percentDone > catPercentDone + distribution[key][categoryEnumerator.Current] - tolerance )
                 {
                     catPercentDone += distribution[key][categoryEnumerator.Current];
                     if (categoryEnumerator.MoveNext())

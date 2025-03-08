@@ -174,7 +174,7 @@ public class ConsoleUi
     {
         var categoryPercentages = new Dictionary<string, double>();
         double totalPercentage = 0;
-        const double tolerance = 1;
+        const double tolerance = 0.00001;
 
         while (true)
         {
