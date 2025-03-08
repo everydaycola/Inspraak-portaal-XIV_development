@@ -35,7 +35,7 @@ public class PanelManager : ISubManager
         {
             PanelMember newMember = new PanelMember();
             newMember.Panel = panel;
-            newMember.Criteria = new List<Criteria>();
+            newMember.Criteria = new List<PanelMemberCriteria>();
             members.Add(newMember);
         }
         // for each criteria in the distribution
@@ -59,13 +59,17 @@ public class PanelManager : ISubManager
                 if (percentDone > catPercentDone + distribution[key][categoryEnumerator.Current] )
                 {
                     catPercentDone += distribution[key][categoryEnumerator.Current];
-                    if (!categoryEnumerator.MoveNext())
+                    if (categoryEnumerator.MoveNext())
                     {
-                        throw new KeyNotFoundException();
+                        currentCriteria = new Criteria(key, categoryEnumerator.Current);
                     }
-                    currentCriteria = new Criteria(key, categoryEnumerator.Current);
                 }
-                memberEnumerator.Current.Criteria.Add(currentCriteria);
+
+                var panelMemberCriteria = new PanelMemberCriteria(memberEnumerator.Current, currentCriteria);
+                memberEnumerator.Current.Criteria.Add(panelMemberCriteria);
+                currentCriteria.PanelMembers.Add(panelMemberCriteria);
+
+                percentDone += (double) 1 / size;
             }
 
             categoryEnumerator.Dispose();
