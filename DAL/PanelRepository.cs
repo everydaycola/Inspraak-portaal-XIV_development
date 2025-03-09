@@ -1,5 +1,6 @@
 ﻿using DAL.EF;
 using Domain.CitizenPanel;
+using Microsoft.EntityFrameworkCore;
 
 namespace DAL;
 
@@ -31,6 +32,12 @@ public class PanelRepository : ISubRepository
     public Panel ReadPanel(Guid id)
     {
         return _context.Panels.First(p => p.Id == id);
+    }
+    public Panel ReadPanelWithRepresentationGroup(Guid id)
+    {
+        return _context.Panels
+            .Include(p => p.RepresentationGroup)
+            .First(p => p.Id == id);
     }
     
     public void CreatePanelMember(PanelMember panelMember)
