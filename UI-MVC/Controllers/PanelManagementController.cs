@@ -20,9 +20,8 @@ public class PanelManagementController : Controller
     public IActionResult Index(Guid id)
     {
         var panel = _manager.GetPanelWithRepresentationGroup(id);
-        int totalMemberCount = (int)(panel.RepresentationGroup.memberCount +
-                                     (panel.RepresentationGroup.memberCount * panel.RepresentationGroup.reservePercentage));
-        PanelManagementDto pmd = new PanelManagementDto(panel.name, totalMemberCount, 0);
+        //TODO: Actualy gather the citizencount instead of simulating this.
+        PanelManagementDto pmd = new PanelManagementDto(panel.name, 20000, 0);
         return View(pmd);
     }
     [HttpPost]
