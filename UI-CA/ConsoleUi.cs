@@ -23,7 +23,8 @@ public class ConsoleUi
                           "0) quit\n" +
                           "1) Create a new panel\n" +
                           "2) Create a default test panel\n" +
-                          "Choice (0-2): ");
+                          "3) View a panel\n" +
+                          "Choice (0-3): ");
             var userChoice = Console.ReadLine();
 
             if (!int.TryParse(userChoice, out choice))
@@ -50,6 +51,9 @@ public class ConsoleUi
             case 2:
                 CreateDefaultPanel();
                 break;
+            case 3:
+                ViewPanel();
+                break;
             case 0:
                 // main while loop will end
                 break;
@@ -57,6 +61,36 @@ public class ConsoleUi
                 Console.WriteLine("Invalid choice, please try again.");
                 break;
         }
+    }
+
+    private void ViewPanel()
+    {
+        Console.WriteLine("choose a Panel\n" +
+                          "=========");
+        var panels = _manager.GetAllPanels().ToList();
+        var i = 1;
+        foreach (var panel in panels)
+        {
+            Console.WriteLine($"{i++}) {panel.name}");
+        }
+
+        Guid guid = Guid.Empty;
+
+        while (guid == Guid.Empty)
+        {
+            try
+            {
+                guid = panels[AskInt("Choose a Panel:") - 1].Id;
+            }
+            catch (ArgumentOutOfRangeException e)
+            {
+                Console.WriteLine("choose a valid integer number");
+            }
+        }
+
+        var chosenPanel = _manager.GetPanel(guid);
+        Console.WriteLine(chosenPanel.describe());
+        Console.WriteLine(chosenPanel.getGuidsPerGroup());
     }
 
     private void CreateDefaultPanel()
@@ -80,7 +114,7 @@ public class ConsoleUi
                     }
                 }
             };
-        
+
         Console.WriteLine("\nCriteria Percentages:");
         foreach (var criteria in distribution)
         {

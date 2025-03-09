@@ -16,6 +16,12 @@ public class PanelRepository : ISubRepository
     {
         return _context.Panels.Find(id);
     }
+
+    public IEnumerable<Panel> ReadAllPanels()
+    {
+        return _context.Panels.ToList();
+    }
+
     public void CreatePanel(Panel panel)
     {
         _context.Panels.Add(panel);
@@ -27,7 +33,7 @@ public class PanelRepository : ISubRepository
         _context.Panels.Remove(panel);
         _context.SaveChanges();
     }
-    
+
     public void CreatePanelMember(PanelMember panelMember)
     {
         _context.PanelMembers.Add(panelMember);
@@ -44,5 +50,4 @@ public class PanelRepository : ISubRepository
         _context.PanelMembers.Remove(member);
         _context.SaveChanges();
     }
-    
 }

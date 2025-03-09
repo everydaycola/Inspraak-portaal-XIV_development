@@ -17,6 +17,11 @@ public class PanelManager : ISubManager
         return _repo.ReadPanel(id);
     }
 
+    public IEnumerable<Panel> GetAllPanels()
+    {
+        return _repo.ReadAllPanels();
+    }
+    
     public PanelMember GetPanelMember(Guid id)
     {
         return _repo.ReadPanelMember(id);
