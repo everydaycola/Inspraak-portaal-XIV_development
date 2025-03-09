@@ -19,7 +19,7 @@ public class PanelManager : ISubManager
 
     public Panel GetPanel(Guid id)
     {
-        return _repo.readPanel(id);
+        return _repo.ReadPanel(id);
     }
 
     public void RemovePanel(Panel panel)
@@ -29,7 +29,7 @@ public class PanelManager : ISubManager
 
     public void AddPanelMember(PanelMember member)
     {
-        if (_repo.readPanel(member.Panel.Id)!=null)
+        if (_repo.ReadPanel(member.Panel.Id)!=null)
         {
             _repo.CreatePanelMember(member);   
         }

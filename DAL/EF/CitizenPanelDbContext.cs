@@ -34,6 +34,7 @@ public class CitizenPanelDbContext : DbContext
         {
             Database.EnsureDeleted();
         }
+        
         return Database.EnsureCreated();
     }
     
