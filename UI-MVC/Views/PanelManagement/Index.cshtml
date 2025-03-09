@@ -1,0 +1,10 @@
+﻿@model UI_MVC.Models.Dto.PanelManagementDto
+
+@{
+    ViewData["Title"] = "Panel beheer";
+}
+
+<div class="container">
+    <h2>Dit is de beheerspagina voor panel: @Model.PanelName</h2>
+    <p>Aantal succesvol aangemelde mensen: @Model.AmountOfAcceptedInvites / @Model.PanelSize</p>
+</div>
