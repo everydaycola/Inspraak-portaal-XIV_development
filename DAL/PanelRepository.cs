@@ -49,5 +49,9 @@ public class PanelRepository : ISubRepository
         _context.PanelMembers.Remove(member);
         _context.SaveChanges();
     }
-    
+
+    public ICollection<Panel> ReadAllPanels()
+    {
+        return _context.Panels.ToList();
+    }
 }

@@ -7,9 +7,9 @@ public class PanelManager : ISubManager
 {
     private readonly PanelRepository _repo;
 
-    public PanelManager(PanelRepository repo)
+    public PanelManager(IRepository repo)
     {
-        _repo = repo;
+        _repo = (PanelRepository) repo;
     }
 
     public void AddPanel(Panel panel)
@@ -20,6 +20,11 @@ public class PanelManager : ISubManager
     public Panel GetPanel(Guid id)
     {
         return _repo.ReadPanel(id);
+    }
+
+    public ICollection<Panel> GetAllPanels()
+    {
+        return _repo.ReadAllPanels();
     }
 
     public void RemovePanel(Panel panel)
