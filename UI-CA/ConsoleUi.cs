@@ -152,7 +152,7 @@ public class ConsoleUi
             Console.WriteLine($"Criteria: {criteria.Key}");
             foreach (var category in criteria.Value)
             {
-                Console.WriteLine($"  Category: {category.Key}, Percentage: {category.Value}%");
+                Console.WriteLine($"  Category: {category.Key}, Percentage: {category.Value*100}%");
             }
         }
 
