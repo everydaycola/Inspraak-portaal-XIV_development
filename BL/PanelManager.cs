@@ -7,9 +7,9 @@ public class PanelManager : ISubManager
 {
     private readonly PanelRepository _repo;
 
-    public PanelManager(PanelRepository repo)
+    public PanelManager(IRepository repo)
     {
-        _repo = repo;
+        _repo = (PanelRepository) repo;
     }
 
     public Panel GetPanel(Guid id)
@@ -32,7 +32,7 @@ public class PanelManager : ISubManager
         _repo.CreatePanel(panel);
     }
     
-    public void AddPanel(string name, int size, Dictionary<string, Dictionary<string, double>> distribution)
+    public Panel AddPanel(string name, int size, Dictionary<string, Dictionary<string, double>> distribution)
     {
         const double tolerance = 0.0001;
         var panel = new Panel(name);
@@ -83,9 +83,10 @@ public class PanelManager : ISubManager
         }
         
         panel.PanelMembers = members;
-        
+
         _repo.CreatePanel(panel);
         Console.WriteLine("Created panel " + name);
+        return panel;
     }
 
     public void AddPanelMember(PanelMember member)
