@@ -40,8 +40,7 @@ public class PanelManagementController : Controller
     public IActionResult ToggleRegistration(Guid id)
     {
         var panel = _manager.GetPanel(id);
-        panel.IsRegistrationOpen = !panel.IsRegistrationOpen;
-        _logger.Log(LogLevel.Information,"De knop doet het wel");
+        _manager.UpdatePanel(id, !panel.IsRegistrationOpen);
         return RedirectToAction("Index", new { id = panel.Id });
     }
 }

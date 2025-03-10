@@ -9,7 +9,7 @@ public class PanelManager : ISubManager
 
     public PanelManager(IRepository repo)
     {
-        _repo = (PanelRepository) repo;
+        _repo = (PanelRepository)repo;
     }
 
     public void AddPanel(Panel panel)
@@ -26,9 +26,23 @@ public class PanelManager : ISubManager
     {
         return _repo.ReadPanelWithRepresentationGroup(id);
     }
+
     public IEnumerable<Panel> GetAllPanels()
     {
         return _repo.ReadAllPanels();
+    }
+
+    public void UpdatePanel(Guid id, bool isRegistrationOpen)
+    {
+        var panel = _repo.readPanel(id);
+        if (panel != null)
+        {
+            panel.IsRegistrationOpen = isRegistrationOpen;
+            _repo.UpdatePanel(panel);
+            return;
+        }
+
+        throw new NullReferenceException("Panel with id: " + id + " was not found.");
     }
 
     public void RemovePanel(Panel panel)
@@ -38,13 +52,13 @@ public class PanelManager : ISubManager
 
     public void AddPanelMember(PanelMember member)
     {
-        if (_repo.ReadPanel(member.Panel.Id)!=null)
+        if (_repo.ReadPanel(member.Panel.Id) != null)
         {
-            _repo.CreatePanelMember(member);   
+            _repo.CreatePanelMember(member);
         }
         else
         {
-            throw new Exception("Panel with id " + member.Panel.Id +" does not exist");
+            throw new Exception("Panel with id " + member.Panel.Id + " does not exist");
         }
     }
 
@@ -52,24 +66,26 @@ public class PanelManager : ISubManager
     {
         return _repo.ReadPanelMember(id);
     }
-    
+
     public void RemovePanelMember(PanelMember member)
     {
         _repo.DeletePanelMember(member);
     }
-    
+
     public int CalculatePanelSize(int citizenCount, double samplePercentage)
     {
         //CitizenCount = amount of citizens in gemeente.
         return (int)(citizenCount * samplePercentage);
     }
+
     public int CalculateAmountOfReserve(int panelSize, double samplePercentage)
     {
         //panelSize = calculatedByCalculatePanelSize
-        return (int) (panelSize * samplePercentage);
+        return (int)(panelSize * samplePercentage);
     }
+
     public int CalculateTotalInvitesNeeded(int panelSizeIncludingReserve, double responseRate)
-    { 
+    {
         //basePanelSize = claculated by CalculatePanelSize
         //Response rate is a percentage which indicates the expected rate of resposne to invites.
         return (int)(panelSizeIncludingReserve / responseRate);
