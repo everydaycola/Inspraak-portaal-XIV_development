@@ -21,6 +21,7 @@ public class PanelsController : Controller
         var CreatedPanel = _manager.AddPanel(
             newPanelDto.Name,
             newPanelDto.Size,
+            newPanelDto.SampleRate,
             newPanelDto.Distributions
         );
 

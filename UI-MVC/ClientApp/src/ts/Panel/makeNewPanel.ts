@@ -8,6 +8,7 @@ export async function defaultPanel() {
         body: JSON.stringify({
             "name": "default panel",
             "size": "150",
+            "SampleRate": "0.005",
             "Distributions": {
                 "sex": {
                     "m": 0.4,

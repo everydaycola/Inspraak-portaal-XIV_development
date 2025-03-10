@@ -27,20 +27,15 @@ public class PanelManager : ISubManager
         return _repo.ReadAllPanels();
     }
 
-    public PanelMember GetPanelMember(Guid id)
-    {
-        return _repo.ReadPanelMember(id);
-    }
-
     public void AddPanel(Panel panel)
     {
         _repo.CreatePanel(panel);
     }
 
-    public Panel AddPanel(string name, int size, Dictionary<string, Dictionary<string, double>> distribution)
+    public Panel AddPanel(string name, int size, double sampleRate, Dictionary<string, Dictionary<string, double>> distribution)
     {
         const double tolerance = 0.0001;
-        var panel = new Panel(name);
+        var panel = new Panel(name, sampleRate);
         var members = new List<PanelMember>();
         for (int i = 0; i < size; i++)
         {
@@ -92,28 +87,6 @@ public class PanelManager : ISubManager
         _repo.CreatePanel(panel);
         Console.WriteLine("Created panel " + name);
         return panel;
-    }
-
-    public void AddPanelMember(PanelMember member)
-    {
-        if (_repo.ReadPanel(member.Panel.Id) != null)
-        {
-            _repo.CreatePanelMember(member);
-        }
-        else
-        {
-            throw new Exception("Panel with id " + member.Panel.Id + " does not exist");
-        }
-    }
-
-    public void RemovePanel(Panel panel)
-    {
-        _repo.DeletePanel(panel);
-    }
-
-    public void RemovePanelMember(PanelMember member)
-    {
-        _repo.DeletePanelMember(member);
     }
     
     public int CalculatePanelSize(int citizenCount, double samplePercentage)

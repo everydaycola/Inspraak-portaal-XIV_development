@@ -71,7 +71,7 @@ public class ConsoleUi
         var i = 1;
         foreach (var panel in panels)
         {
-            Console.WriteLine($"{i++}) {panel.name}");
+            Console.WriteLine($"{i++}) {panel.Name}");
         }
 
         Guid guid = Guid.Empty;
@@ -125,13 +125,14 @@ public class ConsoleUi
             }
         }
 
-        _manager.AddPanel("Default Panel", 150, distribution);
+        _manager.AddPanel("Default Panel", 150, 0.005, distribution);
     }
 
     private void CreatePanel()
     {
         var name = AskString("enter a panel name:");
         var size = AskInt("enter a panel size:");
+        var sampleRate = AskDouble("enter a sample rate");
         var criteriaPercentages = new Dictionary<string, Dictionary<string, double>>();
 
         while (true)
@@ -156,7 +157,7 @@ public class ConsoleUi
             }
         }
 
-        _manager.AddPanel(name, size, criteriaPercentages);
+        _manager.AddPanel(name, size, sampleRate, criteriaPercentages);
     }
 
 
