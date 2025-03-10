@@ -7,6 +7,7 @@ public class CitizenPanelDbContext : DbContext
 {
     public DbSet<Panel> Panels { get; set; }
     public DbSet<PanelMember> PanelMembers { get; set; }
+    public DbSet<RepresentationGroup> RepresentationGroups { get; set; }
     public DbSet<Criteria> Criteria { get; set; }
     public DbSet<PanelMemberCriteria> PanelMemberCriteria { get; set; }
 
@@ -29,6 +30,11 @@ public class CitizenPanelDbContext : DbContext
         modelBuilder.Entity<PanelMember>()
             .HasOne(p => p.Panel)
             .WithMany(p => p.PanelMembers);
+        // panel 1-1 representationgroup
+        modelBuilder.Entity<RepresentationGroup>()
+            .HasOne(p => p.Panel)
+            .WithOne(p => p.RepresentationGroup)
+            .HasForeignKey<RepresentationGroup>("PanelId");
         // panelmember 1-* panelmembercriteria *-1 criteria
         modelBuilder.Entity<PanelMember>()
             .HasMany(pm => pm.Criteria)

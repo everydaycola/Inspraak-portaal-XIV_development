@@ -1,5 +1,6 @@
 ﻿using DAL.EF;
 using Domain.CitizenPanel;
+using Microsoft.EntityFrameworkCore;
 
 namespace DAL;
 
@@ -17,6 +18,18 @@ public class PanelRepository : ISubRepository
         return _context.Panels.Find(id);
     }
 
+    public PanelMember ReadPanelMember(Guid id)
+    {
+        return _context.PanelMembers.Find(id);
+    }
+
+    public Panel ReadPanelWithRepresentationGroup(Guid id)
+    {
+        return _context.Panels
+            .Include(p => p.RepresentationGroup)
+            .Single(p => p.Id == id);
+    }
+
     public IEnumerable<Panel> ReadAllPanels()
     {
         return _context.Panels.ToList();
@@ -28,21 +41,16 @@ public class PanelRepository : ISubRepository
         _context.SaveChanges();
     }
 
-    public void DeletePanel(Panel panel)
-    {
-        _context.Panels.Remove(panel);
-        _context.SaveChanges();
-    }
-
     public void CreatePanelMember(PanelMember panelMember)
     {
         _context.PanelMembers.Add(panelMember);
         _context.SaveChanges();
     }
 
-    public PanelMember ReadPanelMember(Guid id)
+    public void DeletePanel(Panel panel)
     {
-        return _context.PanelMembers.Find(id);
+        _context.Panels.Remove(panel);
+        _context.SaveChanges();
     }
 
     public void DeletePanelMember(PanelMember member)

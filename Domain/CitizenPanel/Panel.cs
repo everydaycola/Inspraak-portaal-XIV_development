@@ -5,23 +5,26 @@ namespace Domain.CitizenPanel;
 public class Panel
 {
     public Guid Id { get; set; }
-    public string name { get; set; }
+    public string Name { get; set; }
     public ICollection<PanelMember> PanelMembers { get; set; }
-
-    public Panel(string name)
+    public RepresentationGroup RepresentationGroup { get; set; }
+    public double SampleRate { get; set; }
+    
+    public Panel(string name, double sampleRate)
     {
-        this.name = name;
+        this.Name = name;
+        this.SampleRate = sampleRate;
     }
 
     public string getGuidsPerGroup()
     {
         // todo: doesnt cross reference, guid's get printed multiple times. 
         var sb = new StringBuilder();
-        sb.AppendLine("name: " + name);
+        sb.AppendLine("name: " + Name);
         sb.AppendLine("size: " + PanelMembers.Count);
         // Group panel members by criteria and collect GUIDs
         var criteriaGuids = PanelMembers
-            .SelectMany(member =>
+            .SelectMany(member => 
                 member.Criteria.Select(criterion => new { MemberId = member.PanelMemberId, Criterion = criterion }))
             .GroupBy(item => new { item.Criterion.Criteria.Name, item.Criterion.Criteria.Value })
             .Select(group => new
@@ -46,7 +49,7 @@ public class Panel
     public string describe()
     {
         var sb = new StringBuilder();
-        sb.AppendLine("name: " + name);
+        sb.AppendLine("name: " + Name);
         sb.AppendLine("size: " + PanelMembers.Count);
         var counts = PanelMembers
             // puts all criteria in one big list
