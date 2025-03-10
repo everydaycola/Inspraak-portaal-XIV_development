@@ -7,6 +7,7 @@ public class CitizenPanelDbContext : DbContext
 {
     public DbSet<Panel> Panels { get; set; }
     public DbSet<PanelMember> PanelMembers { get; set; }
+    public DbSet<RepresentationGroup> RepresentationGroups { get; set; }
 
     public CitizenPanelDbContext(DbContextOptions options) : base(options)
     {
@@ -26,6 +27,10 @@ public class CitizenPanelDbContext : DbContext
         modelBuilder.Entity<PanelMember>()
             .HasOne(p => p.Panel)
             .WithMany(p => p.PanelMembers);
+        modelBuilder.Entity<RepresentationGroup>()
+            .HasOne(p => p.Panel)
+            .WithOne(p => p.RepresentationGroup)
+            .HasForeignKey<RepresentationGroup>("PanelId");
     }
 
     public bool CreateDatabase(bool dropDatabase)
@@ -34,6 +39,7 @@ public class CitizenPanelDbContext : DbContext
         {
             Database.EnsureDeleted();
         }
+        
         return Database.EnsureCreated();
     }
     

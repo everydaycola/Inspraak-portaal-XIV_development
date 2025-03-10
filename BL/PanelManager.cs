@@ -7,9 +7,9 @@ public class PanelManager : ISubManager
 {
     private readonly PanelRepository _repo;
 
-    public PanelManager(PanelRepository repo)
+    public PanelManager(IRepository repo)
     {
-        _repo = repo;
+        _repo = (PanelRepository) repo;
     }
 
     public void AddPanel(Panel panel)
@@ -19,7 +19,16 @@ public class PanelManager : ISubManager
 
     public Panel GetPanel(Guid id)
     {
-        return _repo.readPanel(id);
+        return _repo.ReadPanel(id);
+    }
+
+    public Panel GetPanelWithRepresentationGroup(Guid id)
+    {
+        return _repo.ReadPanelWithRepresentationGroup(id);
+    }
+    public IEnumerable<Panel> GetAllPanels()
+    {
+        return _repo.ReadAllPanels();
     }
 
     public void RemovePanel(Panel panel)
@@ -29,7 +38,7 @@ public class PanelManager : ISubManager
 
     public void AddPanelMember(PanelMember member)
     {
-        if (_repo.readPanel(member.Panel.Id)!=null)
+        if (_repo.ReadPanel(member.Panel.Id)!=null)
         {
             _repo.CreatePanelMember(member);   
         }
@@ -47,5 +56,22 @@ public class PanelManager : ISubManager
     public void RemovePanelMember(PanelMember member)
     {
         _repo.DeletePanelMember(member);
+    }
+    
+    public int CalculatePanelSize(int citizenCount, double samplePercentage)
+    {
+        //CitizenCount = amount of citizens in gemeente.
+        return (int)(citizenCount * samplePercentage);
+    }
+    public int CalculateAmountOfReserve(int panelSize, double samplePercentage)
+    {
+        //panelSize = calculatedByCalculatePanelSize
+        return (int) (panelSize * samplePercentage);
+    }
+    public int CalculateTotalInvitesNeeded(int panelSizeIncludingReserve, double responseRate)
+    { 
+        //basePanelSize = claculated by CalculatePanelSize
+        //Response rate is a percentage which indicates the expected rate of resposne to invites.
+        return (int)(panelSizeIncludingReserve / responseRate);
     }
 }
