@@ -36,4 +36,13 @@ public class PanelManagementController : Controller
         var panels = _manager.GetAllPanels();
         return View(panels);
     }
+    
+    public IActionResult FinishRegistration(PanelManagementDto model)
+    {
+        return RedirectToAction("RegisteredOverviewTemp", "PanelManagement", model);
+    }
+    public IActionResult RegisteredOverviewTemp(PanelManagementDto model)
+    {
+        return View(model);
+    }
 }
