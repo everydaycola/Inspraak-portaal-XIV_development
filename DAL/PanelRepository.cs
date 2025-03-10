@@ -57,7 +57,7 @@ public class PanelRepository : ISubRepository
         _context.SaveChanges();
     }
 
-    public ICollection<Panel> ReadAllPanels()
+    public IEnumerable<Panel> ReadAllPanels()
     {
         return _context.Panels.ToList();
     }

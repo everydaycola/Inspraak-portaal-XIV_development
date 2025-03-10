@@ -20,11 +20,10 @@ public class PanelManagementController : Controller
     public IActionResult Index(Guid id)
     {
         var panel = _manager.GetPanelWithRepresentationGroup(id);
-        //TODO: Actualy gather the citizencount instead of simulating this.
         PanelManagementDto pmd = new PanelManagementDto(panel.name, 20000, 0);
         pmd.PanelSize = _manager.CalculatePanelSize(pmd.CitizenCount, 0.005);
-        pmd.AmountOfReserveInvites = _manager.CalculateAmountOfReserve(pmd.PanelSize, 0.2);
-        pmd.TotalInvitesNeeded = _manager.CalculateTotalInvitesNeeded(pmd.PanelSize + pmd.AmountOfReserveInvites, 0.05);
+        pmd.AmountOfReserveInvites = _manager.CalculateAmountOfReserve(pmd.PanelSize, panel.RepresentationGroup.ReservePercentage);
+        pmd.TotalInvitesNeeded = _manager.CalculateTotalInvitesNeeded(pmd.PanelSize + pmd.AmountOfReserveInvites, panel.RepresentationGroup.ResponseRate);
         return View(pmd);
     }
     [HttpPost]

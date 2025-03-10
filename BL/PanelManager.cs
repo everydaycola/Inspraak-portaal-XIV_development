@@ -26,7 +26,7 @@ public class PanelManager : ISubManager
     {
         return _repo.ReadPanelWithRepresentationGroup(id);
     }
-    public ICollection<Panel> GetAllPanels()
+    public IEnumerable<Panel> GetAllPanels()
     {
         return _repo.ReadAllPanels();
     }
