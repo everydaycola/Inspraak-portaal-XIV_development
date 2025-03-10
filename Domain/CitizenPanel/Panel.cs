@@ -8,6 +8,8 @@ public class Panel
     public RepresentationGroup RepresentationGroup { get; set; }
     public double SampleRate { get; set; }
     
+    public bool IsRegistrationOpen { get; set; }
+    
     public Panel(string name, double sampleRate)
     {
         this.name = name;

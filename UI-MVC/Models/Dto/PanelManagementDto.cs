@@ -2,18 +2,22 @@
 
 public class PanelManagementDto
 {
+    public Guid Id { get; set; }
     public string PanelName { get; set; }
     public int AmountOfAcceptedInvites { get; set; }
     public int CitizenCount { get; set; }
     public int PanelSize { get; set; }
     public int AmountOfReserveInvites { get; set; }
     public int TotalInvitesNeeded { get; set; }
+    public bool IsRegistrationOpen { get; set; }
 
-    public PanelManagementDto(string panelName, int citizenCount, int amountOfAcceptedInvites)
+    public PanelManagementDto(string panelName, int citizenCount, int amountOfAcceptedInvites, Guid id, bool isRegistrationOpen)
     {
+        Id = id;
         PanelName = panelName;
         AmountOfAcceptedInvites = amountOfAcceptedInvites;
         this.CitizenCount = citizenCount;
+        IsRegistrationOpen = isRegistrationOpen;
     }
     
     

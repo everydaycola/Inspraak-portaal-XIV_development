@@ -20,7 +20,7 @@ public class PanelManagementController : Controller
     public IActionResult Index(Guid id)
     {
         var panel = _manager.GetPanelWithRepresentationGroup(id);
-        PanelManagementDto pmd = new PanelManagementDto(panel.name, 20000, 0);
+        PanelManagementDto pmd = new PanelManagementDto(panel.name, 20000, 0, panel.Id, panel.IsRegistrationOpen);
         pmd.PanelSize = _manager.CalculatePanelSize(pmd.CitizenCount, 0.005);
         pmd.AmountOfReserveInvites = _manager.CalculateAmountOfReserve(pmd.PanelSize, panel.RepresentationGroup.ReservePercentage);
         pmd.TotalInvitesNeeded = _manager.CalculateTotalInvitesNeeded(pmd.PanelSize + pmd.AmountOfReserveInvites, panel.RepresentationGroup.ResponseRate);
@@ -37,12 +37,11 @@ public class PanelManagementController : Controller
         return View(panels);
     }
     
-    public IActionResult FinishRegistration(PanelManagementDto model)
+    public IActionResult ToggleRegistration(Guid id)
     {
-        return RedirectToAction("RegisteredOverviewTemp", "PanelManagement", model);
-    }
-    public IActionResult RegisteredOverviewTemp(PanelManagementDto model)
-    {
-        return View(model);
+        var panel = _manager.GetPanel(id);
+        panel.IsRegistrationOpen = !panel.IsRegistrationOpen;
+        _logger.Log(LogLevel.Information,"De knop doet het wel");
+        return RedirectToAction("Index", new { id = panel.Id });
     }
 }
