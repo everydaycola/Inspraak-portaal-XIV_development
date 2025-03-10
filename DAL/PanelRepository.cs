@@ -15,7 +15,7 @@ public class PanelRepository : ISubRepository
 
     public Panel readPanel(Guid id)
     {
-        return _context.Panels.First(p => p.Id == id);
+        return _context.Panels.Find(id);
     }
     public void CreatePanel(Panel panel)
     {
@@ -31,13 +31,13 @@ public class PanelRepository : ISubRepository
 
     public Panel ReadPanel(Guid id)
     {
-        return _context.Panels.First(p => p.Id == id);
+        return _context.Panels.Find(id);
     }
     public Panel ReadPanelWithRepresentationGroup(Guid id)
     {
         return _context.Panels
             .Include(p => p.RepresentationGroup)
-            .First(p => p.Id == id);
+            .Single(p => p.Id == id);
     }
     
     public void CreatePanelMember(PanelMember panelMember)
@@ -48,7 +48,7 @@ public class PanelRepository : ISubRepository
 
     public PanelMember ReadPanelMember(Guid id)
     {
-        return _context.PanelMembers.First(p => p.Id == id);
+        return _context.PanelMembers.Find(id);
     }
 
     public void DeletePanelMember(PanelMember member)

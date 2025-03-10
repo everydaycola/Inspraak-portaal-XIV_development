@@ -6,12 +6,12 @@ namespace UI_MVC.Controllers;
 
 public class PanelManagementController : Controller
 {
-    private readonly ILogger<HomeController> _logger;
+    private readonly ILogger<PanelManagementController> _logger;
 
     private readonly PanelManager _manager;
     
     
-    public PanelManagementController(ILogger<HomeController> logger, IManager manager)
+    public PanelManagementController(ILogger<PanelManagementController> logger, IManager manager)
     {
         _logger = logger;
         _manager = (PanelManager) manager;
