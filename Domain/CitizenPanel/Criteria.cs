@@ -2,7 +2,7 @@
 
 public class Criteria
 {
-    public long CriteriaId { get; set; }
+    public Guid CriteriaId { get; set; }
     public string Name { get; set; }
     public string Value { get; set; }
     public ICollection<PanelMemberCriteria> PanelMembers { get; set; }
