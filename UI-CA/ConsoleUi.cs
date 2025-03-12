@@ -89,7 +89,6 @@ public class ConsoleUi
         }
 
         Console.WriteLine(_manager.describePanel(guid));
-        Console.WriteLine(_manager.getPanelGuidsPerGroup(guid));
     }
 
     private void CreateDefaultPanel()

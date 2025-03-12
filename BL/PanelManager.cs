@@ -38,6 +38,7 @@ public class PanelManager : ISubManager
         const double tolerance = 0.0001;
         var panel = new Panel(name, sampleRate);
         var members = new List<PanelMember>();
+        var rng = new Random();
         for (int i = 0; i < size; i++)
         {
             PanelMember newMember = new PanelMember();
@@ -48,6 +49,13 @@ public class PanelManager : ISubManager
         // for each criteria in the distribution
         foreach (var key in distribution.Keys)
         {
+            // Fisher-Yates shuffle of members so that distribution isn't sorted
+            for (var i = members.Count - 1; i > 0; i--)
+            {
+                var k = rng.Next(i + 1);
+                (members[k], members[i]) = (members[i], members[k]); // Swap
+            }
+            
             var categoryEnumerator = distribution[key].Keys.GetEnumerator();
             var memberEnumerator = members.GetEnumerator();
 
