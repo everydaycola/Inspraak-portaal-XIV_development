@@ -6,6 +6,7 @@ public static class DataSeeder
 {
     public static void Seed(CitizenPanelDbContext context)
     {
+        Console.WriteLine("Seeding...");
         //REPRESENTATION GROUPS
         RepresentationGroup rg1 = new RepresentationGroup(20000, 0.2, 0.1);
         //PANELS

@@ -13,13 +13,37 @@ public class PanelRepository : ISubRepository
         this._context = context;
     }
 
-    public Panel readPanel(Guid id)
+    public Panel ReadPanel(Guid id)
     {
         return _context.Panels.Find(id);
     }
+
+    public PanelMember ReadPanelMember(Guid id)
+    {
+        return _context.PanelMembers.Find(id);
+    }
+
+    public Panel ReadPanelWithRepresentationGroup(Guid id)
+    {
+        return _context.Panels
+            .Include(p => p.RepresentationGroup)
+            .Single(p => p.Id == id);
+    }
+
+    public IEnumerable<Panel> ReadAllPanels()
+    {
+        return _context.Panels.ToList();
+    }
+
     public void CreatePanel(Panel panel)
     {
         _context.Panels.Add(panel);
+        _context.SaveChanges();
+    }
+
+    public void CreatePanelMember(PanelMember panelMember)
+    {
+        _context.PanelMembers.Add(panelMember);
         _context.SaveChanges();
     }
 
@@ -29,36 +53,9 @@ public class PanelRepository : ISubRepository
         _context.SaveChanges();
     }
 
-    public Panel ReadPanel(Guid id)
-    {
-        return _context.Panels.Find(id);
-    }
-    public Panel ReadPanelWithRepresentationGroup(Guid id)
-    {
-        return _context.Panels
-            .Include(p => p.RepresentationGroup)
-            .Single(p => p.Id == id);
-    }
-    
-    public void CreatePanelMember(PanelMember panelMember)
-    {
-        _context.PanelMembers.Add(panelMember);
-        _context.SaveChanges();
-    }
-
-    public PanelMember ReadPanelMember(Guid id)
-    {
-        return _context.PanelMembers.Find(id);
-    }
-
     public void DeletePanelMember(PanelMember member)
     {
         _context.PanelMembers.Remove(member);
         _context.SaveChanges();
-    }
-
-    public IEnumerable<Panel> ReadAllPanels()
-    {
-        return _context.Panels.ToList();
     }
 }

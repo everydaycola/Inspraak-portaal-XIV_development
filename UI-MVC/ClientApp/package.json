@@ -1,0 +1,27 @@
+{
+  "name": "UI-MVC",
+  "description": "UI layer for the CitizenPanel application.",
+  "repository": "https://gitlab.com/groups/kdg-ti/integratieproject-1/202425/14_team-14",
+  "license": "MIT",
+  "version": "5.0.0",
+  "dependencies": {
+    "@popperjs/core": "^2.11.8",
+    "jquery": "^3.7.1",
+    "jquery-validation": "^1.20.0",
+    "jquery-validation-unobtrusive": "^4.0.0",
+    "bootstrap": "^5.3.3",
+    "bootstrap-icons": "^1.11.3"
+  },
+  "devDependencies": {
+    "@tsconfig/recommended": "^1.0.5",
+    "@types/bootstrap": "^5.2.10",
+    "sass": "^1.72.0",
+    "typescript": "^5.4.3",
+    "vite": "^6.2.0"
+  },
+  "scripts": {
+    "build": "vite build",
+    "watch": "vite"
+  }
+
+}
