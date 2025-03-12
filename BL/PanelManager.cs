@@ -22,7 +22,11 @@ public class PanelManager : ISubManager
     {
         return _repo.ReadPanelWithRepresentationGroup(id);
     }
-    
+
+    public Panel GetPanelWithPanelMembersAndCriteria(Guid id)
+    {
+        return _repo.ReadPanelWithPanelMembersAndCriteria(id);
+    }
     public IEnumerable<Panel> GetAllPanels()
     {
         return _repo.ReadAllPanels();

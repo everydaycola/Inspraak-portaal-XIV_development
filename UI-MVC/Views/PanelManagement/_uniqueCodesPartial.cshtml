@@ -1,10 +1,42 @@
-@model ICollection<UI_MVC.Models.Dto.UniqueCodesDto>
+@using UI_MVC.Models.Dto
+@model IEnumerable<GroupedUniqueCodesDto>
 
 <div>
-    <ul>
-        @foreach (var entry in Model)
-        {
-            <li>@entry.Name</li>
-        }
-    </ul>
+    @foreach (var group in Model)
+    {
+        <div class="card">
+            <div class="card-header">
+                <button
+                    class="btn btn-link"
+                    type="button"
+                    data-bs-toggle="collapse"
+                    data-bs-target="#collapse-@group.GroupKey.Replace(" ", "").Replace(",", "-")"
+                    aria-expanded="false"
+                    aria-controls="collapse-@group.GroupKey.Replace(" ", "").Replace(",", "-")">
+                    Criteria: @group.GroupKey
+                </button>
+            </div>
+            <div
+                id="collapse-@group.GroupKey.Replace(" ", "").Replace(",", "-")"
+                class="collapse">
+                <div class="card-body">
+                    <table class="table table-striped table-bordered">
+                        <thead class="thead-dark">
+                        <tr>
+                            <th>Member ID</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        @foreach (var member in group.Members)
+                        {
+                            <tr>
+                                <td>@member.memberId</td>
+                            </tr>
+                        }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    }
 </div>

@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using BL;
+using Domain.CitizenPanel;
 using Microsoft.AspNetCore.Mvc;
 using UI_MVC.Models.Dto;
 
@@ -29,10 +30,26 @@ public class PanelManagementController : Controller
     }
     public IActionResult LoadUniqueCodes(Guid panelId)
     {
+        Panel panel = _manager.GetPanelWithPanelMembersAndCriteria(panelId);
         ICollection<UniqueCodesDto> codes = new List<UniqueCodesDto>();
-        codes.Add(new UniqueCodesDto("Test1"));
-        codes.Add(new UniqueCodesDto("Test2"));
-        var model = codes;
+        foreach (var member in panel.PanelMembers)
+        {
+            var codeDto = new UniqueCodesDto(member.PanelMemberId);
+            foreach (var criteria in member.Criteria)
+            {
+                codeDto.criteria.Add(criteria.Criteria);
+            }
+            codes.Add(codeDto);
+        }
+
+        var model = codes
+            .GroupBy(entry => entry.GroupKey) // Group by the GroupKey property in DTO
+            .Select(group => new GroupedUniqueCodesDto
+            {
+                GroupKey = group.Key,
+                Members = group.ToList()
+            }).ToList();
+        
         return PartialView("_UniqueCodesPartial", model);
     }
     [HttpPost]

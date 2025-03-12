@@ -30,6 +30,15 @@ public class PanelRepository : ISubRepository
             .Single(p => p.Id == id);
     }
 
+    public Panel ReadPanelWithPanelMembersAndCriteria(Guid id)
+    {
+        return _context.Panels
+            .Include(p => p.PanelMembers)
+            .ThenInclude(p=> p.Criteria)
+            .ThenInclude(c=>c.Criteria)
+            .Single(p => p.Id == id);
+    }
+
     public IEnumerable<Panel> ReadAllPanels()
     {
         return _context.Panels.ToList();
