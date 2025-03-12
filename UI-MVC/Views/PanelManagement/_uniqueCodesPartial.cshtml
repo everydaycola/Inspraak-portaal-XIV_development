@@ -1,0 +1,10 @@
+@model ICollection<UI_MVC.Models.Dto.UniqueCodesDto>
+
+<div>
+    <ul>
+        @foreach (var entry in Model)
+        {
+            <li>@entry.Name</li>
+        }
+    </ul>
+</div>
