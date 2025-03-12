@@ -34,7 +34,7 @@ public class PanelManagementController : Controller
         ICollection<UniqueCodesDto> codes = new List<UniqueCodesDto>();
         foreach (var member in panel.PanelMembers)
         {
-            var codeDto = new UniqueCodesDto(member.PanelMemberId);
+            var codeDto = new UniqueCodesDto(panel.Id, member.PanelMemberId);
             foreach (var criteria in member.Criteria)
             {
                 codeDto.criteria.Add(criteria.Criteria);
