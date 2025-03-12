@@ -33,7 +33,7 @@ public class PanelManager : ISubManager
         _repo.CreatePanel(panel);
     }
 
-    public Panel AddPanel(string name, int size, double sampleRate, Dictionary<string, Dictionary<string, double>> distribution)
+    public Panel AddPanel(string name, int size, double sampleRate, Dictionary<string, Dictionary<string, double>> distribution,int citizenCount, double reservePercentage, double responseRate )
     {
         const double tolerance = 0.0001;
         var panel = new Panel(name, sampleRate);
@@ -84,6 +84,7 @@ public class PanelManager : ISubManager
         }
         
         panel.PanelMembers = members;
+        panel.RepresentationGroup = new RepresentationGroup(citizenCount,reservePercentage,responseRate);
 
         _repo.CreatePanel(panel);
         Console.WriteLine("Created panel " + name);

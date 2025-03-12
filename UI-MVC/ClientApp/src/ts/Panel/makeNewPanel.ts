@@ -19,7 +19,10 @@ export async function defaultPanel() {
                     "30": 0.6,
                     "40": 0.2
                 }
-            }
+            },
+            "CitizenCount":10000,
+            "ReservePercentage":0.2,
+            "ResponseRate":0.005
         }),
     });
 }

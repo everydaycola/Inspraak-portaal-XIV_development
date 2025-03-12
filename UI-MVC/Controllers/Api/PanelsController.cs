@@ -22,7 +22,10 @@ public class PanelsController : Controller
             newPanelDto.Name,
             newPanelDto.Size,
             newPanelDto.SampleRate,
-            newPanelDto.Distributions
+            newPanelDto.Distributions,
+            newPanelDto.CitizenCount,
+            newPanelDto.ReservePercentage,
+            newPanelDto.ResponseRate
         );
 
         //todo: redirect to a page with detail about the just created panel
