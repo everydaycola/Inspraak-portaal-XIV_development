@@ -1,17 +1,19 @@
 ﻿using BL;
 using Domain.CitizenPanel;
+using UI_CA.ca_helpers;
 
 namespace UI_CA;
 
 public class ConsoleUi
 {
     private readonly PanelManager _manager;
-
+    private readonly PanelCaHelper panelCaHelper;
     public ConsoleUi(PanelManager manager)
     {
         _manager = manager;
+        panelCaHelper = new PanelCaHelper(_manager);
     }
-
+    
     public void Start()
     {
         int choice;
@@ -88,8 +90,8 @@ public class ConsoleUi
             }
         }
 
-        Console.WriteLine(_manager.DescribePanel(guid));
-        Console.WriteLine(_manager.GetPanelGuidsPerGroup(guid));
+        Console.WriteLine(panelCaHelper.DescribePanel(guid));
+        Console.WriteLine(panelCaHelper.GetPanelGuidsPerGroup(guid));
     }
 
     private void CreateDefaultPanel()

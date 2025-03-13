@@ -29,6 +29,11 @@ public class PanelManager : ISubManager
         return _repo.ReadPanelWithPanelMembersAndCriteria(id);
     }
 
+    public PanelMember GetPanelByUserId(Guid memberId)
+    {
+        return _repo.ReadPanelByUserId(memberId);
+    }
+
     public IEnumerable<Panel> GetAllPanels()
     {
         return _repo.ReadAllPanels();
@@ -38,108 +43,107 @@ public class PanelManager : ISubManager
     {
         _repo.CreatePanel(panel);
     }
-
-    //TODO: FIX NULL VALUES IN PANEL CREATION
+    
+    
+    
     public Panel AddPanel(string name, int size, double sampleRate,
-    Dictionary<string, Dictionary<string, double>> distribution, int citizenCount, double reservePercentage, double responseRate)
-{
-    const double tolerance = 0.0001;
-    
-    var panel = new Panel(name, sampleRate);
-    var rpg = new RepresentationGroup(citizenCount, reservePercentage, responseRate);
-    panel.RepresentationGroup = rpg;
-    var rng = new Random();
-    
-    var panelMembers = new List<PanelMember>();
-    for (int i = 0; i < size; i++)
+        Dictionary<string, Dictionary<string, double>> distribution, int citizenCount, double reservePercentage,
+        double responseRate)
     {
-        var panelMember = new PanelMember
-        {
-            Panel = panel
-        };
-        panelMembers.Add(panelMember);
-    }
+        var panel = new Panel(name, sampleRate);
+        var rpg = new RepresentationGroup(citizenCount, reservePercentage, responseRate);
+        panel.RepresentationGroup = rpg;
+        
+        panel.PanelMembers = generatePanelMembers(size, panel);
+        var random = new Random();
+        panel.PanelMembers = panel.PanelMembers.OrderBy(_ => random.Next()).ToList();
+        //PrintDistribution(distribution);
 
-    panel.PanelMembers = panelMembers;
-    
-    var criteriaGroups = new List<CriteriaGroup>();
-    var criteriaCombinations = GenerateCriteriaCombinations(distribution);
-
-    foreach (var combination in criteriaCombinations)
-    {
-        var criteriaGroup = new CriteriaGroup
+        List<Criteria> criteriaList = new List<Criteria>();
+        
+        foreach (var outerEntry in distribution)
         {
-            Name = string.Join("-", combination.Select(c => $"{c.Value}")),
-            Criteria = combination.Select(c => new Criteria(c.Key, c.Value)).ToList(),
-            PanelMembers = new List<PanelMember>()
-        };
-
-        criteriaGroups.Add(criteriaGroup);
-    }
-    
-    foreach (var criteriaGroup in criteriaGroups)
-    {
-        for (var i = panelMembers.Count - 1; i > 0; i--)
-        {
-            var k = rng.Next(i + 1);
-            (panelMembers[k], panelMembers[i]) = (panelMembers[i], panelMembers[k]);
-        }
-
-        double percentDone = 0;
-        foreach (var panelMember in panelMembers)
-        {
-            if (percentDone >= distribution[criteriaGroup.Criteria.First().Name][criteriaGroup.Criteria.First().Value])
+            string outerKey = outerEntry.Key;
+            var innerDict = outerEntry.Value;
+            foreach (var innerEntry in innerDict)
             {
-                break;
+                string innerKey = innerEntry.Key;
+                double value = innerEntry.Value;
+                criteriaList.Add(new Criteria(outerKey, innerKey, value));
+            }
+        }
+        //GROUP CRITERIA BY NAME
+        var groupedCriteria = criteriaList
+            .GroupBy(c => c.Name)
+            .ToDictionary(g => g.Key, g => g.ToList());
+        
+        //GENERATE COMBINATIONS
+        List<Dictionary<string, Criteria>> combinations = new List<Dictionary<string, Criteria>>();
+        void GenerateCombinations(Dictionary<string, Criteria> current, List<string> remainingCriteria)
+        {
+            if (remainingCriteria.Count == 0)
+            {
+                combinations.Add(new Dictionary<string, Criteria>(current));
+                return;
+            }
+            string nextCriterion = remainingCriteria[0];
+            var nextCriteriaValues = groupedCriteria[nextCriterion];
+
+            foreach (var value in nextCriteriaValues)
+            {
+                current[nextCriterion] = value;
+                GenerateCombinations(current, remainingCriteria.Skip(1).ToList());
+                current.Remove(nextCriterion);
+            }
+        }
+        
+        GenerateCombinations(new Dictionary<string, Criteria>(), groupedCriteria.Keys.ToList());
+
+        List<CriteriaGroup> criteriaGroups = new List<CriteriaGroup>();
+        int currentuserIndex = 0;
+        foreach (var combo in combinations)
+        {
+            string comboKey = string.Join("-", combo.Values.Select(c => c.Value));
+            double comboPercentage = combo.Values.Aggregate(1.0, (acc, c) => acc * c.distributionPercentage);
+            int totalMembersNeeded = (int)Math.Round(comboPercentage * panel.PanelMembers.Count);
+            if (currentuserIndex + totalMembersNeeded > panel.PanelMembers.Count)
+            {
+                totalMembersNeeded = panel.PanelMembers.Count - currentuserIndex;
             }
             
-            panelMember.CriteriaGroup = criteriaGroup;
-            criteriaGroup.PanelMembers.Add(panelMember);
-
-            percentDone += 1.0 / size;
+            var assignedMembers = panel.PanelMembers
+                .Skip(currentuserIndex)
+                .Take(totalMembersNeeded)
+                .ToList();
+            currentuserIndex += totalMembersNeeded;
+            
+            var criteriaGroup = new CriteriaGroup(comboKey, assignedMembers);
+            criteriaGroups.Add(criteriaGroup);
         }
-    }
-    
-    _repo.CreatePanel(panel);
-    Console.WriteLine($"Created panel {name}");
-    return panel;
-}
-
-    private List<Dictionary<string, string>> GenerateCriteriaCombinations(Dictionary<string, Dictionary<string, double>> distribution)
-    {
-        var keys = distribution.Keys.ToList();
-    
-        // Recursive function to generate combinations
-        List<Dictionary<string, string>> Generate(int index)
+        
+        foreach (var group in criteriaGroups)
         {
-            if (index == keys.Count)
+            _repo.CreateCriteriaGroup(group);
+        }
+        
+        return panel;
+    }
+    
+    private ICollection<PanelMember> generatePanelMembers(int size, Panel panel)
+    {
+        var panelMembers = new List<PanelMember>();
+        for (int i = 0; i < size; i++)
+        {
+            var panelMember = new PanelMember
             {
-                return new List<Dictionary<string, string>> { new Dictionary<string, string>() };
-            }
-
-            var key = keys[index];
-            var values = distribution[key].Keys.ToList();
-            var subCombinations = Generate(index + 1);
-
-            var combinations = new List<Dictionary<string, string>>();
-            foreach (var value in values)
-            {
-                foreach (var subCombination in subCombinations)
-                {
-                    var combination = new Dictionary<string, string>(subCombination)
-                    {
-                        [key] = value
-                    };
-                    combinations.Add(combination);
-                }
-            }
-
-            return combinations;
+                Panel = panel
+            };
+            panelMembers.Add(panelMember);
         }
 
-        return Generate(0);
+        return panelMembers;
     }
-
+    
     public int CalculatePanelSize(int citizenCount, double samplePercentage)
     {
         //CitizenCount = amount of citizens in gemeente.
@@ -157,77 +161,5 @@ public class PanelManager : ISubManager
         //basePanelSize = claculated by CalculatePanelSize
         //Response rate is a percentage which indicates the expected rate of resposne to invites.
         return (int)(panelSizeIncludingReserve / responseRate);
-    }
-
-    public string GetPanelGuidsPerGroup(Guid panelGuid)
-    {
-        var panel = _repo.ReadPanel(panelGuid);
-
-        var sb = new StringBuilder();
-        sb.AppendLine($"Name: {panel.Name}");
-        sb.AppendLine($"Size: {panel.PanelMembers.Count}");
-
-        var criteriaMemberPairs = panel.PanelMembers
-            .SelectMany(member => member.CriteriaGroup.Criteria
-                .Select(criteria => new
-                {
-                    MemberId = member.PanelMemberId,
-                    CriterionName = criteria.Name,
-                    CriterionValue = criteria.Value
-                }));
-
-        var groupedByCriteria = criteriaMemberPairs
-            .GroupBy(pair => new { pair.CriterionName, pair.CriterionValue })
-            .OrderBy(group => group.Key.CriterionName)
-            .ThenBy(group => group.Key.CriterionValue);
-
-        foreach (var group in groupedByCriteria)
-        {
-            sb.AppendLine($"Criterion: {group.Key.CriterionName}, Value: {group.Key.CriterionValue}");
-
-            foreach (var member in group)
-            {
-                sb.AppendLine(member.MemberId.ToString());
-            }
-
-            sb.AppendLine();
-        }
-
-        return sb.ToString();
-    }
-
-    public string DescribePanel(Guid panelGuid)
-    {
-        var panel = _repo.ReadPanel(panelGuid);
-
-        var sb = new StringBuilder();
-        sb.AppendLine($"Name: {panel.Name}");
-        sb.AppendLine($"Size: {panel.PanelMembers.Count}");
-
-        var allCriteria = panel.PanelMembers
-            .SelectMany(member => member.CriteriaGroup.Criteria
-                .Select(criteria => new
-                {
-                    CriteriaName = criteria.Name,
-                    CriteriaValue = criteria.Value
-                }));
-
-        var counts = allCriteria
-            .GroupBy(c => new { c.CriteriaName, c.CriteriaValue })
-            .Select(group => new
-            {
-                group.Key.CriteriaName,
-                group.Key.CriteriaValue,
-                Count = group.Count()
-            })
-            .OrderBy(item => item.CriteriaName)
-            .ThenBy(item => item.CriteriaValue);
-
-        foreach (var item in counts)
-        {
-            sb.AppendLine($"Criterion: {item.CriteriaName}, Value: {item.CriteriaValue}, Count: {item.Count}");
-        }
-
-        return sb.ToString();
     }
 }

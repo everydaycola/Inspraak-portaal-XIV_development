@@ -7,7 +7,7 @@ public class UniqueCodesDto
     public Guid memberId { get; set; }
     public Guid panelId { get; set; }
     public ICollection<Criteria> criteria{ get; set; }
-    public string generatedUri => "http://localhost:5228/Register?UserId=" + memberId + "&PanelId=" + panelId;
+    public string generatedUri => "http://localhost:5228/Register?UserId=" + memberId;
     public CriteriaGroup CriteriaGroup { get; set; }
 
     public UniqueCodesDto(Guid panelId, Guid memberId, CriteriaGroup criteriaGroup)

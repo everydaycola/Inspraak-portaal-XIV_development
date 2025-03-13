@@ -43,6 +43,13 @@ public class PanelRepository : ISubRepository
         return _context.Panels.ToList();
     }
 
+    public PanelMember ReadPanelByUserId(Guid memberId)
+    {
+        return _context.PanelMembers
+            .Include(pm => pm.Panel)
+            .Single(pm => pm.PanelMemberId == memberId);
+    }
+    
     public void CreatePanel(Panel panel)
     {
         _context.Panels.Add(panel);
@@ -71,4 +78,5 @@ public class PanelRepository : ISubRepository
         _context.PanelMembers.Remove(member);
         _context.SaveChanges();
     }
+    
 }

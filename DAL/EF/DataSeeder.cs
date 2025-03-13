@@ -29,11 +29,11 @@ public static class DataSeeder
         
         
         //CRITERIA
-        Criteria criteria1 = new Criteria("Rijbewijs","Yes");
-        Criteria criteria2 = new Criteria("Rijbewijs","No");
-        Criteria criteria3 = new Criteria("Vervoermethode","Te voet");
-        Criteria criteria4 = new Criteria("Vervoermethode","Fiets");
-        Criteria criteria5 = new Criteria("Vervoermethode","Auto");
+        Criteria criteria1 = new Criteria("Rijbewijs","Yes",0.5);
+        Criteria criteria2 = new Criteria("Rijbewijs","No",0.5);
+        Criteria criteria3 = new Criteria("Vervoermethode","Te voet",1/3);
+        Criteria criteria4 = new Criteria("Vervoermethode","Fiets",1/3);
+        Criteria criteria5 = new Criteria("Vervoermethode", "Auto",1/3);
         
         //Add criteria to criteriagroups
         criteriaGroup1.Criteria.Add(criteria1);
