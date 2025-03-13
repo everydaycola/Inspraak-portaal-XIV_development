@@ -8,12 +8,13 @@ public class UniqueCodesDto
     public Guid panelId { get; set; }
     public ICollection<Criteria> criteria{ get; set; }
     public string generatedUri => "http://localhost:5228/Register?UserId=" + memberId + "&PanelId=" + panelId;
-    public string GroupKey => string.Join(", ", criteria.Select(crit => crit.Name +"-"+ crit.Value));
+    public CriteriaGroup CriteriaGroup { get; set; }
 
-    public UniqueCodesDto(Guid panelId, Guid memberId)
+    public UniqueCodesDto(Guid panelId, Guid memberId, CriteriaGroup criteriaGroup)
     {
         this.panelId = panelId;
         this.memberId = memberId;
         this.criteria = new List<Criteria>();
+        this.CriteriaGroup = criteriaGroup;
     }
 }

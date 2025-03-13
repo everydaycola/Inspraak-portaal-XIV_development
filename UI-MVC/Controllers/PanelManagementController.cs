@@ -34,20 +34,21 @@ public class PanelManagementController : Controller
         ICollection<UniqueCodesDto> codes = new List<UniqueCodesDto>();
         foreach (var member in panel.PanelMembers)
         {
-            var codeDto = new UniqueCodesDto(panel.Id, member.PanelMemberId);
-            foreach (var criteria in member.Criteria)
-            {
-                codeDto.criteria.Add(criteria.Criteria);
-            }
+            var codeDto = new UniqueCodesDto(panel.Id, member.PanelMemberId, member.CriteriaGroup);
+            foreach (var criteria in member.CriteriaGroup.Criteria)
+                {
+                    codeDto.criteria.Add(criteria);
+                }
             codes.Add(codeDto);
         }
 
         var model = codes
-            .GroupBy(entry => entry.GroupKey) // Group by the GroupKey property in DTO
+            .GroupBy(entry => entry.CriteriaGroup.Id) 
             .Select(group => new GroupedUniqueCodesDto
             {
-                GroupKey = group.Key,
-                Members = group.ToList()
+                GroupKey = group.Key.ToString(),
+                Members = group.ToList(),
+                Name = group.First().CriteriaGroup.Name
             }).ToList();
         
         return PartialView("_UniqueCodesPartial", model);

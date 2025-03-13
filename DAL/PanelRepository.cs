@@ -32,10 +32,9 @@ public class PanelRepository : ISubRepository
 
     public Panel ReadPanelWithPanelMembersAndCriteria(Guid id)
     {
-        return _context.Panels
-            .Include(p => p.PanelMembers)
-            .ThenInclude(p=> p.Criteria)
-            .ThenInclude(c=>c.Criteria)
+        return _context.Panels.Include(p => p.PanelMembers)
+            .ThenInclude(p => p.CriteriaGroup)
+            .ThenInclude(p => p.Criteria)
             .Single(p => p.Id == id);
     }
 
@@ -50,6 +49,11 @@ public class PanelRepository : ISubRepository
         _context.SaveChanges();
     }
 
+    public void CreateCriteriaGroup(CriteriaGroup criteriaGroup)
+    {
+        _context.CriteriaGroups.Add(criteriaGroup);
+        _context.SaveChanges();
+    }
     public void CreatePanelMember(PanelMember panelMember)
     {
         _context.PanelMembers.Add(panelMember);

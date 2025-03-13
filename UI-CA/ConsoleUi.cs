@@ -88,8 +88,8 @@ public class ConsoleUi
             }
         }
 
-        Console.WriteLine(_manager.describePanel(guid));
-        Console.WriteLine(_manager.getPanelGuidsPerGroup(guid));
+        Console.WriteLine(_manager.DescribePanel(guid));
+        Console.WriteLine(_manager.GetPanelGuidsPerGroup(guid));
     }
 
     private void CreateDefaultPanel()
@@ -124,7 +124,7 @@ public class ConsoleUi
             }
         }
 
-        _manager.AddPanel("Default Panel", 150, 0.005, distribution);
+        _manager.AddPanel("Default Panel", 150, 0.005, distribution,15000,0.2,0.01);
     }
 
     private void CreatePanel()
@@ -156,7 +156,7 @@ public class ConsoleUi
             }
         }
 
-        _manager.AddPanel(name, size, sampleRate, criteriaPercentages);
+        _manager.AddPanel(name, size, sampleRate, criteriaPercentages, 15000,0.2,0.01);
     }
 
 

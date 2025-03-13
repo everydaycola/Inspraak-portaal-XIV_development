@@ -14,6 +14,20 @@ public static class DataSeeder
         //PANELS
         Panel panel1 = new Panel("Verkeersveiligheid in en rond Antwerpen.", 0.005);
         
+        //PanelMembers
+        PanelMember panelMember1 = new PanelMember(panel1);
+        PanelMember panelMember2 = new PanelMember(panel1);
+        PanelMember panelMember3 = new PanelMember(panel1);
+        PanelMember panelMember4 = new PanelMember(panel1);
+        PanelMember panelMember5 = new PanelMember(panel1);
+        
+        //CriteriaGroup
+        CriteriaGroup criteriaGroup1 = new CriteriaGroup("Rijbewijs-fiets",new List<PanelMember>{panelMember1,panelMember5});
+        CriteriaGroup criteriaGroup2 = new CriteriaGroup("Rijbewijs-Auto",new List<PanelMember>{panelMember2});
+        CriteriaGroup criteriaGroup3 = new CriteriaGroup("Rijbewijs-TeVoet",new List<PanelMember>{panelMember3}); 
+        CriteriaGroup criteriaGroup4 = new CriteriaGroup("GeenRijbewijs-TeVoet",new List<PanelMember>{panelMember4});
+        
+        
         //CRITERIA
         Criteria criteria1 = new Criteria("Rijbewijs","Yes");
         Criteria criteria2 = new Criteria("Rijbewijs","No");
@@ -21,36 +35,28 @@ public static class DataSeeder
         Criteria criteria4 = new Criteria("Vervoermethode","Fiets");
         Criteria criteria5 = new Criteria("Vervoermethode","Auto");
         
-        //PanelMembers
-        PanelMember PanelMember1 = new PanelMember(panel1);
-        PanelMember PanelMember2 = new PanelMember(panel1);
-        PanelMember PanelMember3 = new PanelMember(panel1);
-        PanelMember PanelMember4 = new PanelMember(panel1);
-        
-        //PanelMemberCriteria
-        PanelMemberCriteria panelMemberCriteria1 = new PanelMemberCriteria(PanelMember1, criteria1);
-        PanelMemberCriteria panelMemberCriteria2 = new PanelMemberCriteria(PanelMember1, criteria4);
-        PanelMemberCriteria panelMemberCriteria3 = new PanelMemberCriteria(PanelMember2, criteria1);
-        PanelMemberCriteria panelMemberCriteria4 = new PanelMemberCriteria(PanelMember2, criteria5);
-        PanelMemberCriteria panelMemberCriteria5 = new PanelMemberCriteria(PanelMember3, criteria1);
-        PanelMemberCriteria panelMemberCriteria6 = new PanelMemberCriteria(PanelMember3, criteria3);
-        PanelMemberCriteria panelMemberCriteria7 = new PanelMemberCriteria(PanelMember4, criteria2);
-        PanelMemberCriteria panelMemberCriteria8 = new PanelMemberCriteria(PanelMember4, criteria3);
+        //Add criteria to criteriagroups
+        criteriaGroup1.Criteria.Add(criteria1);
+        criteriaGroup1.Criteria.Add(criteria4);
+        criteriaGroup2.Criteria.Add(criteria1);
+        criteriaGroup2.Criteria.Add(criteria5);
+        criteriaGroup3.Criteria.Add(criteria1);
+        criteriaGroup3.Criteria.Add(criteria3);
+        criteriaGroup4.Criteria.Add(criteria2);
+        criteriaGroup4.Criteria.Add(criteria3);
         
         //LINK REP. GROUP WITH PANEL
         rg1.Panel = panel1;
         panel1.RepresentationGroup = rg1;
         
+        
         //SAVE TO DATABASE
         context.RepresentationGroups.Add(rg1);
         context.Panels.Add(panel1);
-        addMultiplePanelMembers(new List<PanelMember>() { PanelMember1, PanelMember2, PanelMember3, PanelMember4 });
+        addMultiplePanelMembers(new List<PanelMember>() { panelMember1, panelMember2, panelMember3, panelMember4 });
         addMultipleCriteria(new List<Criteria>() { criteria1, criteria2, criteria3, criteria4, criteria5 });
-        addMultiplePanelMemberCriteria(new List<PanelMemberCriteria>()
-        {
-            panelMemberCriteria1, panelMemberCriteria2, panelMemberCriteria3, panelMemberCriteria4,
-            panelMemberCriteria5, panelMemberCriteria6, panelMemberCriteria7, panelMemberCriteria8
-        });
+        addMultipleCriteriaGroups(new List<CriteriaGroup>()
+        { criteriaGroup1, criteriaGroup2, criteriaGroup3, criteriaGroup4 });
         
         context.SaveChanges();
         context.ChangeTracker.Clear();
@@ -70,12 +76,13 @@ public static class DataSeeder
             _context.Criteria.Add(crit);
         }
     }
-    private static void addMultiplePanelMemberCriteria(List<PanelMemberCriteria> panelMemberCriteria)
+    private static void addMultipleCriteriaGroups(List<CriteriaGroup> criteriaGroups)
     {
-        foreach (var pmc in panelMemberCriteria)
+        foreach (var cg in criteriaGroups)
         {
-            _context.PanelMemberCriteria.Add(pmc);
+            _context.CriteriaGroups.Add(cg);
         }
     }
+    
     
 }

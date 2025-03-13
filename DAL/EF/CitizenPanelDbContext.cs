@@ -9,7 +9,7 @@ public class CitizenPanelDbContext : DbContext
     public DbSet<PanelMember> PanelMembers { get; set; }
     public DbSet<RepresentationGroup> RepresentationGroups { get; set; }
     public DbSet<Criteria> Criteria { get; set; }
-    public DbSet<PanelMemberCriteria> PanelMemberCriteria { get; set; }
+    public DbSet<CriteriaGroup> CriteriaGroups { get; set; }
 
     public CitizenPanelDbContext(DbContextOptions options) : base(options)
     {
@@ -35,22 +35,16 @@ public class CitizenPanelDbContext : DbContext
             .HasOne(p => p.Panel)
             .WithOne(p => p.RepresentationGroup)
             .HasForeignKey<RepresentationGroup>("PanelId");
-        // panelmember 1-* panelmembercriteria *-1 criteria
+        
+        //panelmember 1-* CriteriaGroup 1-*
         modelBuilder.Entity<PanelMember>()
-            .HasMany(pm => pm.Criteria)
-            .WithOne(pmc => pmc.PanelMember);
-        modelBuilder.Entity<Criteria>()
-            .HasMany(c => c.PanelMembers)
-            .WithOne(pmc => pmc.Criteria);
+            .HasOne(pm => pm.CriteriaGroup)
+            .WithMany(cg => cg.PanelMembers);
+        //criteriagroup 1-* criteria
+        modelBuilder.Entity<CriteriaGroup>()
+            .HasMany(cg => cg.Criteria)
+            .WithOne(c => c.CriteriaGroup);
         
-        
-        // shared primary key of PanelMemberCriteria
-        modelBuilder.Entity<PanelMemberCriteria>()
-            .Property("CriteriaId");
-        modelBuilder.Entity<PanelMemberCriteria>()
-            .Property("PanelMemberId");
-        modelBuilder.Entity<PanelMemberCriteria>()
-            .HasKey("CriteriaId", "PanelMemberId");
     }
 
     public bool CreateDatabase(bool dropDatabase)
