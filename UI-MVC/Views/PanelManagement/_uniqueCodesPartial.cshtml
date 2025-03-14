@@ -2,8 +2,9 @@
 @model IEnumerable<GroupedUniqueCodesDto>
 
 @{
-var request = Context.Request; // Or ViewContext.HttpContext.Request
-var baseUrl = $"{request.Scheme}://{request.Host}";
+    var request = Context.Request; // Or ViewContext.HttpContext.Request
+    var baseUrl = $"{request.Scheme}://{request.Host}";
+    var panelId = Model.First().Members.First().panelId;
 }
 
 
@@ -38,7 +39,9 @@ var baseUrl = $"{request.Scheme}://{request.Host}";
                         {
                             <tr>
                                 <td>@member.memberId</td>
-                                <td><a href="@($"{baseUrl}{member.generatedUri}")">@($"{baseUrl}{member.generatedUri}")</a></td>
+                                <td>
+                                    <a href="@($"{baseUrl}{member.generatedUri}")">@($"{baseUrl}{member.generatedUri}")</a>
+                                </td>
                             </tr>
                         }
                         </tbody>
@@ -47,4 +50,7 @@ var baseUrl = $"{request.Scheme}://{request.Host}";
             </div>
         </div>
     }
+    <form asp-action="DownloadQRCodesForAllGroups" asp-route-panelId="@panelId">
+        <button type="submit" class="btn btn-primary mt-2" id="generateAllQrCodesButton" >Generate QR Codes for All Groups</button>
+    </form>
 </div>
