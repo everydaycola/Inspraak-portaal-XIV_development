@@ -10,6 +10,7 @@ public interface IPanelRepository
     public Panel ReadPanelWithPanelMembersAndCriteria(Guid id);
     public IEnumerable<Panel> ReadAllPanels();
     public PanelMember ReadPanelByUserId(Guid memberId);
+    public void UpdatePanel(Panel panel);
     public void CreatePanel(Panel panel);
     public void CreateCriteriaGroup(CriteriaGroup criteriaGroup);
     public void CreatePanelMember(PanelMember panelMember);

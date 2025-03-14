@@ -13,6 +13,8 @@ public interface IPanelManager
     public Panel AddPanel(string name, int size, double sampleRate,
         Dictionary<string, Dictionary<string, double>> distribution, int citizenCount, double reservePercentage,
         double responseRate);
+
+    public void UpdatePanel(Guid id, bool isRegistrationOpen);
     public int CalculatePanelSize(int citizenCount, double samplePercentage);
     public int CalculateAmountOfReserve(int panelSize, double samplePercentage);
     public int CalculateTotalInvitesNeeded(int panelSizeIncludingReserve, double responseRate);

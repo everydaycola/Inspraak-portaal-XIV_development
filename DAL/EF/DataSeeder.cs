@@ -4,7 +4,7 @@ namespace DAL.EF;
 
 public static class DataSeeder
 {
-    private static CitizenPanelDbContext _context;
+   private static CitizenPanelDbContext _context;
     public static void Seed(CitizenPanelDbContext context)
     {
         Console.WriteLine("Seeding...");
@@ -49,19 +49,22 @@ public static class DataSeeder
         rg1.Panel = panel1;
         panel1.RepresentationGroup = rg1;
         
+        //SET REGISTRATION TO OPEN
+        panel1.IsRegistrationOpen = true;
         
         //SAVE TO DATABASE
         context.RepresentationGroups.Add(rg1);
         context.Panels.Add(panel1);
+        
         addMultiplePanelMembers(new List<PanelMember>() { panelMember1, panelMember2, panelMember3, panelMember4 });
         addMultipleCriteria(new List<Criteria>() { criteria1, criteria2, criteria3, criteria4, criteria5 });
         addMultipleCriteriaGroups(new List<CriteriaGroup>()
-        { criteriaGroup1, criteriaGroup2, criteriaGroup3, criteriaGroup4 });
+            { criteriaGroup1, criteriaGroup2, criteriaGroup3, criteriaGroup4 });
         
         context.SaveChanges();
         context.ChangeTracker.Clear();
     }
-
+    
     private static void addMultiplePanelMembers(List<PanelMember> members)
     {
         foreach (var mem in members)
@@ -83,6 +86,6 @@ public static class DataSeeder
             _context.CriteriaGroups.Add(cg);
         }
     }
-    
-    
+
+
 }

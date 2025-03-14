@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using BL.Interfaces;
 using Domain.CitizenPanel;
 using Microsoft.AspNetCore.Mvc;
@@ -26,6 +26,7 @@ public class PanelManagementController : Controller
         pmd.PanelSize = _manager.CalculatePanelSize(pmd.CitizenCount, 0.005);
         pmd.AmountOfReserveInvites = _manager.CalculateAmountOfReserve(pmd.PanelSize, panel.RepresentationGroup.ReservePercentage);
         pmd.TotalInvitesNeeded = _manager.CalculateTotalInvitesNeeded(pmd.PanelSize + pmd.AmountOfReserveInvites, panel.RepresentationGroup.ResponseRate);
+        pmd.IsRegistrationOpen = panel.IsRegistrationOpen;
         return View(pmd);
     }
     public IActionResult LoadUniqueCodes(Guid panelId)
@@ -62,5 +63,12 @@ public class PanelManagementController : Controller
     {
         var panels = _manager.GetAllPanels();
         return View(panels);
+    }
+
+    public IActionResult ToggleRegistration(Guid panelId)
+    {
+        var panel = _manager.GetPanel(panelId);
+        _manager.UpdatePanel(panelId, !panel.IsRegistrationOpen);
+        return RedirectToAction("Index", new { id = panel.Id });
     }
 }

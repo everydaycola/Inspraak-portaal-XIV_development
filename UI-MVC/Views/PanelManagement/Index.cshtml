@@ -27,6 +27,27 @@
                     @Model.CitizenCount inwoners: @Model.TotalInvitesNeeded
                 </p>
             </div>
+            <div class="mt-4">
+                <h5 class="card-title">Inschrijving Status</h5>
+                @if (Model.IsRegistrationOpen)
+                {
+                    <p class="card-text">Inschrijving staat open.</p>
+                }
+                else
+                {
+                    <p class="card-text">Inschrijving is gesloten.</p>
+                }
+            </div>
+            <form asp-action="ToggleRegistration" asp-controller="PanelManagement" asp-route-panelId="@Model.PanelId">
+                @if (Model.IsRegistrationOpen)
+                {
+                    <button type="submit" class="btn btn-warning mt-3 col-sm-4 col-lg-3">Inschrijving Afronden</button>
+                }
+                else
+                {
+                    <button type="submit" class="btn btn-primary mt-3 col-sm-4 col-lg-3">Inschrijving Openen</button>
+                }
+            </form>
         </div>
     </div>
     <div class="row mt-4 row-cols-3">
