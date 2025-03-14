@@ -1,14 +1,16 @@
-using BL;
-using DAL;
+using BL.Interfaces;
+using BL.Managers;
 using DAL.EF;
+using DAL.Interfaces;
+using DAL.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
-builder.Services.AddScoped<IRepository, PanelRepository>();
-builder.Services.AddScoped<IManager, PanelManager>();
+builder.Services.AddScoped<IPanelRepository, PanelRepository>();
+builder.Services.AddScoped<IPanelManager, PanelManager>();
 builder.Services.AddDbContext<CitizenPanelDbContext>();
 
 var app = builder.Build();

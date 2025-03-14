@@ -1,13 +1,13 @@
-using BL;
+using BL.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
 namespace UI_MVC.Controllers;
 
 public class PanelController : Controller
 {
-    private readonly IManager _manager;
+    private readonly IPanelManager _manager;
 
-    public PanelController(IManager manager)
+    public PanelController(IPanelManager manager)
     {
         _manager = manager;
     }
