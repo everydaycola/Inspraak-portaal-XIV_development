@@ -1,5 +1,5 @@
 ﻿using System.Collections;
-using BL;
+using BL.Interfaces;
 using Domain.CitizenPanel;
 using Microsoft.AspNetCore.Mvc;
 using UI_MVC.Models.Dto;
@@ -10,13 +10,13 @@ public class PanelManagementController : Controller
 {
     private readonly ILogger<PanelManagementController> _logger;
 
-    private readonly PanelManager _manager;
+    private readonly IPanelManager _manager;
     
     
-    public PanelManagementController(ILogger<PanelManagementController> logger, IManager manager)
+    public PanelManagementController(ILogger<PanelManagementController> logger, IPanelManager manager)
     {
         _logger = logger;
-        _manager = (PanelManager) manager;
+        _manager = manager;
     }
 
     public IActionResult Index(Guid id)

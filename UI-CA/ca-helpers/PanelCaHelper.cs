@@ -1,12 +1,12 @@
 using System.Text;
-using BL;
+using BL.Interfaces;
 
 namespace UI_CA.ca_helpers;
 
 public class PanelCaHelper
 {
-    public readonly PanelManager _manager;
-    public PanelCaHelper(PanelManager panelManager)
+    private readonly IPanelManager _manager;
+    public PanelCaHelper(IPanelManager panelManager)
     {
         _manager = panelManager;
     }

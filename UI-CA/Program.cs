@@ -1,6 +1,8 @@
-﻿using BL;
-using DAL;
+﻿using BL.Interfaces;
+using BL.Managers;
 using DAL.EF;
+using DAL.Interfaces;
+using DAL.Repositories;
 using Microsoft.EntityFrameworkCore;
 using UI_CA;
 
@@ -18,8 +20,8 @@ if (cpdc.CreateDatabase(dropDatabase: true))
 // // for real work? 
 // cpdc.CreateDatabase(false);
 
-PanelRepository pr = new PanelRepository(cpdc);
-PanelManager pm = new PanelManager(pr);
+IPanelRepository pr = new PanelRepository(cpdc);
+IPanelManager pm = new PanelManager(pr);
 ConsoleUi consoleUi = new ConsoleUi(pm);
 consoleUi.Start();
 

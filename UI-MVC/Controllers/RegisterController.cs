@@ -1,4 +1,4 @@
-﻿using BL;
+﻿using BL.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using UI_MVC.Models.Dto;
 
@@ -6,11 +6,11 @@ namespace UI_MVC.Controllers;
 
 public class RegisterController : Controller
 {
-    private readonly PanelManager _manager;
+    private readonly IPanelManager _manager;
 
-    public RegisterController(IManager manager)
+    public RegisterController(IPanelManager manager)
     {
-        _manager = (PanelManager)manager;
+        _manager = manager;
     }
 
     [HttpGet]

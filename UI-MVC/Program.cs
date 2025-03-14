@@ -1,6 +1,8 @@
-using BL;
-using DAL;
+using BL.Interfaces;
+using BL.Managers;
 using DAL.EF;
+using DAL.Interfaces;
+using DAL.Repositories;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -8,10 +10,13 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
+builder.Services.AddScoped<IPanelRepository, PanelRepository>();
+builder.Services.AddScoped<IPanelManager, PanelManager>();
+builder.Services.AddDbContext<CitizenPanelDbContext>();
+
 var connectionString = Environment.GetEnvironmentVariable("ConnectionStrings__DefaultConnection");
 builder.Services.AddScoped<IRepository, PanelRepository>();
 builder.Services.AddScoped<IManager, PanelManager>();
-Console.WriteLine("hello"+connectionString +" hello");
 builder.Services.AddDbContext<CitizenPanelDbContext>(options =>
 {
     options.UseNpgsql(connectionString);
