@@ -10,10 +10,13 @@ public static class DataSeeder
         RepresentationGroup rg1 = new RepresentationGroup(20000, 0.2, 0.1);
         //PANELS
         Panel panel1 = new Panel("Verkeersveiligheid in en rond Antwerpen.", 0.005);
-
+            
         //LINK REP. GROUP WITH PANEL
         rg1.Panel = panel1;
         panel1.RepresentationGroup = rg1;
+        
+        //SET REGISTRATION TO OPEN
+        panel1.IsRegistrationOpen = true;
         
         //SAVE TO DATABASE
         context.RepresentationGroups.Add(rg1);
