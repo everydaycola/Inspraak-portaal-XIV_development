@@ -46,6 +46,9 @@
                         }
                         </tbody>
                     </table>
+                    <form asp-action="DownloadQRCodesForSpecificGroup" asp-route-panelId="@panelId" asp-route-groupName="@group.Name">
+                        <button type="submit" class="btn btn-primary mt-2" id="generateAllQrCodesButton" >Generate QR Codes for this group</button>
+                    </form>
                 </div>
             </div>
         </div>

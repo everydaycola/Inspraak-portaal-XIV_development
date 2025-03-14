@@ -92,4 +92,34 @@ public class PanelManagementController : Controller
         var zipFileBytes = FileHelper.CreateZipFileForAllCodesInAGroup(model);
         return File(zipFileBytes, "application/zip", "qrcodes.zip");
     }
+    public IActionResult DownloadQRCodesForSpecificGroup(Guid panelId, string groupName)
+    {
+        Panel panel = _manager.GetPanelWithPanelMembersAndCriteria(panelId);
+        ICollection<UniqueCodesDto> codes = new List<UniqueCodesDto>();
+        foreach (var member in panel.PanelMembers)
+        {
+            var codeDto = new UniqueCodesDto(panel.Id, member.PanelMemberId, member.CriteriaGroup);
+            foreach (var criteria in member.CriteriaGroup.Criteria)
+            {
+                codeDto.criteria.Add(criteria);
+            }
+            codes.Add(codeDto);
+        }
+
+        var model = codes
+            .GroupBy(entry => entry.CriteriaGroup.Id) 
+            .Select(group => new GroupedUniqueCodesDto
+            {
+                GroupKey = group.Key.ToString(),
+                Members = group.ToList(),
+                Name = group.First().CriteriaGroup.Name
+            })
+            .Single(g => g.Name == groupName);
+        
+        _logger.LogInformation("Downloading QR Codes for all groups");
+        IEnumerable<GroupedUniqueCodesDto> group = new List<GroupedUniqueCodesDto>() { model };
+        var zipFileBytes = FileHelper.CreateZipFileForAllCodesInAGroup(group);
+        return File(zipFileBytes, "application/zip", $"qrcodes_{groupName}.zip");
+        
+    }
 }

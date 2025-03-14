@@ -45,7 +45,7 @@ public static class FileHelper
                             throw new InvalidOperationException("Failed to generate QR code.");
                         }
 
-                        var entry = archive.CreateEntry(group.GroupKey + $"/qrcode_{member.memberId}.png");
+                        var entry = archive.CreateEntry(group.Name + $"/qrcode_{member.memberId}.png");
                         using (var entryStream = entry.Open())
                         {
                             entryStream.Write(qrCodeBytes, 0, qrCodeBytes.Length);
