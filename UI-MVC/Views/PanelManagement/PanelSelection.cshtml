@@ -1,0 +1,20 @@
+﻿@model IEnumerable<Domain.CitizenPanel.Panel>
+@{
+    ViewData["Title"] = "Panel beheer | Selecteer panel";
+}
+
+<div class="container">
+    <h2 class="mb-3">Selecteer het panel dat je wilt beheren.</h2>
+    <form asp-action="SelectPanel" asp-controller="PanelManagement" method="post">
+        <div class="form-group">
+            <select class="form-select" id="panelSelect" name="panelId" aria-label="Select a panel">
+                <option selected disabled>Kies een panel</option>
+                @foreach (var panel in Model)
+                {
+                <option value="@panel.Id">@panel.Name</option>
+                }
+            </select>
+        </div>
+        <button type="submit" class="btn btn-primary mt-3">Panel selecteren!</button>
+    </form>
+</div>
