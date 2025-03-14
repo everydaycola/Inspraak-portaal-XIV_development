@@ -1,17 +1,16 @@
-﻿using System.Collections;
-using System.Text;
-using DAL;
+﻿using BL.Interfaces;
+using DAL.Interfaces;
 using Domain.CitizenPanel;
 
-namespace BL;
+namespace BL.Managers;
 
-public class PanelManager : ISubManager
+public class PanelManager : IPanelManager
 {
-    private readonly PanelRepository _repo;
+    private readonly IPanelRepository _repo;
 
-    public PanelManager(IRepository repo)
+    public PanelManager(IPanelRepository repo)
     {
-        _repo = (PanelRepository)repo;
+        _repo = repo;
     }
 
     public Panel GetPanel(Guid id)
@@ -54,7 +53,7 @@ public class PanelManager : ISubManager
         var rpg = new RepresentationGroup(citizenCount, reservePercentage, responseRate);
         panel.RepresentationGroup = rpg;
         
-        panel.PanelMembers = generatePanelMembers(size, panel);
+        panel.PanelMembers = GeneratePanelMembers(size, panel);
         var random = new Random();
         panel.PanelMembers = panel.PanelMembers.OrderBy(_ => random.Next()).ToList();
         //PrintDistribution(distribution);
@@ -129,7 +128,7 @@ public class PanelManager : ISubManager
         return panel;
     }
     
-    private ICollection<PanelMember> generatePanelMembers(int size, Panel panel)
+    private ICollection<PanelMember> GeneratePanelMembers(int size, Panel panel)
     {
         var panelMembers = new List<PanelMember>();
         for (int i = 0; i < size; i++)

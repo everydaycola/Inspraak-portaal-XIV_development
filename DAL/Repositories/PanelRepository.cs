@@ -1,10 +1,11 @@
 ﻿using DAL.EF;
+using DAL.Interfaces;
 using Domain.CitizenPanel;
 using Microsoft.EntityFrameworkCore;
 
-namespace DAL;
+namespace DAL.Repositories;
 
-public class PanelRepository : ISubRepository
+public class PanelRepository : IPanelRepository
 {
     private readonly CitizenPanelDbContext _context;
 

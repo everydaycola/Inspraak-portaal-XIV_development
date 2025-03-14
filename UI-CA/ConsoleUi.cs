@@ -1,14 +1,13 @@
-﻿using BL;
-using Domain.CitizenPanel;
+﻿using BL.Interfaces;
 using UI_CA.ca_helpers;
 
 namespace UI_CA;
 
 public class ConsoleUi
 {
-    private readonly PanelManager _manager;
+    private readonly IPanelManager _manager;
     private readonly PanelCaHelper panelCaHelper;
-    public ConsoleUi(PanelManager manager)
+    public ConsoleUi(IPanelManager manager)
     {
         _manager = manager;
         panelCaHelper = new PanelCaHelper(_manager);
