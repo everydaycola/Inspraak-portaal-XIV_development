@@ -12,12 +12,16 @@ public class PanelManagementController : Controller
     private readonly ILogger<PanelManagementController> _logger;
 
     private readonly IPanelManager _manager;
+    private readonly IFileManager _fileManager;
+    private readonly ICriteriaManager _criteriaManager;
     
     
-    public PanelManagementController(ILogger<PanelManagementController> logger, IPanelManager manager)
+    public PanelManagementController(ILogger<PanelManagementController> logger, IPanelManager manager, IFileManager fileManager, ICriteriaManager criteriaManager)
     {
         _logger = logger;
         _manager = manager;
+        _fileManager = fileManager;
+        _criteriaManager = criteriaManager;
     }
 
     public IActionResult Index(Guid id)
@@ -32,27 +36,8 @@ public class PanelManagementController : Controller
     public IActionResult LoadUniqueCodes(Guid panelId)
     {
         Panel panel = _manager.GetPanelWithPanelMembersAndCriteria(panelId);
-        ICollection<UniqueCodesDto> codes = new List<UniqueCodesDto>();
-        foreach (var member in panel.PanelMembers)
-        {
-            var codeDto = new UniqueCodesDto(panel.Id, member.PanelMemberId, member.CriteriaGroup);
-            foreach (var criteria in member.CriteriaGroup.Criteria)
-                {
-                    codeDto.criteria.Add(criteria);
-                }
-            codes.Add(codeDto);
-        }
-
-        var model = codes
-            .GroupBy(entry => entry.CriteriaGroup.Id) 
-            .Select(group => new GroupedUniqueCodesDto
-            {
-                GroupKey = group.Key.ToString(),
-                Members = group.ToList(),
-                Name = group.First().CriteriaGroup.Name
-            }).ToList();
-        
-        return PartialView("_UniqueCodesPartial", model);
+        var codes = populateUniqueCodesDto(panel);
+        return PartialView("_UniqueCodesPartial", codes);
     }
     [HttpPost]
     public IActionResult SelectPanel(Guid panelId)
@@ -67,34 +52,26 @@ public class PanelManagementController : Controller
     
     public IActionResult DownloadQRCodesForAllGroups(Guid panelId)
     {
-        Panel panel = _manager.GetPanelWithPanelMembersAndCriteria(panelId);
-        ICollection<UniqueCodesDto> codes = new List<UniqueCodesDto>();
-        foreach (var member in panel.PanelMembers)
-        {
-            var codeDto = new UniqueCodesDto(panel.Id, member.PanelMemberId, member.CriteriaGroup);
-            foreach (var criteria in member.CriteriaGroup.Criteria)
-            {
-                codeDto.criteria.Add(criteria);
-            }
-            codes.Add(codeDto);
-        }
-
-        var model = codes
-            .GroupBy(entry => entry.CriteriaGroup.Id) 
-            .Select(group => new GroupedUniqueCodesDto
-            {
-                GroupKey = group.Key.ToString(),
-                Members = group.ToList(),
-                Name = group.First().CriteriaGroup.Name
-            }).ToList();
-        
-        _logger.LogInformation("Downloading QR Codes for all groups");
-        var zipFileBytes = FileHelper.CreateZipFileForAllCodesInAGroup(model);
+        //Panel panel = _manager.GetPanelWithPanelMembersAndCriteria(panelId);
+        //var codes = populateUniqueCodesDto(panel);
+        var criteriaGroups = _criteriaManager.GetAllCriteriaGroupForPanel(panelId);
+        var zipFileBytes = _fileManager.CreateZipFileForAllCodesInAllGroups(criteriaGroups, "http://localhost:5228/Register");
         return File(zipFileBytes, "application/zip", "qrcodes.zip");
     }
     public IActionResult DownloadQRCodesForSpecificGroup(Guid panelId, string groupName)
     {
-        Panel panel = _manager.GetPanelWithPanelMembersAndCriteria(panelId);
+        //Panel panel = _manager.GetPanelWithPanelMembersAndCriteria(panelId);
+        //var codes = populateUniqueCodesDto(panel);
+        //var selectedGroup = codes.Single(g => g.Name == groupName);
+        
+        var group = _criteriaManager.GetCriteriaGroupByPanelIdAndName(panelId, groupName);
+        //IEnumerable<GroupedUniqueCodesDto> group = new List<GroupedUniqueCodesDto>() { selectedGroup };
+        var zipFileBytes = _fileManager.CreateZipFileForAllCodesInAGroup(group,"http://localhost:5228/Register");
+        return File(zipFileBytes, "application/zip", $"qrcodes_{groupName}.zip");
+    }
+    
+    private List<GroupedUniqueCodesDto> populateUniqueCodesDto(Panel panel)
+    {
         ICollection<UniqueCodesDto> codes = new List<UniqueCodesDto>();
         foreach (var member in panel.PanelMembers)
         {
@@ -105,21 +82,14 @@ public class PanelManagementController : Controller
             }
             codes.Add(codeDto);
         }
-
-        var model = codes
-            .GroupBy(entry => entry.CriteriaGroup.Id) 
-            .Select(group => new GroupedUniqueCodesDto
+        
+        return codes.GroupBy(entry => entry.CriteriaGroup.Id)
+            .Select(group => new GroupedUniqueCodesDto()
             {
-                GroupKey = group.Key.ToString(),
+                GroupKey= group.Key.ToString(),
                 Members = group.ToList(),
                 Name = group.First().CriteriaGroup.Name
-            })
-            .Single(g => g.Name == groupName);
-        
-        _logger.LogInformation("Downloading QR Codes for all groups");
-        IEnumerable<GroupedUniqueCodesDto> group = new List<GroupedUniqueCodesDto>() { model };
-        var zipFileBytes = FileHelper.CreateZipFileForAllCodesInAGroup(group);
-        return File(zipFileBytes, "application/zip", $"qrcodes_{groupName}.zip");
-        
+            }).ToList();
     }
+    
 }

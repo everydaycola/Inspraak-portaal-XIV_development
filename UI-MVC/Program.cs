@@ -1,9 +1,11 @@
+using BL.Generator;
 using BL.Interfaces;
 using BL.Managers;
 using DAL.EF;
 using DAL.Interfaces;
 using DAL.Repositories;
 using Microsoft.EntityFrameworkCore;
+using UI_MVC.Models.Helper;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,6 +14,10 @@ builder.Services.AddControllersWithViews();
 
 builder.Services.AddScoped<IPanelRepository, PanelRepository>();
 builder.Services.AddScoped<IPanelManager, PanelManager>();
+builder.Services.AddScoped<QrCodeGenerator, QrCodeGenerator>();
+builder.Services.AddScoped<IFileManager, FileManager>();
+builder.Services.AddScoped<ICriteriaManager, CriteriaManager>();
+builder.Services.AddScoped<ICriteriaRepository, CriteriaRepository>();
 
 var connectionString = Environment.GetEnvironmentVariable("ConnectionStrings__DefaultConnection");
 builder.Services.AddDbContext<CitizenPanelDbContext>(options =>

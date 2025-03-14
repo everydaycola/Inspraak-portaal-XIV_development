@@ -1,25 +1,21 @@
 ﻿using System.Drawing;
 using System.IO.Compression;
+using BL.Generator;
 using QRCoder;
 using UI_MVC.Models.Dto;
 
 namespace UI_MVC.Models.Helper;
 
-public static class FileHelper
+public class FileHelper
 {
-    
-    private static byte[] GenerateQRCode(string data)
+    private readonly QrCodeGenerator _qrCodeGenerator;
+
+    public FileHelper(QrCodeGenerator qrCodeGenerator)
     {
-        QRCodeGenerator qrGenerator = new QRCodeGenerator();
-        QRCodeData qrCodeData = qrGenerator.CreateQrCode(data, QRCodeGenerator.ECCLevel.Q);
-    
-        using (PngByteQRCode qrCode = new PngByteQRCode(qrCodeData))
-        {
-            return qrCode.GetGraphic(20);
-        }
+        _qrCodeGenerator = qrCodeGenerator;
     }
     
-    public static byte[] CreateZipFileForAllCodesInAGroup(IEnumerable<GroupedUniqueCodesDto> dto)
+    public byte[] CreateZipFileForAllCodesInAGroup(IEnumerable<GroupedUniqueCodesDto> dto)
     {
         if (dto == null || !dto.Any())
         {
@@ -34,12 +30,14 @@ public static class FileHelper
                 {
                     if (group.Members == null || !group.Members.Any())
                     {
-                        continue; // Skip empty groups
+                        continue;
                     }
 
                     foreach (var member in group.Members)
                     {
-                        var qrCodeBytes = GenerateQRCode($"http://localhost:5228{member.generatedUri}");
+                        //TODO: Dynamiccly insert the domain + port.
+                        var qrCodeBytes =
+                            _qrCodeGenerator.GenerateQrCode($"http://localhost:5228{member.generatedUri}");
                         if (qrCodeBytes == null || qrCodeBytes.Length == 0)
                         {
                             throw new InvalidOperationException("Failed to generate QR code.");
