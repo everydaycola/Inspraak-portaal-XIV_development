@@ -15,9 +15,6 @@ public static class DataSeeder
         rg1.Panel = panel1;
         panel1.RepresentationGroup = rg1;
         
-        //SET REGISTRATION TO OPEN
-        panel1.IsRegistrationOpen = true;
-        
         //SAVE TO DATABASE
         context.RepresentationGroups.Add(rg1);
         context.Panels.Add(panel1);

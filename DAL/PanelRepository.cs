@@ -23,12 +23,6 @@ public class PanelRepository : ISubRepository
         _context.SaveChanges();
     }
 
-    public void UpdatePanel(Panel panel)
-    {
-        _context.Panels.Update(panel);
-        _context.SaveChanges();
-    }
-
     public void DeletePanel(Panel panel)
     {
         _context.Panels.Remove(panel);

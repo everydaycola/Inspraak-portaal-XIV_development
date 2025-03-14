@@ -2,8 +2,9 @@
 
 public class PanelMember
 {
-    public Guid Id { get; set; }
+    public Guid PanelMemberId { get; set; }
     public Panel Panel { get; set; }
+    public CriteriaGroup CriteriaGroup { get; set; }
 
     //EMPTY CONSTRUCTOR FOR EF
     public PanelMember()
@@ -14,4 +15,10 @@ public class PanelMember
     {
         Panel = panel;
     }
+    public PanelMember(Panel panel, CriteriaGroup criteriaGroup)
+    {
+        Panel = panel;
+        CriteriaGroup = criteriaGroup;
+    }
+
 }

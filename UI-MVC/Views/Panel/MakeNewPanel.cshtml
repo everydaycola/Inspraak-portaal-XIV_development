@@ -1,0 +1,50 @@
+@* @model TModel *@
+
+@{
+    ViewBag.Title = "nieuw panel aanmaken";
+    Layout = "_Layout";
+}
+
+<div class="container mt-5">
+    <div class="card shadow-sm border-0">
+        <div class="card-header bg-primary text-white">
+            <h3 class="mb-0">Nieuw panel aanmaken</h3>
+        </div>
+        <div class="card-body">
+            <div class="mb-4">
+                <h5 class="card-title">Criteria van default panel</h5>
+                <p class="card-text"><strong>Naam:</strong> default panel</p>
+                <p class="card-text"><strong>Grootte:</strong> 150</p>
+                <p class="card-text"><strong>Sample rate:</strong> 0.5%</p>
+
+                <div class="mt-4">
+                    <h6><strong>Sexeverdeling</strong></h6>
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item"><strong>Man:</strong> 40%</li>
+                        <li class="list-group-item"><strong>Vrouw:</strong> 60%</li>
+                    </ul>
+                </div>
+
+                <div class="mt-4">
+                    <h6><strong>Leeftijdsverdeling</strong></h6>
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item"><strong>20-29:</strong> 20%</li>
+                        <li class="list-group-item"><strong>30-39:</strong> 60%</li>
+                        <li class="list-group-item"><strong>40-49:</strong> 20%</li>
+                    </ul>
+                </div>
+
+                <div class="mt-4">
+                    <button id="DefaultPanelBtn" type="button" class="btn btn-primary">
+                        Default panel aanmaken
+                    </button>
+                    <p class="text-muted mt-2">
+                        <small>
+                            Na het klikken op de knop gebeurt er niets zichtbaar, maar het panel wordt wel aangemaakt en opgeslagen in de database. Er is alleen geen redirect.
+                        </small>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
