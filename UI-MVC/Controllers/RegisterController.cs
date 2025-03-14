@@ -6,21 +6,22 @@ namespace UI_MVC.Controllers;
 
 public class RegisterController : Controller
 {
-    private readonly IManager _manager;
+    private readonly PanelManager _manager;
 
     public RegisterController(IManager manager)
     {
-        _manager = manager;
+        _manager = (PanelManager)manager;
     }
 
     [HttpGet]
-    public IActionResult Index(string userId, string panelId)
+    public IActionResult Index(Guid userId)
     {
-        Console.WriteLine($"userId: {userId}, panelId: {panelId}");
+        var member = _manager.GetPanelByUserId(userId);
+        Console.WriteLine($"userId: {userId}, panelId: {member.Panel.Id.ToString()}");
         return View(new NewPanelMemberDto
         {
-            PanelId = panelId,
-            UserId = userId
+            PanelId = member.Panel.Id.ToString(),
+            UserId = userId.ToString()
         });
     }
     

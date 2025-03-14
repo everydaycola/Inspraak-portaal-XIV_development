@@ -5,12 +5,19 @@ public class Criteria
     public Guid CriteriaId { get; set; }
     public string Name { get; set; }
     public string Value { get; set; }
-    public ICollection<PanelMemberCriteria> PanelMembers { get; set; }
+    public double distributionPercentage { get; set; }
+    public CriteriaGroup CriteriaGroup { get; set; }
 
-    public Criteria(string name, string value)
+    public Criteria(string name, string value,double distributionPercentage)
     {
         this.Name = name;
         this.Value = value;
-        this.PanelMembers = new List<PanelMemberCriteria>();
+        this.distributionPercentage = distributionPercentage;
+    }
+    public Criteria(string name, string value, CriteriaGroup criteriaGroup)
+    {
+        this.Name = name;
+        this.Value = value;
+        CriteriaGroup = CriteriaGroup;
     }
 }

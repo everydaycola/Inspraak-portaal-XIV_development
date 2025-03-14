@@ -30,17 +30,37 @@ public class PanelRepository : ISubRepository
             .Single(p => p.Id == id);
     }
 
+    public Panel ReadPanelWithPanelMembersAndCriteria(Guid id)
+    {
+        return _context.Panels.Include(p => p.PanelMembers)
+            .ThenInclude(p => p.CriteriaGroup)
+            .ThenInclude(p => p.Criteria)
+            .Single(p => p.Id == id);
+    }
+
     public IEnumerable<Panel> ReadAllPanels()
     {
         return _context.Panels.ToList();
     }
 
+    public PanelMember ReadPanelByUserId(Guid memberId)
+    {
+        return _context.PanelMembers
+            .Include(pm => pm.Panel)
+            .Single(pm => pm.PanelMemberId == memberId);
+    }
+    
     public void CreatePanel(Panel panel)
     {
         _context.Panels.Add(panel);
         _context.SaveChanges();
     }
 
+    public void CreateCriteriaGroup(CriteriaGroup criteriaGroup)
+    {
+        _context.CriteriaGroups.Add(criteriaGroup);
+        _context.SaveChanges();
+    }
     public void CreatePanelMember(PanelMember panelMember)
     {
         _context.PanelMembers.Add(panelMember);
@@ -58,4 +78,5 @@ public class PanelRepository : ISubRepository
         _context.PanelMembers.Remove(member);
         _context.SaveChanges();
     }
+    
 }

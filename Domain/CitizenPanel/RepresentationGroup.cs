@@ -14,4 +14,5 @@ public class RepresentationGroup
         this.ReservePercentage = reservePercentage;
         this.ResponseRate = responseRate;
     }
+    
 }
