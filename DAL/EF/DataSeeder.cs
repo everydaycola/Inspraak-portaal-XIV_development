@@ -45,6 +45,10 @@ public static class DataSeeder
         criteriaGroup4.Criteria.Add(criteria2);
         criteriaGroup4.Criteria.Add(criteria3);
         
+        //LINK REP. GROUP WITH PANEL
+        rg1.Panel = panel1;
+        panel1.RepresentationGroup = rg1;
+        
         //SET REGISTRATION TO OPEN
         panel1.IsRegistrationOpen = true;
         
