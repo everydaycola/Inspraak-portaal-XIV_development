@@ -12,11 +12,8 @@ builder.Services.AddControllersWithViews();
 
 builder.Services.AddScoped<IPanelRepository, PanelRepository>();
 builder.Services.AddScoped<IPanelManager, PanelManager>();
-builder.Services.AddDbContext<CitizenPanelDbContext>();
 
 var connectionString = Environment.GetEnvironmentVariable("ConnectionStrings__DefaultConnection");
-builder.Services.AddScoped<IRepository, PanelRepository>();
-builder.Services.AddScoped<IManager, PanelManager>();
 builder.Services.AddDbContext<CitizenPanelDbContext>(options =>
 {
     options.UseNpgsql(connectionString);
