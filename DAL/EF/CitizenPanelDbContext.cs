@@ -27,7 +27,6 @@ public class CitizenPanelDbContext : DbContext
             .HasOne(p => p.Panel)
             .WithOne(p => p.RepresentationGroup)
             .HasForeignKey<RepresentationGroup>("PanelId");
-        
         //panelmember 1-* CriteriaGroup 1-*
         modelBuilder.Entity<PanelMember>()
             .HasOne(pm => pm.CriteriaGroup)

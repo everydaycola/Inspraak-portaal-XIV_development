@@ -19,4 +19,5 @@ public class CriteriaGroup
         Criteria = new List<Criteria>();
         PanelMembers = panelMembers;
     }
+    
 }

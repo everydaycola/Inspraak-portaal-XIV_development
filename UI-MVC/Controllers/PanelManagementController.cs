@@ -11,12 +11,16 @@ public class PanelManagementController : Controller
     private readonly ILogger<PanelManagementController> _logger;
 
     private readonly IPanelManager _manager;
+    private readonly IFileManager _fileManager;
+    private readonly ICriteriaManager _criteriaManager;
     
     
-    public PanelManagementController(ILogger<PanelManagementController> logger, IPanelManager manager)
+    public PanelManagementController(ILogger<PanelManagementController> logger, IPanelManager manager, IFileManager fileManager, ICriteriaManager criteriaManager)
     {
         _logger = logger;
         _manager = manager;
+        _fileManager = fileManager;
+        _criteriaManager = criteriaManager;
     }
 
     public IActionResult Index(Guid id)
@@ -31,27 +35,8 @@ public class PanelManagementController : Controller
     public IActionResult LoadUniqueCodes(Guid panelId)
     {
         Panel panel = _manager.GetPanelWithPanelMembersAndCriteria(panelId);
-        ICollection<UniqueCodesDto> codes = new List<UniqueCodesDto>();
-        foreach (var member in panel.PanelMembers)
-        {
-            var codeDto = new UniqueCodesDto(panel.Id, member.PanelMemberId, member.CriteriaGroup);
-            foreach (var criteria in member.CriteriaGroup.Criteria)
-                {
-                    codeDto.criteria.Add(criteria);
-                }
-            codes.Add(codeDto);
-        }
-
-        var model = codes
-            .GroupBy(entry => entry.CriteriaGroup.Id) 
-            .Select(group => new GroupedUniqueCodesDto
-            {
-                GroupKey = group.Key.ToString(),
-                Members = group.ToList(),
-                Name = group.First().CriteriaGroup.Name
-            }).ToList();
-        
-        return PartialView("_UniqueCodesPartial", model);
+        var codes = populateUniqueCodesDto(panel);
+        return PartialView("_UniqueCodesPartial", codes);
     }
     [HttpPost]
     public IActionResult SelectPanel(Guid panelId)
@@ -63,4 +48,47 @@ public class PanelManagementController : Controller
         var panels = _manager.GetAllPanels();
         return View(panels);
     }
+    
+    public IActionResult DownloadQRCodesForAllGroups(Guid panelId)
+    {
+        var criteriaGroups = _criteriaManager.GetAllCriteriaGroupForPanel(panelId);
+        var baseUrl = $"{Request.Scheme}://{Request.Host}/Register";
+        var zipFileBytes = _fileManager.CreateZipFileForAllCodesInAllGroups(criteriaGroups, baseUrl);
+        return File(zipFileBytes, "application/zip", "qrcodes.zip");
+    }
+    public IActionResult DownloadQRCodesForSpecificGroup(Guid panelId, string groupName)
+    {
+        var group = _criteriaManager.GetCriteriaGroupByPanelIdAndName(panelId, groupName);
+        var baseUrl = $"{Request.Scheme}://{Request.Host}/Register";
+        var zipFileBytes = _fileManager.CreateZipFileForAllCodesInAGroup(group,baseUrl);
+        return File(zipFileBytes, "application/zip", $"qrcodes_{groupName}.zip");
+    }
+    public IActionResult DownloadSingleQrCode(string generatedUrl)
+    {
+        var qrCodeBytes = _fileManager.CreateSingleQrCode(generatedUrl);
+        return File(qrCodeBytes, "image/png", "qrcode.png");
+    }
+    
+    private List<GroupedUniqueCodesDto> populateUniqueCodesDto(Panel panel)
+    {
+        ICollection<UniqueCodesDto> codes = new List<UniqueCodesDto>();
+        foreach (var member in panel.PanelMembers)
+        {
+            var codeDto = new UniqueCodesDto(panel.Id, member.PanelMemberId, member.CriteriaGroup);
+            foreach (var criteria in member.CriteriaGroup.Criteria)
+            {
+                codeDto.criteria.Add(criteria);
+            }
+            codes.Add(codeDto);
+        }
+        
+        return codes.GroupBy(entry => entry.CriteriaGroup.Id)
+            .Select(group => new GroupedUniqueCodesDto()
+            {
+                GroupKey= group.Key.ToString(),
+                Members = group.ToList(),
+                Name = group.First().CriteriaGroup.Name
+            }).ToList();
+    }
+    
 }
