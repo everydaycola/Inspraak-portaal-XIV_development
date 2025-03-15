@@ -17,4 +17,7 @@ public class PanelManagementDto
         AmountOfAcceptedInvites = amountOfAcceptedInvites;
         this.CitizenCount = citizenCount;
     }
+    
+    
+    
 }
