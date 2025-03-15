@@ -80,4 +80,10 @@ public class PanelRepository : IPanelRepository
         _context.SaveChanges();
     }
     
+    public void UpdatePanel(Panel panel)
+    {
+        _context.Panels.Update(panel);
+        _context.SaveChanges();
+    }
+
 }

@@ -9,6 +9,7 @@ public class PanelManagementDto
     public int PanelSize { get; set; }
     public int AmountOfReserveInvites { get; set; }
     public int TotalInvitesNeeded { get; set; }
+    public bool IsRegistrationOpen { get; set; }
 
     public PanelManagementDto(Guid panelId, string panelName, int citizenCount, int amountOfAcceptedInvites)
     {

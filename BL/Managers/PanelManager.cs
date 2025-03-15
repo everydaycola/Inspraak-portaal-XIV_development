@@ -160,4 +160,18 @@ public class PanelManager : IPanelManager
         //Response rate is a percentage which indicates the expected rate of resposne to invites.
         return (int)(panelSizeIncludingReserve / responseRate);
     }
+
+    public void UpdatePanel(Guid id, bool isRegistrationOpen)
+    {
+        var panel = _repo.ReadPanel(id);
+        if (panel != null)
+        {
+            panel.IsRegistrationOpen = isRegistrationOpen;
+            _repo.UpdatePanel(panel);
+            return;
+        }
+
+        throw new NullReferenceException("Panel with id: " + id + " was not found.");
+    }
+
 }
