@@ -115,7 +115,6 @@ public class PanelManager : IPanelManager
                 .Take(totalMembersNeeded)
                 .ToList();
             currentuserIndex += totalMembersNeeded;
-            
             var criteriaGroup = new CriteriaGroup(comboKey, assignedMembers);
             criteriaGroups.Add(criteriaGroup);
         }

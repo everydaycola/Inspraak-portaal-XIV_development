@@ -2,8 +2,9 @@
 @model IEnumerable<GroupedUniqueCodesDto>
 
 @{
-var request = Context.Request; // Or ViewContext.HttpContext.Request
-var baseUrl = $"{request.Scheme}://{request.Host}";
+    var request = Context.Request; // Or ViewContext.HttpContext.Request
+    var baseUrl = $"{request.Scheme}://{request.Host}";
+    var panelId = Model.First().Members.First().panelId;
 }
 
 
@@ -31,6 +32,7 @@ var baseUrl = $"{request.Scheme}://{request.Host}";
                         <tr>
                             <th>Member ID</th>
                             <th>Gegenereerde url</th>
+                            <th>QR code</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -38,13 +40,33 @@ var baseUrl = $"{request.Scheme}://{request.Host}";
                         {
                             <tr>
                                 <td>@member.memberId</td>
-                                <td><a href="@($"{baseUrl}{member.generatedUri}")">@($"{baseUrl}{member.generatedUri}")</a></td>
+                                <td>
+                                    <a href="@($"{baseUrl}{member.generatedUri}")">@($"{baseUrl}{member.generatedUri}")</a>
+                                </td>
+                                <td>
+                                    <a asp-action="DownloadSingleQrCode"
+                                       class="btn btn-primary mt-2"
+                                       asp-route-generatedUrl="@($"{baseUrl}{member.generatedUri}")")>
+                                        QR code downloaden voor dit panellid
+                                    </a>
+                                </td>
                             </tr>
                         }
                         </tbody>
                     </table>
+                    <a asp-action="DownloadQRCodesForSpecificGroup"
+                       asp-route-panelId="@panelId"
+                       asp-route-groupName="@group.Name"
+                       class="btn btn-primary mt-2">
+                        QR codes downloaden voor iedereen in deze criteriagroup
+                    </a>
                 </div>
             </div>
         </div>
     }
+    <a asp-action="DownloadQRCodesForAllGroups"
+       asp-route-panelId="@panelId"
+       class="btn btn-primary mt-2">
+        QR codes downloaden voor ieder lid van dit panel
+    </a>
 </div>
