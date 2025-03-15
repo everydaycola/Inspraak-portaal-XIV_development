@@ -28,7 +28,12 @@ public class FileManager : IFileManager
         }
     }
 
-    public byte[] CreateZipFileForAllCodesInAllGroups(ICollection<CriteriaGroup> criteriaGroups, string defaultUri = "http://localhost:5228/Register")
+    public byte[] CreateSingleQrCode(string qrCodeData)
+    {
+        return _qrCodeGenerator.GenerateQrCode(qrCodeData);
+    }
+
+    public byte[] CreateZipFileForAllCodesInAllGroups(ICollection<CriteriaGroup> criteriaGroups, string defaultUri)
     {
         using (MemoryStream ms = new MemoryStream())
         {

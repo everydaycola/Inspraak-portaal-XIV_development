@@ -8,4 +8,5 @@ public interface IFileManager
 {
     public byte[] CreateZipFileForAllCodesInAllGroups(ICollection<CriteriaGroup> criteriaGroups,string defaultUri);
     public byte[] CreateZipFileForAllCodesInAGroup(CriteriaGroup criteriaGroup,string defaultUri);
+    public byte[] CreateSingleQrCode(string qrCodeData);
 }

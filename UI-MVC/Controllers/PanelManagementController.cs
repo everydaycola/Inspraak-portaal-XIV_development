@@ -52,22 +52,22 @@ public class PanelManagementController : Controller
     
     public IActionResult DownloadQRCodesForAllGroups(Guid panelId)
     {
-        //Panel panel = _manager.GetPanelWithPanelMembersAndCriteria(panelId);
-        //var codes = populateUniqueCodesDto(panel);
         var criteriaGroups = _criteriaManager.GetAllCriteriaGroupForPanel(panelId);
-        var zipFileBytes = _fileManager.CreateZipFileForAllCodesInAllGroups(criteriaGroups, "http://localhost:5228/Register");
+        var baseUrl = $"{Request.Scheme}://{Request.Host}/Register";
+        var zipFileBytes = _fileManager.CreateZipFileForAllCodesInAllGroups(criteriaGroups, baseUrl);
         return File(zipFileBytes, "application/zip", "qrcodes.zip");
     }
     public IActionResult DownloadQRCodesForSpecificGroup(Guid panelId, string groupName)
     {
-        //Panel panel = _manager.GetPanelWithPanelMembersAndCriteria(panelId);
-        //var codes = populateUniqueCodesDto(panel);
-        //var selectedGroup = codes.Single(g => g.Name == groupName);
-        
         var group = _criteriaManager.GetCriteriaGroupByPanelIdAndName(panelId, groupName);
-        //IEnumerable<GroupedUniqueCodesDto> group = new List<GroupedUniqueCodesDto>() { selectedGroup };
-        var zipFileBytes = _fileManager.CreateZipFileForAllCodesInAGroup(group,"http://localhost:5228/Register");
+        var baseUrl = $"{Request.Scheme}://{Request.Host}/Register";
+        var zipFileBytes = _fileManager.CreateZipFileForAllCodesInAGroup(group,baseUrl);
         return File(zipFileBytes, "application/zip", $"qrcodes_{groupName}.zip");
+    }
+    public IActionResult DownloadSingleQrCode(string generatedUrl)
+    {
+        var qrCodeBytes = _fileManager.CreateSingleQrCode(generatedUrl);
+        return File(qrCodeBytes, "image/png", "qrcode.png");
     }
     
     private List<GroupedUniqueCodesDto> populateUniqueCodesDto(Panel panel)

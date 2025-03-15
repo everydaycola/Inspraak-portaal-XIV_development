@@ -32,6 +32,7 @@
                         <tr>
                             <th>Member ID</th>
                             <th>Gegenereerde url</th>
+                            <th>QR code</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -42,18 +43,30 @@
                                 <td>
                                     <a href="@($"{baseUrl}{member.generatedUri}")">@($"{baseUrl}{member.generatedUri}")</a>
                                 </td>
+                                <td>
+                                    <a asp-action="DownloadSingleQrCode"
+                                       class="btn btn-primary mt-2"
+                                       asp-route-generatedUrl="@($"{baseUrl}{member.generatedUri}")")>
+                                        QR code downloaden voor dit panellid
+                                    </a>
+                                </td>
                             </tr>
                         }
                         </tbody>
                     </table>
-                    <form asp-action="DownloadQRCodesForSpecificGroup" asp-route-panelId="@panelId" asp-route-groupName="@group.Name">
-                        <button type="submit" class="btn btn-primary mt-2" id="generateAllQrCodesButton" >Generate QR Codes for this group</button>
-                    </form>
+                    <a asp-action="DownloadQRCodesForSpecificGroup"
+                       asp-route-panelId="@panelId"
+                       asp-route-groupName="@group.Name"
+                       class="btn btn-primary mt-2">
+                        QR codes downloaden voor iedereen in deze criteriagroup
+                    </a>
                 </div>
             </div>
         </div>
     }
-    <form asp-action="DownloadQRCodesForAllGroups" asp-route-panelId="@panelId">
-        <button type="submit" class="btn btn-primary mt-2" id="generateAllQrCodesButton" >Generate QR Codes for All Groups</button>
-    </form>
+    <a asp-action="DownloadQRCodesForAllGroups"
+       asp-route-panelId="@panelId"
+       class="btn btn-primary mt-2">
+        QR codes downloaden voor ieder lid van dit panel
+    </a>
 </div>

@@ -22,4 +22,5 @@ public class CriteriaManager : ICriteriaManager
     {
         return _repo.ReadCriteraGroupByPanelIdAndName(panelId, groupName);
     }
+    
 }
