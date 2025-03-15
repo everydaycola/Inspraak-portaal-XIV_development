@@ -7,7 +7,7 @@ namespace BL.Managers;
 
 public class FileManager : IFileManager
 {
-    private QrCodeGenerator _qrCodeGenerator;
+    private readonly QrCodeGenerator _qrCodeGenerator;
 
     public FileManager(QrCodeGenerator qrCodeGenerator)
     {
@@ -33,7 +33,7 @@ public class FileManager : IFileManager
         return _qrCodeGenerator.GenerateQrCode(qrCodeData);
     }
 
-    public byte[] CreateZipFileForAllCodesInAllGroups(ICollection<CriteriaGroup> criteriaGroups, string defaultUri)
+    public byte[] CreateZipFileForAllCodesInAllGroups(IEnumerable<CriteriaGroup> criteriaGroups, string defaultUri)
     {
         using (MemoryStream ms = new MemoryStream())
         {

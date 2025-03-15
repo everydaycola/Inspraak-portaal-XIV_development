@@ -13,7 +13,7 @@ public class CriteriaManager : ICriteriaManager
         _repo = repo;
     }
     
-    public ICollection<CriteriaGroup> GetAllCriteriaGroupForPanel(Guid panelId)
+    public IEnumerable<CriteriaGroup> GetAllCriteriaGroupForPanel(Guid panelId)
     {
         return _repo.ReadAllCriteriaGroupForPanel(panelId);
     }

@@ -14,7 +14,7 @@ public class CriteriaRepository :ICriteriaRepository
         this._context = context;
     }
 
-    public ICollection<CriteriaGroup> ReadAllCriteriaGroupForPanel(Guid panelId)
+    public IEnumerable<CriteriaGroup> ReadAllCriteriaGroupForPanel(Guid panelId)
     {
         return this._context.CriteriaGroups
             .Include(cg => cg.PanelMembers)

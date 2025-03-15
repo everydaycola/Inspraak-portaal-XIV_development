@@ -5,7 +5,6 @@ using DAL.EF;
 using DAL.Interfaces;
 using DAL.Repositories;
 using Microsoft.EntityFrameworkCore;
-using UI_MVC.Models.Helper;
 
 var builder = WebApplication.CreateBuilder(args);
 
