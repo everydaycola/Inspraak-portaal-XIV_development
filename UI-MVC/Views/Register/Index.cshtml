@@ -5,7 +5,61 @@
     Layout = "_Layout";
 }
 
-<h2>Welcome</h2>
+<div class="container mt-5">
+    <div class="card shadow-sm border-0">
+        <h2>Welcome</h2>
+        <p>welcome user @Model.UserId to panel @Model.PanelId</p>
+        <button class="btn btn-primary" id="viewCodesButton" data-bs-toggle="modal" data-bs-target="#dataModal" data-panel-id="@Model.PanelId">
+            Unieke codes per criteria bekijken
+        </button>
+        <div class="modal fade" id="dataModal" tabindex="-1" aria-labelledby="dataModalLabel" aria-hidden="false">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="dataModalLabel">We hebben nog enkele vragen</h5>
+                    </div>
+                    <div class="modal-body">
+                        <form id="multiStepForm">
+                            <!-- Step 1 -->
+                            <div class="form-step active">
+                                <div class="mb-3">
+                                    <label for="email" class="form-label">E-mailadres</label>
+                                    <input type="email" class="form-control" id="email" placeholder="Voer je e-mailadres in" required>
+                                </div>
+                            </div>
 
-<p>welcome user @Model.UserId to panel @Model.PanelId</p>
+                            <!-- Step 2 -->
+                            <div class="form-step">
+                                <div class="mb-3">
+                                    <label class="form-label">Wat is je favoriete kleur?</label>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="color" id="colorRed" value="red" required>
+                                        <label class="form-check-label" for="colorRed">Rood</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="color" id="colorBlue" value="blue">
+                                        <label class="form-check-label" for="colorBlue">Blauw</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="color" id="colorGreen" value="green">
+                                        <label class="form-check-label" for="colorGreen">Groen</label>
+                                    </div>
+                                </div>
+                            </div>
 
+                            <!-- Step 3 -->
+                            <div class="form-step">
+                                <div class="mb-3">
+                                    <label for="feedback" class="form-label">Eventuele opmerkingen:</label>
+                                    <textarea id="feedback" class="form-control"></textarea>
+                                </div>
+                                <button type="button" class="btn btn-secondary prev-step">Vorige</button>
+                                <button type="submit" class="btn btn-success">Verzenden</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -29,21 +29,26 @@ public static class DataSeeder
         
         
         //CRITERIA
-        Criteria criteria1 = new Criteria("Rijbewijs","Yes",0.5);
-        Criteria criteria2 = new Criteria("Rijbewijs","No",0.5);
-        Criteria criteria3 = new Criteria("Vervoermethode","Te voet",1/3);
-        Criteria criteria4 = new Criteria("Vervoermethode","Fiets",1/3);
-        Criteria criteria5 = new Criteria("Vervoermethode", "Auto",1/3);
+        Criteria criteria1 = new Criteria("Rijbewijs");
+        Criteria criteria2 = new Criteria("Vervoermethode");
+        
+        //CRITERIA VALUES
+        CriteriaValue value1 = new CriteriaValue("Ja", 0.5);
+        CriteriaValue value2 = new CriteriaValue("Nee", 0.5);
+        CriteriaValue value3 = new CriteriaValue("Te voet", 0.33);
+        CriteriaValue value4 = new CriteriaValue("Fiets", 0.33);
+        CriteriaValue value5 = new CriteriaValue("Auto", 0.33);
+        
+        //BIND CRITERIA WITH VALUES
+        criteria1.Values.Add(value1);
+        criteria1.Values.Add(value2);
+        criteria2.Values.Add(value3);
+        criteria2.Values.Add(value4);
+        criteria2.Values.Add(value5);
         
         //Add criteria to criteriagroups
         criteriaGroup1.Criteria.Add(criteria1);
-        criteriaGroup1.Criteria.Add(criteria4);
-        criteriaGroup2.Criteria.Add(criteria1);
-        criteriaGroup2.Criteria.Add(criteria5);
-        criteriaGroup3.Criteria.Add(criteria1);
-        criteriaGroup3.Criteria.Add(criteria3);
-        criteriaGroup4.Criteria.Add(criteria2);
-        criteriaGroup4.Criteria.Add(criteria3);
+        criteriaGroup1.Criteria.Add(criteria2);
         
         //LINK REP. GROUP WITH PANEL
         rg1.Panel = panel1;
@@ -57,12 +62,20 @@ public static class DataSeeder
         context.Panels.Add(panel1);
         
         addMultiplePanelMembers(new List<PanelMember>() { panelMember1, panelMember2, panelMember3, panelMember4 });
-        addMultipleCriteria(new List<Criteria>() { criteria1, criteria2, criteria3, criteria4, criteria5 });
+        addMultipleCriteria(new List<Criteria>() { criteria1, criteria2 });
         addMultipleCriteriaGroups(new List<CriteriaGroup>()
             { criteriaGroup1, criteriaGroup2, criteriaGroup3, criteriaGroup4 });
-        
+        addMultipleCriteriaValue(new List<CriteriaValue>() { value1, value2, value3, value4, value5 });
         context.SaveChanges();
         context.ChangeTracker.Clear();
+    }
+    
+    private static void addMultipleCriteriaValue(List<CriteriaValue> values)
+    {
+        foreach (var val in values)
+        {
+            _context.CriteriaValues.Add(val);
+        }
     }
     
     private static void addMultiplePanelMembers(List<PanelMember> members)

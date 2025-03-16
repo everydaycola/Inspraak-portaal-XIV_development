@@ -4,20 +4,18 @@ public class Criteria
 {
     public Guid CriteriaId { get; set; }
     public string Name { get; set; }
-    public string Value { get; set; }
-    public double distributionPercentage { get; set; }
+    public ICollection<CriteriaValue> Values { get; set; }
     public CriteriaGroup CriteriaGroup { get; set; }
 
-    public Criteria(string name, string value,double distributionPercentage)
+    public Criteria(string name)
     {
         this.Name = name;
-        this.Value = value;
-        this.distributionPercentage = distributionPercentage;
+        Values = new List<CriteriaValue>();
     }
-    public Criteria(string name, string value, CriteriaGroup criteriaGroup)
+    public Criteria(string name, CriteriaGroup criteriaGroup)
     {
         this.Name = name;
-        this.Value = value;
         CriteriaGroup = CriteriaGroup;
+        Values = new List<CriteriaValue>();
     }
 }

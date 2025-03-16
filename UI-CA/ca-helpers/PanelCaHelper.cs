@@ -6,11 +6,13 @@ namespace UI_CA.ca_helpers;
 public class PanelCaHelper
 {
     private readonly IPanelManager _manager;
+
     public PanelCaHelper(IPanelManager panelManager)
     {
         _manager = panelManager;
     }
-    
+
+    // Updated GetPanelGuidsPerGroup method
     public string GetPanelGuidsPerGroup(Guid panelGuid)
     {
         var panel = _manager.GetPanel(panelGuid);
@@ -19,15 +21,17 @@ public class PanelCaHelper
         sb.AppendLine($"Name: {panel.Name}");
         sb.AppendLine($"Size: {panel.PanelMembers.Count}");
 
+        // Extract member IDs and their associated criteria values
         var criteriaMemberPairs = panel.PanelMembers
             .SelectMany(member => member.CriteriaGroup.Criteria
-                .Select(criteria => new
+                .SelectMany(criteria => criteria.Values.Select(value => new
                 {
                     MemberId = member.PanelMemberId,
                     CriterionName = criteria.Name,
-                    CriterionValue = criteria.Value
-                }));
+                    CriterionValue = value.Value
+                })));
 
+        // Group by criterion name and value
         var groupedByCriteria = criteriaMemberPairs
             .GroupBy(pair => new { pair.CriterionName, pair.CriterionValue })
             .OrderBy(group => group.Key.CriterionName)
@@ -47,23 +51,26 @@ public class PanelCaHelper
 
         return sb.ToString();
     }
-    
+
+    // Updated DescribePanel method
     public string DescribePanel(Guid panelGuid)
     {
         var panel = _manager.GetPanel(panelGuid);
-        
+
         var sb = new StringBuilder();
         sb.AppendLine($"Name: {panel.Name}");
         sb.AppendLine($"Size: {panel.PanelMembers.Count}");
 
+        // Extract all criteria and their values from members
         var allCriteria = panel.PanelMembers
             .SelectMany(member => member.CriteriaGroup.Criteria
-                .Select(criteria => new
+                .SelectMany(criteria => criteria.Values.Select(value => new
                 {
                     CriteriaName = criteria.Name,
-                    CriteriaValue = criteria.Value
-                }));
+                    CriteriaValue = value.Value
+                })));
 
+        // Group by criterion name and value, and count occurrences
         var counts = allCriteria
             .GroupBy(c => new { c.CriteriaName, c.CriteriaValue })
             .Select(group => new
@@ -82,5 +89,4 @@ public class PanelCaHelper
 
         return sb.ToString();
     }
-    
 }

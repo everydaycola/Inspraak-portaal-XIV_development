@@ -10,6 +10,7 @@ public class CitizenPanelDbContext : DbContext
     public DbSet<RepresentationGroup> RepresentationGroups { get; set; }
     public DbSet<Criteria> Criteria { get; set; }
     public DbSet<CriteriaGroup> CriteriaGroups { get; set; }
+    public DbSet<CriteriaValue> CriteriaValues { get; set; }
 
     public CitizenPanelDbContext(DbContextOptions options) : base(options)
     {
@@ -35,7 +36,11 @@ public class CitizenPanelDbContext : DbContext
         modelBuilder.Entity<CriteriaGroup>()
             .HasMany(cg => cg.Criteria)
             .WithOne(c => c.CriteriaGroup);
-        
+        //criteria 1 - * criteriavalues
+        modelBuilder.Entity<Criteria>()
+            .HasMany(c => c.Values)
+            .WithOne(c => c.criteria);
+
     }
 
     public bool CreateDatabase(bool dropDatabase)
