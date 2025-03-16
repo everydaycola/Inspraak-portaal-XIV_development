@@ -26,7 +26,6 @@
                                     <label for="email" class="form-label">E-mailadres</label>
                                     <input type="email" class="form-control" id="email" placeholder="Voer je e-mailadres in" required>
                                 </div>
-                                <button type="button" class="btn btn-primary next-step">Volgende</button>
                             </div>
 
                             <!-- Step 2 -->
@@ -46,8 +45,6 @@
                                         <label class="form-check-label" for="colorGreen">Groen</label>
                                     </div>
                                 </div>
-                                <button type="button" class="btn btn-secondary prev-step">Vorige</button>
-                                <button type="button" class="btn btn-primary next-step">Volgende</button>
                             </div>
 
                             <!-- Step 3 -->
@@ -66,50 +63,3 @@
         </div>
     </div>
 </div>
-
-<script>
-// JavaScript to handle navigation between steps
-document.addEventListener("DOMContentLoaded", () => {
-    const steps = document.querySelectorAll(".form-step");
-    const nextButtons = document.querySelectorAll(".next-step");
-    const prevButtons = document.querySelectorAll(".prev-step");
-
-    let currentStep = 0;
-
-    function showStep(step) {
-        steps.forEach((stepDiv, index) => {
-            stepDiv.classList.toggle("active", index === step);
-        });
-    }
-
-    nextButtons.forEach(button => {
-        button.addEventListener("click", () => {
-            if (currentStep < steps.length - 1) {
-                currentStep++;
-                showStep(currentStep);
-            }
-        });
-    });
-
-    prevButtons.forEach(button => {
-        button.addEventListener("click", () => {
-            if (currentStep > 0) {
-                currentStep--;
-                showStep(currentStep);
-            }
-        });
-    });
-
-    showStep(currentStep);
-});
-</script>
-
-<style>
-/* Hide all steps except the active one */
-.form-step {
-    display: none;
-}
-.form-step.active {
-    display: block;
-}
-</style>
