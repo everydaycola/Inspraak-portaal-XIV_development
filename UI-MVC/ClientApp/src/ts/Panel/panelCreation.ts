@@ -26,3 +26,11 @@ export async function defaultPanel() {
         }),
     });
 }
+
+
+document.addEventListener("DOMContentLoaded", () => {
+    const defaultPanelButton = document.getElementById("DefaultPanelBtn")
+    if (defaultPanelButton) {
+        defaultPanelButton.addEventListener("click", defaultPanel)
+    }
+});
