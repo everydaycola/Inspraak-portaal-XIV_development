@@ -22,6 +22,10 @@ public class PanelManager : IPanelManager
     {
         return _repo.ReadPanelWithRepresentationGroup(id);
     }
+    public Panel GetPanelWithMembersAndRepresentationGroup(Guid id)
+    {
+        return _repo.ReadPanelWithMembersAndRepresentationGroup(id);
+    }
 
     public Panel GetPanelWithPanelMembersAndCriteria(Guid id)
     {
@@ -206,6 +210,28 @@ public class PanelManager : IPanelManager
 
         throw new NullReferenceException("Panel with id: " + id + " was not found.");
     }
+
+    public void UpdatePanelRegistrationCount(Guid id, bool increase)
+    {
+        var panel = _repo.ReadPanel(id);
+        if (panel != null)
+        {
+            if (increase)
+            {
+                panel.SuccesfulRegistrationCount++;
+            }
+            else
+            {
+                panel.SuccesfulRegistrationCount--;
+            }
+
+            _repo.UpdatePanel(panel);
+            return;
+        }
+
+        throw new NullReferenceException("Panel with id: " + id + " was not found");
+    }
+
     public PanelMember UpdatePanelMember(PanelMember member)
     {
         return _repo.UpdatePanelMember(member);

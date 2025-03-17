@@ -62,6 +62,7 @@ public class RegisterController : Controller
             PanelMember member = _manager.GetPanelMemberById(formData.UserId);
             member.Email = email;
             member.hasAnsweredAllQuestions = true;
+            _manager.UpdatePanelRegistrationCount(formData.PanelId, true);
             PanelMember updatedMember = _manager.UpdatePanelMember(member);
             
             return View("Index", new NewPanelMemberDto

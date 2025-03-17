@@ -94,7 +94,15 @@ public class PanelRepository : IPanelRepository
         _context.PanelMembers.Remove(member);
         _context.SaveChanges();
     }
-    
+
+    public Panel ReadPanelWithMembersAndRepresentationGroup(Guid id)
+    {
+        return _context.Panels
+            .Include(p => p.PanelMembers)
+            .Include(p => p.RepresentationGroup)
+            .Single(p => p.Id == id);
+    }
+
     public void UpdatePanel(Panel panel)
     {
         _context.Panels.Update(panel);

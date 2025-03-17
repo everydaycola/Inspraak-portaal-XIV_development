@@ -6,6 +6,7 @@ public interface IPanelManager
 {
     public Panel GetPanel(Guid id);
     public Panel GetPanelWithRepresentationGroup(Guid id);
+    public Panel GetPanelWithMembersAndRepresentationGroup(Guid id);
     public Panel GetPanelWithPanelMembersAndCriteria(Guid id);
     public PanelMember GetPanelByUserId(Guid memberId);
     public IEnumerable<Panel> GetAllPanels();
@@ -17,6 +18,7 @@ public interface IPanelManager
         double responseRate);
 
     public void UpdatePanel(Guid id, bool isRegistrationOpen);
+    public void UpdatePanelRegistrationCount(Guid id, bool increase);
     PanelMember UpdatePanelMember(PanelMember member);
     public int CalculatePanelSize(int citizenCount, double samplePercentage);
     public int CalculateAmountOfReserve(int panelSize, double samplePercentage);
