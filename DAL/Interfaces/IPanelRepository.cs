@@ -12,12 +12,11 @@ public interface IPanelRepository
     public IEnumerable<Panel> ReadAllPanels();
     public PanelMember ReadPanelByUserId(Guid memberId);
     public void UpdatePanel(Panel panel);
-    PanelMember UpdatePanelMember(PanelMember member);
+    public PanelMember UpdatePanelMember(PanelMember member);
     public void CreatePanel(Panel panel);
     public void CreateCriteriaGroup(CriteriaGroup criteriaGroup);
     public void CreatePanelMember(PanelMember panelMember);
     public void DeletePanel(Panel panel);
     public void DeletePanelMember(PanelMember member);
-
     Panel ReadPanelWithMembersAndRepresentationGroup(Guid id);
 }
