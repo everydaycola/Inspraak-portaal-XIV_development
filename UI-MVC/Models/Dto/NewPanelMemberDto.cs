@@ -6,5 +6,8 @@ public class NewPanelMemberDto
 {
     public string UserId{ get; set; }
     public string PanelId { get; set; }
+    public string Email { get; set; }
+    public bool HasAnsweredQuestions { get; set; }
+
     public ICollection<Criteria> CriteriaList { get; set; }
 }

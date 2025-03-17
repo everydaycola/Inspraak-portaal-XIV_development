@@ -27,6 +27,7 @@ public class PanelManagementController : Controller
     {
         var panel = _manager.GetPanelWithRepresentationGroup(id);
         var pmd = new PanelManagementDto(id, panel.Name, 20000, 0);
+        pmd.SuccesfulRegistrationCount = panel.SuccesfulRegistrationCount;
         pmd.PanelSize = _manager.CalculatePanelSize(pmd.CitizenCount, 0.005);
         pmd.AmountOfReserveInvites = _manager.CalculateAmountOfReserve(pmd.PanelSize, panel.RepresentationGroup.ReservePercentage);
         pmd.TotalInvitesNeeded = _manager.CalculateTotalInvitesNeeded(pmd.PanelSize + pmd.AmountOfReserveInvites, panel.RepresentationGroup.ResponseRate);

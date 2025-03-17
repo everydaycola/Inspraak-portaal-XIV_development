@@ -7,14 +7,6 @@ import 'bootstrap/dist/css/bootstrap.css';
 import '../css/site.css'
 
 // Custom Ts
-import {fetchUniqueCodes} from "./PanelManagement/panelManagement";
+
 
 console.log('The \'site\' bundle has been loaded!');
-
-if(window.location.href.includes('PanelManagement/Index/')){
-    const viewCodesButton = document.getElementById("viewCodesButton")
-    const generateAllQrCodes = document.getElementById("generateAllQrCodesButton");
-    if(viewCodesButton){
-        viewCodesButton.addEventListener("click", fetchUniqueCodes)
-    }
-}

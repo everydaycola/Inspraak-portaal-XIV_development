@@ -17,3 +17,10 @@ export function fetchUniqueCodes() {
         })
     }
 }
+
+document.addEventListener("DOMContentLoaded", () => {
+    const viewCodesButton = document.getElementById("viewCodesButton")
+    if(viewCodesButton){
+        viewCodesButton.addEventListener("click", fetchUniqueCodes)
+    }
+});

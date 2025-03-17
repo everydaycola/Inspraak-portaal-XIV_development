@@ -22,6 +22,11 @@ public class PanelManager : IPanelManager
     {
         return _repo.ReadPanelWithRepresentationGroup(id);
     }
+    
+    public Panel GetPanelWithMembersAndRepresentationGroup(Guid id)
+    {
+        return _repo.ReadPanelWithMembersAndRepresentationGroup(id);
+    }
 
     public Panel GetPanelWithPanelMembersAndCriteria(Guid id)
     {
@@ -37,7 +42,17 @@ public class PanelManager : IPanelManager
     {
         return _repo.ReadAllPanels();
     }
-    
+
+    public PanelMember GetPanelMemberById(Guid memberId)
+    {
+        return _repo.ReadPanelMember(memberId);
+    }
+
+    public PanelMember GetPanelMemberWithPanel(Guid id)
+    {
+        return _repo.ReadPanelMemberWithPanel(id);
+    }
+
     public Panel AddPanel(string name, int size, double sampleRate,
         Dictionary<string, Dictionary<string, double>> distribution, int citizenCount, double reservePercentage,
         double responseRate)
@@ -161,5 +176,31 @@ public class PanelManager : IPanelManager
         if (panel == null) throw new NullReferenceException("Panel with id: " + id + " was not found.");
         panel.IsRegistrationOpen = isRegistrationOpen;
         _repo.UpdatePanel(panel);
+    }
+
+    public void UpdatePanelRegistrationCount(Guid id, bool increase)
+    {
+        var panel = _repo.ReadPanel(id);
+        if (panel != null)
+        {
+            if (increase)
+            {
+                panel.SuccesfulRegistrationCount++;
+            }
+            else
+            {
+                panel.SuccesfulRegistrationCount--;
+            }
+
+            _repo.UpdatePanel(panel);
+            return;
+        }
+
+        throw new NullReferenceException("Panel with id: " + id + " was not found");
+    }
+
+    public PanelMember UpdatePanelMember(PanelMember member)
+    {
+        return _repo.UpdatePanelMember(member);
     }
 }
