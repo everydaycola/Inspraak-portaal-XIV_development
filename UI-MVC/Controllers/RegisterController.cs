@@ -9,11 +9,13 @@ namespace UI_MVC.Controllers;
 
 public class RegisterController : Controller
 {
+    private readonly ILogger<RegisterController> _logger;
     private readonly IPanelManager _manager;
     private readonly ICriteriaManager _critManager;
 
-    public RegisterController(IPanelManager manager, ICriteriaManager critManager)
+    public RegisterController(ILogger<RegisterController> logger,IPanelManager manager, ICriteriaManager critManager)
     {
+        _logger = logger;
         _manager = manager;
         _critManager = critManager;
     }
@@ -45,6 +47,18 @@ public class RegisterController : Controller
     {
         if (ModelState.IsValid)
         {
+            
+            _logger.Log(LogLevel.Information,"Lengte van antwoorden " + formData.CriteriaAnswers.Count());
+            foreach (var answer in formData.CriteriaAnswers)
+            {
+                var criterium = answer.Key;
+                var userAnswer = answer.Value;
+                
+                _logger.Log(LogLevel.Information,"De gebruiker antwoorde met " + criterium + " " + userAnswer);
+
+                // Verwerken, opslaan etc.
+            }
+            
             var email = formData.Email;
             PanelMember member = _manager.GetPanelMemberById(formData.UserId);
             member.Email = email;

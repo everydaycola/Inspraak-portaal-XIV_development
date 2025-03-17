@@ -74,23 +74,38 @@ public class PanelManagementController : Controller
     private List<GroupedUniqueCodesDto> populateUniqueCodesDto(Panel panel)
     {
         ICollection<UniqueCodesDto> codes = new List<UniqueCodesDto>();
+
         foreach (var member in panel.PanelMembers)
         {
-            var codeDto = new UniqueCodesDto(panel.Id, member.PanelMemberId, member.CriteriaGroup);
-            foreach (var criteria in member.CriteriaGroup.Criteria)
+            if (member.CriteriaGroup == null)
             {
-                codeDto.criteria.Add(criteria);
+                var codeDto = new UniqueCodesDto(panel.Id, member.PanelMemberId, null)
+                {
+                    criteria = new List<Criteria>() 
+                };
+                codes.Add(codeDto);
             }
-            codes.Add(codeDto);
+            else
+            {
+                var codeDto = new UniqueCodesDto(panel.Id, member.PanelMemberId, member.CriteriaGroup);
+                foreach (var criteria in member.CriteriaGroup.Criteria)
+                {
+                    codeDto.criteria.Add(criteria);
+                }
+                codes.Add(codeDto);
+            }
         }
         
-        return codes.GroupBy(entry => entry.CriteriaGroup.Id)
+        var groupedCodes = codes.GroupBy(entry => entry.CriteriaGroup?.Id ?? Guid.Empty) // Gebruik Guid.Empty voor onbekende groepen
             .Select(group => new GroupedUniqueCodesDto()
             {
-                GroupKey= group.Key.ToString(),
+                GroupKey = group.Key == Guid.Empty ? "Onbekend" : group.Key.ToString(),
                 Members = group.ToList(),
-                Name = group.First().CriteriaGroup.Name
-            }).ToList();
+                Name = group.Key == Guid.Empty ? "Criteria onbekend" : group.First().CriteriaGroup?.Name
+            })
+            .ToList();
+        
+        return groupedCodes.OrderByDescending(group => group.Name == "Criteria onbekend").ToList();
     }
     public IActionResult ToggleRegistration(Guid panelId)
     {
