@@ -15,7 +15,10 @@ export default defineConfig({
             input: {
                 index: resolve(__dirname, 'src/ts/index.ts'),
                 site: resolve(__dirname, 'src/ts/site.ts'),
-                validation: resolve(__dirname, 'src/ts/validation.ts')
+                validation: resolve(__dirname, 'src/ts/validation.ts'),
+                register: resolve(__dirname, 'src/ts/register/register.ts'),
+                panelManagement: resolve(__dirname, 'src/ts/PanelManagement/panelManagement.ts'),
+                panelCreation: resolve(__dirname, 'src/ts/Panel/panelCreation.ts')
             },
             output: {
                 entryFileNames: '[name].entry.js',

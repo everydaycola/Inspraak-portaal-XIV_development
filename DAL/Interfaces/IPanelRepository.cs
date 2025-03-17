@@ -6,14 +6,18 @@ public interface IPanelRepository
 {
     public Panel ReadPanel(Guid id);
     public PanelMember ReadPanelMember(Guid id);
+    public PanelMember ReadPanelMemberWithPanel(Guid id);
     public Panel ReadPanelWithRepresentationGroup(Guid id);
     public Panel ReadPanelWithPanelMembersAndCriteria(Guid id);
     public IEnumerable<Panel> ReadAllPanels();
     public PanelMember ReadPanelByUserId(Guid memberId);
     public void UpdatePanel(Panel panel);
+    PanelMember UpdatePanelMember(PanelMember member);
     public void CreatePanel(Panel panel);
     public void CreateCriteriaGroup(CriteriaGroup criteriaGroup);
     public void CreatePanelMember(PanelMember panelMember);
     public void DeletePanel(Panel panel);
     public void DeletePanelMember(PanelMember member);
+
+    Panel ReadPanelWithMembersAndRepresentationGroup(Guid id);
 }
