@@ -19,7 +19,6 @@ if (window.location.href.endsWith("MakeNewPanel")) {
     }
 }
 
-
 if(window.location.href.includes('PanelManagement/Index/')){
     const viewCodesButton = document.getElementById("viewCodesButton")
     const generateAllQrCodes = document.getElementById("generateAllQrCodesButton");

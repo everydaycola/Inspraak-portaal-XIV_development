@@ -23,6 +23,13 @@ public class PanelRepository : IPanelRepository
     {
         return _context.PanelMembers.Find(id);
     }
+    
+    public PanelMember ReadPanelMemberWithPanel(Guid id)
+    {
+        return _context.PanelMembers
+            .Include(pm => pm.Panel)
+            .Single(p => p.PanelMemberId == id);
+    }
 
     public Panel ReadPanelWithRepresentationGroup(Guid id)
     {
@@ -50,7 +57,15 @@ public class PanelRepository : IPanelRepository
             .Include(pm => pm.Panel)
             .Single(pm => pm.PanelMemberId == memberId);
     }
-    
+
+    public PanelMember UpdatePanelMember(PanelMember member)
+    {
+        _context.PanelMembers.Update(member);
+        _context.SaveChanges();
+
+        return ReadPanelMemberWithPanel(member.PanelMemberId);
+    }
+
     public void CreatePanel(Panel panel)
     {
         _context.Panels.Add(panel);

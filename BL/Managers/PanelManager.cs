@@ -38,6 +38,16 @@ public class PanelManager : IPanelManager
         return _repo.ReadAllPanels();
     }
 
+    public PanelMember GetPanelMemberById(Guid memberId)
+    {
+        return _repo.ReadPanelMember(memberId);
+    }
+
+    public PanelMember GetPanelMemberWithPanel(Guid id)
+    {
+        return _repo.ReadPanelMemberWithPanel(id);
+    }
+
     public void AddPanel(Panel panel)
     {
         _repo.CreatePanel(panel);
@@ -163,6 +173,7 @@ public class PanelManager : IPanelManager
 
         return panelMembers;
     }
+    
 
     public int CalculatePanelSize(int citizenCount, double samplePercentage)
     {
@@ -194,5 +205,9 @@ public class PanelManager : IPanelManager
         }
 
         throw new NullReferenceException("Panel with id: " + id + " was not found.");
+    }
+    public PanelMember UpdatePanelMember(PanelMember member)
+    {
+        return _repo.UpdatePanelMember(member);
     }
 }
