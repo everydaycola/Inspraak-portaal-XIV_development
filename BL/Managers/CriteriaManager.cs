@@ -12,7 +12,12 @@ public class CriteriaManager : ICriteriaManager
     {
         _repo = repo;
     }
-    
+
+    public IEnumerable<Criteria> GetAllCriteriaWithValuesForPanel(Guid panelId)
+    {
+        return _repo.ReadAllCriteriaWithValuesForPanel(panelId);
+    }
+
     public IEnumerable<CriteriaGroup> GetAllCriteriaGroupForPanel(Guid panelId)
     {
         return _repo.ReadAllCriteriaGroupForPanel(panelId);

@@ -4,6 +4,7 @@
     ViewBag.Title = "Welkom";
     Layout = "_Layout";
 }
+
 @section Scripts{
     <script src="~/dist/register.entry.js" type="module"></script>
 }
@@ -38,7 +39,9 @@
                 </div>
             </div>
         }
-        <div class="modal fade" id="dataModal" tabindex="-1" aria-labelledby="dataModalLabel" data-show-hasAnswered="@Model.HasAnsweredQuestions" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+        <div class="modal fade" id="dataModal" tabindex="-1" aria-labelledby="dataModalLabel"
+             data-show-hasAnswered="@Model.HasAnsweredQuestions" aria-hidden="true" data-bs-backdrop="static"
+             data-bs-keyboard="false">
             <div class="modal-dialog modal-lg">
                 <div class="modal-content">
                     <div class="modal-header">
@@ -51,13 +54,72 @@
                             <div class="form-step active">
                                 <div class="mb-3">
                                     <label for="Email" class="form-label">E-mailadres</label>
-                                    <input type="email" class="form-control" name="Email" id="Email" placeholder="Voer je e-mailadres in" required>
+                                    <input type="email" class="form-control" name="Email" id="Email"
+                                           placeholder="Voer je e-mailadres in" required>
                                 </div>
                                 <input type="hidden" name="UserId" value="@Model.UserId"/>
                                 <input type="hidden" name="panelId" value="@Model.PanelId"/>
-                                <button type="submit" class="btn btn-success">Verzenden</button>
+                                <button type="button" class="btn btn-primary next-step">Volgende</button>
                             </div>
+                            @if (Model.criteria != null && Model.criteria.Any())
+                            {
+                                foreach (var crit in Model.criteria)
+                                {
+                                    <div class="form-step">
+                                        <div class="mb-3">
+                                            <!--TODO:Create it so that we fallback on name when question is NULL-->
+                                            <label class="form-label">@crit.Question</label>
+                                            @foreach (var value in crit.Values)
+                                            {
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="radio" name="@crit.Name" id="@(crit.Name + "-" + value.Value)" value="@value.Value" required>
+                                                    <label class="form-check-label" for="@(crit.Name + "-" + value.Value)">@value.Value</label>
+                                                </div>
+                                            }
+                                        </div>
+                                        <button type="button" class="btn btn-secondary prev-step">Vorige</button>
+                                        <button type="button" class="btn btn-primary next-step">Volgende</button>
+                                    </div>
+                                }
+                                <!--TODO: take these changes over to the correct branch-->
+                            }<!--TODO: if last question make button a submit button instead of next-->
 
+                            <!-- 
+                            <div class="form-step">
+                                <div class="mb-3">
+                                    <label class="form-label">Beschikt u over een rijbewijs?</label>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="color" id="rijbewijsJa" value="red" required>
+                                        <label class="form-check-label" for="rijbewijsJa">Ja</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="color" id="rijbewijsNee" value="blue">
+                                        <label class="form-check-label" for="rijbewijsNee">Nee</label>
+                                    </div>
+                                </div>
+                                <button type="button" class="btn btn-secondary prev-step">Vorige</button>
+                                <button type="button" class="btn btn-primary next-step">Volgende</button>
+                            </div>
+                            Step 3
+                            <div class="form-step">
+                                <div class="mb-3">
+                                    <label class="form-label">Wat is uw hoofdvervoersmiddel?</label>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="vervoer" id="vervoerFiets" value="red" required>
+                                        <label class="form-check-label" for="vervoerFiets">Fiets</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="vervoer" id="vervoerAuto" value="blue">
+                                        <label class="form-check-label" for="vervoerAuto">Auto</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="vervoer" id="vervoerTevoet" value="green">
+                                        <label class="form-check-label" for="vervoerTevoet">Te voet</label>
+                                    </div>
+                                </div>
+                                <button type="button" class="btn btn-secondary prev-step">Vorige</button>
+                                <button type="submit" class="btn btn-success">Verzenden</button>
+                            </div>-->
                         </form>
                     </div>
                 </div>

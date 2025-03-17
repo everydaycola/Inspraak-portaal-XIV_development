@@ -8,6 +8,5 @@ public class NewPanelMemberDto
     public string PanelId { get; set; }
     public string Email { get; set; }
     public bool HasAnsweredQuestions { get; set; }
-
-    public ICollection<Criteria> criteriaList { get; set; }
+    public IEnumerable<Criteria> criteria { get; set; }
 }

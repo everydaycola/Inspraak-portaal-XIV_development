@@ -1,4 +1,5 @@
-﻿using BL.Interfaces;
+﻿using System.Collections;
+using BL.Interfaces;
 using Domain.CitizenPanel;
 using Microsoft.AspNetCore.Mvc;
 using UI_MVC.Models.Dto;
@@ -9,41 +10,27 @@ namespace UI_MVC.Controllers;
 public class RegisterController : Controller
 {
     private readonly IPanelManager _manager;
+    private readonly ICriteriaManager _critManager;
 
-    public RegisterController(IPanelManager manager)
+    public RegisterController(IPanelManager manager, ICriteriaManager critManager)
     {
         _manager = manager;
+        _critManager = critManager;
     }
 
     [HttpGet]
     public IActionResult Index(Guid userId)
     {
         PanelMember member = _manager.GetPanelMemberWithPanel(userId);
-        
-        Criteria crit1 = new Criteria("Rijbewijs");
-        CriteriaValue val1 = new CriteriaValue("Ja", 0.5);
-        CriteriaValue val2 = new CriteriaValue("Nee", 0.5);
-        crit1.Values.Add(val1);
-        crit1.Values.Add(val2);
-        Criteria crit2 = new Criteria("Vervoersmiddel");
-        CriteriaValue val3 = new CriteriaValue("Fiets", 1/3);
-        CriteriaValue val4 = new CriteriaValue("Auto", 1/3);
-        CriteriaValue val5 = new CriteriaValue("Te voet", 1/3);
-        crit2.Values.Add(val3);
-        crit2.Values.Add(val4);
-        crit2.Values.Add(val5);
+        IEnumerable<Criteria> criteria = _critManager.GetAllCriteriaWithValuesForPanel(member.Panel.Id);
         
         return View(new NewPanelMemberDto
         {
             PanelId = member.Panel.Id.ToString(),
             UserId = userId.ToString(),
             Email = member.Email,
-            criteriaList = new List<Criteria>()
-            {
-                crit1,
-                crit2
-            },
-            HasAnsweredQuestions = member.hasAnsweredAllQuestions
+            HasAnsweredQuestions = member.hasAnsweredAllQuestions,
+            criteria = criteria
         });
     }
     

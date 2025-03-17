@@ -29,8 +29,8 @@ public static class DataSeeder
         
         
         //CRITERIA
-        Criteria criteria1 = new Criteria("Rijbewijs");
-        Criteria criteria2 = new Criteria("Vervoermethode");
+        Criteria criteria1 = new Criteria("Rijbewijs","Beschikt u over een rijbewijs?");
+        Criteria criteria2 = new Criteria("Vervoermethode","Wat is uw voorkeurs vervoersmethode?");
         
         //CRITERIA VALUES
         CriteriaValue value1 = new CriteriaValue("Ja", 0.5);
@@ -53,6 +53,9 @@ public static class DataSeeder
         //LINK REP. GROUP WITH PANEL
         rg1.Panel = panel1;
         panel1.RepresentationGroup = rg1;
+        
+        //LINK CRITERIA WITH PANEL
+        panel1.PanelCriteria = new List<Criteria>() { criteria1, criteria2 };
         
         //SET REGISTRATION TO OPEN
         panel1.IsRegistrationOpen = true;

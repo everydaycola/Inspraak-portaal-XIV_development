@@ -14,6 +14,13 @@ public class CriteriaRepository :ICriteriaRepository
         this._context = context;
     }
 
+    public IEnumerable<Criteria> ReadAllCriteriaWithValuesForPanel(Guid panelId)
+    {
+        return _context.Criteria
+            .Include(c => c.Values)
+            .Where(c => c.Panel.Id == panelId)
+            .ToList();
+    }
     public IEnumerable<CriteriaGroup> ReadAllCriteriaGroupForPanel(Guid panelId)
     {
         return this._context.CriteriaGroups
