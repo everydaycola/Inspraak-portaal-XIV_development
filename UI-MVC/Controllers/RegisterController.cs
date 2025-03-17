@@ -43,7 +43,7 @@ public class RegisterController : Controller
                 crit1,
                 crit2
             },
-            HasAnsweredQuestions = false
+            HasAnsweredQuestions = member.hasAnsweredAllQuestions
         });
     }
     
