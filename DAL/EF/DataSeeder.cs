@@ -29,8 +29,8 @@ public static class DataSeeder
         
         
         //CRITERIA
-        Criteria criteria1 = new Criteria("Rijbewijs","Beschikt u over een rijbewijs?");
-        Criteria criteria2 = new Criteria("Vervoermethode","Wat is uw voorkeurs vervoersmethode?");
+        Criteria criteria1 = new Criteria("Rijbewijs","Beschikt u over een rijbewijs?",false);
+        Criteria criteria2 = new Criteria("Vervoermethode","Wat is uw voorkeurs vervoersmethode?", false);
         
         //CRITERIA VALUES
         CriteriaValue value1 = new CriteriaValue("Ja", 0.5);

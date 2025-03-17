@@ -103,6 +103,12 @@ public class PanelRepository : IPanelRepository
             .Single(p => p.Id == id);
     }
 
+    public void CreateCriteria(Criteria criteria)
+    {
+        _context.Criteria.Update(criteria);
+        _context.SaveChanges();
+    }
+
     public void UpdatePanel(Panel panel)
     {
         _context.Panels.Update(panel);

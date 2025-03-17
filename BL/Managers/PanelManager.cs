@@ -79,7 +79,7 @@ public class PanelManager : IPanelManager
             var innerDict = outerEntry.Value; // Values and their percentages
 
             // Create a Criteria object for each unique name
-            var criteria = new Criteria(outerKey);
+            var criteria = new Criteria(outerKey, true);
 
             foreach (var innerEntry in innerDict)
             {
@@ -91,7 +91,8 @@ public class PanelManager : IPanelManager
                 criteria.Values ??= new List<CriteriaValue>(); // Initialize Values if null
                 criteria.Values.Add(criteriaValue);
             }
-
+            _repo.CreateCriteria(criteria);
+            criteria.Panel = panel;
             criteriaList.Add(criteria);
         }
 

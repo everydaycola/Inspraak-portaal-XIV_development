@@ -8,23 +8,19 @@ public class Criteria
     public string Question { get; set; }
     public ICollection<CriteriaValue> Values { get; set; }
     public CriteriaGroup CriteriaGroup { get; set; }
+    public bool IsDefault { get; set; }
 
-    public Criteria(string name)
+    public Criteria(string name, bool isDefault)
     {
         this.Name = name;
         Values = new List<CriteriaValue>();
+        IsDefault = isDefault;
     }
-    public Criteria(string name, string question)
+    public Criteria(string name,string question,bool isDefault)
     {
         this.Name = name;
         Values = new List<CriteriaValue>();
         this.Question = question;
-    }
-    public Criteria(string name, string question,CriteriaGroup criteriaGroup)
-    {
-        this.Name = name;
-        this.Question = question;
-        CriteriaGroup = CriteriaGroup;
-        Values = new List<CriteriaValue>();
+        IsDefault = isDefault;
     }
 }

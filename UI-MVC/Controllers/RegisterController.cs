@@ -24,7 +24,7 @@ public class RegisterController : Controller
     public IActionResult Index(Guid userId)
     {
         PanelMember member = _manager.GetPanelMemberWithPanel(userId);
-        IEnumerable<Criteria> criteria = _critManager.GetAllCriteriaWithValuesForPanel(member.Panel.Id);
+        IEnumerable<Criteria> criteria = _critManager.GetAllDefaultCriteriaWithValuesForPanel(member.Panel.Id);
         
         return View(new NewPanelMemberDto
         {
@@ -47,15 +47,10 @@ public class RegisterController : Controller
     {
         if (ModelState.IsValid)
         {
-            
-            _logger.Log(LogLevel.Information,"Lengte van antwoorden " + formData.CriteriaAnswers.Count());
             foreach (var answer in formData.CriteriaAnswers)
             {
                 var criterium = answer.Key;
                 var userAnswer = answer.Value;
-                
-                _logger.Log(LogLevel.Information,"De gebruiker antwoorde met " + criterium + " " + userAnswer);
-
                 // Verwerken, opslaan etc.
             }
             

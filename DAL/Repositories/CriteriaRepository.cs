@@ -40,5 +40,12 @@ public class CriteriaRepository :ICriteriaRepository
                 cg.PanelMembers.Any(pm => pm.Panel.Id == panelId)
             );
     }
-    
+
+    public IEnumerable<Criteria> ReadAllDefaultCriteriaWithValuesForPanel(Guid panelId)
+    {
+        return _context.Criteria
+            .Include(c => c.Values)
+            .Where(c => c.Panel.Id == panelId && c.IsDefault == false)
+            .ToList();
+    }
 }

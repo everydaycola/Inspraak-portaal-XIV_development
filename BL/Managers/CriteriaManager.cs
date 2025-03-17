@@ -18,6 +18,11 @@ public class CriteriaManager : ICriteriaManager
         return _repo.ReadAllCriteriaWithValuesForPanel(panelId);
     }
 
+    public IEnumerable<Criteria> GetAllDefaultCriteriaWithValuesForPanel(Guid panelId)
+    {
+        return _repo.ReadAllDefaultCriteriaWithValuesForPanel(panelId);
+    }
+
     public IEnumerable<CriteriaGroup> GetAllCriteriaGroupForPanel(Guid panelId)
     {
         return _repo.ReadAllCriteriaGroupForPanel(panelId);
