@@ -27,10 +27,9 @@ public static class DataSeeder
         
         
         //CRITERIA
-        var criteria3 = new Criteria("Geslacht", "Wat is uw geslacht?", true);
         var criteria1 = new Criteria("Rijbewijs","Beschikt u over een rijbewijs?",false);
         var criteria2 = new Criteria("Vervoermethode","Wat is uw voorkeurs vervoersmethode?", false);
-       
+        var criteria3 = new Criteria("Geslacht", "Wat is uw geslacht?", true);
         
         //CRITERIA VALUES
         var value1 = new CriteriaValue("Ja", 0.5);
@@ -53,12 +52,12 @@ public static class DataSeeder
         //Add criteria to criteriagroups
         criteriaGroup1.CriteriaAnswers.Add(new CriteriaAnswer()
         {
-            criteria = criteria1,
+            criteria = criteria3,
             criteriaValue = value6
         });
         criteriaGroup2.CriteriaAnswers.Add(new CriteriaAnswer()
         {
-            criteria = criteria1,
+            criteria = criteria3,
             criteriaValue = value7
         });
         

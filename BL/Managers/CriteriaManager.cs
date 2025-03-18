@@ -34,7 +34,12 @@ public class CriteriaManager : ICriteriaManager
     {
         return _repo.ReadAllDefaultCriteriaWithValuesAndAnswerForPanel(panelId);
     }
-    
+
+    public IEnumerable<Criteria> GetCriteriaWithValuesAndAnswerForPanel(Guid panelId)
+    {
+        return _repo.ReadAllCriteriaWithValuesForPanel(panelId);
+    }
+
     public IEnumerable<CriteriaGroup> GetAllCriteriaGroupForPanel(Guid panelId)
     {
         return _repo.ReadAllCriteriaGroupForPanel(panelId);

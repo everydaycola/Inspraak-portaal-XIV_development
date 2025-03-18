@@ -67,7 +67,7 @@
                 </div>
             </div>
         </div>
-        @Html.Partial("_extraCriteriaStatsPartial", Model.CriteriaGroups)
+        @Html.Partial("_extraCriteriaStatsPartial", Model.ExtraCriteriaViewModel)
     </div>
 
     <div class="modal fade" id="dataModal" tabindex="-1" aria-labelledby="dataModalLabel" aria-hidden="true">
@@ -79,7 +79,7 @@
                 </div>
                 <div class="modal-body">
                     <div id="modalContent">
-                        @Html.Partial("_uniqueCodesPartial", Model.CriteriaGroups)
+                        @Html.Partial("_uniqueCodesPartial", Model.ExtraCriteriaViewModel.CriteriaGroups)
                     </div>
                 </div>
             </div>

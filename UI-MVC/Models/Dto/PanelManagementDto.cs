@@ -12,7 +12,7 @@ public class PanelManagementDto
     public int AmountOfReserveInvites { get; set; }
     public int TotalInvitesNeeded { get; set; }
     public bool IsRegistrationOpen { get; set; }
-    public IEnumerable<CriteriaGroup> CriteriaGroups { get; set; }
+    public ExtraCriteriaViewModel ExtraCriteriaViewModel { get; set; }
 
     public PanelManagementDto(Guid panelId, string panelName, int citizenCount, int amountOfAcceptedInvites, IEnumerable<CriteriaGroup> criteriaGroups)
     {
@@ -20,6 +20,7 @@ public class PanelManagementDto
         PanelName = panelName;
         SuccesfulRegistrationCount = amountOfAcceptedInvites;
         CitizenCount = citizenCount;
-        CriteriaGroups = criteriaGroups;
+        ExtraCriteriaViewModel = new ExtraCriteriaViewModel();
+        ExtraCriteriaViewModel.CriteriaGroups = criteriaGroups;
     }
 }

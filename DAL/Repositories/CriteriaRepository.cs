@@ -25,11 +25,15 @@ public class CriteriaRepository :ICriteriaRepository
     {
         return _context.CriteriaGroups
             .Include(cg => cg.PanelMembers)
-            .ThenInclude(pm => pm.Panel)
+                .ThenInclude(pm => pm.Panel)
+            .Include(cg=>cg.CriteriaAnswers)
+                .ThenInclude(ca => ca.criteriaValue)
+            .Include(c => c.CriteriaAnswers)
+                .ThenInclude(ca=>ca.criteria)
             .Where(cg => cg.PanelMembers.Any(pm => pm.Panel.Id == panelId))
             .ToList();
     }
-
+    
     public CriteriaGroup ReadCriteriaGroupByMemberId(Guid memberId)
     {
         return _context.CriteriaGroups
@@ -73,6 +77,15 @@ public class CriteriaRepository :ICriteriaRepository
             .ThenInclude(c => c.CriteriaAnswers)
             .ThenInclude(ca => ca.criteria)
             .Where(c => c.Panel.Id == panelId && c.IsDefault == true)
+            .ToList();
+    }
+    public IEnumerable<Criteria> ReadCriteriaWithValuesAndAnswerForPanel(Guid panelId)
+    {
+        return _context.Criteria
+            .Include(c => c.Values)
+            .ThenInclude(c => c.CriteriaAnswers)
+            .ThenInclude(ca => ca.criteria)
+            .Where(c => c.Panel.Id == panelId)
             .ToList();
     }
 

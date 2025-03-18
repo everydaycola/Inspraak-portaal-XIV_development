@@ -2,6 +2,7 @@ using System.Collections;
 using BL.Interfaces;
 using Domain.CitizenPanel;
 using Microsoft.AspNetCore.Mvc;
+using UI_MVC.Models;
 using UI_MVC.Models.Dto;
 
 namespace UI_MVC.Controllers;
@@ -13,14 +14,16 @@ public class PanelManagementController : Controller
     private readonly IPanelManager _manager;
     private readonly IFileManager _fileManager;
     private readonly ICriteriaManager _criteriaManager;
+    private readonly ICalculationManager _calcManager;
     
     
-    public PanelManagementController(ILogger<PanelManagementController> logger, IPanelManager manager, IFileManager fileManager, ICriteriaManager criteriaManager)
+    public PanelManagementController(ILogger<PanelManagementController> logger, IPanelManager manager, IFileManager fileManager, ICriteriaManager criteriaManager, ICalculationManager calcHelper)
     {
         _logger = logger;
         _manager = manager;
         _fileManager = fileManager;
         _criteriaManager = criteriaManager;
+        _calcManager = calcHelper;
     }
 
     public IActionResult Index(Guid id)
@@ -33,6 +36,8 @@ public class PanelManagementController : Controller
         pmd.AmountOfReserveInvites = _manager.CalculateAmountOfReserve(pmd.PanelSize, panel.RepresentationGroup.ReservePercentage);
         pmd.TotalInvitesNeeded = _manager.CalculateTotalInvitesNeeded(pmd.PanelSize + pmd.AmountOfReserveInvites, panel.RepresentationGroup.ResponseRate);
         pmd.IsRegistrationOpen = panel.IsRegistrationOpen;
+        pmd.ExtraCriteriaViewModel.CriteriaMemberCount = _calcManager.CalculateAllCriteriaCountForPanel(panel.Id);
+        pmd.ExtraCriteriaViewModel.TotalMemberCount = _calcManager.CalculateTotalMemberCount(panel.Id);
         return View(pmd);
     }
     [HttpPost]

@@ -17,6 +17,7 @@ builder.Services.AddScoped<QrCodeGenerator, QrCodeGenerator>();
 builder.Services.AddScoped<IFileManager, FileManager>();
 builder.Services.AddScoped<ICriteriaManager, CriteriaManager>();
 builder.Services.AddScoped<ICriteriaRepository, CriteriaRepository>();
+builder.Services.AddScoped<ICalculationManager, CalculationManager>();
 
 var connectionString = Environment.GetEnvironmentVariable("ConnectionStrings__DefaultConnection");
 builder.Services.AddDbContext<CitizenPanelDbContext>(options =>
