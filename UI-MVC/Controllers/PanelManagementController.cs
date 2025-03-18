@@ -26,7 +26,7 @@ public class PanelManagementController : Controller
     public IActionResult Index(Guid id)
     {
         var panel = _manager.GetPanelWithRepresentationGroup(id);
-        PanelManagementDto pmd = new PanelManagementDto(id, panel.Name, 20000, 0);
+        var pmd = new PanelManagementDto(id, panel.Name, 20000, 0);
         pmd.SuccesfulRegistrationCount = panel.SuccesfulRegistrationCount;
         pmd.PanelSize = _manager.CalculatePanelSize(pmd.CitizenCount, 0.005);
         pmd.AmountOfReserveInvites = _manager.CalculateAmountOfReserve(pmd.PanelSize, panel.RepresentationGroup.ReservePercentage);
@@ -36,8 +36,8 @@ public class PanelManagementController : Controller
     }
     public IActionResult LoadUniqueCodes(Guid panelId)
     {
-        Panel panel = _manager.GetPanelWithPanelMembersAndCriteria(panelId);
-        var codes = populateUniqueCodesDto(panel);
+        var panel = _manager.GetPanelWithPanelMembersAndCriteria(panelId);
+        var codes = PopulateUniqueCodesDto(panel);
         return PartialView("_UniqueCodesPartial", codes);
     }
     [HttpPost]
@@ -51,14 +51,14 @@ public class PanelManagementController : Controller
         return View(panels);
     }
     
-    public IActionResult DownloadQRCodesForAllGroups(Guid panelId)
+    public IActionResult DownloadQrCodesForAllGroups(Guid panelId)
     {
         var criteriaGroups = _criteriaManager.GetAllCriteriaGroupForPanel(panelId);
         var baseUrl = $"{Request.Scheme}://{Request.Host}/Register";
         var zipFileBytes = _fileManager.CreateZipFileForAllCodesInAllGroups(criteriaGroups, baseUrl);
         return File(zipFileBytes, "application/zip", "qrcodes.zip");
     }
-    public IActionResult DownloadQRCodesForSpecificGroup(Guid panelId, string groupName)
+    public IActionResult DownloadQrCodesForSpecificGroup(Guid panelId, string groupName)
     {
         var group = _criteriaManager.GetCriteriaGroupByPanelIdAndName(panelId, groupName);
         var baseUrl = $"{Request.Scheme}://{Request.Host}/Register";
@@ -71,10 +71,9 @@ public class PanelManagementController : Controller
         return File(qrCodeBytes, "image/png", "qrcode.png");
     }
     
-    private List<GroupedUniqueCodesDto> populateUniqueCodesDto(Panel panel)
+    private List<GroupedUniqueCodesDto> PopulateUniqueCodesDto(Panel panel)
     {
-        ICollection<UniqueCodesDto> codes = new List<UniqueCodesDto>();
-
+        var codes = new List<UniqueCodesDto>();
         foreach (var member in panel.PanelMembers)
         {
             if (member.CriteriaGroup == null)
@@ -96,7 +95,7 @@ public class PanelManagementController : Controller
             }
         }
         
-        var groupedCodes = codes.GroupBy(entry => entry.CriteriaGroup?.Id ?? Guid.Empty) // Gebruik Guid.Empty voor onbekende groepen
+        var groupedCodes = codes.GroupBy(entry => entry.CriteriaGroup?.Id ?? Guid.Empty)
             .Select(group => new GroupedUniqueCodesDto()
             {
                 GroupKey = group.Key == Guid.Empty ? "Onbekend" : group.Key.ToString(),

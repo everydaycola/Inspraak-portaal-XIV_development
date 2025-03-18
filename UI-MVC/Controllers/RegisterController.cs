@@ -23,8 +23,8 @@ public class RegisterController : Controller
     [HttpGet]
     public IActionResult Index(Guid userId)
     {
-        PanelMember member = _manager.GetPanelMemberWithPanel(userId);
-        CriteriaGroup currentGroup = _critManager.GetCriteriaGroupByMemberId(member.PanelMemberId);
+        var member = _manager.GetPanelMemberWithPanel(userId);
+        var currentGroup = _critManager.GetCriteriaGroupByMemberId(member.PanelMemberId);
         IEnumerable<Criteria> nonDefaultCriteria = _critManager.GetAllNonDefaultCriteriaWithValuesForPanel(member.Panel.Id);
         IEnumerable<CriteriaAnswer> defaultCriteria = currentGroup.CriteriaAnswers;
         return View(new NewPanelMemberDto

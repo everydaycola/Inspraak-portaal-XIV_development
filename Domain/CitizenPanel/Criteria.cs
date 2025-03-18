@@ -13,15 +13,15 @@ public class Criteria
 
     public Criteria(string name, bool isDefault)
     {
-        this.Name = name;
+        Name = name;
         Values = new List<CriteriaValue>();
         IsDefault = isDefault;
     }
-    public Criteria(string name,string question,bool isDefault)
+    public Criteria(string name, string question, bool isDefault)
     {
-        this.Name = name;
+        Name = name;
         Values = new List<CriteriaValue>();
-        this.Question = question;
+        Question = question;
         IsDefault = isDefault;
     }
 }

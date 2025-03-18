@@ -22,6 +22,7 @@ public class PanelManager : IPanelManager
     {
         return _repo.ReadPanelWithRepresentationGroup(id);
     }
+    
     public Panel GetPanelWithMembersAndRepresentationGroup(Guid id)
     {
         return _repo.ReadPanelWithMembersAndRepresentationGroup(id);
@@ -51,25 +52,25 @@ public class PanelManager : IPanelManager
     {
         return _repo.ReadPanelMemberWithPanel(id);
     }
-
-    public void AddPanel(Panel panel)
-    {
-        _repo.CreatePanel(panel);
-    }
-
-
+    
     public Panel AddPanel(string name, int size, double sampleRate,
         Dictionary<string, Dictionary<string, double>> distribution, int citizenCount, double reservePercentage,
         double responseRate)
     {
-        var panel = new Panel(name, sampleRate);
-        var rpg = new RepresentationGroup(citizenCount, reservePercentage, responseRate);
-        panel.RepresentationGroup = rpg;
-
+        // Create and initialize the panel
+        var panel = new Panel(name, sampleRate)
+        {
+            RepresentationGroup = new RepresentationGroup(citizenCount, reservePercentage, responseRate)
+        };
+        
         // Generate and shuffle panel members
         panel.PanelMembers = GeneratePanelMembers(size, panel);
         var random = new Random();
-        panel.PanelMembers = panel.PanelMembers.OrderBy(_ => random.Next()).ToList();
+        panel.PanelMembers = Enumerable.Range(0, size)
+            .Select(_ => new PanelMember(panel))
+            .ToList()
+            .OrderBy(_ => random.Next())
+            .ToList();
 
         // Create criteria list from distribution
         List<Criteria> criteriaList = new List<Criteria>();
@@ -110,7 +111,7 @@ public class PanelManager : IPanelManager
                 return;
             }
 
-            string nextCriterionName = remainingCriteria[0];
+            var nextCriterionName = remainingCriteria[0];
             var nextCriteriaValues = groupedCriteria[nextCriterionName].Values;
 
             foreach (var value in nextCriteriaValues)
@@ -128,14 +129,9 @@ public class PanelManager : IPanelManager
         int currentUserIndex = 0;
         foreach (var combo in combinations)
         {
-            // Generate a unique key for the combination
-            string comboKey = string.Join("-", combo.Values.Select(v => v.Value));
-
-            // Calculate the percentage for this combination
-            double comboPercentage = combo.Values.Aggregate(1.0, (acc, v) => acc * v.distributionPercentage);
-
-            // Determine the number of members needed for this group
-            int totalMembersNeeded = (int)Math.Round(comboPercentage * panel.PanelMembers.Count);
+            var comboKey = string.Join("-", combo.Values.Select(v => v.Value));
+            var comboPercentage = combo.Values.Aggregate(1.0, (acc, v) => acc * v.DistributionPercentage);
+            var totalMembersNeeded = (int)Math.Round(comboPercentage * panel.PanelMembers.Count);
 
             if (currentUserIndex + totalMembersNeeded > panel.PanelMembers.Count)
             {
@@ -194,22 +190,17 @@ public class PanelManager : IPanelManager
 
     public int CalculateTotalInvitesNeeded(int panelSizeIncludingReserve, double responseRate)
     {
-        //basePanelSize = claculated by CalculatePanelSize
-        //Response rate is a percentage which indicates the expected rate of resposne to invites.
+        //basePanelSize = calculated by CalculatePanelSize
+        //Response rate is a percentage which indicates the expected rate of response to invites.
         return (int)(panelSizeIncludingReserve / responseRate);
     }
 
     public void UpdatePanel(Guid id, bool isRegistrationOpen)
     {
         var panel = _repo.ReadPanel(id);
-        if (panel != null)
-        {
-            panel.IsRegistrationOpen = isRegistrationOpen;
-            _repo.UpdatePanel(panel);
-            return;
-        }
-
-        throw new NullReferenceException("Panel with id: " + id + " was not found.");
+        if (panel == null) throw new NullReferenceException("Panel with id: " + id + " was not found.");
+        panel.IsRegistrationOpen = isRegistrationOpen;
+        _repo.UpdatePanel(panel);
     }
 
     public void UpdatePanelRegistrationCount(Guid id, bool increase)

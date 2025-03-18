@@ -8,6 +8,6 @@ import '../css/site.css'
 import '../css/register.css'
 
 // Custom Ts
-import {defaultPanel} from "./Panel/panelCreation";
+
 
 console.log('The \'site\' bundle has been loaded!');
