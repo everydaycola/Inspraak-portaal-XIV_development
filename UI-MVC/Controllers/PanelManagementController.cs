@@ -26,7 +26,8 @@ public class PanelManagementController : Controller
     public IActionResult Index(Guid id)
     {
         var panel = _manager.GetPanelWithMembersAndRepresentationGroup(id);
-        var pmd = new PanelManagementDto(id, panel.Name, 20000, 0, PopulateUniqueCodesDto(panel.Id));
+        IEnumerable<CriteriaGroup> criteriaGroups = _criteriaManager.GetAllCriteriaGroupForPanel(panel.Id);
+        var pmd = new PanelManagementDto(id, panel.Name, 20000, 0,criteriaGroups);
         pmd.SuccesfulRegistrationCount = panel.SuccesfulRegistrationCount;
         pmd.PanelSize = _manager.CalculatePanelSize(pmd.CitizenCount, 0.005);
         pmd.AmountOfReserveInvites = _manager.CalculateAmountOfReserve(pmd.PanelSize, panel.RepresentationGroup.ReservePercentage);
@@ -45,27 +46,7 @@ public class PanelManagementController : Controller
         return View(panels);
     }
     
-    public IActionResult DownloadQrCodesForAllGroups(Guid panelId)
-    {
-        var criteriaGroups = _criteriaManager.GetAllCriteriaGroupForPanel(panelId);
-        var baseUrl = $"{Request.Scheme}://{Request.Host}/Register";
-        var zipFileBytes = _fileManager.CreateZipFileForAllCodesInAllGroups(criteriaGroups, baseUrl);
-        return File(zipFileBytes, "application/zip", "qrcodes.zip");
-    }
-    public IActionResult DownloadQrCodesForSpecificGroup(Guid panelId, string groupName)
-    {
-        var group = _criteriaManager.GetCriteriaGroupByPanelIdAndName(panelId, groupName);
-        var baseUrl = $"{Request.Scheme}://{Request.Host}/Register";
-        var zipFileBytes = _fileManager.CreateZipFileForAllCodesInAGroup(group,baseUrl);
-        return File(zipFileBytes, "application/zip", $"qrcodes_{groupName}.zip");
-    }
-    public IActionResult DownloadSingleQrCode(string generatedUrl)
-    {
-        var qrCodeBytes = _fileManager.CreateSingleQrCode(generatedUrl);
-        return File(qrCodeBytes, "image/png", "qrcode.png");
-    }
-    
-    private List<GroupedUniqueCodesDto> PopulateUniqueCodesDto(Guid panelId)
+    /*private List<GroupedUniqueCodesDto> PopulateUniqueCodesDto(Guid panelId)
     {
         var panel = _manager.GetPanelWithPanelMembersAndCriteria(panelId);
         var codes = new List<UniqueCodesDto>();
@@ -101,7 +82,8 @@ public class PanelManagementController : Controller
             .ToList();
         
         return groupedCodes.OrderByDescending(group => group.Name == "Criteria onbekend").ToList();
-    }
+    }*/
+    
     public IActionResult ToggleRegistration(Guid panelId)
     {
         var panel = _manager.GetPanel(panelId);

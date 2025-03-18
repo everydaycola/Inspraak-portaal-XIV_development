@@ -1,4 +1,4 @@
-@model IEnumerable<UI_MVC.Models.Dto.GroupedUniqueCodesDto>
+@model IEnumerable<Domain.CitizenPanel.CriteriaGroup>
 
 
 <div class="card shadow-sm border-0 col-8">
@@ -7,10 +7,10 @@
     </div>
     <div class="card-body">
         <ul>
-            @foreach (var group in Model.Where(g => !g.IsDefaultGroup))
+            @foreach (var group in Model.Where(g => !g.IsADefaultGroup))
             {
                 <li>
-                    @group.Name: @group.Members.Count() leden
+                    @group.Name: @group.PanelMembers.Count() leden
                 </li>
             }
         </ul>

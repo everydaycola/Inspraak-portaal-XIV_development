@@ -1,15 +1,16 @@
+@using Microsoft.AspNetCore.Mvc.TagHelpers
 @using UI_MVC.Models.Dto
-@model IEnumerable<GroupedUniqueCodesDto>
+@model IEnumerable<Domain.CitizenPanel.CriteriaGroup>
 
 @{
     var request = Context.Request; // Or ViewContext.HttpContext.Request
     var baseUrl = $"{request.Scheme}://{request.Host}";
-    var panelId = Model.First().Members.First().PanelId;
+    var panelId = Model.First().PanelMembers.First().PanelMemberId;
 }
 
 
 <div>
-    @foreach (var group in Model.Where(g => g.IsDefaultGroup))
+    @foreach (var group in Model.Where(g => g.IsADefaultGroup))
     {
         <div class="card">
             <div class="card-header">
@@ -17,14 +18,14 @@
                     class="btn btn-link"
                     type="button"
                     data-bs-toggle="collapse"
-                    data-bs-target="#collapse-@group.GroupKey.Replace(" ", "").Replace(",", "-")"
+                    data-bs-target="#collapse-@group.Id"
                     aria-expanded="false"
-                    aria-controls="collapse-@group.GroupKey.Replace(" ", "").Replace(",", "-")">
+                    aria-controls="collapse-@group.Id">
                     Criteria: @group.Name
                 </button>
             </div>
             <div
-                id="collapse-@group.GroupKey.Replace(" ", "").Replace(",", "-")"
+                id="collapse-@group.Id"
                 class="collapse">
                 <div class="card-body">
                     <table class="table table-striped table-bordered">
@@ -36,17 +37,18 @@
                         </tr>
                         </thead>
                         <tbody>
-                        @foreach (var member in group.Members)
+                        @foreach (var member in group.PanelMembers)
                         {
                             <tr>
-                                <td>@member.MemberId</td>
+                                <td>@member.PanelMemberId</td>
                                 <td>
-                                    <a href="@($"{baseUrl}{member.GeneratedUri}")">@($"{baseUrl}{member.GeneratedUri}")</a>
+                                    <a href="@($"{baseUrl}/Register?UserId={member.PanelMemberId}")">@($"{baseUrl}/Register?UserId={member.PanelMemberId}")</a>
                                 </td>
                                 <td>
-                                    <a asp-action="DownloadSingleQrCode"
+                                    <a asp-controller="QRCode"
+                                       asp-action="DownloadSingleQrCode"
                                        class="btn btn-primary mt-2"
-                                       asp-route-generatedUrl="@($"{baseUrl}{member.GeneratedUri}")")>
+                                       asp-route-data="@($"{baseUrl}/Register?UserId={member.PanelMemberId}")")>
                                         QR code downloaden voor dit panellid
                                     </a>
                                 </td>
@@ -54,7 +56,8 @@
                         }
                         </tbody>
                     </table>
-                    <a asp-action="DownloadQrCodesForSpecificGroup"
+                    <a asp-controller="QRCode"
+                        asp-action="DownloadQrCodesForSpecificCriteriaGroup"
                        asp-route-panelId="@panelId"
                        asp-route-groupName="@group.Name"
                        class="btn btn-primary mt-2">
@@ -64,7 +67,8 @@
             </div>
         </div>
     }
-    <a asp-action="DownloadQrCodesForAllGroups"
+    <a asp-controller="QRCode"
+        asp-action="DownloadQrCodesForAllCriteriaGroups"
        asp-route-panelId="@panelId"
        class="btn btn-primary mt-2">
         QR codes downloaden voor ieder lid van dit panel
