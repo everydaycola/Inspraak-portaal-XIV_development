@@ -56,7 +56,7 @@ public static class DataSeeder
             criteria = criteria1,
             criteriaValue = value6
         });
-        criteriaGroup1.CriteriaAnswers.Add(new CriteriaAnswer()
+        criteriaGroup2.CriteriaAnswers.Add(new CriteriaAnswer()
         {
             criteria = criteria1,
             criteriaValue = value7

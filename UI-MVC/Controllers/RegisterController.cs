@@ -24,8 +24,9 @@ public class RegisterController : Controller
     public IActionResult Index(Guid userId)
     {
         PanelMember member = _manager.GetPanelMemberWithPanel(userId);
+        CriteriaGroup currentGroup = _critManager.GetCriteriaGroupByMemberId(member.PanelMemberId);
         IEnumerable<Criteria> nonDefaultCriteria = _critManager.GetAllNonDefaultCriteriaWithValuesForPanel(member.Panel.Id);
-        IEnumerable<Criteria> defaultCriteria = _critManager.GetAllDefaultCriteriaWithValuesForPanel(member.Panel.Id);
+        IEnumerable<CriteriaAnswer> defaultCriteria = currentGroup.CriteriaAnswers;
         return View(new NewPanelMemberDto
         {
             PanelId = member.Panel.Id.ToString(),
@@ -33,8 +34,8 @@ public class RegisterController : Controller
             Email = member.Email,
             IsRegistrationOpen = member.Panel.IsRegistrationOpen,
             HasAnsweredQuestions = member.hasAnsweredAllQuestions,
-            NonDefaultCriteria = defaultCriteria,
-            DefaultCriteria= nonDefaultCriteria
+            NonDefaultCriteria = nonDefaultCriteria,
+            DefaultCriteria= defaultCriteria
         });
     }
     

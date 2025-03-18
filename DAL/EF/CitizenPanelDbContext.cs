@@ -40,7 +40,7 @@ public class CitizenPanelDbContext : DbContext
         //criteriagroup 1-* criteriaAnswer
         modelBuilder.Entity<CriteriaGroup>()
             .HasMany(cg => cg.CriteriaAnswers)
-            .WithMany(c => c.CriteriaGroups);
+            .WithOne(c => c.CriteriaGroup);
         
         //criteriaAnswer * - 1 criteria
         modelBuilder.Entity<CriteriaAnswer>()

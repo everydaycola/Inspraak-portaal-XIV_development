@@ -9,6 +9,7 @@ public interface ICriteriaManager
     public IEnumerable<Criteria> GetAllNonDefaultCriteriaWithValuesForPanel(Guid panelId);
     public IEnumerable<Criteria> GetAllDefaultCriteriaWithValuesForPanel(Guid panelId);
     public IEnumerable<CriteriaGroup> GetAllCriteriaGroupForPanel(Guid panelId);
+    public CriteriaGroup GetCriteriaGroupByMemberId(Guid memberId);
     public CriteriaGroup GetCriteriaGroupByPanelIdAndName(Guid panelId, string groupName);
     public CriteriaGroup AssignMemberToCriteriaGroup(Guid panelId, Dictionary<string, string> CriteriaAnswers,
         PanelMember member);
