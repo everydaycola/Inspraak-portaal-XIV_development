@@ -21,16 +21,16 @@ public static class DataSeeder
         PanelMember panelMember4 = new PanelMember(panel1);
         PanelMember panelMember5 = new PanelMember(panel1);
         
-        //CriteriaGroup
-        CriteriaGroup criteriaGroup1 = new CriteriaGroup("Rijbewijs-fiets",new List<PanelMember>{panelMember1,panelMember5});
-        CriteriaGroup criteriaGroup2 = new CriteriaGroup("Rijbewijs-Auto",new List<PanelMember>{panelMember2});
-        CriteriaGroup criteriaGroup3 = new CriteriaGroup("Rijbewijs-TeVoet",new List<PanelMember>{panelMember3}); 
-        CriteriaGroup criteriaGroup4 = new CriteriaGroup("GeenRijbewijs-TeVoet",new List<PanelMember>{panelMember4});
+        //CriteriaGroup (default groups SHOULD be based on default values only)!
+        CriteriaGroup criteriaGroup1 = new CriteriaGroup("Man",new List<PanelMember>{panelMember1,panelMember3,panelMember5});
+        CriteriaGroup criteriaGroup2 = new CriteriaGroup("Vrouw",new List<PanelMember>{panelMember2, panelMember4});
         
         
         //CRITERIA
+        Criteria criteria3 = new Criteria("Geslacht", "Wat is uw geslacht?", true);
         Criteria criteria1 = new Criteria("Rijbewijs","Beschikt u over een rijbewijs?",false);
         Criteria criteria2 = new Criteria("Vervoermethode","Wat is uw voorkeurs vervoersmethode?", false);
+       
         
         //CRITERIA VALUES
         CriteriaValue value1 = new CriteriaValue("Ja", 0.5);
@@ -38,6 +38,8 @@ public static class DataSeeder
         CriteriaValue value3 = new CriteriaValue("Te voet", 0.33);
         CriteriaValue value4 = new CriteriaValue("Fiets", 0.33);
         CriteriaValue value5 = new CriteriaValue("Auto", 0.33);
+        CriteriaValue value6 = new CriteriaValue("Man", 0.5);
+        CriteriaValue value7 = new CriteriaValue("Vrouw", 0.5);
         
         //BIND CRITERIA WITH VALUES
         criteria1.Values.Add(value1);
@@ -45,17 +47,20 @@ public static class DataSeeder
         criteria2.Values.Add(value3);
         criteria2.Values.Add(value4);
         criteria2.Values.Add(value5);
+        criteria3.Values.Add(value6);
+        criteria3.Values.Add(value7);
         
         //Add criteria to criteriagroups
         criteriaGroup1.Criteria.Add(criteria1);
         criteriaGroup1.Criteria.Add(criteria2);
+        criteriaGroup1.Criteria.Add(criteria3);
         
         //LINK REP. GROUP WITH PANEL
         rg1.Panel = panel1;
         panel1.RepresentationGroup = rg1;
         
         //LINK CRITERIA WITH PANEL
-        panel1.PanelCriteria = new List<Criteria>() { criteria1, criteria2 };
+        panel1.PanelCriteria = new List<Criteria>() { criteria1, criteria2 , criteria3};
         
         //SET REGISTRATION TO OPEN
         panel1.IsRegistrationOpen = true;
@@ -65,10 +70,10 @@ public static class DataSeeder
         context.Panels.Add(panel1);
         
         addMultiplePanelMembers(new List<PanelMember>() { panelMember1, panelMember2, panelMember3, panelMember4 });
-        addMultipleCriteria(new List<Criteria>() { criteria1, criteria2 });
+        addMultipleCriteria(new List<Criteria>() { criteria1, criteria2, criteria3 });
         addMultipleCriteriaGroups(new List<CriteriaGroup>()
-            { criteriaGroup1, criteriaGroup2, criteriaGroup3, criteriaGroup4 });
-        addMultipleCriteriaValue(new List<CriteriaValue>() { value1, value2, value3, value4, value5 });
+            { criteriaGroup1, criteriaGroup2 });
+        addMultipleCriteriaValue(new List<CriteriaValue>() { value1, value2, value3, value4, value5, value6, value7 });
         context.SaveChanges();
         context.ChangeTracker.Clear();
     }

@@ -42,18 +42,12 @@ public class RegisterController : Controller
     {
         if (ModelState.IsValid)
         {
-            foreach (var answer in formData.CriteriaAnswers)
-            {
-                var criterium = answer.Key;
-                var userAnswer = answer.Value;
-                // Verwerken, opslaan etc.
-            }
-            
             var email = formData.Email;
             PanelMember member = _manager.GetPanelMemberById(formData.UserId);
             member.Email = email;
             member.hasAnsweredAllQuestions = true;
             _manager.UpdatePanelRegistrationCount(formData.PanelId, true);
+            _critManager.AssignMemberToCriteriaGroup(formData.PanelId, formData.CriteriaAnswers,member);
             PanelMember updatedMember = _manager.UpdatePanelMember(member);
             
             return View("Index", new NewPanelMemberDto

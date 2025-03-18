@@ -30,6 +30,14 @@ public class CriteriaRepository :ICriteriaRepository
             .ToList();
     }
 
+    public CriteriaGroup ReadCriteriaGroupForPanel(Guid panelId, string groupName)
+    {
+        return this._context.CriteriaGroups
+            .Include(cg => cg.PanelMembers)
+            .ThenInclude(pm => pm.Panel)
+            .FirstOrDefault(cg => cg.PanelMembers.Any(p => p.Panel.Id == panelId) && cg.Name == groupName);
+    }
+
     public CriteriaGroup ReadCriteraGroupByPanelIdAndName(Guid panelId, string groupName)
     {
         return _context.CriteriaGroups
@@ -47,5 +55,17 @@ public class CriteriaRepository :ICriteriaRepository
             .Include(c => c.Values)
             .Where(c => c.Panel.Id == panelId && c.IsDefault == false)
             .ToList();
+    }
+
+    public void UpdateCriteriaGroup(CriteriaGroup criteriaGroup)
+    {
+        _context.CriteriaGroups.Update(criteriaGroup);
+        _context.SaveChanges();
+    }
+
+    public void CreateCriteriaGroup(CriteriaGroup newCriteriaGroup)
+    {
+        _context.CriteriaGroups.Add(newCriteriaGroup);
+        _context.SaveChanges();
     }
 }
