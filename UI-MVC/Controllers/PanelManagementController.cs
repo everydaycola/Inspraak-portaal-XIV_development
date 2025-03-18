@@ -25,20 +25,14 @@ public class PanelManagementController : Controller
 
     public IActionResult Index(Guid id)
     {
-        var panel = _manager.GetPanelWithRepresentationGroup(id);
-        var pmd = new PanelManagementDto(id, panel.Name, 20000, 0);
+        var panel = _manager.GetPanelWithMembersAndRepresentationGroup(id);
+        var pmd = new PanelManagementDto(id, panel.Name, 20000, 0, PopulateUniqueCodesDto(panel.Id));
         pmd.SuccesfulRegistrationCount = panel.SuccesfulRegistrationCount;
         pmd.PanelSize = _manager.CalculatePanelSize(pmd.CitizenCount, 0.005);
         pmd.AmountOfReserveInvites = _manager.CalculateAmountOfReserve(pmd.PanelSize, panel.RepresentationGroup.ReservePercentage);
         pmd.TotalInvitesNeeded = _manager.CalculateTotalInvitesNeeded(pmd.PanelSize + pmd.AmountOfReserveInvites, panel.RepresentationGroup.ResponseRate);
         pmd.IsRegistrationOpen = panel.IsRegistrationOpen;
         return View(pmd);
-    }
-    public IActionResult LoadUniqueCodes(Guid panelId)
-    {
-        var panel = _manager.GetPanelWithPanelMembersAndCriteria(panelId);
-        var codes = PopulateUniqueCodesDto(panel);
-        return PartialView("_UniqueCodesPartial", codes);
     }
     [HttpPost]
     public IActionResult SelectPanel(Guid panelId)
@@ -71,8 +65,9 @@ public class PanelManagementController : Controller
         return File(qrCodeBytes, "image/png", "qrcode.png");
     }
     
-    private List<GroupedUniqueCodesDto> PopulateUniqueCodesDto(Panel panel)
+    private List<GroupedUniqueCodesDto> PopulateUniqueCodesDto(Guid panelId)
     {
+        var panel = _manager.GetPanelWithPanelMembersAndCriteria(panelId);
         var codes = new List<UniqueCodesDto>();
         foreach (var member in panel.PanelMembers)
         {
@@ -100,7 +95,8 @@ public class PanelManagementController : Controller
             {
                 GroupKey = group.Key == Guid.Empty ? "Onbekend" : group.Key.ToString(),
                 Members = group.ToList(),
-                Name = group.Key == Guid.Empty ? "Criteria onbekend" : group.First().CriteriaGroup?.Name
+                Name = group.Key == Guid.Empty ? "Criteria onbekend" : group.First().CriteriaGroup?.Name,
+                IsDefaultGroup = group.First().CriteriaGroup.IsADefaultGroup
             })
             .ToList();
         

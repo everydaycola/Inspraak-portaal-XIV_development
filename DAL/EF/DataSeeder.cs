@@ -22,8 +22,8 @@ public static class DataSeeder
         var panelMember5 = new PanelMember(panel1);
         
         //CriteriaGroup (default groups SHOULD be based on default values only)!
-        var criteriaGroup1 = new CriteriaGroup("Man",new List<PanelMember>{panelMember1,panelMember3,panelMember5});
-        var criteriaGroup2 = new CriteriaGroup("Vrouw",new List<PanelMember>{panelMember2, panelMember4});
+        var criteriaGroup1 = new CriteriaGroup("Man",new List<PanelMember>{panelMember1,panelMember3,panelMember5}, true);
+        var criteriaGroup2 = new CriteriaGroup("Vrouw",new List<PanelMember>{panelMember2, panelMember4}, true);
         
         
         //CRITERIA

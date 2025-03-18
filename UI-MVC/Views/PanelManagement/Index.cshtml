@@ -3,9 +3,7 @@
 @{
     ViewData["Title"] = "Panel beheer";
 }
-@section Scripts{
-    <script src="~/dist/panelManagement.entry.js" type="module"></script>
-}
+
 
 <div class="container mt-5">
     <div class="card shadow-sm border-0">
@@ -54,17 +52,19 @@
         </div>
     </div>
     <div class="row mt-4 row-cols-3">
-        <div class="card shadow-sm border-0">
+        <div class="card shadow-sm border-0 col-3">
             <div class="card-body">
                 <div>
                     <p class="card-text">
-                        <button class="btn btn-primary" id="viewCodesButton" data-bs-toggle="modal" data-bs-target="#dataModal" data-panel-id="@Model.PanelId">
+                        <button class="btn btn-primary" id="viewCodesButton" data-bs-toggle="modal"
+                                data-bs-target="#dataModal" data-panel-id="@Model.PanelId">
                             Unieke codes per criteria bekijken
                         </button>
                     </p>
                 </div>
             </div>
         </div>
+        @Html.Partial("_extraCriteriaStatsPartial", Model.GroupedUniqueCodesDtos)
     </div>
 
     <div class="modal fade" id="dataModal" tabindex="-1" aria-labelledby="dataModalLabel" aria-hidden="true">
@@ -75,9 +75,8 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <!-- Content will be loaded here via AJAX -->
                     <div id="modalContent">
-                        <p>Loading...</p>
+                        @Html.Partial("_uniqueCodesPartial", Model.GroupedUniqueCodesDtos)
                     </div>
                 </div>
             </div>

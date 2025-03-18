@@ -10,12 +10,14 @@ public class PanelManagementDto
     public int AmountOfReserveInvites { get; set; }
     public int TotalInvitesNeeded { get; set; }
     public bool IsRegistrationOpen { get; set; }
+    public IEnumerable<GroupedUniqueCodesDto> GroupedUniqueCodesDtos { get; set; }
 
-    public PanelManagementDto(Guid panelId, string panelName, int citizenCount, int amountOfAcceptedInvites)
+    public PanelManagementDto(Guid panelId, string panelName, int citizenCount, int amountOfAcceptedInvites, IEnumerable<GroupedUniqueCodesDto> uniqueCodesDtos)
     {
         PanelId = panelId;
         PanelName = panelName;
         SuccesfulRegistrationCount = amountOfAcceptedInvites;
         CitizenCount = citizenCount;
+        GroupedUniqueCodesDtos = uniqueCodesDtos;
     }
 }

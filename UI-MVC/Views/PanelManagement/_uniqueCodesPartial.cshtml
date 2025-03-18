@@ -9,7 +9,7 @@
 
 
 <div>
-    @foreach (var group in Model)
+    @foreach (var group in Model.Where(g => g.IsDefaultGroup))
     {
         <div class="card">
             <div class="card-header">
