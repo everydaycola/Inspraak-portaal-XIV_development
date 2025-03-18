@@ -88,9 +88,9 @@ public class PanelManagementController : Controller
             else
             {
                 var codeDto = new UniqueCodesDto(panel.Id, member.PanelMemberId, member.CriteriaGroup);
-                foreach (var criteria in member.CriteriaGroup.Criteria)
+                foreach (var criteriaAnswer in member.CriteriaGroup.CriteriaAnswers)
                 {
-                    codeDto.criteria.Add(criteria);
+                    codeDto.criteria.Add(criteriaAnswer.criteria);
                 }
                 codes.Add(codeDto);
             }

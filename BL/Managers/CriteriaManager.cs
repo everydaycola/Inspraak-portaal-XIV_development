@@ -21,6 +21,15 @@ public class CriteriaManager : ICriteriaManager
         return _repo.ReadAllCriteriaWithValuesForPanel(panelId);
     }
 
+    public CriteriaValue GetCriteriaValueBasedOnCriteriaAndValue(Guid CriteriaId, string criteriaValue)
+    {
+        return _repo.ReadCriteriaValueBasedOnCriteriaAndValue(CriteriaId, criteriaValue);
+    }
+
+    public IEnumerable<Criteria> GetAllNonDefaultCriteriaWithValuesForPanel(Guid panelId)
+    {
+        return _repo.ReadAllNonDefaultCriteriaWithValuesForPanel(panelId);
+    }
     public IEnumerable<Criteria> GetAllDefaultCriteriaWithValuesForPanel(Guid panelId)
     {
         return _repo.ReadAllDefaultCriteriaWithValuesForPanel(panelId);
@@ -39,6 +48,22 @@ public class CriteriaManager : ICriteriaManager
     public CriteriaGroup AssignMemberToCriteriaGroup(Guid panelId, Dictionary<string, string> CriteriaAnswers, PanelMember member)
     {
         string groupName = string.Join("-", CriteriaAnswers.Values);
+
+        ICollection<CriteriaAnswer> criteriaAnswers = new List<CriteriaAnswer>();
+        foreach (var crit in CriteriaAnswers)
+        {
+            Criteria criteria = this.GetCriteriaByName(panelId, crit.Key);
+            //FIND CRITERIA BASED ON THE KEY 
+            CriteriaValue value = this.GetCriteriaValueBasedOnCriteriaAndValue(criteria.CriteriaId, crit.Value);
+
+            if (criteria != null && value != null)
+            {
+                CriteriaAnswer criteriaAnswer = new CriteriaAnswer(criteria, value);
+                criteriaAnswers.Add(criteriaAnswer);
+            }
+        }
+        
+        
         var existingCriteriaGroup = _repo.ReadCriteriaGroupForPanel(panelId, groupName);
         if (existingCriteriaGroup != null)
         {
@@ -52,7 +77,7 @@ public class CriteriaManager : ICriteriaManager
             var newCriteriaGroup = new CriteriaGroup
             {
                 Name = groupName,
-                Criteria = panelCriteria,
+                CriteriaAnswers = criteriaAnswers,
             };
             newCriteriaGroup.PanelMembers.Add(member);
             _repo.CreateCriteriaGroup(newCriteriaGroup);
@@ -61,5 +86,9 @@ public class CriteriaManager : ICriteriaManager
         
         return _repo.ReadCriteriaGroupForPanel(panelId, groupName);
     }
-    
+
+    public Criteria GetCriteriaByName(Guid panelId,string critName)
+    {
+        return _repo.ReadCriteriaByName(panelId, critName);
+    }
 }

@@ -42,7 +42,8 @@ public class PanelRepository : IPanelRepository
     {
         return _context.Panels.Include(p => p.PanelMembers)
             .ThenInclude(p => p.CriteriaGroup)
-            .ThenInclude(p => p.Criteria)
+            .ThenInclude(p => p.CriteriaAnswers)
+            .ThenInclude(p => p.criteria)
             .Single(p => p.Id == id);
     }
 

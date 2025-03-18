@@ -7,6 +7,7 @@ public class Criteria
     public string Name { get; set; }
     public string Question { get; set; }
     public ICollection<CriteriaValue> Values { get; set; }
+    public ICollection<CriteriaAnswer> CriteriaAnswers { get; set; }
     public CriteriaGroup CriteriaGroup { get; set; }
     public bool IsDefault { get; set; }
 

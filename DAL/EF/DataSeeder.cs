@@ -51,9 +51,16 @@ public static class DataSeeder
         criteria3.Values.Add(value7);
         
         //Add criteria to criteriagroups
-        criteriaGroup1.Criteria.Add(criteria1);
-        criteriaGroup1.Criteria.Add(criteria2);
-        criteriaGroup1.Criteria.Add(criteria3);
+        criteriaGroup1.CriteriaAnswers.Add(new CriteriaAnswer()
+        {
+            criteria = criteria1,
+            criteriaValue = value6
+        });
+        criteriaGroup1.CriteriaAnswers.Add(new CriteriaAnswer()
+        {
+            criteria = criteria1,
+            criteriaValue = value7
+        });
         
         //LINK REP. GROUP WITH PANEL
         rg1.Panel = panel1;

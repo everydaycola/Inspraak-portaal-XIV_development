@@ -21,15 +21,15 @@ public class PanelCaHelper
         sb.AppendLine($"Name: {panel.Name}");
         sb.AppendLine($"Size: {panel.PanelMembers.Count}");
 
-        // Extract member IDs and their associated criteria values
+        // Extract member IDs and their associated criteria answers
         var criteriaMemberPairs = panel.PanelMembers
-            .SelectMany(member => member.CriteriaGroup.Criteria
-                .SelectMany(criteria => criteria.Values.Select(value => new
+            .SelectMany(member => member.CriteriaGroup.CriteriaAnswers
+                .Select(answer => new
                 {
                     MemberId = member.PanelMemberId,
-                    CriterionName = criteria.Name,
-                    CriterionValue = value.Value
-                })));
+                    CriterionName = answer.criteria.Name,
+                    CriterionValue = answer.criteriaValue.Value
+                }));
 
         // Group by criterion name and value
         var groupedByCriteria = criteriaMemberPairs
@@ -61,14 +61,14 @@ public class PanelCaHelper
         sb.AppendLine($"Name: {panel.Name}");
         sb.AppendLine($"Size: {panel.PanelMembers.Count}");
 
-        // Extract all criteria and their values from members
+        // Extract all criteria answers from members
         var allCriteria = panel.PanelMembers
-            .SelectMany(member => member.CriteriaGroup.Criteria
-                .SelectMany(criteria => criteria.Values.Select(value => new
+            .SelectMany(member => member.CriteriaGroup.CriteriaAnswers
+                .Select(answer => new
                 {
-                    CriteriaName = criteria.Name,
-                    CriteriaValue = value.Value
-                })));
+                    CriteriaName = answer.criteria.Name,
+                    CriteriaValue = answer.criteriaValue.Value
+                }));
 
         // Group by criterion name and value, and count occurrences
         var counts = allCriteria

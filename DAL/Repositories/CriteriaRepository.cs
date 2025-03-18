@@ -49,6 +49,14 @@ public class CriteriaRepository :ICriteriaRepository
             );
     }
 
+    public IEnumerable<Criteria> ReadAllNonDefaultCriteriaWithValuesForPanel(Guid panelId)
+    {
+        return _context.Criteria
+            .Include(c => c.Values)
+            .Where(c => c.Panel.Id == panelId && c.IsDefault == true)
+            .ToList();
+    }
+
     public IEnumerable<Criteria> ReadAllDefaultCriteriaWithValuesForPanel(Guid panelId)
     {
         return _context.Criteria
@@ -67,5 +75,17 @@ public class CriteriaRepository :ICriteriaRepository
     {
         _context.CriteriaGroups.Add(newCriteriaGroup);
         _context.SaveChanges();
+    }
+
+    public CriteriaValue ReadCriteriaValueBasedOnCriteriaAndValue(Guid criteriaId, string criteriaValue)
+    {
+        return _context.CriteriaValues
+            .FirstOrDefault(cv => cv.criteria.CriteriaId == criteriaId && cv.Value == criteriaValue);
+    }
+
+    public Criteria ReadCriteriaByName(Guid panelId, string critName)
+    {
+        return _context.Criteria
+            .FirstOrDefault(c => c.Panel.Id == panelId && c.Name == critName);
     }
 }

@@ -61,7 +61,7 @@
                                     </div>
                                     <input type="hidden" name="UserId" value="@Model.UserId"/>
                                     <input type="hidden" name="panelId" value="@Model.PanelId"/>
-                                    @if (Model.criteria == null || !Model.criteria.Any())
+                                    @if (Model.NonDefaultCriteria == null || !Model.NonDefaultCriteria.Any())
                                     {
                                         <button type="submit" class="btn btn-success">Verzenden</button>
                                     }
@@ -70,9 +70,10 @@
                                         <button type="button" class="btn btn-primary next-step">Volgende</button>
                                     }
                                 </div>
-                                @if (Model.criteria != null && Model.criteria.Any())
+                                <!--TODO:Add hidden fields to process default already known values.-->
+                                @if (Model.NonDefaultCriteria != null && Model.NonDefaultCriteria.Any())
                                 {
-                                    foreach (var crit in Model.criteria)
+                                    foreach (var crit in Model.NonDefaultCriteria)
                                     {
                                         <div class="form-step">
                                             <div class="mb-3">
@@ -96,7 +97,7 @@
                                                 }
                                             </div>
                                             <button type="button" class="btn btn-secondary prev-step">Vorige</button>
-                                            @if (crit.Equals(Model.criteria.Last()))
+                                            @if (crit.Equals(Model.NonDefaultCriteria.Last()))
                                             {
                                                 <button type="submit" class="btn btn-success">Verzenden</button>
                                             }
