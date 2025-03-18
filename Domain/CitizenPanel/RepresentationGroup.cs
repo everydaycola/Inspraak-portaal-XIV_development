@@ -10,9 +10,9 @@ public class RepresentationGroup
 
     public RepresentationGroup(int citizenCount, double reservePercentage, double responseRate)
     {
-        this.CitizenCount = citizenCount;
-        this.ReservePercentage = reservePercentage;
-        this.ResponseRate = responseRate;
+        CitizenCount = citizenCount;
+        ReservePercentage = reservePercentage;
+        ResponseRate = responseRate;
     }
     
 }

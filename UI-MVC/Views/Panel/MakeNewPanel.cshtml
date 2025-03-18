@@ -21,7 +21,7 @@
                 <p class="card-text"><strong>Sample rate:</strong> 0.5%</p>
 
                 <div class="mt-4">
-                    <h6><strong>Sexeverdeling</strong></h6>
+                    <h6><strong>Sex verdeling</strong></h6>
                     <ul class="list-group list-group-flush">
                         <li class="list-group-item"><strong>Man:</strong> 40%</li>
                         <li class="list-group-item"><strong>Vrouw:</strong> 60%</li>
@@ -29,7 +29,7 @@
                 </div>
 
                 <div class="mt-4">
-                    <h6><strong>Leeftijdsverdeling</strong></h6>
+                    <h6><strong>Leeftijd verdeling</strong></h6>
                     <ul class="list-group list-group-flush">
                         <li class="list-group-item"><strong>20-29:</strong> 20%</li>
                         <li class="list-group-item"><strong>30-39:</strong> 60%</li>
@@ -38,14 +38,9 @@
                 </div>
 
                 <div class="mt-4">
-                    <button id="DefaultPanelBtn" type="button" class="btn btn-primary">
-                        Default panel aanmaken
-                    </button>
-                    <p class="text-muted mt-2">
-                        <small>
-                            Na het klikken op de knop gebeurt er niets zichtbaar, maar het panel wordt wel aangemaakt en opgeslagen in de database. Er is alleen geen redirect.
-                        </small>
-                    </p>
+                    <form method="post" asp-controller="Panel" asp-action="AddDefaultPanel">
+                        <button class="btn btn-primary" type="submit">Create Panel</button>
+                    </form>
                 </div>
             </div>
         </div>

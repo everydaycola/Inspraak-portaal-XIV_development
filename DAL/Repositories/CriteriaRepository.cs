@@ -11,12 +11,12 @@ public class CriteriaRepository :ICriteriaRepository
 
     public CriteriaRepository(CitizenPanelDbContext context)
     {
-        this._context = context;
+        _context = context;
     }
 
     public IEnumerable<CriteriaGroup> ReadAllCriteriaGroupForPanel(Guid panelId)
     {
-        return this._context.CriteriaGroups
+        return _context.CriteriaGroups
             .Include(cg => cg.PanelMembers)
             .ThenInclude(pm => pm.Panel)
             .Where(cg => cg.PanelMembers.Any(pm => pm.Panel.Id == panelId))

@@ -11,7 +11,7 @@ public class PanelRepository : IPanelRepository
 
     public PanelRepository(CitizenPanelDbContext context)
     {
-        this._context = context;
+        _context = context;
     }
 
     public Panel ReadPanel(Guid id)

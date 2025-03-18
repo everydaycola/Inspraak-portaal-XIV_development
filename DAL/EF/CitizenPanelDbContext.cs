@@ -39,7 +39,7 @@ public class CitizenPanelDbContext : DbContext
         //criteria 1 - * criteriavalues
         modelBuilder.Entity<Criteria>()
             .HasMany(c => c.Values)
-            .WithOne(c => c.criteria);
+            .WithOne(c => c.Criteria);
 
     }
 

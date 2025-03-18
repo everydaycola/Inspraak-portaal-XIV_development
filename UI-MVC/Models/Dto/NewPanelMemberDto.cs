@@ -9,5 +9,5 @@ public class NewPanelMemberDto
     public string Email { get; set; }
     public bool HasAnsweredQuestions { get; set; }
 
-    public ICollection<Criteria> criteriaList { get; set; }
+    public ICollection<Criteria> CriteriaList { get; set; }
 }

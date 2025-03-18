@@ -13,9 +13,9 @@ public class PanelManagementDto
 
     public PanelManagementDto(Guid panelId, string panelName, int citizenCount, int amountOfAcceptedInvites)
     {
-        this.PanelId = panelId;
+        PanelId = panelId;
         PanelName = panelName;
         SuccesfulRegistrationCount = amountOfAcceptedInvites;
-        this.CitizenCount = citizenCount;
+        CitizenCount = citizenCount;
     }
 }

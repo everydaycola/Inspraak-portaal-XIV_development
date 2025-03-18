@@ -4,7 +4,7 @@
 @{
     var request = Context.Request; // Or ViewContext.HttpContext.Request
     var baseUrl = $"{request.Scheme}://{request.Host}";
-    var panelId = Model.First().Members.First().panelId;
+    var panelId = Model.First().Members.First().PanelId;
 }
 
 
@@ -39,14 +39,14 @@
                         @foreach (var member in group.Members)
                         {
                             <tr>
-                                <td>@member.memberId</td>
+                                <td>@member.MemberId</td>
                                 <td>
-                                    <a href="@($"{baseUrl}{member.generatedUri}")">@($"{baseUrl}{member.generatedUri}")</a>
+                                    <a href="@($"{baseUrl}{member.GeneratedUri}")">@($"{baseUrl}{member.GeneratedUri}")</a>
                                 </td>
                                 <td>
                                     <a asp-action="DownloadSingleQrCode"
                                        class="btn btn-primary mt-2"
-                                       asp-route-generatedUrl="@($"{baseUrl}{member.generatedUri}")")>
+                                       asp-route-generatedUrl="@($"{baseUrl}{member.GeneratedUri}")")>
                                         QR code downloaden voor dit panellid
                                     </a>
                                 </td>
@@ -54,17 +54,17 @@
                         }
                         </tbody>
                     </table>
-                    <a asp-action="DownloadQRCodesForSpecificGroup"
+                    <a asp-action="DownloadQrCodesForSpecificGroup"
                        asp-route-panelId="@panelId"
                        asp-route-groupName="@group.Name"
                        class="btn btn-primary mt-2">
-                        QR codes downloaden voor iedereen in deze criteriagroup
+                        QR codes downloaden voor iedereen in deze criteria groep
                     </a>
                 </div>
             </div>
         </div>
     }
-    <a asp-action="DownloadQRCodesForAllGroups"
+    <a asp-action="DownloadQrCodesForAllGroups"
        asp-route-panelId="@panelId"
        class="btn btn-primary mt-2">
         QR codes downloaden voor ieder lid van dit panel

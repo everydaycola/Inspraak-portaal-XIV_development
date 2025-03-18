@@ -1,6 +1,4 @@
-﻿using System.Text;
-
-namespace Domain.CitizenPanel;
+﻿namespace Domain.CitizenPanel;
 
 public class Panel
 {
@@ -14,8 +12,8 @@ public class Panel
     
     public Panel(string name, double sampleRate)
     {
-        this.Name = name;
-        this.SampleRate = sampleRate;
+        Name = name;
+        SampleRate = sampleRate;
         SuccesfulRegistrationCount = 0;
     }
 }

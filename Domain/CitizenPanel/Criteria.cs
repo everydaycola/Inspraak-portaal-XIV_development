@@ -9,13 +9,13 @@ public class Criteria
 
     public Criteria(string name)
     {
-        this.Name = name;
+        Name = name;
         Values = new List<CriteriaValue>();
     }
     public Criteria(string name, CriteriaGroup criteriaGroup)
     {
-        this.Name = name;
-        CriteriaGroup = CriteriaGroup;
+        Name = name;
+        CriteriaGroup = criteriaGroup;
         Values = new List<CriteriaValue>();
     }
 }

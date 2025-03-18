@@ -7,6 +7,6 @@ import 'bootstrap/dist/css/bootstrap.css';
 import '../css/site.css'
 
 // Custom Ts
-import {defaultPanel} from "./Panel/panelCreation";
+
 
 console.log('The \'site\' bundle has been loaded!');
