@@ -10,105 +10,128 @@
 }
 
 <div class="container mt-5">
-    <div class="card shadow-sm border-0">
-        <h2>Welcome</h2>
-        <p>welcome user @Model.UserId to panel @Model.PanelId</p>
-        @if (Model.HasAnsweredQuestions)
-        {
-            <div class="card shadow-sm border-0 mb-4">
-                <div class="card-body">
-                    <div class="d-flex align-items-center mb-3">
-                        <div class="me-3">
-                            <i class="bi bi-check-circle-fill text-success fs-1"></i>
+    @if (Model.IsRegistrationOpen || Model.HasAnsweredQuestions)
+    {
+        <div class="card shadow-sm border-0">
+            <h2>Welcome</h2>
+            <p>welcome user @Model.UserId to panel @Model.PanelId</p>
+            @if (Model.HasAnsweredQuestions)
+            {
+                <div class="card shadow-sm border-0 mb-4">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center mb-3">
+                            <div class="me-3">
+                                <i class="bi bi-check-circle-fill text-success fs-1"></i>
+                            </div>
+                            <div>
+                                <h4 class="card-title mb-0 text-success">Bedankt!</h4>
+                                <small class="text-muted">Je hebt alle vragen ingevuld</small>
+                            </div>
                         </div>
-                        <div>
-                            <h4 class="card-title mb-0 text-success">Bedankt!</h4>
-                            <small class="text-muted">Je hebt alle vragen ingevuld</small>
-                        </div>
-                    </div>
 
-                    <p class="mb-2">
-                        Indien u geselecteerd wordt voor dit panel, brengen we u via e-mail op de hoogte.
-                    </p>
+                        <p class="mb-2">
+                            Indien u geselecteerd wordt voor dit panel, brengen we u via e-mail op de hoogte.
+                        </p>
 
-                    <div class="alert alert-secondary d-flex align-items-center" role="alert">
-                        <div class="text-primary fw-bold">
-                            @Model.Email
+                        <div class="alert alert-secondary d-flex align-items-center" role="alert">
+                            <div class="text-primary fw-bold">
+                                @Model.Email
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
-        }
-        <div class="modal fade" id="dataModal" tabindex="-1" aria-labelledby="dataModalLabel"
-             data-show-hasAnswered="@Model.HasAnsweredQuestions" aria-hidden="true" data-bs-backdrop="static"
-             data-bs-keyboard="false">
-            <div class="modal-dialog modal-lg">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="dataModalLabel">We hebben nog enkele vragen</h5>
-                    </div>
-                    <div class="modal-body">
-                        <form id="multiStepForm" method="post" asp-action="SubmitExtraQuestionForm">
-                            @Html.ValidationSummary(true, "", new { @class = "alert alert-danger" })
-                            <!-- Step 1 -->
-                            <div class="form-step active">
-                                <div class="mb-3">
-                                    <label for="Email" class="form-label">E-mailadres</label>
-                                    <input type="email" class="form-control" name="Email" id="Email"
-                                           placeholder="Voer je e-mailadres in" required>
+            }
+            <div class="modal fade" id="dataModal" tabindex="-1" aria-labelledby="dataModalLabel"
+                 data-show-hasAnswered="@Model.HasAnsweredQuestions" aria-hidden="true" data-bs-backdrop="static"
+                 data-bs-keyboard="false">
+                <div class="modal-dialog modal-lg">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="dataModalLabel">We hebben nog enkele vragen</h5>
+                        </div>
+                        <div class="modal-body">
+                            <form id="multiStepForm" method="post" asp-action="SubmitExtraQuestionForm">
+                                @Html.ValidationSummary(true, "", new { @class = "alert alert-danger" })
+                                <!-- Step 1 -->
+                                <div class="form-step active">
+                                    <div class="mb-3">
+                                        <label for="Email" class="form-label">E-mailadres</label>
+                                        <input type="email" class="form-control" name="Email" id="Email"
+                                               placeholder="Voer je e-mailadres in" required>
+                                    </div>
+                                    <input type="hidden" name="UserId" value="@Model.UserId"/>
+                                    <input type="hidden" name="panelId" value="@Model.PanelId"/>
+                                    @if (Model.criteria == null || !Model.criteria.Any())
+                                    {
+                                        <button type="submit" class="btn btn-success">Verzenden</button>
+                                    }
+                                    else
+                                    {
+                                        <button type="button" class="btn btn-primary next-step">Volgende</button>
+                                    }
                                 </div>
-                                <input type="hidden" name="UserId" value="@Model.UserId"/>
-                                <input type="hidden" name="panelId" value="@Model.PanelId"/>
-                                @if (Model.criteria == null || !Model.criteria.Any())
+                                @if (Model.criteria != null && Model.criteria.Any())
                                 {
-                                    <button type="submit" class="btn btn-success">Verzenden</button>
-                                }
-                                else
-                                {
-                                    <button type="button" class="btn btn-primary next-step">Volgende</button>
-                                }
-                            </div>
-                            @if (Model.criteria != null && Model.criteria.Any())
-                            {
-                                foreach (var crit in Model.criteria)
-                                {
-                                    <div class="form-step">
-                                        <div class="mb-3">
-                                            <label class="form-label">
-                                                @(crit.Question != null ? crit.Question : crit.Name)
-                                            </label>
-                                            @foreach (var value in crit.Values)
+                                    foreach (var crit in Model.criteria)
+                                    {
+                                        <div class="form-step">
+                                            <div class="mb-3">
+                                                <label class="form-label">
+                                                    @(crit.Question != null ? crit.Question : crit.Name)
+                                                </label>
+                                                @foreach (var value in crit.Values)
+                                                {
+                                                    <div class="form-check">
+                                                        <input class="form-check-input"
+                                                               type="radio"
+                                                               name="CriteriaAnswers[@crit.Name]"
+                                                               id="@(crit.Name + "-" + value.Value)"
+                                                               value="@value.Value"
+                                                               required>
+                                                        <label class="form-check-label"
+                                                               for="@(crit.Name + "-" + value.Value)">
+                                                            @value.Value
+                                                        </label>
+                                                    </div>
+                                                }
+                                            </div>
+                                            <button type="button" class="btn btn-secondary prev-step">Vorige</button>
+                                            @if (crit.Equals(Model.criteria.Last()))
                                             {
-                                                <div class="form-check">
-                                                    <input class="form-check-input"
-                                                           type="radio"
-                                                           name="CriteriaAnswers[@crit.Name]"
-                                                           id="@(crit.Name + "-" + value.Value)"
-                                                           value="@value.Value"
-                                                           required>
-                                                    <label class="form-check-label"
-                                                           for="@(crit.Name + "-" + value.Value)">
-                                                        @value.Value
-                                                    </label>
-                                                </div>
+                                                <button type="submit" class="btn btn-success">Verzenden</button>
+                                            }
+                                            else
+                                            {
+                                                <button type="button" class="btn btn-primary next-step">Volgende
+                                                </button>
                                             }
                                         </div>
-                                        <button type="button" class="btn btn-secondary prev-step">Vorige</button>
-                                        @if (crit.Equals(Model.criteria.Last()))
-                                        {
-                                            <button type="submit" class="btn btn-success">Verzenden</button>
-                                        }
-                                        else
-                                        {
-                                            <button type="button" class="btn btn-primary next-step">Volgende</button>
-                                        }
-                                    </div>
+                                    }
                                 }
-                            }
-                        </form>
+                            </form>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
+    }
+    else
+    {
+        <div class="card shadow-sm border-0">
+            <div class="card-body">
+                <div class="d-flex align-items-center mb-3">
+                    <div class="me-3">
+                        <i class="bi bi-exclamation-circle-fill text-warning fs-1"></i>
+                    </div>
+                    <div>
+                        <h4 class="card-title mb-0 text-warning">Helaas...</h4>
+                        <small class="text-muted">De inschrijvingen zijn gesloten</small>
+                    </div>
+                </div>
+                <p class="mb-3">
+                    Op dit moment is het niet meer mogelijk om je aan te melden voor dit panel.
+                </p>
+            </div>
+        </div>
+    }
 </div>

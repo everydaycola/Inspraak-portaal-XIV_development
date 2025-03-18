@@ -31,6 +31,7 @@ public class RegisterController : Controller
             PanelId = member.Panel.Id.ToString(),
             UserId = userId.ToString(),
             Email = member.Email,
+            IsRegistrationOpen = member.Panel.IsRegistrationOpen,
             HasAnsweredQuestions = member.hasAnsweredAllQuestions,
             criteria = criteria
         });
