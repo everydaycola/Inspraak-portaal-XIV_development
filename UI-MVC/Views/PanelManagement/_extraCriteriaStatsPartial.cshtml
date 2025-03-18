@@ -1,16 +1,26 @@
 @model IEnumerable<Domain.CitizenPanel.CriteriaGroup>
 
+@{
+    var totalNonDefaultCriteriaMembers = Model
+        .Where(g => !g.IsADefaultGroup)
+        .Sum(g => g.PanelMembers.Count());
+    var totalDefaultCriteriaMembers = Model
+        .Where(g => g.IsADefaultGroup)
+        .Sum(g => g.PanelMembers.Count());
+}
 
 <div class="card shadow-sm border-0 col-8 mt-4">
     <h3 class="mb-0">Verdeling extra criteria</h3>
     <div class="card-body">
-        <ul>
-            @foreach (var group in Model.Where(g => !g.IsADefaultGroup))
-            {
-                <li>
-                    @group.Name: @group.PanelMembers.Count() leden
-                </li>
-            }
-        </ul>
+        <h2>Gebruikte codes</h2>
+        @foreach (var group in Model.Where(g => !g.IsADefaultGroup))
+        {
+            <div>
+                <p>@group.Name</p>
+                <div class="progress">
+                    <div class="progress-bar" role="progressbar" style="width: @(((double)group.PanelMembers.Count() / (double)totalNonDefaultCriteriaMembers) * 100)%" aria-valuenow="@group.PanelMembers.Count()" aria-valuemin="0" aria-valuemax="@totalNonDefaultCriteriaMembers"></div>
+                </div>
+            </div>
+        }
     </div>
 </div>
