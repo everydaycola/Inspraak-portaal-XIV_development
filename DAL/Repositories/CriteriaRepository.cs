@@ -35,7 +35,7 @@ public class CriteriaRepository :ICriteriaRepository
         return _context.CriteriaGroups
             .Include(cg => cg.CriteriaAnswers)
             .ThenInclude(ca => ca.criteriaValue)
-            .ThenInclude(ca => ca.criteria)    
+            .ThenInclude(ca => ca.Criteria)    
             .FirstOrDefault(cg => cg.PanelMembers.Any(pm => pm.PanelMemberId == memberId));
     }
 
@@ -91,7 +91,7 @@ public class CriteriaRepository :ICriteriaRepository
     public CriteriaValue ReadCriteriaValueBasedOnCriteriaAndValue(Guid criteriaId, string criteriaValue)
     {
         return _context.CriteriaValues
-            .FirstOrDefault(cv => cv.criteria.CriteriaId == criteriaId && cv.Value == criteriaValue);
+            .FirstOrDefault(cv => cv.Criteria.CriteriaId == criteriaId && cv.Value == criteriaValue);
     }
 
     public Criteria ReadCriteriaByName(Guid panelId, string critName)

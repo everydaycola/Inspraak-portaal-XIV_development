@@ -80,7 +80,7 @@ public class PanelManagementController : Controller
             {
                 var codeDto = new UniqueCodesDto(panel.Id, member.PanelMemberId, null)
                 {
-                    criteria = new List<Criteria>() 
+                    Criteria = new List<Criteria>() 
                 };
                 codes.Add(codeDto);
             }
@@ -89,7 +89,7 @@ public class PanelManagementController : Controller
                 var codeDto = new UniqueCodesDto(panel.Id, member.PanelMemberId, member.CriteriaGroup);
                 foreach (var criteriaAnswer in member.CriteriaGroup.CriteriaAnswers)
                 {
-                    codeDto.criteria.Add(criteriaAnswer.criteria);
+                    codeDto.Criteria.Add(criteriaAnswer.criteria);
                 }
                 codes.Add(codeDto);
             }
