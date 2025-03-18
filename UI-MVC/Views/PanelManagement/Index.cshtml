@@ -2,57 +2,60 @@
 
 @{
     ViewData["Title"] = "Panel beheer";
+    var buttonClass = Model.IsRegistrationOpen ? "btn-warning" : "btn-success";
 }
 
 
 <div class="container mt-5">
-    <div class="card shadow-sm border-0">
-        <div class="card-header bg-primary text-white">
-            <h2 class="mb-0">Beheerpagina voor panel: <strong>@Model.PanelName</strong></h2>
+    <h2 class="mb-0">Beheerpagina voor panel: <strong>@Model.PanelName</strong></h2>
+    <div class="row mt-4 row-cols-2">
+        <div class="card shadow-sm border-0 col-8 me-4">
+            <div class="card-body">
+                <div class="mb-4">
+                    <h5 class="card-title">Aanmeldstatus</h5>
+                    <p class="card-text">
+                        <i class="bi bi-person-check-fill text-success"></i>
+                        <strong>Aantal succesvol aangemelde mensen:</strong>
+                        @Model.SuccesfulRegistrationCount /
+                        @(Model.PanelSize + Model.AmountOfReserveInvites) (waarvan @Model.AmountOfReserveInvites reserve)
+                    </p>
+                </div>
+                <div>
+                    <h5 class="card-title">Uitnodigingen</h5>
+                    <p class="card-text">
+                        <i class="bi bi-envelope-fill text-info"></i>
+                        <strong>Geschat aantal uitnodigingen benodigd voor</strong>
+                        @Model.CitizenCount inwoners: @Model.TotalInvitesNeeded
+                    </p>
+                </div>
+            </div>
         </div>
-        <div class="card-body">
-            <div class="mb-4">
-                <h5 class="card-title">Aanmeldstatus</h5>
-                <p class="card-text">
-                    <i class="bi bi-person-check-fill text-success"></i>
-                    <strong>Aantal succesvol aangemelde mensen:</strong>
-                    @Model.SuccesfulRegistrationCount /
-                    @(Model.PanelSize + Model.AmountOfReserveInvites) (waarvan @Model.AmountOfReserveInvites reserve)
-                </p>
+
+        <div class="card shadow-sm border-0 col-3 me-4">
+            <div class="card-body">
+                <div class="mt-4">
+                    <h5 class="card-title">Inschrijving Status</h5>
+                    @if (Model.IsRegistrationOpen)
+                    {
+                        <p class="card-text">Inschrijving staat open.</p>
+                    }
+                    else
+                    {
+                        <p class="card-text">Inschrijving is gesloten.</p>
+                    }
+                </div>
+                <a class="btn @buttonClass mt-4"
+                   asp-action="ToggleRegistration"
+                   asp-controller="PanelManagement"
+                   asp-route-panelId="@Model.PanelId">
+                    @(Model.IsRegistrationOpen ? "Inschrijving Afronden" : "Inschrijving Openen")
+                </a>
             </div>
-            <div>
-                <h5 class="card-title">Uitnodigingen</h5>
-                <p class="card-text">
-                    <i class="bi bi-envelope-fill text-info"></i>
-                    <strong>Geschat aantal uitnodigingen benodigd voor</strong>
-                    @Model.CitizenCount inwoners: @Model.TotalInvitesNeeded
-                </p>
-            </div>
-            <div class="mt-4">
-                <h5 class="card-title">Inschrijving Status</h5>
-                @if (Model.IsRegistrationOpen)
-                {
-                    <p class="card-text">Inschrijving staat open.</p>
-                }
-                else
-                {
-                    <p class="card-text">Inschrijving is gesloten.</p>
-                }
-            </div>
-            <form asp-action="ToggleRegistration" asp-controller="PanelManagement" asp-route-panelId="@Model.PanelId">
-                @if (Model.IsRegistrationOpen)
-                {
-                    <button type="submit" class="btn btn-warning mt-3 col-sm-4 col-lg-3">Inschrijving Afronden</button>
-                }
-                else
-                {
-                    <button type="submit" class="btn btn-primary mt-3 col-sm-4 col-lg-3">Inschrijving Openen</button>
-                }
-            </form>
         </div>
+
     </div>
     <div class="row mt-4 row-cols-3">
-        <div class="card shadow-sm border-0 col-3">
+        <div class="card shadow-sm border-0 col-3 me-4">
             <div class="card-body">
                 <div>
                     <p class="card-text">
