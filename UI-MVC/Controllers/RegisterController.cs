@@ -37,12 +37,6 @@ public class RegisterController : Controller
         });
     }
     
-    [HttpGet]
-    public IActionResult NewUserTemp()
-    {
-        return View();
-    }
-
     [HttpPost]
     public IActionResult SubmitExtraQuestionForm(ExtraQuestionFormAnswersDto formData)
     {
