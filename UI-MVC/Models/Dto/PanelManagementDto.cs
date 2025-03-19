@@ -1,4 +1,6 @@
-﻿namespace UI_MVC.Models.Dto;
+﻿using Domain.CitizenPanel;
+
+namespace UI_MVC.Models.Dto;
 
 public class PanelManagementDto
 {
@@ -10,12 +12,15 @@ public class PanelManagementDto
     public int AmountOfReserveInvites { get; set; }
     public int TotalInvitesNeeded { get; set; }
     public bool IsRegistrationOpen { get; set; }
+    public ExtraCriteriaViewModel ExtraCriteriaViewModel { get; set; }
 
-    public PanelManagementDto(Guid panelId, string panelName, int citizenCount, int amountOfAcceptedInvites)
+    public PanelManagementDto(Guid panelId, string panelName, int citizenCount, int amountOfAcceptedInvites, IEnumerable<CriteriaGroup> criteriaGroups)
     {
         PanelId = panelId;
         PanelName = panelName;
         SuccesfulRegistrationCount = amountOfAcceptedInvites;
         CitizenCount = citizenCount;
+        ExtraCriteriaViewModel = new ExtraCriteriaViewModel();
+        ExtraCriteriaViewModel.CriteriaGroups = criteriaGroups;
     }
 }

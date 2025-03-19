@@ -6,6 +6,7 @@ public class CriteriaValue
     public string Value { get; set; }
     public Criteria Criteria { get; set; }
     public double DistributionPercentage { get; set; }
+    public ICollection<CriteriaAnswer> CriteriaAnswers { get; set; }
 
     public CriteriaValue(string value, double distributionPercentage)
     {

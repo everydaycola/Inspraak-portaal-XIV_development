@@ -1,4 +1,5 @@
-﻿using BL.Interfaces;
+﻿using System.Collections;
+using BL.Interfaces;
 using Domain.CitizenPanel;
 using Microsoft.AspNetCore.Mvc;
 using UI_MVC.Models.Dto;
@@ -8,51 +9,36 @@ namespace UI_MVC.Controllers;
 
 public class RegisterController : Controller
 {
+    private readonly ILogger<RegisterController> _logger;
     private readonly IPanelManager _manager;
+    private readonly ICriteriaManager _critManager;
 
-    public RegisterController(IPanelManager manager)
+    public RegisterController(ILogger<RegisterController> logger,IPanelManager manager, ICriteriaManager critManager)
     {
+        _logger = logger;
         _manager = manager;
+        _critManager = critManager;
     }
 
     [HttpGet]
     public IActionResult Index(Guid userId)
     {
         var member = _manager.GetPanelMemberWithPanel(userId);
-        
-        var crit1 = new Criteria("Rijbewijs");
-        var val1 = new CriteriaValue("Ja", 0.5);
-        var val2 = new CriteriaValue("Nee", 0.5);
-        crit1.Values.Add(val1);
-        crit1.Values.Add(val2);
-        var crit2 = new Criteria("Vervoersmiddel");
-        var val3 = new CriteriaValue("Fiets", 1/3);
-        var val4 = new CriteriaValue("Auto", 1/3);
-        var val5 = new CriteriaValue("Te voet", 1/3);
-        crit2.Values.Add(val3);
-        crit2.Values.Add(val4);
-        crit2.Values.Add(val5);
-        
+        var currentGroup = _critManager.GetCriteriaGroupByMemberId(member.PanelMemberId);
+        IEnumerable<Criteria> nonDefaultCriteria = _critManager.GetAllNonDefaultCriteriaWithValuesForPanel(member.Panel.Id);
+        IEnumerable<CriteriaAnswer> defaultCriteria = currentGroup.CriteriaAnswers;
         return View(new NewPanelMemberDto
         {
             PanelId = member.Panel.Id.ToString(),
             UserId = userId.ToString(),
             Email = member.Email,
-            CriteriaList = new List<Criteria>()
-            {
-                crit1,
-                crit2
-            },
-            HasAnsweredQuestions = member.hasAnsweredAllQuestions
+            IsRegistrationOpen = member.Panel.IsRegistrationOpen,
+            HasAnsweredQuestions = member.hasAnsweredAllQuestions,
+            NonDefaultCriteria = nonDefaultCriteria,
+            DefaultCriteria= defaultCriteria
         });
     }
     
-    [HttpGet]
-    public IActionResult NewUserTemp()
-    {
-        return View();
-    }
-
     [HttpPost]
     public IActionResult SubmitExtraQuestionForm(ExtraQuestionFormAnswersDto formData)
     {
@@ -63,6 +49,7 @@ public class RegisterController : Controller
             member.Email = email;
             member.hasAnsweredAllQuestions = true;
             _manager.UpdatePanelRegistrationCount(formData.PanelId, true);
+            _critManager.AssignMemberToCriteriaGroup(formData.PanelId, formData.CriteriaAnswers,member);
             PanelMember updatedMember = _manager.UpdatePanelMember(member);
             
             return View("Index", new NewPanelMemberDto

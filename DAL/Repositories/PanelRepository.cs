@@ -42,7 +42,8 @@ public class PanelRepository : IPanelRepository
     {
         return _context.Panels.Include(p => p.PanelMembers)
             .ThenInclude(p => p.CriteriaGroup)
-            .ThenInclude(p => p.Criteria)
+            .ThenInclude(p => p.CriteriaAnswers)
+            .ThenInclude(p => p.criteria)
             .Single(p => p.Id == id);
     }
 
@@ -101,6 +102,12 @@ public class PanelRepository : IPanelRepository
             .Include(p => p.PanelMembers)
             .Include(p => p.RepresentationGroup)
             .Single(p => p.Id == id);
+    }
+
+    public void CreateCriteria(Criteria criteria)
+    {
+        _context.Criteria.Update(criteria);
+        _context.SaveChanges();
     }
 
     public void UpdatePanel(Panel panel)

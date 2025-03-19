@@ -19,4 +19,5 @@ public interface IPanelRepository
     public void DeletePanel(Panel panel);
     public void DeletePanelMember(PanelMember member);
     Panel ReadPanelWithMembersAndRepresentationGroup(Guid id);
+    void CreateCriteria(Criteria criteria);
 }

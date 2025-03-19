@@ -52,7 +52,7 @@ public class PanelManager : IPanelManager
     {
         return _repo.ReadPanelMemberWithPanel(id);
     }
-
+    
     public Panel AddPanel(string name, int size, double sampleRate,
         Dictionary<string, Dictionary<string, double>> distribution, int citizenCount, double reservePercentage,
         double responseRate)
@@ -64,6 +64,7 @@ public class PanelManager : IPanelManager
         };
         
         // Generate and shuffle panel members
+        panel.PanelMembers = GeneratePanelMembers(size, panel);
         var random = new Random();
         panel.PanelMembers = Enumerable.Range(0, size)
             .Select(_ => new PanelMember(panel))
@@ -71,34 +72,36 @@ public class PanelManager : IPanelManager
             .OrderBy(_ => random.Next())
             .ToList();
 
-        // Create criteria list from distribution using LINQ
-        var groupedCriteria = distribution
-            .Select(outer => new Criteria(outer.Key)
-            {
-                Values = outer.Value
-                    .Select(inner => new CriteriaValue(inner.Key, inner.Value))
-                    .ToList()
-            })
-            .ToList()
-            .ToDictionary(c => c.Name);
-        
-        var criteriaCombinations = GenerateCriteriaCombinations(groupedCriteria);
-
-        // Create criteria groups from the generated combinations
-        var criteriaGroups = CreateCriteriaGroups(criteriaCombinations, panel);
-        
-        // Persist criteria groups to the repository
-        foreach (var group in criteriaGroups)
+        // Create criteria list from distribution
+        List<Criteria> criteriaList = new List<Criteria>();
+        foreach (var outerEntry in distribution)
         {
-            _repo.CreateCriteriaGroup(group);
+            string outerKey = outerEntry.Key; // Criteria name
+            var innerDict = outerEntry.Value; // Values and their percentages
+
+            // Create a Criteria object for each unique name
+            var criteria = new Criteria(outerKey, true);
+
+            foreach (var innerEntry in innerDict)
+            {
+                string innerKey = innerEntry.Key; // Value
+                double valuePercentage = innerEntry.Value; // Distribution percentage
+
+                // Create CriteriaValue and add it to the Criteria's Values collection
+                var criteriaValue = new CriteriaValue(innerKey, valuePercentage);
+                criteria.Values ??= new List<CriteriaValue>(); // Initialize Values if null
+                criteria.Values.Add(criteriaValue);
+            }
+            _repo.CreateCriteria(criteria);
+            criteria.Panel = panel;
+            criteriaList.Add(criteria);
         }
 
-        return panel;
-    }
-    
-    private List<Dictionary<string, CriteriaValue>> GenerateCriteriaCombinations(Dictionary<string,Criteria> groupedCriteria)
-    {
-        var combinations = new List<Dictionary<string, CriteriaValue>>();
+        // Group criteria by name
+        var groupedCriteria = criteriaList.ToDictionary(c => c.Name);
+
+        // Generate combinations of criteria values
+        List<Dictionary<string, CriteriaValue>> combinations = new List<Dictionary<string, CriteriaValue>>();
 
         void GenerateCombinations(Dictionary<string, CriteriaValue> current, List<string> remainingCriteria)
         {
@@ -120,14 +123,10 @@ public class PanelManager : IPanelManager
         }
 
         GenerateCombinations(new Dictionary<string, CriteriaValue>(), groupedCriteria.Keys.ToList());
-        return combinations;
-    }
-    
-    private List<CriteriaGroup> CreateCriteriaGroups(List<Dictionary<string, CriteriaValue>> combinations, Panel panel)
-    {
-        var criteriaGroups = new List<CriteriaGroup>();
-        var currentUserIndex = 0;
 
+        // Create criteria groups based on combinations
+        List<CriteriaGroup> criteriaGroups = new List<CriteriaGroup>();
+        int currentUserIndex = 0;
         foreach (var combo in combinations)
         {
             var comboKey = string.Join("-", combo.Values.Select(v => v.Value));
@@ -139,17 +138,43 @@ public class PanelManager : IPanelManager
                 totalMembersNeeded = panel.PanelMembers.Count - currentUserIndex;
             }
 
+            // Assign members to this criteria group
             var assignedMembers = panel.PanelMembers
                 .Skip(currentUserIndex)
                 .Take(totalMembersNeeded)
                 .ToList();
+
             currentUserIndex += totalMembersNeeded;
 
-            criteriaGroups.Add(new CriteriaGroup(comboKey, assignedMembers));
+            // Create and add the criteria group
+            var criteriaGroup = new CriteriaGroup(comboKey, assignedMembers, false);
+            criteriaGroups.Add(criteriaGroup);
         }
 
-        return criteriaGroups;
+        // Persist criteria groups to the repository
+        foreach (var group in criteriaGroups)
+        {
+            _repo.CreateCriteriaGroup(group);
+        }
+
+        return panel;
     }
+
+    private ICollection<PanelMember> GeneratePanelMembers(int size, Panel panel)
+    {
+        var panelMembers = new List<PanelMember>();
+        for (int i = 0; i < size; i++)
+        {
+            var panelMember = new PanelMember
+            {
+                Panel = panel
+            };
+            panelMembers.Add(panelMember);
+        }
+
+        return panelMembers;
+    }
+    
 
     public int CalculatePanelSize(int citizenCount, double samplePercentage)
     {
