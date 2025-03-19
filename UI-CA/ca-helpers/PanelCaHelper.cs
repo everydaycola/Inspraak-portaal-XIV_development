@@ -27,8 +27,8 @@ public class PanelCaHelper
                 .Select(answer => new
                 {
                     MemberId = member.PanelMemberId,
-                    CriterionName = answer.criteria.Name,
-                    CriterionValue = answer.criteriaValue.Value
+                    CriterionName = answer.Criteria.Name,
+                    CriterionValue = answer.CriteriaValue.Value
                 }));
 
         // Group by criterion name and value
@@ -66,8 +66,8 @@ public class PanelCaHelper
             .SelectMany(member => member.CriteriaGroup.CriteriaAnswers
                 .Select(answer => new
                 {
-                    CriteriaName = answer.criteria.Name,
-                    CriteriaValue = answer.criteriaValue.Value
+                    CriteriaName = answer.Criteria.Name,
+                    CriteriaValue = answer.CriteriaValue.Value
                 }));
 
         // Group by criterion name and value, and count occurrences

@@ -33,7 +33,7 @@ public class RegisterController : Controller
             UserId = userId.ToString(),
             Email = member.Email,
             IsRegistrationOpen = member.Panel.IsRegistrationOpen,
-            HasAnsweredQuestions = member.hasAnsweredAllQuestions,
+            HasAnsweredQuestions = member.HasAnsweredAllQuestions,
             NonDefaultCriteria = nonDefaultCriteria,
             DefaultCriteria= defaultCriteria
         });
@@ -47,7 +47,7 @@ public class RegisterController : Controller
             var email = formData.Email;
             PanelMember member = _manager.GetPanelMemberById(formData.UserId);
             member.Email = email;
-            member.hasAnsweredAllQuestions = true;
+            member.HasAnsweredAllQuestions = true;
             _manager.UpdatePanelRegistrationCount(formData.PanelId, true);
             _critManager.AssignMemberToCriteriaGroup(formData.PanelId, formData.CriteriaAnswers,member);
             PanelMember updatedMember = _manager.UpdatePanelMember(member);
@@ -56,7 +56,7 @@ public class RegisterController : Controller
             {
                 PanelId = updatedMember.Panel.Id.ToString(),
                 UserId = updatedMember.PanelMemberId.ToString(),
-                HasAnsweredQuestions = updatedMember.hasAnsweredAllQuestions,
+                HasAnsweredQuestions = updatedMember.HasAnsweredAllQuestions,
                 Email = updatedMember.Email
             });
         }

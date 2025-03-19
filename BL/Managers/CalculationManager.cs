@@ -37,8 +37,8 @@ public class CalculationManager : ICalculationManager
         var criteriaGroups = _critManager.GetAllCriteriaGroupForPanel(panelId);
         var matchingGroups = criteriaGroups.Where(group =>
             group.CriteriaAnswers.Any(a =>
-                a.criteria.Name.Equals(searchedCriteriaName) == true &&
-                a.criteriaValue.Value.Equals(searchedCriteriaValue) == true));
+                a.Criteria.Name.Equals(searchedCriteriaName) == true &&
+                a.CriteriaValue.Value.Equals(searchedCriteriaValue) == true));
         var allMatchingMembers = matchingGroups
             .SelectMany(group => group.PanelMembers);
         return allMatchingMembers.Count();

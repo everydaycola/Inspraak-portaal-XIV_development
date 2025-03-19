@@ -44,10 +44,10 @@ public class CitizenPanelDbContext : DbContext
         
         //criteriaAnswer * - 1 criteria
         modelBuilder.Entity<CriteriaAnswer>()
-            .HasOne(ca => ca.criteria)
+            .HasOne(ca => ca.Criteria)
             .WithMany(c => c.CriteriaAnswers);
         modelBuilder.Entity<CriteriaAnswer>()
-            .HasOne(ca => ca.criteriaValue)
+            .HasOne(ca => ca.CriteriaValue)
             .WithMany(c => c.CriteriaAnswers);
     //public Criteria criteria { get; set; }
     //public CriteriaValue criteriaValue { get; set; }

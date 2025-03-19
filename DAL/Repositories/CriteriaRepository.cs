@@ -27,9 +27,9 @@ public class CriteriaRepository :ICriteriaRepository
             .Include(cg => cg.PanelMembers)
                 .ThenInclude(pm => pm.Panel)
             .Include(cg=>cg.CriteriaAnswers)
-                .ThenInclude(ca => ca.criteriaValue)
+                .ThenInclude(ca => ca.CriteriaValue)
             .Include(c => c.CriteriaAnswers)
-                .ThenInclude(ca=>ca.criteria)
+                .ThenInclude(ca=>ca.Criteria)
             .Where(cg => cg.PanelMembers.Any(pm => pm.Panel.Id == panelId))
             .ToList();
     }
@@ -38,7 +38,7 @@ public class CriteriaRepository :ICriteriaRepository
     {
         return _context.CriteriaGroups
             .Include(cg => cg.CriteriaAnswers)
-            .ThenInclude(ca => ca.criteriaValue)
+            .ThenInclude(ca => ca.CriteriaValue)
             .ThenInclude(ca => ca.Criteria)    
             .FirstOrDefault(cg => cg.PanelMembers.Any(pm => pm.PanelMemberId == memberId));
     }
@@ -75,7 +75,7 @@ public class CriteriaRepository :ICriteriaRepository
         return _context.Criteria
             .Include(c => c.Values)
             .ThenInclude(c => c.CriteriaAnswers)
-            .ThenInclude(ca => ca.criteria)
+            .ThenInclude(ca => ca.Criteria)
             .Where(c => c.Panel.Id == panelId && c.IsDefault == true)
             .ToList();
     }
@@ -84,7 +84,7 @@ public class CriteriaRepository :ICriteriaRepository
         return _context.Criteria
             .Include(c => c.Values)
             .ThenInclude(c => c.CriteriaAnswers)
-            .ThenInclude(ca => ca.criteria)
+            .ThenInclude(ca => ca.Criteria)
             .Where(c => c.Panel.Id == panelId)
             .ToList();
     }

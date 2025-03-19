@@ -3,8 +3,8 @@ namespace Domain.CitizenPanel;
 public class CriteriaAnswer
 {
     public Guid Id { get; set; }
-    public Criteria criteria { get; set; }
-    public CriteriaValue criteriaValue { get; set; }
+    public Criteria Criteria { get; set; }
+    public CriteriaValue CriteriaValue { get; set; }
     public CriteriaGroup CriteriaGroup { get; set; }
 
     public CriteriaAnswer()
@@ -13,7 +13,7 @@ public class CriteriaAnswer
 
     public CriteriaAnswer(Criteria criteria, CriteriaValue criteriaValue)
     {
-        this.criteria = criteria;
-        this.criteriaValue = criteriaValue;
+        this.Criteria = criteria;
+        this.CriteriaValue = criteriaValue;
     }
 }

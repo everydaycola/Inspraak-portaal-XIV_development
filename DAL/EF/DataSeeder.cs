@@ -52,13 +52,13 @@ public static class DataSeeder
         //Add criteria to criteriagroups
         criteriaGroup1.CriteriaAnswers.Add(new CriteriaAnswer()
         {
-            criteria = criteria3,
-            criteriaValue = value6
+            Criteria = criteria3,
+            CriteriaValue = value6
         });
         criteriaGroup2.CriteriaAnswers.Add(new CriteriaAnswer()
         {
-            criteria = criteria3,
-            criteriaValue = value7
+            Criteria = criteria3,
+            CriteriaValue = value7
         });
         
         //LINK REP. GROUP WITH PANEL

@@ -16,8 +16,8 @@
                     {
                         foreach (var crit in Model.DefaultCriteria)
                         {
-                            <input type="hidden" name="CriteriaAnswers[@crit.criteriaValue.Criteria.Name]"
-                                   value="@crit.criteriaValue.Value" required/>
+                            <input type="hidden" name="CriteriaAnswers[@crit.CriteriaValue.Criteria.Name]"
+                                   value="@crit.CriteriaValue.Value" required/>
                         }
                     }
 
