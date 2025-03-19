@@ -21,5 +21,4 @@ public class CriteriaGroup
         PanelMembers = panelMembers;
         IsADefaultGroup = isADefaultGroup;
     }
-    
 }

@@ -23,4 +23,7 @@ public class PanelManagementDto
         ExtraCriteriaViewModel = new ExtraCriteriaViewModel();
         ExtraCriteriaViewModel.CriteriaGroups = criteriaGroups;
     }
+    
+    
+    
 }
