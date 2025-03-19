@@ -2,45 +2,72 @@
 
 @{
     ViewData["Title"] = "Panel beheer";
+    var buttonClass = Model.IsRegistrationOpen ? "btn-warning" : "btn-success";
 }
 
+
 <div class="container mt-5">
-    <div class="card shadow-sm border-0">
-        <div class="card-header bg-primary text-white">
-            <h2 class="mb-0">Beheerpagina voor panel: <strong>@Model.PanelName</strong></h2>
-        </div>
-        <div class="card-body">
-            <div class="mb-4">
-                <h5 class="card-title">Aanmeldstatus</h5>
-                <p class="card-text">
-                    <i class="bi bi-person-check-fill text-success"></i>
-                    <strong>Aantal succesvol aangemelde mensen:</strong>
-                    @Model.AmountOfAcceptedInvites /
-                    @(Model.PanelSize + Model.AmountOfReserveInvites) (waarvan @Model.AmountOfReserveInvites reserven)
-                </p>
+    <h2 class="mb-0">Beheerpagina voor panel: <strong>@Model.PanelName</strong></h2>
+    <div class="row mt-4 row-cols-2">
+        <div class="card shadow-sm border-0 col-8 me-4">
+            <div class="card-body">
+                <div class="mb-4">
+                    <h5 class="card-title">Aanmeldstatus</h5>
+                    <p class="card-text">
+                        <i class="bi bi-person-check-fill text-success"></i>
+                        <strong>Aantal succesvol aangemelde mensen:</strong>
+                        @Model.SuccesfulRegistrationCount /
+                        @(Model.PanelSize + Model.AmountOfReserveInvites) (waarvan @Model.AmountOfReserveInvites reserve)
+                    </p>
+                </div>
+                <div>
+                    <h5 class="card-title">Uitnodigingen</h5>
+                    <p class="card-text">
+                        <i class="bi bi-envelope-fill text-info"></i>
+                        <strong>Geschat aantal uitnodigingen benodigd voor</strong>
+                        @Model.CitizenCount inwoners: @Model.TotalInvitesNeeded
+                    </p>
+                </div>
             </div>
-            <div>
-                <h5 class="card-title">Uitnodigingen</h5>
-                <p class="card-text">
-                    <i class="bi bi-envelope-fill text-info"></i>
-                    <strong>Geschat aantal uitnodigingen benodigd voor</strong>
-                    @Model.CitizenCount inwoners: @Model.TotalInvitesNeeded
-                </p>
+        </div>
+
+        <div class="card shadow-sm border-0 col-3 me-4">
+            <div class="card-body">
+                <div class="mt-4">
+                    <h5 class="card-title">Inschrijving Status</h5>
+                    @if (Model.IsRegistrationOpen)
+                    {
+                        <p class="card-text">Inschrijving staat open.</p>
+                    }
+                    else
+                    {
+                        <p class="card-text">Inschrijving is gesloten.</p>
+                    }
+                </div>
+                <a class="btn @buttonClass mt-4"
+                   asp-action="ToggleRegistration"
+                   asp-controller="PanelManagement"
+                   asp-route-panelId="@Model.PanelId">
+                    @(Model.IsRegistrationOpen ? "Inschrijving Afronden" : "Inschrijving Openen")
+                </a>
             </div>
         </div>
+
     </div>
     <div class="row mt-4 row-cols-3">
-        <div class="card shadow-sm border-0">
+        <div class="card shadow-sm border-0 col-3 me-4">
             <div class="card-body">
                 <div>
                     <p class="card-text">
-                        <button class="btn btn-primary" id="viewCodesButton" data-bs-toggle="modal" data-bs-target="#dataModal" data-panel-id="@Model.PanelId">
+                        <button class="btn btn-primary" id="viewCodesButton" data-bs-toggle="modal"
+                                data-bs-target="#dataModal" data-panel-id="@Model.PanelId">
                             Unieke codes per criteria bekijken
                         </button>
                     </p>
                 </div>
             </div>
         </div>
+        @Html.Partial("_extraCriteriaStatsPartial", Model.ExtraCriteriaViewModel)
     </div>
 
     <div class="modal fade" id="dataModal" tabindex="-1" aria-labelledby="dataModalLabel" aria-hidden="true">
@@ -51,9 +78,8 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <!-- Content will be loaded here via AJAX -->
                     <div id="modalContent">
-                        <p>Loading...</p>
+                        @Html.Partial("_uniqueCodesPartial", Model.ExtraCriteriaViewModel.CriteriaGroups)
                     </div>
                 </div>
             </div>

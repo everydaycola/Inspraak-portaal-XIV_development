@@ -3,21 +3,25 @@
 public class Criteria
 {
     public Guid CriteriaId { get; set; }
+    public Panel Panel { get; set; }
     public string Name { get; set; }
-    public string Value { get; set; }
-    public double distributionPercentage { get; set; }
+    public string Question { get; set; }
+    public ICollection<CriteriaValue> Values { get; set; }
+    public ICollection<CriteriaAnswer> CriteriaAnswers { get; set; }
     public CriteriaGroup CriteriaGroup { get; set; }
+    public bool IsDefault { get; set; }
 
-    public Criteria(string name, string value,double distributionPercentage)
+    public Criteria(string name, bool isDefault)
     {
-        this.Name = name;
-        this.Value = value;
-        this.distributionPercentage = distributionPercentage;
+        Name = name;
+        Values = new List<CriteriaValue>();
+        IsDefault = isDefault;
     }
-    public Criteria(string name, string value, CriteriaGroup criteriaGroup)
+    public Criteria(string name, string question, bool isDefault)
     {
-        this.Name = name;
-        this.Value = value;
-        CriteriaGroup = CriteriaGroup;
+        Name = name;
+        Values = new List<CriteriaValue>();
+        Question = question;
+        IsDefault = isDefault;
     }
 }

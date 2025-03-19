@@ -1,33 +1,72 @@
-﻿using BL.Interfaces;
+﻿using System.Collections;
+using BL.Interfaces;
+using Domain.CitizenPanel;
 using Microsoft.AspNetCore.Mvc;
 using UI_MVC.Models.Dto;
+using UI_MVC.Models.Dto.Register;
 
 namespace UI_MVC.Controllers;
 
 public class RegisterController : Controller
 {
+    private readonly ILogger<RegisterController> _logger;
     private readonly IPanelManager _manager;
+    private readonly ICriteriaManager _critManager;
 
-    public RegisterController(IPanelManager manager)
+    public RegisterController(ILogger<RegisterController> logger,IPanelManager manager, ICriteriaManager critManager)
     {
+        _logger = logger;
         _manager = manager;
+        _critManager = critManager;
     }
 
     [HttpGet]
     public IActionResult Index(Guid userId)
     {
-        var member = _manager.GetPanelByUserId(userId);
-        Console.WriteLine($"userId: {userId}, panelId: {member.Panel.Id.ToString()}");
+        var member = _manager.GetPanelMemberWithPanel(userId);
+        var currentGroup = _critManager.GetCriteriaGroupByMemberId(member.PanelMemberId);
+        IEnumerable<Criteria> nonDefaultCriteria = _critManager.GetAllNonDefaultCriteriaWithValuesForPanel(member.Panel.Id);
+        IEnumerable<CriteriaAnswer> defaultCriteria = currentGroup.CriteriaAnswers;
         return View(new NewPanelMemberDto
         {
             PanelId = member.Panel.Id.ToString(),
-            UserId = userId.ToString()
+            UserId = userId.ToString(),
+            Email = member.Email,
+            IsRegistrationOpen = member.Panel.IsRegistrationOpen,
+            HasAnsweredQuestions = member.HasAnsweredAllQuestions,
+            NonDefaultCriteria = nonDefaultCriteria,
+            DefaultCriteria= defaultCriteria
         });
     }
     
-    [HttpGet]
-    public IActionResult NewUserTemp()
+    [HttpPost]
+    public IActionResult SubmitExtraQuestionForm(ExtraQuestionFormAnswersDto formData)
     {
-        return View();
+        if (ModelState.IsValid)
+        {
+            var email = formData.Email;
+            PanelMember member = _manager.GetPanelMemberById(formData.UserId);
+            member.Email = email;
+            member.HasAnsweredAllQuestions = true;
+            _manager.UpdatePanelRegistrationCount(formData.PanelId, true);
+            _critManager.AssignMemberToCriteriaGroup(formData.PanelId, formData.CriteriaAnswers,member);
+            PanelMember updatedMember = _manager.UpdatePanelMember(member);
+            
+            return View("Index", new NewPanelMemberDto
+            {
+                PanelId = updatedMember.Panel.Id.ToString(),
+                UserId = updatedMember.PanelMemberId.ToString(),
+                HasAnsweredQuestions = updatedMember.HasAnsweredAllQuestions,
+                Email = updatedMember.Email
+            });
+        }
+        
+        ModelState.AddModelError("", "Invalid form data.");
+        return View("Index", new NewPanelMemberDto
+        {
+            PanelId = formData.PanelId.ToString(),
+            UserId = formData.UserId.ToString(),
+            HasAnsweredQuestions = false
+        });
     }
 }

@@ -11,7 +11,7 @@ public class PanelRepository : IPanelRepository
 
     public PanelRepository(CitizenPanelDbContext context)
     {
-        this._context = context;
+        _context = context;
     }
 
     public Panel ReadPanel(Guid id)
@@ -22,6 +22,13 @@ public class PanelRepository : IPanelRepository
     public PanelMember ReadPanelMember(Guid id)
     {
         return _context.PanelMembers.Find(id);
+    }
+    
+    public PanelMember ReadPanelMemberWithPanel(Guid id)
+    {
+        return _context.PanelMembers
+            .Include(pm => pm.Panel)
+            .Single(p => p.PanelMemberId == id);
     }
 
     public Panel ReadPanelWithRepresentationGroup(Guid id)
@@ -35,6 +42,7 @@ public class PanelRepository : IPanelRepository
     {
         return _context.Panels.Include(p => p.PanelMembers)
             .ThenInclude(p => p.CriteriaGroup)
+            .ThenInclude(p => p.CriteriaAnswers)
             .ThenInclude(p => p.Criteria)
             .Single(p => p.Id == id);
     }
@@ -50,7 +58,15 @@ public class PanelRepository : IPanelRepository
             .Include(pm => pm.Panel)
             .Single(pm => pm.PanelMemberId == memberId);
     }
-    
+
+    public PanelMember UpdatePanelMember(PanelMember member)
+    {
+        _context.PanelMembers.Update(member);
+        _context.SaveChanges();
+
+        return ReadPanelMemberWithPanel(member.PanelMemberId);
+    }
+
     public void CreatePanel(Panel panel)
     {
         _context.Panels.Add(panel);
@@ -79,5 +95,25 @@ public class PanelRepository : IPanelRepository
         _context.PanelMembers.Remove(member);
         _context.SaveChanges();
     }
-    
+
+    public Panel ReadPanelWithMembersAndRepresentationGroup(Guid id)
+    {
+        return _context.Panels
+            .Include(p => p.PanelMembers)
+            .Include(p => p.RepresentationGroup)
+            .Single(p => p.Id == id);
+    }
+
+    public void CreateCriteria(Criteria criteria)
+    {
+        _context.Criteria.Update(criteria);
+        _context.SaveChanges();
+    }
+
+    public void UpdatePanel(Panel panel)
+    {
+        _context.Panels.Update(panel);
+        _context.SaveChanges();
+    }
+
 }

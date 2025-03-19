@@ -5,24 +5,9 @@ import 'bootstrap/dist/css/bootstrap.css';
 
 // Custom CSS imports
 import '../css/site.css'
+import '../css/register.css'
 
 // Custom Ts
-import {defaultPanel} from "./Panel/makeNewPanel";
-import {fetchUniqueCodes} from "./PanelManagement/panelManagement";
+
 
 console.log('The \'site\' bundle has been loaded!');
-
-if (window.location.href.endsWith("MakeNewPanel")) {
-    const defaultPanelButton = document.getElementById("DefaultPanelBtn")
-    if (defaultPanelButton) {
-        defaultPanelButton.addEventListener("click", defaultPanel)
-    }
-}
-
-
-if(window.location.href.includes('PanelManagement/Index/')){
-    const viewCodesButton = document.getElementById("viewCodesButton")
-    if(viewCodesButton){
-        viewCodesButton.addEventListener("click", fetchUniqueCodes)
-    }
-}
