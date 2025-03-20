@@ -2,16 +2,19 @@ using System.IO.Compression;
 using BL.Generator;
 using BL.Interfaces;
 using Domain.CitizenPanel;
+using Microsoft.Extensions.Logging;
 
 namespace BL.Managers;
 
 public class FileManager : IFileManager
 {
     private readonly QrCodeGenerator _qrCodeGenerator;
+    private readonly ILogger<CriteriaManager> _logger;
 
-    public FileManager(QrCodeGenerator qrCodeGenerator)
+    public FileManager(QrCodeGenerator qrCodeGenerator, ILogger<CriteriaManager> logger)
     {
         _qrCodeGenerator = qrCodeGenerator;
+        _logger = logger;
     }
 
     public byte[] CreateZipFileForAllCodesInAGroup(CriteriaGroup criteriaGroup, string defaultUri)
@@ -28,7 +31,15 @@ public class FileManager : IFileManager
 
     public byte[] CreateSingleQrCode(string qrCodeData)
     {
-        return _qrCodeGenerator.GenerateQrCode(qrCodeData);
+        try
+        {
+            return _qrCodeGenerator.GenerateQrCode(qrCodeData);
+        }
+        catch (Exception e)
+        {
+            _logger.Log(LogLevel.Critical, "QRCode generator was called with empty data");
+            return null;
+        }
     }
 
     public byte[] CreateZipFileForAllCodesInAllGroups(IEnumerable<CriteriaGroup> criteriaGroups, string defaultUri)

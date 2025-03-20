@@ -37,7 +37,7 @@ public class PanelManagementController : Controller
         pmd.TotalInvitesNeeded = _manager.CalculateTotalInvitesNeeded(pmd.PanelSize + pmd.AmountOfReserveInvites, panel.RepresentationGroup.ResponseRate);
         pmd.IsRegistrationOpen = panel.IsRegistrationOpen;
         pmd.ExtraCriteriaViewModel.CriteriaMemberCount = _calcManager.CalculateAllCriteriaCountForPanel(panel.Id);
-        pmd.ExtraCriteriaViewModel.TotalMemberCount = _calcManager.CalculateTotalMemberCount(panel.Id);
+        pmd.ExtraCriteriaViewModel.SuccesfulRegistrationCount = _calcManager.CalculateSuccesfulRegistrationCount(panel.Id);
         return View(pmd);
     }
     [HttpPost]
