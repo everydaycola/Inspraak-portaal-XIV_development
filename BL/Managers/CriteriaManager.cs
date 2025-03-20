@@ -30,32 +30,24 @@ public class CriteriaManager : ICriteriaManager
     {
         return _repo.ReadAllNonDefaultCriteriaWithValuesForPanel(panelId);
     }
-    public IEnumerable<Criteria> GetAllDefaultCriteriaWithValuesForPanel(Guid panelId)
-    {
-        return _repo.ReadAllDefaultCriteriaWithValuesAndAnswerForPanel(panelId);
-    }
-
-    public IEnumerable<Criteria> GetCriteriaWithValuesAndAnswerForPanel(Guid panelId)
-    {
-        return _repo.ReadAllCriteriaWithValuesForPanel(panelId);
-    }
 
     public IEnumerable<CriteriaGroup> GetAllCriteriaGroupForPanel(Guid panelId)
     {
         return _repo.ReadAllCriteriaGroupForPanel(panelId);
     }
     
-
-    public CriteriaGroup GetCriteriaGroupByPanelIdAndName(Guid panelId, string groupName)
-    {
-        return _repo.ReadCriteraGroupByPanelIdAndName(panelId, groupName);
-    }
+    
 
     public CriteriaGroup GetCriteriaGroupByMemberId(Guid memberId)
     {
         return _repo.ReadCriteriaGroupByMemberId(memberId);
     }
-    
+
+    public CriteriaGroup GetCriteriaGroupById(Guid criteriaGroupId)
+    {
+        return _repo.ReadCriteriaGroupByid(criteriaGroupId);
+    }
+
     public CriteriaGroup AssignMemberToCriteriaGroup(Guid panelId, Dictionary<string, string> CriteriaAnswers, PanelMember member)
     {
         string groupName = string.Join("-", CriteriaAnswers.Values);
@@ -84,7 +76,6 @@ public class CriteriaManager : ICriteriaManager
             _logger.Log(LogLevel.Information, string.Format("Member {0} added to criteriaGroup {1}",member.PanelMemberId, groupName));
         }else{
             _logger.Log(LogLevel.Information, string.Format("Creating new criteriagroup for {0}",groupName));
-            ICollection<Criteria> panelCriteria = _repo.ReadAllCriteriaWithValuesForPanel(panelId) as ICollection<Criteria>;
             var newCriteriaGroup = new CriteriaGroup
             {
                 Name = groupName,

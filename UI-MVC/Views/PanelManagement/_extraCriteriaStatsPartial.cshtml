@@ -3,15 +3,27 @@
 <div class="card shadow-sm border-0 col-8 mt-4">
     <h3 class="mb-0">Verdeling extra criteria</h3>
     <div class="card-body">
-        <p>(Deze weergave gaat over enkelvoudige criteria bv. een man met rijbewijs komt zowel in rijbewijs Ja voor als in man)</p>
-        @foreach (var pair in Model.CriteriaMemberCount)
+        <p>(Deze weergave gaat over enkelvoudige criteria bv. een man met rijbewijs komt zowel in "rijbewijs", "Ja" voor als in "man")</p>
+        @foreach (var kpv in Model.CriteriaMemberCount)
         {
-            <div>
-                <p>@pair.Key</p>
-                <div class="progress">
-                    <div class="progress-bar" role="progressbar" style="width: @((pair.Value / Model.TotalMemberCount)*100)%" aria-valuenow="@pair.Value" aria-valuemin="0" aria-valuemax="@((pair.Value / Model.TotalMemberCount)*100)">@((pair.Value / Model.TotalMemberCount)*100)%</div>
+            <h4>@kpv.Key</h4> 
+            @foreach (var innerKpv in kpv.Value)
+            {
+                <div>
+                    <h5>@innerKpv.Key</h5>
+                    <div class="progress">
+                        <div class="progress-bar"
+                             role="progressbar"
+                             style="width: @(Model.SuccesfulRegistrationCount == 0 ? 0 : (innerKpv.Value * 100) / Model.SuccesfulRegistrationCount)%"
+                             aria-valuenow="@innerKpv.Value"
+                             aria-valuemin="0"
+                             aria-valuemax="@Model.SuccesfulRegistrationCount">
+                            @(Model.SuccesfulRegistrationCount == 0 ? 0 : (innerKpv.Value * 100) / Model.SuccesfulRegistrationCount)
+                            %
+                        </div>
+                    </div>
                 </div>
-            </div>
+            }
         }
     </div>
 </div>

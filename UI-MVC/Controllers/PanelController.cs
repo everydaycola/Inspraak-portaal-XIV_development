@@ -38,7 +38,7 @@ public class PanelController : Controller
     public IActionResult AddDefaultPanel()
     {
         var createdPanel = _manager.AddPanel(
-            "Default Panel",
+            "Panel rond alcoholgebruik",
             150,
             0.005,
             new Dictionary<string, Dictionary<string, double>>

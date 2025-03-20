@@ -65,12 +65,6 @@ public class PanelManager : IPanelManager
         
         // Generate and shuffle panel members
         panel.PanelMembers = GeneratePanelMembers(size, panel);
-        var random = new Random();
-        panel.PanelMembers = Enumerable.Range(0, size)
-            .Select(_ => new PanelMember(panel))
-            .ToList()
-            .OrderBy(_ => random.Next())
-            .ToList();
 
         // Create criteria list from distribution
         List<Criteria> criteriaList = new List<Criteria>();
@@ -147,16 +141,15 @@ public class PanelManager : IPanelManager
             currentUserIndex += totalMembersNeeded;
 
             // Create and add the criteria group
-            var criteriaGroup = new CriteriaGroup(comboKey, assignedMembers, false);
+            var criteriaGroup = new CriteriaGroup(comboKey, assignedMembers, true);
             criteriaGroups.Add(criteriaGroup);
         }
-
         // Persist criteria groups to the repository
         foreach (var group in criteriaGroups)
         {
             _repo.CreateCriteriaGroup(group);
         }
-
+        
         return panel;
     }
 
