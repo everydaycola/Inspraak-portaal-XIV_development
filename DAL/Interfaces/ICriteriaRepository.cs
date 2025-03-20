@@ -8,7 +8,7 @@ public interface ICriteriaRepository
     IEnumerable<CriteriaGroup> ReadAllCriteriaGroupForPanel(Guid panelId);
     CriteriaGroup ReadCriteriaGroupByMemberId(Guid memberId);
     CriteriaGroup ReadCriteriaGroupForPanel(Guid panelId, string groupName);
-    CriteriaGroup ReadCriteraGroupByPanelIdAndName(Guid panelId, string groupName);
+    CriteriaGroup ReadCriteriaGroupByid(Guid criteriaGroupId);
     IEnumerable<Criteria> ReadAllNonDefaultCriteriaWithValuesForPanel(Guid panelId);
     IEnumerable<Criteria> ReadAllDefaultCriteriaWithValuesAndAnswerForPanel(Guid panelId);
     void UpdateCriteriaGroup(CriteriaGroup criteriaGroup);

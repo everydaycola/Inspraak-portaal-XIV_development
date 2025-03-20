@@ -24,13 +24,13 @@ public class QRCodeController : Controller
         _logger.Log(LogLevel.Information, "Generating qr codes for all groups in panel{} ",panelId);
         return File(zipFileBytes, "application/zip", "qrcodes.zip");
     }
-    public IActionResult DownloadQrCodesForSpecificCriteriaGroup(Guid panelId, string groupName)
+    public IActionResult DownloadQrCodesForSpecificCriteriaGroup(Guid criteriaGroupId)
     {
-        var group = _criteriaManager.GetCriteriaGroupByPanelIdAndName(panelId, groupName);
+        var group = _criteriaManager.GetCriteriaGroupById(criteriaGroupId);
         var baseUrl = $"{Request.Scheme}://{Request.Host}/Register";
         var zipFileBytes = _fileManager.CreateZipFileForAllCodesInAGroup(group,baseUrl);
-        _logger.Log(LogLevel.Information, "Generating qr codes for group : \'{1}\' in panel{2} ",panelId, groupName);
-        return File(zipFileBytes, "application/zip", $"qrcodes_{groupName}.zip");
+        _logger.Log(LogLevel.Information, "Generating qr codes for group : \'{1}\'",group.Name);
+        return File(zipFileBytes, "application/zip", $"qrcodes_{group.Name}.zip");
     }
     public IActionResult DownloadSingleQrCode(string data)
     {

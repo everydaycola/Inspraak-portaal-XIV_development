@@ -45,17 +45,18 @@ public class CriteriaManager : ICriteriaManager
         return _repo.ReadAllCriteriaGroupForPanel(panelId);
     }
     
-
-    public CriteriaGroup GetCriteriaGroupByPanelIdAndName(Guid panelId, string groupName)
-    {
-        return _repo.ReadCriteraGroupByPanelIdAndName(panelId, groupName);
-    }
+    
 
     public CriteriaGroup GetCriteriaGroupByMemberId(Guid memberId)
     {
         return _repo.ReadCriteriaGroupByMemberId(memberId);
     }
-    
+
+    public CriteriaGroup GetCriteriaGroupById(Guid criteriaGroupId)
+    {
+        return _repo.ReadCriteriaGroupByid(criteriaGroupId);
+    }
+
     public CriteriaGroup AssignMemberToCriteriaGroup(Guid panelId, Dictionary<string, string> CriteriaAnswers, PanelMember member)
     {
         string groupName = string.Join("-", CriteriaAnswers.Values);
