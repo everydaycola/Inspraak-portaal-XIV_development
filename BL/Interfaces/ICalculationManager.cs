@@ -4,8 +4,8 @@ namespace BL.Interfaces;
 
 public interface ICalculationManager
 {
-    public double CalculateTotalMemberCount(Guid panelId);
-    public Dictionary<string, double> CalculateAllCriteriaCountForPanel(Guid panelId);
-    public double CalculateAmountOfMembersWithSpecificCriteria(Guid panelId, string searchedCriteriaName,
+    public int CalculateSuccesfulRegistrationCount(Guid panelId);
+    public Dictionary<string, Dictionary<string, int>> CalculateAllCriteriaCountForPanel(Guid panelId);
+    public int CalculateAmountOfMembersWithSpecificCriteria(Guid panelId, string searchedCriteriaName,
         string searchedCriteriaValue);
 }
