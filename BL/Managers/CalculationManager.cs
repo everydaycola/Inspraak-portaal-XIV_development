@@ -31,7 +31,7 @@ public class CalculationManager : ICalculationManager
                 val => CalculateAmountOfMembersWithSpecificCriteria(crit.Panel.Id, crit.Name, val.Value)
             ));
     }
-    public int CalculateAmountOfMembersWithSpecificCriteria(Guid panelId, string searchedCriteriaName, string searchedCriteriaValue)
+    private int CalculateAmountOfMembersWithSpecificCriteria(Guid panelId, string searchedCriteriaName, string searchedCriteriaValue)
     {
         var criteriaGroups = _critManager.GetAllCriteriaGroupForPanel(panelId);
         var matchingGroups = criteriaGroups.Where(group =>
@@ -39,7 +39,8 @@ public class CalculationManager : ICalculationManager
                 a.Criteria.Name.Equals(searchedCriteriaName) == true &&
                 a.CriteriaValue.Value.Equals(searchedCriteriaValue) == true));
         var allMatchingMembers = matchingGroups
-            .SelectMany(group => group.PanelMembers);
+            .SelectMany(group => group.PanelMembers)
+            .Where(panelMember => panelMember.HasAnsweredAllQuestions);
         return allMatchingMembers.Count();
     }
 }

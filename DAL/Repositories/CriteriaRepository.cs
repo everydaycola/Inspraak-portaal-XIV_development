@@ -66,25 +66,6 @@ public class CriteriaRepository :ICriteriaRepository
             .ToList();
     }
 
-    public IEnumerable<Criteria> ReadAllDefaultCriteriaWithValuesAndAnswerForPanel(Guid panelId)
-    {
-        return _context.Criteria
-            .Include(c => c.Values)
-            .ThenInclude(c => c.CriteriaAnswers)
-            .ThenInclude(ca => ca.Criteria)
-            .Where(c => c.Panel.Id == panelId && c.IsDefault == true)
-            .ToList();
-    }
-    public IEnumerable<Criteria> ReadCriteriaWithValuesAndAnswerForPanel(Guid panelId)
-    {
-        return _context.Criteria
-            .Include(c => c.Values)
-            .ThenInclude(c => c.CriteriaAnswers)
-            .ThenInclude(ca => ca.Criteria)
-            .Where(c => c.Panel.Id == panelId)
-            .ToList();
-    }
-
     public void UpdateCriteriaGroup(CriteriaGroup criteriaGroup)
     {
         _context.CriteriaGroups.Update(criteriaGroup);

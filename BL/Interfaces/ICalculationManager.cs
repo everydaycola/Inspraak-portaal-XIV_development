@@ -6,6 +6,4 @@ public interface ICalculationManager
 {
     public int CalculateSuccesfulRegistrationCount(Guid panelId);
     public Dictionary<string, Dictionary<string, int>> CalculateAllCriteriaCountForPanel(Guid panelId);
-    public int CalculateAmountOfMembersWithSpecificCriteria(Guid panelId, string searchedCriteriaName,
-        string searchedCriteriaValue);
 }

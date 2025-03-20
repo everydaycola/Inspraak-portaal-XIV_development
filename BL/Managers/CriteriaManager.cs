@@ -30,15 +30,6 @@ public class CriteriaManager : ICriteriaManager
     {
         return _repo.ReadAllNonDefaultCriteriaWithValuesForPanel(panelId);
     }
-    public IEnumerable<Criteria> GetAllDefaultCriteriaWithValuesForPanel(Guid panelId)
-    {
-        return _repo.ReadAllDefaultCriteriaWithValuesAndAnswerForPanel(panelId);
-    }
-
-    public IEnumerable<Criteria> GetCriteriaWithValuesAndAnswerForPanel(Guid panelId)
-    {
-        return _repo.ReadAllCriteriaWithValuesForPanel(panelId);
-    }
 
     public IEnumerable<CriteriaGroup> GetAllCriteriaGroupForPanel(Guid panelId)
     {
@@ -85,7 +76,6 @@ public class CriteriaManager : ICriteriaManager
             _logger.Log(LogLevel.Information, string.Format("Member {0} added to criteriaGroup {1}",member.PanelMemberId, groupName));
         }else{
             _logger.Log(LogLevel.Information, string.Format("Creating new criteriagroup for {0}",groupName));
-            ICollection<Criteria> panelCriteria = _repo.ReadAllCriteriaWithValuesForPanel(panelId) as ICollection<Criteria>;
             var newCriteriaGroup = new CriteriaGroup
             {
                 Name = groupName,
