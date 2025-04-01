@@ -209,7 +209,13 @@ public class PanelManager : IPanelManager
                     // if so, whatever
                     break;
                 // rider is dumb, can never be null because of check above
-                memberIterator.Current.Responses = count.Key;
+                // create a copy so EF recognises it as separate objects
+                memberIterator.Current.Responses = count.Key
+                    .Select(cr => new CriteriaResponse
+                    {
+                        Criteria = cr.Criteria,
+                        SelectedOption = cr.SelectedOption
+                    }).ToList();
             }
         }
     }

@@ -35,16 +35,18 @@ public class CriteriaManager : ICriteriaManager
     
     public Dictionary<string, ICollection<PanelMember>> GetPanelMembersGroupedByResponses(Guid panelId)
     {
-        Dictionary<string, ICollection<PanelMember>> result = new Dictionary<string, ICollection<PanelMember>>();
+        var result = new Dictionary<string, ICollection<PanelMember>>();
         var panelMembers = _panelManager.GetAllPanelMembersForPanel(panelId);
         foreach (var member in panelMembers)
         {
-            var groupName = string.Join("-", member.Responses.Select(r => r.SelectedOption));
-            if (!result.ContainsKey(groupName))
+            var groupName = string.Join("-", member.Responses.OrderBy(r => r.Criteria.Name).Select(r => r.SelectedOption).ToList());
+            if (!result.TryGetValue(groupName, out var value))
             {
-                result[groupName] = new List<PanelMember>(); 
+                value = new List<PanelMember>();
+                result[groupName] = value; 
             }
-            result[groupName].Add(member);
+
+            value.Add(member);
         }
         return result;
     }
