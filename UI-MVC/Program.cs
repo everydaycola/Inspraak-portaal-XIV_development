@@ -62,9 +62,10 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
-
+app.MapRazorPages();
 // todo: the /id thing isnt very relevant here, copied from .net project. 
 app.MapControllerRoute(
     name: "default",
