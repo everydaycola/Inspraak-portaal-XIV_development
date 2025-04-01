@@ -12,15 +12,6 @@
                 <form id="multiStepForm" method="post" asp-action="SubmitExtraQuestionForm">
                     @Html.ValidationSummary(true, "", new { @class = "alert alert-danger" })
                     
-                    @if (Model.DefaultCriteria != null)
-                    {
-                        foreach (var crit in Model.DefaultCriteria)
-                        {
-                            <input type="hidden" name="CriteriaAnswers[@crit.Criteria.Name]"
-                                   value="@crit.SelectedOption" required />
-                        }
-                    }
-
                     <!-- Step 1 -->
                     <div class="form-step active">
                         <div class="mb-3">

@@ -13,10 +13,8 @@
 
                 @foreach (var option in pair.Value)
                 {
-                    var percentage = Model.TotalMemberCount > 0
-                        ? (option.Value / (double)Model.TotalMemberCount) * 100
-                        : 0;
-
+                    var percentage = (option.Value / Model.TotalMemberCount) * 100;
+                    
                     <div class="mb-2">
                         <p class="mb-1">@option.Key (@option.Value leden)</p>
                         <div class="progress">

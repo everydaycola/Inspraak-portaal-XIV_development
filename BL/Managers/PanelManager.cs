@@ -238,6 +238,11 @@ public class PanelManager : IPanelManager
         return _repo.ReadPanelMembersWithCriteria(panelId);
     }
 
+    public IEnumerable<PanelMember> GetAllPanelMembersWhichAnsweredAllQuestionsWithCriteria(Guid id)
+    {
+        return _repo.ReadPanelMembersWhichAnsweredAllQuestionsWithCriteria(id);
+    }
+
     public Panel GetPanelWithCriteriaAndCriteriaAnswerOptions(Guid panelId)
     {
         return _repo.ReadPanelWithCriteriaAndAnswerOptions(panelId);

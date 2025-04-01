@@ -58,6 +58,17 @@ public class PanelRepository : IPanelRepository
             .ToList();
     }
 
+    public IEnumerable<PanelMember> ReadPanelMembersWhichAnsweredAllQuestionsWithCriteria(Guid id)
+    {
+        return _context.PanelMembers
+            .Include(pm => pm.Panel)
+            .ThenInclude(p => p.Criteria)
+            .ThenInclude(c => c.AnswerOptions)
+            .Include(pm => pm.Responses)
+            .Where(pm => pm.Panel.Id == id && pm.HasAnsweredAllQuestions == true) 
+            .ToList();
+    }
+    
     public IEnumerable<Panel> ReadAllPanels()
     {
         return _context.Panels.ToList();

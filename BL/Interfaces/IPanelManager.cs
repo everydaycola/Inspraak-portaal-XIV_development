@@ -23,5 +23,6 @@ public interface IPanelManager
     public int CalculateAmountOfReserve(int panelSize, double samplePercentage);
     public int CalculateTotalInvitesNeeded(int panelSizeIncludingReserve, double responseRate);
     IEnumerable<PanelMember> GetAllPanelMembersForPanel(Guid panelId);
+    public IEnumerable<PanelMember> GetAllPanelMembersWhichAnsweredAllQuestionsWithCriteria(Guid id);
     Panel GetPanelWithCriteriaAndCriteriaAnswerOptions(Guid panelId);
 }
