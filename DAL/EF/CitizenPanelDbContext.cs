@@ -32,7 +32,7 @@ public class CitizenPanelDbContext : DbContext
         
         //Criteria * - 1 panels
         modelBuilder.Entity<Panel>()
-            .HasMany(p => p.PanelCriteria);
+            .HasMany(p => p.Criteria);
         
         //Criteria 1 - * Answeroptions.
         modelBuilder.Entity<Criteria>()

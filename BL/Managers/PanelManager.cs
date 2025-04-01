@@ -23,14 +23,14 @@ public class PanelManager : IPanelManager
         return _repo.ReadPanelWithRepresentationGroup(id);
     }
     
-    public Panel GetPanelWithMembersAndRepresentationGroup(Guid id)
+    public ICollection<PanelMember> GetPanelMembersAndRepresentationGroup(Guid id)
     {
-        return _repo.ReadPanelWithMembersAndRepresentationGroup(id);
+        return _repo.ReadPanelMembersAndRepresentationGroup(id);
     }
 
-    public Panel GetPanelWithPanelMembersAndCriteria(Guid id)
+    public IEnumerable<PanelMember> GetPanelWithPanelMembersAndCriteria(Guid id)
     {
-        return _repo.ReadPanelWithPanelMembersAndCriteria(id);
+        return _repo.ReadPanelMembersWithCriteria(id);
     }
 
     public PanelMember GetPanelByUserId(Guid memberId)
@@ -52,21 +52,50 @@ public class PanelManager : IPanelManager
     {
         return _repo.ReadPanelMemberWithPanel(id);
     }
-    
+
     public Panel AddPanel(string name, int size, double sampleRate,
         Dictionary<string, Dictionary<string, double>> distribution, int citizenCount, double reservePercentage,
         double responseRate)
     {
         // Create and initialize the panel
-        var panel = new Panel(name, sampleRate)
+        var panel = new Panel
         {
-            RepresentationGroup = new RepresentationGroup(citizenCount, reservePercentage, responseRate)
+            Name = name,
+            SampleRate = sampleRate,
+            RepresentationGroup = new RepresentationGroup
+            {
+                CitizenCount = citizenCount,
+                ReservePercentage = reservePercentage,
+                ResponseRate = responseRate
+            }
         };
         
         // Generate and shuffle panel members
-        panel.PanelMembers = GeneratePanelMembers(size, panel);
+        var PanelMembers = Enumerable
+            .Range(0, size)
+            .Select(_ => new PanelMember { Panel = panel })
+            .ToList();
 
-        // Create criteria list from distribution
+        var criteriaList = distribution.Select(outerKvp => new Criteria
+        {
+            Name = outerKvp.Key,
+            IsDefault = true,
+            AnswerOptions = outerKvp.Value.Select(innerKvp => new CriteriaAnswerOption
+            {
+                Option = innerKvp.Key,
+                DistributionPercentage = innerKvp.Value
+            }).ToList() // Create the List<CriteriaAnswerOption> for the property
+        }).ToList(); // Create the final List<Criteria>
+
+        var crossDistribution = this.crossDistribution(criteriaList);
+        
+        // use this distribution to give {value} member {key} as responses
+
+        return panel;
+
+
+
+        /*// Create criteria list from distribution
         List<Criteria> criteriaList = new List<Criteria>();
         foreach (var outerEntry in distribution)
         {
@@ -149,26 +178,19 @@ public class PanelManager : IPanelManager
         {
             _repo.CreateCriteriaGroup(group);
         }
-        
-        return panel;
+
+        return panel;*/
     }
 
-    private ICollection<PanelMember> GeneratePanelMembers(int size, Panel panel)
+    private Dictionary<string, int> crossDistribution(List<Criteria> criteriaList)
     {
-        var panelMembers = new List<PanelMember>();
-        for (int i = 0; i < size; i++)
-        {
-            var panelMember = new PanelMember
-            {
-                Panel = panel
-            };
-            panelMembers.Add(panelMember);
-        }
-
-        return panelMembers;
+        // make a dictionary that would look like key={CriteriaResponse1, CriteriaResponse2}
+        //                                        value={percentage of people that have this list}
+        //                      key is exacly what goes in the panelmember;
+        
+        return null;
     }
-    
-
+  
     public int CalculatePanelSize(int citizenCount, double samplePercentage)
     {
         //CitizenCount = amount of citizens in gemeente.
@@ -186,6 +208,11 @@ public class PanelManager : IPanelManager
         //basePanelSize = calculated by CalculatePanelSize
         //Response rate is a percentage which indicates the expected rate of response to invites.
         return (int)(panelSizeIncludingReserve / responseRate);
+    }
+
+    public IEnumerable<PanelMember> GetAllPanelMembersForPanel(Guid panelId)
+    {
+        return _repo.ReadAllPanelMembersForPanel(panelId);
     }
 
     public void UpdatePanel(Guid id, bool isRegistrationOpen)

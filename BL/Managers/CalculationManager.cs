@@ -7,40 +7,47 @@ namespace BL.Managers;
 public class CalculationManager : ICalculationManager
 {
     private ICriteriaManager _critManager;
-    public CalculationManager(ICriteriaManager critManager)
+    private readonly IPanelManager _panelManager;
+
+    public CalculationManager(ICriteriaManager critManager, IPanelManager panelManager)
     {
         _critManager = critManager;
+        _panelManager = panelManager;
     }
-
     public int CalculateSuccesfulRegistrationCount(Guid panelId)
     {
-        return _critManager.GetAllCriteriaGroupForPanel(panelId)
-            .SelectMany(group => group.PanelMembers)
-            .Where(member => member.HasAnsweredAllQuestions)
+        return _panelManager.GetAllPanelMembersForPanel(panelId)
+            .Where(m => m.HasAnsweredAllQuestions)
             .Distinct()
             .Count();
     }
     public Dictionary<string, Dictionary<string, int>> CalculateAllCriteriaCountForPanel(Guid panelId)
     {
-        var allCriteria = _critManager.GetAllCriteriaWithValuesForPanel(panelId);
-        // dictionary with criteria name -> criteria value <-> amount of members with this criteria
+        var allCriteria = _critManager.GetAllCriteriaWithValuesForPanel(panelId).Criteria;
+    
         return allCriteria.ToDictionary(
             crit => crit.Name,
-            crit => crit.Values.ToDictionary(
-                val => val.Value,
-                val => CalculateAmountOfMembersWithSpecificCriteria(crit.Panel.Id, crit.Name, val.Value)
+            crit => crit.AnswerOptions.ToDictionary(
+                answer => answer.Option,
+                answer => CalculateAmountOfMembersWithSpecificCriteria(
+                    panelId,     
+                    crit.Name, 
+                    answer.Option
+                )
             ));
     }
     private int CalculateAmountOfMembersWithSpecificCriteria(Guid panelId, string searchedCriteriaName, string searchedCriteriaValue)
     {
-        var criteriaGroups = _critManager.GetAllCriteriaGroupForPanel(panelId);
-        var matchingGroups = criteriaGroups.Where(group =>
-            group.CriteriaAnswers.Any(a =>
-                a.Criteria.Name.Equals(searchedCriteriaName) == true &&
-                a.CriteriaValue.Value.Equals(searchedCriteriaValue) == true));
-        var allMatchingMembers = matchingGroups
-            .SelectMany(group => group.PanelMembers)
-            .Where(panelMember => panelMember.HasAnsweredAllQuestions);
-        return allMatchingMembers.Count();
+        var responseGroups = _critManager.GetPanelMembersGroupedByResponses(panelId);
+        return responseGroups
+            .Where(group => GroupContainsCriteria(group.Key, searchedCriteriaName, searchedCriteriaValue))
+            .SelectMany(group => group.Value)
+            .Count(panelMember => panelMember.HasAnsweredAllQuestions);
+    }
+
+    private bool GroupContainsCriteria(string groupKey, string criteriaName, string criteriaValue)
+    {
+        var expectedSegment = $"{criteriaName}:{criteriaValue}";
+        return groupKey.Split('-').Any(segment => segment == expectedSegment);
     }
 }

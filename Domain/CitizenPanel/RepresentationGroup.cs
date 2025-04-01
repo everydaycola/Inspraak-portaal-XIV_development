@@ -7,12 +7,5 @@ public class RepresentationGroup
     public double ReservePercentage { get; set; }
     public double ResponseRate { get; set; }
     public Panel Panel { get; set; }
-
-    public RepresentationGroup(int citizenCount, double reservePercentage, double responseRate)
-    {
-        CitizenCount = citizenCount;
-        ReservePercentage = reservePercentage;
-        ResponseRate = responseRate;
-    }
     
 }

@@ -91,17 +91,25 @@ public class PanelRepository : IPanelRepository
         _context.SaveChanges();
     }
 
-    public PanelMember ReadPanelWithMembersAndRepresentationGroup(Guid id)
+    public ICollection<PanelMember> ReadPanelMembersAndRepresentationGroup(Guid id)
     {
         return _context.PanelMembers.Include(pm => pm.Panel)
             .ThenInclude(pm => pm.RepresentationGroup)
-            .Single(pm => pm.Panel.Id == id);
+            .Where(pm => pm.Panel.Id == id)
+            .ToList();
     }
 
     public void CreateCriteria(Criteria criteria)
     {
         _context.Criteria.Update(criteria);
         _context.SaveChanges();
+    }
+
+    public IEnumerable<PanelMember> ReadAllPanelMembersForPanel(Guid panelId)
+    {
+        return _context.PanelMembers.Include(pm => pm.Panel)
+            .Where(p => p.Panel.Id == panelId)
+            .ToList();
     }
 
     public void UpdatePanel(Panel panel)

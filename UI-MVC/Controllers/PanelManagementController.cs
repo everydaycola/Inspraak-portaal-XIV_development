@@ -28,9 +28,9 @@ public class PanelManagementController : Controller
 
     public IActionResult Index(Guid id)
     {
-        var panel = _manager.GetPanelWithMembersAndRepresentationGroup(id);
-        IEnumerable<CriteriaGroup> criteriaGroups = _criteriaManager.GetAllCriteriaGroupForPanel(panel.Id);
-        var pmd = new PanelManagementDto(id, panel.Name, 20000, 0,criteriaGroups);
+        var panelMembers = _manager.GetPanelMembersAndRepresentationGroup(id);
+        var panel = panelMembers.First().Panel;
+        var pmd = new PanelManagementDto(id, panel.Name, 20000, 0);
         pmd.SuccesfulRegistrationCount = panel.SuccesfulRegistrationCount;
         pmd.PanelSize = _manager.CalculatePanelSize(pmd.CitizenCount, 0.005);
         pmd.AmountOfReserveInvites = _manager.CalculateAmountOfReserve(pmd.PanelSize, panel.RepresentationGroup.ReservePercentage);
@@ -38,6 +38,10 @@ public class PanelManagementController : Controller
         pmd.IsRegistrationOpen = panel.IsRegistrationOpen;
         pmd.ExtraCriteriaViewModel.CriteriaMemberCount = _calcManager.CalculateAllCriteriaCountForPanel(panel.Id);
         pmd.ExtraCriteriaViewModel.SuccesfulRegistrationCount = _calcManager.CalculateSuccesfulRegistrationCount(panel.Id);
+        pmd.ExtraCriteriaViewModel.uniqueCodesDto = new uniqueCodesDto
+        {
+            panelId = panel.Id, panelMembers = _criteriaManager.GetPanelMembersGroupedByResponses(panel.Id)
+        };
         return View(pmd);
     }
     [HttpPost]

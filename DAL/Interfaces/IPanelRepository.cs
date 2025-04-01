@@ -17,6 +17,7 @@ public interface IPanelRepository
     public void CreatePanelMember(PanelMember panelMember);
     public void DeletePanel(Panel panel);
     public void DeletePanelMember(PanelMember member);
-    PanelMember ReadPanelWithMembersAndRepresentationGroup(Guid id);
+    ICollection<PanelMember> ReadPanelMembersAndRepresentationGroup(Guid id);
     void CreateCriteria(Criteria criteria);
+    IEnumerable<PanelMember> ReadAllPanelMembersForPanel(Guid panelId);
 }

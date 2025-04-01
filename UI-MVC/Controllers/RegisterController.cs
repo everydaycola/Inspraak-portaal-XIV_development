@@ -24,9 +24,12 @@ public class RegisterController : Controller
     public IActionResult Index(Guid userId)
     {
         var member = _manager.GetPanelMemberWithPanel(userId);
-        var currentGroup = _critManager.GetCriteriaGroupByMemberId(member.PanelMemberId);
-        IEnumerable<Criteria> nonDefaultCriteria = _critManager.GetAllNonDefaultCriteriaWithValuesForPanel(member.Panel.Id);
-        IEnumerable<CriteriaAnswer> defaultCriteria = currentGroup.CriteriaAnswers;
+        var critResponse = member.Responses;
+        //var currentGroup = _critManager.GetCriteriaGroupByMemberId(member.PanelMemberId);
+        IEnumerable<CriteriaResponse> defaultCriteria = critResponse.Where(c => c.Criteria.IsDefault);
+        IEnumerable<CriteriaResponse> nonDefaultCriteria = critResponse.Where(c => c.Criteria.IsDefault == false);
+        //IEnumerable<Criteria> nonDefaultCriteria = _critManager.GetAllNonDefaultCriteriaWithValuesForPanel(member.Panel.Id);
+        //IEnumerable<CriteriaAnswer> defaultCriteria = currentGroup.CriteriaAnswers;
         return View(new NewPanelMemberDto
         {
             PanelId = member.Panel.Id.ToString(),
@@ -49,7 +52,7 @@ public class RegisterController : Controller
             member.Email = email;
             member.HasAnsweredAllQuestions = true;
             _manager.UpdatePanelRegistrationCount(formData.PanelId, true);
-            _critManager.AssignMemberToCriteriaGroup(formData.PanelId, formData.CriteriaAnswers,member);
+            //_critManager.AssignMemberToCriteriaGroup(formData.PanelId, formData.CriteriaAnswers,member);
             PanelMember updatedMember = _manager.UpdatePanelMember(member);
             
             return View("Index", new NewPanelMemberDto

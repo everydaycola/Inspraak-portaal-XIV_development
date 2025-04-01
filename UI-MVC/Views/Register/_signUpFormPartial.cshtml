@@ -16,8 +16,8 @@
                     {
                         foreach (var crit in Model.DefaultCriteria)
                         {
-                            <input type="hidden" name="CriteriaAnswers[@crit.CriteriaValue.Criteria.Name]"
-                                   value="@crit.CriteriaValue.Value" required/>
+                            <input type="hidden" name="CriteriaAnswers[@crit.Criteria.Name]"
+                                   value="@crit.SelectedOption" required/>
                         }
                     }
 
@@ -48,23 +48,20 @@
                             <div class="form-step">
                                 <div class="mb-3">
                                     <label class="form-label">
-                                        @(crit.Question != null ? crit.Question : crit.Name)
+                                        @(crit.Criteria.Question != null ? crit.Criteria.Question : crit.Criteria.Name)
                                     </label>
-                                    @foreach (var value in crit.Values)
-                                    {
-                                        <div class="form-check">
-                                            <input class="form-check-input"
-                                                   type="radio"
-                                                   name="CriteriaAnswers[@crit.Name]"
-                                                   id="@(crit.Name + "-" + value.Value)"
-                                                   value="@value.Value"
-                                                   required>
-                                            <label class="form-check-label"
-                                                   for="@(crit.Name + "-" + value.Value)">
-                                                @value.Value
-                                            </label>
-                                        </div>
-                                    }
+                                    <div class="form-check">
+                                        <input class="form-check-input"
+                                               type="radio"
+                                               name="CriteriaAnswers[@crit.Criteria.Name]"
+                                               id="@(crit.Criteria.Name + "-" + crit.SelectedOption)"
+                                               value="@crit.SelectedOption"
+                                               required>
+                                        <label class="form-check-label"
+                                               for="@(crit.Criteria.Name + "-" + crit.SelectedOption)">
+                                            @crit.SelectedOption
+                                        </label>
+                                    </div>
                                 </div>
                                 <button type="button" class="btn btn-secondary prev-step">Vorige</button>
                                 @if (crit.Equals(Model.NonDefaultCriteria.Last()))
@@ -73,7 +70,8 @@
                                 }
                                 else
                                 {
-                                    <button type="button" class="btn btn-primary next-step">Volgende
+                                    <button type="button" class="btn btn-primary next-step">
+                                        Volgende
                                     </button>
                                 }
                             </div>

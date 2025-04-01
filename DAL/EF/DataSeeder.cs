@@ -10,7 +10,13 @@ public static class DataSeeder
         Console.WriteLine("Seeding...");
         _context = context;
         //REPRESENTATION GROUPS
-        var rg1 = new RepresentationGroup(20000, 0.2, 0.1);
+        var rg1 = new RepresentationGroup
+        {
+            CitizenCount =20000,
+            ReservePercentage = 0.2, 
+            ResponseRate = 0.1
+            
+        };
         //PANELS
         var panel1 = new Panel
         {
@@ -35,20 +41,22 @@ public static class DataSeeder
         {
             Name="Rijbewijs",
             Question="Beschikt u over een rijbewijs?",
-            IsDefault = false
-            
+            IsDefault = false,
+            AnswerOptions =new List<CriteriaAnswerOption>()
         };
         var criteria2 = new Criteria
         {
             Name="Vervoermethode",
             Question="Wat is uw voorkeurs vervoersmethode?", 
-            IsDefault = false
+            IsDefault = false,
+            AnswerOptions =new List<CriteriaAnswerOption>()
         };
         var criteria3 = new Criteria
         {
             Name="Geslacht",
             Question="Wat is uw geslacht?",
-            IsDefault=true
+            IsDefault=true,
+            AnswerOptions =new List<CriteriaAnswerOption>()
         };
         //criteriaAnswerOptions
         var cao1 = new CriteriaAnswerOption
@@ -86,44 +94,11 @@ public static class DataSeeder
             DistributionPercentage = 0.5,
             Option = "Vrouw"
         };
-        //CRITERIA VALUES
-        //TODO REMOVE THESE
-        /*
-        var value1 = new CriteriaValue("Ja", 0.5);
-        var value2 = new CriteriaValue("Nee", 0.5);
-        var value3 = new CriteriaValue("Te voet", 0.33);
-        var value4 = new CriteriaValue("Fiets", 0.33);
-        var value5 = new CriteriaValue("Auto", 0.33);
-        var value6 = new CriteriaValue("Man", 0.5);
-        var value7 = new CriteriaValue("Vrouw", 0.5);
         
-        //BIND CRITERIA WITH VALUES
-        criteria1.Values.Add(value1);
-        criteria1.Values.Add(value2);
-        criteria2.Values.Add(value3);
-        criteria2.Values.Add(value4);
-        criteria2.Values.Add(value5);
-        criteria3.Values.Add(value6);
-        criteria3.Values.Add(value7);
-        */
-        //Add criteria to criteriagroups
-        /*criteriaGroup1.CriteriaAnswers.Add(new CriteriaAnswer()
-        {
-            Criteria = criteria3,
-            CriteriaValue = value6
-        });
-        criteriaGroup2.CriteriaAnswers.Add(new CriteriaAnswer()
-        {
-            Criteria = criteria3,
-            CriteriaValue = value7
-        });*/
-        
+    
         //LINK REP. GROUP WITH PANEL
         rg1.Panel = panel1;
         panel1.RepresentationGroup = rg1;
-        
-        //LINK CRITERIA WITH PANEL
-        panel1.PanelCriteria = new List<Criteria>() { criteria1, criteria2 , criteria3};
         
         //LINK ANSWER OPTIONS WITH CRITERIA
         criteria1.AnswerOptions.Add(cao1);
@@ -134,6 +109,10 @@ public static class DataSeeder
         criteria3.AnswerOptions.Add(cao6);
         criteria3.AnswerOptions.Add(cao7);
         
+
+        //LINK CRITERIA WITH PANEL
+        panel1.Criteria = new List<Criteria>() { criteria1, criteria2 , criteria3};
+        
         //SET REGISTRATION TO OPEN
         panel1.IsRegistrationOpen = true;
         
@@ -142,6 +121,7 @@ public static class DataSeeder
         context.Panels.Add(panel1);
         
         AddMultipleEntities([panelMember1, panelMember2, panelMember3, panelMember4, panelMember5]);
+        AddMultipleEntities([cao1, cao2,cao3,cao4,cao5,cao6,cao7]);
         AddMultipleEntities([criteria1, criteria2, criteria3]);
         //AddMultipleEntities([criteriaGroup1, criteriaGroup2 ]);
         //AddMultipleEntities([value1, value2, value3, value4, value5, value6, value7 ]);
