@@ -9,9 +9,12 @@ public class CitizenPanelDbContext : DbContext
     public DbSet<PanelMember> PanelMembers { get; set; }
     public DbSet<RepresentationGroup> RepresentationGroups { get; set; }
     public DbSet<Criteria> Criteria { get; set; }
-    public DbSet<CriteriaGroup> CriteriaGroups { get; set; }
-    public DbSet<CriteriaValue> CriteriaValues { get; set; }
-    public DbSet<CriteriaAnswer> CriteriaAnswers { get; set; }
+    public DbSet<CriteriaAnswerOption> CriteriaAnswerOptions { get; set; }
+    public DbSet<CriteriaResponse> CriteriaResponses { get; set; }
+    
+    //public DbSet<CriteriaGroup> CriteriaGroups { get; set; }
+    //public DbSet<CriteriaValue> CriteriaValues { get; set; }
+    //public DbSet<CriteriaAnswer> CriteriaAnswers { get; set; }
 
     public CitizenPanelDbContext(DbContextOptions options) : base(options)
     {
@@ -20,19 +23,28 @@ public class CitizenPanelDbContext : DbContext
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
-        // panel 1-* panelmember
-        modelBuilder.Entity<PanelMember>()
-            .HasOne(p => p.Panel)
-            .WithMany(p => p.PanelMembers);
+        
         // panel 1-1 representationgroup
         modelBuilder.Entity<RepresentationGroup>()
             .HasOne(p => p.Panel)
             .WithOne(p => p.RepresentationGroup)
             .HasForeignKey<RepresentationGroup>("PanelId");
+        
         //Criteria * - 1 panels
         modelBuilder.Entity<Panel>()
-            .HasMany(p => p.PanelCriteria)
-            .WithOne(p => p.Panel);
+            .HasMany(p => p.PanelCriteria);
+        
+        //Criteria 1 - * Answeroptions.
+        modelBuilder.Entity<Criteria>()
+            .HasMany(c => c.AnswerOptions)
+            .WithOne();
+
+        // CriteriaResponse 1 - * Criteria
+        modelBuilder.Entity<CriteriaResponse>()
+            .HasOne(c => c.Criteria);
+        
+        
+        /*
         //panelmember 1-* CriteriaGroup 
         modelBuilder.Entity<PanelMember>()
             .HasOne(pm => pm.CriteriaGroup)
@@ -54,7 +66,7 @@ public class CitizenPanelDbContext : DbContext
         //criteria 1 - * criteriavalues
         modelBuilder.Entity<Criteria>()
             .HasMany(c => c.Values)
-            .WithOne(c => c.Criteria);
+            .WithOne(c => c.Criteria);*/
 
     }
 

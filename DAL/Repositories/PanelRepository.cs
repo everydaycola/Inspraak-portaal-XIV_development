@@ -38,13 +38,13 @@ public class PanelRepository : IPanelRepository
             .Single(p => p.Id == id);
     }
 
-    public Panel ReadPanelWithPanelMembersAndCriteria(Guid id)
+    public IEnumerable<PanelMember> ReadPanelMembersWithCriteria(Guid id)
     {
-        return _context.Panels.Include(p => p.PanelMembers)
-            .ThenInclude(p => p.CriteriaGroup)
-            .ThenInclude(p => p.CriteriaAnswers)
+        return _context.PanelMembers.Include(pm => pm.Panel)
             .ThenInclude(p => p.Criteria)
-            .Single(p => p.Id == id);
+            .ThenInclude(c => c.AnswerOptions)
+            .Where(pm => pm.Panel.Id == id)
+            .ToList();
     }
 
     public IEnumerable<Panel> ReadAllPanels()
@@ -72,12 +72,7 @@ public class PanelRepository : IPanelRepository
         _context.Panels.Add(panel);
         _context.SaveChanges();
     }
-
-    public void CreateCriteriaGroup(CriteriaGroup criteriaGroup)
-    {
-        _context.CriteriaGroups.Add(criteriaGroup);
-        _context.SaveChanges();
-    }
+    
     public void CreatePanelMember(PanelMember panelMember)
     {
         _context.PanelMembers.Add(panelMember);
@@ -96,12 +91,11 @@ public class PanelRepository : IPanelRepository
         _context.SaveChanges();
     }
 
-    public Panel ReadPanelWithMembersAndRepresentationGroup(Guid id)
+    public PanelMember ReadPanelWithMembersAndRepresentationGroup(Guid id)
     {
-        return _context.Panels
-            .Include(p => p.PanelMembers)
-            .Include(p => p.RepresentationGroup)
-            .Single(p => p.Id == id);
+        return _context.PanelMembers.Include(pm => pm.Panel)
+            .ThenInclude(pm => pm.RepresentationGroup)
+            .Single(pm => pm.Panel.Id == id);
     }
 
     public void CreateCriteria(Criteria criteria)
