@@ -74,14 +74,15 @@ public class PanelManager : IPanelManager
                 ResponseRate = responseRate
             }
         };
-        
-        // Generate and shuffle panel members
+
+        // Generate members
         var PanelMembers = Enumerable
             .Range(0, size)
             .Select(_ => new PanelMember { Panel = panel })
             .ToList();
 
-        var criteriaList = distribution.Select(outerKvp => new Criteria
+        // Create the criteria list from the dictionary, initializing all Criteria and CriteriaAnswerOptions
+        panel.Criteria = distribution.Select(outerKvp => new Criteria
         {
             Name = outerKvp.Key,
             IsDefault = true,
@@ -92,110 +93,127 @@ public class PanelManager : IPanelManager
             }).ToList() // Create the List<CriteriaAnswerOption> for the property
         }).ToList(); // Create the final List<Criteria>
 
-        var crossDistribution = this.crossDistribution(criteriaList);
+        // preforms an action very similar to a cartesian product, but with the options of each criteria
+        var crossDistribution = CrossDistribution(panel.Criteria.ToList());
+        // finally, give panel members their distributions
+        HandOutAnsweredCriteriaToPanelMembers(PanelMembers, crossDistribution);
         
-        // use this distribution to give {value} member {key} as responses
+        // adding panel members to repo also has dependencies to everything else so everything gets added
+        PanelMembers.ForEach(member => _repo.CreatePanelMember(member));
 
         return panel;
-
-
-
-        /*// Create criteria list from distribution
-        List<Criteria> criteriaList = new List<Criteria>();
-        foreach (var outerEntry in distribution)
-        {
-            string outerKey = outerEntry.Key; // Criteria name
-            var innerDict = outerEntry.Value; // Values and their percentages
-
-            // Create a Criteria object for each unique name
-            var criteria = new Criteria(outerKey, true);
-
-            foreach (var innerEntry in innerDict)
-            {
-                string innerKey = innerEntry.Key; // Value
-                double valuePercentage = innerEntry.Value; // Distribution percentage
-
-                // Create CriteriaValue and add it to the Criteria's Values collection
-                var criteriaValue = new CriteriaValue(innerKey, valuePercentage);
-                criteria.Values ??= new List<CriteriaValue>(); // Initialize Values if null
-                criteria.Values.Add(criteriaValue);
-            }
-            _repo.CreateCriteria(criteria);
-            criteria.Panel = panel;
-            criteriaList.Add(criteria);
-        }
-
-        // Group criteria by name
-        var groupedCriteria = criteriaList.ToDictionary(c => c.Name);
-
-        // Generate combinations of criteria values
-        List<Dictionary<string, CriteriaValue>> combinations = new List<Dictionary<string, CriteriaValue>>();
-
-        void GenerateCombinations(Dictionary<string, CriteriaValue> current, List<string> remainingCriteria)
-        {
-            if (remainingCriteria.Count == 0)
-            {
-                combinations.Add(new Dictionary<string, CriteriaValue>(current));
-                return;
-            }
-
-            var nextCriterionName = remainingCriteria[0];
-            var nextCriteriaValues = groupedCriteria[nextCriterionName].Values;
-
-            foreach (var value in nextCriteriaValues)
-            {
-                current[nextCriterionName] = value;
-                GenerateCombinations(current, remainingCriteria.Skip(1).ToList());
-                current.Remove(nextCriterionName);
-            }
-        }
-
-        GenerateCombinations(new Dictionary<string, CriteriaValue>(), groupedCriteria.Keys.ToList());
-
-        // Create criteria groups based on combinations
-        List<CriteriaGroup> criteriaGroups = new List<CriteriaGroup>();
-        int currentUserIndex = 0;
-        foreach (var combo in combinations)
-        {
-            var comboKey = string.Join("-", combo.Values.Select(v => v.Value));
-            var comboPercentage = combo.Values.Aggregate(1.0, (acc, v) => acc * v.DistributionPercentage);
-            var totalMembersNeeded = (int)Math.Round(comboPercentage * panel.PanelMembers.Count);
-
-            if (currentUserIndex + totalMembersNeeded > panel.PanelMembers.Count)
-            {
-                totalMembersNeeded = panel.PanelMembers.Count - currentUserIndex;
-            }
-
-            // Assign members to this criteria group
-            var assignedMembers = panel.PanelMembers
-                .Skip(currentUserIndex)
-                .Take(totalMembersNeeded)
-                .ToList();
-
-            currentUserIndex += totalMembersNeeded;
-
-            // Create and add the criteria group
-            var criteriaGroup = new CriteriaGroup(comboKey, assignedMembers, true);
-            criteriaGroups.Add(criteriaGroup);
-        }
-        // Persist criteria groups to the repository
-        foreach (var group in criteriaGroups)
-        {
-            _repo.CreateCriteriaGroup(group);
-        }
-
-        return panel;*/
     }
 
-    private Dictionary<string, int> crossDistribution(List<Criteria> criteriaList)
+    /// <summary>
+    /// Generates all possible combinations of criteria responses and calculates their percentage
+    /// based on the distribution percentages of each answer option in the criteria list, multiplied.
+    /// It performs a recursive process similar to a Cartesian product, combining response options
+    /// across multiple criteria and computes the combined distributions.
+    /// </summary>
+    private Dictionary<ICollection<CriteriaResponse>, double> CrossDistribution(List<Criteria> criteriaList)
     {
-        // make a dictionary that would look like key={CriteriaResponse1, CriteriaResponse2}
-        //                                        value={percentage of people that have this list}
-        //                      key is exacly what goes in the panelmember;
-        
-        return null;
+        // Handle edge case: If the criteriaList is null or empty, return an empty dictionary
+        if (criteriaList == null || criteriaList.Count == 0)
+        {
+            return new Dictionary<ICollection<CriteriaResponse>, double>();
+        }
+
+        // Dictionary to store combinations of CriteriaResponse and their calculated probabilities
+        var combinations = new Dictionary<ICollection<CriteriaResponse>, double>();
+
+        // Iterate through each answer option in the first Criteria
+        foreach (var option in criteriaList[0].AnswerOptions)
+        {
+            // Create a new combination with one CriteriaResponse for the current answer option
+            var currentResponse = new CriteriaResponse
+            {
+                Criteria = criteriaList[0],
+                SelectedOption = option.Option
+            };
+
+            // If there is only one Criteria left, add the combination and its distribution percentage
+            if (criteriaList.Count == 1)
+            {
+                combinations.Add([currentResponse], option.DistributionPercentage);
+                continue;
+            }
+
+            // Recursively generate combinations for the remaining Criteria
+            var subCombinations = CrossDistribution(criteriaList.Skip(1).ToList());
+
+            // Combine the current CriteriaResponse with each sub-combination
+            foreach (var subCombo in subCombinations)
+            {
+                // Create a new combination by merging the current response with the sub-combination
+                var newCombo = new List<CriteriaResponse> {currentResponse};
+                newCombo.AddRange(subCombo.Key);
+
+                // Calculate the combined probability by multiplying the distribution percentages 
+                // Add the combined result to the dictionary
+                combinations.Add(newCombo, option.DistributionPercentage * subCombo.Value);
+            }
+        }
+
+        // Return the dictionary of all generated combinations and their probabilities
+        return combinations;
     }
-  
+
+    private void HandOutAnsweredCriteriaToPanelMembers(ICollection<PanelMember> panelMembers,
+        Dictionary<ICollection<CriteriaResponse>, double> crossDistribution)
+    {
+        // Convert percentages to actual member counts
+        var totalCount = panelMembers.Count;
+        var allCounts = new Dictionary<ICollection<CriteriaResponse>, int>();
+
+        // Calculate how many members should get each collection of criteria responses
+        var doneCount = 0;
+        foreach (var distribution in crossDistribution)
+        {
+            // Calculate number of members for this distribution group
+            var doingCount = (int)Math.Round(distribution.Value * totalCount);
+
+            // Ensure we don't exceed total member count due to rounding
+            // I can image small edge cases where this goes wrong but eh its good enough
+            if (doneCount + doingCount > totalCount)
+            {
+                // if so assume this is the last criteria and just make the amount the remaining members
+                doingCount = totalCount - doneCount;
+            }
+
+            // add distribution count and update 
+            allCounts.Add(distribution.Key, doingCount);
+            doneCount += doingCount;
+        }
+
+        // If we didn't assign enough, assign some more
+        if (doneCount < totalCount)
+        {
+            // add whatever needed to the first one. should not be that much.
+            allCounts[
+                allCounts
+                    .Keys
+                    .OrderByDescending(k => crossDistribution[k])
+                    .First()
+            ] += totalCount - doneCount;
+        }
+
+        // Iterate through members and assign criteria responses until no more
+        using var memberIterator = panelMembers.GetEnumerator();
+        foreach (var count in allCounts)
+        {
+            // Assign criteria to members by calculated counts
+            for (var i = 0; i < count.Value; i++)
+            {
+                // Check if we have more members to process
+                if (!memberIterator.MoveNext())
+                    // if so, whatever
+                    break;
+                // rider is dumb, can never be null because of check above
+                memberIterator.Current.Responses = count.Key;
+            }
+        }
+    }
+
     public int CalculatePanelSize(int citizenCount, double samplePercentage)
     {
         //CitizenCount = amount of citizens in gemeente.
