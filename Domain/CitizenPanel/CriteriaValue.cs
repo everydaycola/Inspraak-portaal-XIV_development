@@ -1,6 +1,6 @@
 namespace Domain.CitizenPanel;
 
-public class CriteriaValue
+/*public class CriteriaValue
 {
     public Guid CriteriaValueId { get; set; }
     public string Value { get; set; }
@@ -13,4 +13,4 @@ public class CriteriaValue
         Value = value;
         DistributionPercentage = distributionPercentage;
     }
-}
+}*/

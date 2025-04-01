@@ -1,6 +1,6 @@
 namespace Domain.CitizenPanel;
 
-public class CriteriaGroup
+/* class CriteriaGroup
 {
     public Guid Id { get; set; }
     public string Name { get; set; }
@@ -21,4 +21,4 @@ public class CriteriaGroup
         PanelMembers = panelMembers;
         IsADefaultGroup = isADefaultGroup;
     }
-}
+}*/

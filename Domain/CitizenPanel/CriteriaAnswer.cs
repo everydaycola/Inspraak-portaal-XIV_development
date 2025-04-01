@@ -1,6 +1,6 @@
 namespace Domain.CitizenPanel;
 
-public class CriteriaAnswer
+/*public class CriteriaAnswer
 {
     public Guid Id { get; set; }
     public Criteria Criteria { get; set; }
@@ -16,4 +16,4 @@ public class CriteriaAnswer
         this.Criteria = criteria;
         this.CriteriaValue = criteriaValue;
     }
-}
+}*/
