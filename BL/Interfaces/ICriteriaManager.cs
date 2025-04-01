@@ -12,4 +12,6 @@ public interface ICriteriaManager
     //public CriteriaGroup GetCriteriaGroupByMemberId(Guid memberId);
     //public CriteriaGroup GetCriteriaGroupById(Guid criteriaGroupId);
     //public CriteriaGroup AssignMemberToCriteriaGroup(Guid panelId, Dictionary<string, string> CriteriaAnswers,PanelMember member);
+    void SavePanelMemberCriteriaResponses(Guid panelId,Dictionary<string, string> CriteriaAnswers, PanelMember member);
+    public Criteria GetCriteriaByNameWithAnswerOptions(Guid panelId, string critName);
 }

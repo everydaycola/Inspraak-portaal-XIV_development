@@ -14,4 +14,5 @@ public interface ICriteriaRepository
     //void CreateCriteriaGroup(CriteriaGroup newCriteriaGroup);
     //CriteriaValue ReadCriteriaValueBasedOnCriteriaAndValue(Guid criteriaId, string criteriaValue);
     Criteria ReadCriteriaByName(Guid panelId,string critName);
+    public Criteria ReadCriteriaByNameWithAnswerOptions(Guid panelId, string critName);
 }

@@ -24,12 +24,12 @@ public class RegisterController : Controller
     public IActionResult Index(Guid userId)
     {
         var member = _manager.GetPanelMemberWithPanel(userId);
+        var panel = _manager.GetPanelWithCriteriaAndCriteriaAnswerOptions(member.Panel.Id);
         var critResponse = member.Responses;
-        //var currentGroup = _critManager.GetCriteriaGroupByMemberId(member.PanelMemberId);
         IEnumerable<CriteriaResponse> defaultCriteria = critResponse.Where(c => c.Criteria.IsDefault);
-        IEnumerable<CriteriaResponse> nonDefaultCriteria = critResponse.Where(c => c.Criteria.IsDefault == false);
-        //IEnumerable<Criteria> nonDefaultCriteria = _critManager.GetAllNonDefaultCriteriaWithValuesForPanel(member.Panel.Id);
-        //IEnumerable<CriteriaAnswer> defaultCriteria = currentGroup.CriteriaAnswers;
+        IEnumerable<Criteria> nonDefaultCriteriaWithoutResponse = panel.Criteria
+            .Where(c => !c.IsDefault);
+        
         return View(new NewPanelMemberDto
         {
             PanelId = member.Panel.Id.ToString(),
@@ -37,7 +37,7 @@ public class RegisterController : Controller
             Email = member.Email,
             IsRegistrationOpen = member.Panel.IsRegistrationOpen,
             HasAnsweredQuestions = member.HasAnsweredAllQuestions,
-            NonDefaultCriteria = nonDefaultCriteria,
+            NonDefaultCriteria = nonDefaultCriteriaWithoutResponse,
             DefaultCriteria= defaultCriteria
         });
     }
@@ -48,11 +48,11 @@ public class RegisterController : Controller
         if (ModelState.IsValid)
         {
             var email = formData.Email;
-            PanelMember member = _manager.GetPanelMemberById(formData.UserId);
+            PanelMember member = _manager.GetPanelMemberWithCriteriaResponses(formData.UserId);
             member.Email = email;
             member.HasAnsweredAllQuestions = true;
             _manager.UpdatePanelRegistrationCount(formData.PanelId, true);
-            //_critManager.AssignMemberToCriteriaGroup(formData.PanelId, formData.CriteriaAnswers,member);
+            _critManager.SavePanelMemberCriteriaResponses(formData.PanelId, formData.CriteriaAnswers,member);
             PanelMember updatedMember = _manager.UpdatePanelMember(member);
             
             return View("Index", new NewPanelMemberDto

@@ -52,7 +52,6 @@ app.UseRouting();
 app.UseAuthorization();
 
 
-// todo: the /id thing isnt very relevant here, copied from .net project. 
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");

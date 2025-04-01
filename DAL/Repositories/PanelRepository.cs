@@ -23,11 +23,20 @@ public class PanelRepository : IPanelRepository
     {
         return _context.PanelMembers.Find(id);
     }
+
+    public PanelMember ReadPanelMemberWithCriteriaResponses(Guid id)
+    {
+        return _context.PanelMembers
+            .Include(pm => pm.Responses)
+            .Single(p => p.PanelMemberId == id);
+    }
     
     public PanelMember ReadPanelMemberWithPanel(Guid id)
     {
         return _context.PanelMembers
             .Include(pm => pm.Panel)
+            .Include(pm => pm.Responses)
+                .ThenInclude(pm => pm.Criteria)
             .Single(p => p.PanelMemberId == id);
     }
 
@@ -40,10 +49,12 @@ public class PanelRepository : IPanelRepository
 
     public IEnumerable<PanelMember> ReadPanelMembersWithCriteria(Guid id)
     {
-        return _context.PanelMembers.Include(pm => pm.Panel)
-            .ThenInclude(p => p.Criteria)
-            .ThenInclude(c => c.AnswerOptions)
-            .Where(pm => pm.Panel.Id == id)
+        return _context.PanelMembers
+            .Include(pm => pm.Panel)
+                .ThenInclude(p => p.Criteria)
+                .ThenInclude(c => c.AnswerOptions)
+            .Include(pm => pm.Responses)
+            .Where(pm => pm.Panel.Id == id) 
             .ToList();
     }
 
@@ -110,6 +121,14 @@ public class PanelRepository : IPanelRepository
         return _context.PanelMembers.Include(pm => pm.Panel)
             .Where(p => p.Panel.Id == panelId)
             .ToList();
+    }
+
+    public Panel ReadPanelWithCriteriaAndAnswerOptions(Guid panelId)
+    {
+        return _context.Panels
+            .Include(p => p.Criteria)
+            .ThenInclude(p => p.AnswerOptions)
+            .Single(p => p.Id == panelId);
     }
 
     public void UpdatePanel(Panel panel)

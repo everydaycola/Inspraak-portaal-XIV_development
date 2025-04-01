@@ -43,9 +43,12 @@ public class CitizenPanelDbContext : DbContext
         modelBuilder.Entity<CriteriaResponse>()
             .HasOne(c => c.Criteria);
         
-        
+        // Panelmember 1 - * CriteriaResponse
+        modelBuilder.Entity<PanelMember>()
+            .HasMany(pm => pm.Responses);
+
         /*
-        //panelmember 1-* CriteriaGroup 
+        //panelmember 1-* CriteriaGroup
         modelBuilder.Entity<PanelMember>()
             .HasOne(pm => pm.CriteriaGroup)
             .WithMany(cg => cg.PanelMembers);
@@ -53,7 +56,7 @@ public class CitizenPanelDbContext : DbContext
         modelBuilder.Entity<CriteriaGroup>()
             .HasMany(cg => cg.CriteriaAnswers)
             .WithOne(c => c.CriteriaGroup);
-        
+
         //criteriaAnswer * - 1 criteria
         modelBuilder.Entity<CriteriaAnswer>()
             .HasOne(ca => ca.Criteria)

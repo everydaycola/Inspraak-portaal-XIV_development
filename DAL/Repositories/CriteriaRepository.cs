@@ -92,5 +92,15 @@ public class CriteriaRepository :ICriteriaRepository
             .SelectMany(p => p.Criteria)
             .FirstOrDefault(c => c.Name == critName);
     }
+
+    public Criteria ReadCriteriaByNameWithAnswerOptions(Guid panelId, string critName)
+    {
+        return _context.Panels
+            .Include(p => p.Criteria)
+            .ThenInclude(c => c.AnswerOptions)
+            .Where(p => p.Id == panelId)
+            .SelectMany(p => p.Criteria)
+            .FirstOrDefault(c => c.Name == critName);
+    }
     
 }

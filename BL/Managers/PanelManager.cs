@@ -48,6 +48,11 @@ public class PanelManager : IPanelManager
         return _repo.ReadPanelMember(memberId);
     }
 
+    public PanelMember GetPanelMemberWithCriteriaResponses(Guid id)
+    {
+        return _repo.ReadPanelMemberWithCriteriaResponses(id);
+    }
+
     public PanelMember GetPanelMemberWithPanel(Guid id)
     {
         return _repo.ReadPanelMemberWithPanel(id);
@@ -212,7 +217,12 @@ public class PanelManager : IPanelManager
 
     public IEnumerable<PanelMember> GetAllPanelMembersForPanel(Guid panelId)
     {
-        return _repo.ReadAllPanelMembersForPanel(panelId);
+        return _repo.ReadPanelMembersWithCriteria(panelId);
+    }
+
+    public Panel GetPanelWithCriteriaAndCriteriaAnswerOptions(Guid panelId)
+    {
+        return _repo.ReadPanelWithCriteriaAndAnswerOptions(panelId);
     }
 
     public void UpdatePanel(Guid id, bool isRegistrationOpen)

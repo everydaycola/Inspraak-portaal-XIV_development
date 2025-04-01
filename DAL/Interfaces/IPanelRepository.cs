@@ -6,6 +6,7 @@ public interface IPanelRepository
 {
     public Panel ReadPanel(Guid id);
     public PanelMember ReadPanelMember(Guid id);
+    public PanelMember ReadPanelMemberWithCriteriaResponses(Guid id);
     public PanelMember ReadPanelMemberWithPanel(Guid id);
     public Panel ReadPanelWithRepresentationGroup(Guid id);
     public IEnumerable<PanelMember> ReadPanelMembersWithCriteria(Guid id);
@@ -20,4 +21,5 @@ public interface IPanelRepository
     ICollection<PanelMember> ReadPanelMembersAndRepresentationGroup(Guid id);
     void CreateCriteria(Criteria criteria);
     IEnumerable<PanelMember> ReadAllPanelMembersForPanel(Guid panelId);
+    Panel ReadPanelWithCriteriaAndAnswerOptions(Guid panelId);
 }

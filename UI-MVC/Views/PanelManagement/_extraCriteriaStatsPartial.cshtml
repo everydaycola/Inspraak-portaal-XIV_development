@@ -3,27 +3,34 @@
 <div class="card shadow-sm border-0 col-8 mt-4">
     <h3 class="mb-0">Verdeling extra criteria</h3>
     <div class="card-body">
-        <p>(Deze weergave gaat over enkelvoudige criteria bv. een man met rijbewijs komt zowel in "rijbewijs", "Ja" voor als in "man")</p>
-        @foreach (var kpv in Model.CriteriaMemberCount)
+        <p>(Deze weergave gaat over enkelvoudige criteria bv. een man met rijbewijs komt zowel in rijbewijs Ja voor als in man)</p>
+
+        @foreach (var pair in Model.CriteriaMemberCount)
         {
-            <h4>@kpv.Key</h4> 
-            @foreach (var innerKpv in kpv.Value)
-            {
-                <div>
-                    <h5>@innerKpv.Key</h5>
-                    <div class="progress">
-                        <div class="progress-bar"
-                             role="progressbar"
-                             style="width: @(Model.SuccesfulRegistrationCount == 0 ? 0 : (innerKpv.Value * 100) / Model.SuccesfulRegistrationCount)%"
-                             aria-valuenow="@innerKpv.Value"
-                             aria-valuemin="0"
-                             aria-valuemax="@Model.SuccesfulRegistrationCount">
-                            @(Model.SuccesfulRegistrationCount == 0 ? 0 : (innerKpv.Value * 100) / Model.SuccesfulRegistrationCount)
-                            %
+            <div class="mb-3">
+                <!-- Criterion Title -->
+                <h5 class="fw-bold">@pair.Key</h5>
+
+                @foreach (var option in pair.Value)
+                {
+                    var percentage = Model.TotalMemberCount > 0
+                        ? (option.Value / (double)Model.TotalMemberCount) * 100
+                        : 0;
+
+                    <div class="mb-2">
+                        <p class="mb-1">@option.Key (@option.Value leden)</p>
+                        <div class="progress">
+                            <div class="progress-bar bg-primary" role="progressbar"
+                                 style="width: @percentage%"
+                                 aria-valuenow="@percentage"
+                                 aria-valuemin="0"
+                                 aria-valuemax="100">
+                                @($"{percentage:F2}%")
+                            </div>
                         </div>
                     </div>
-                </div>
-            }
+                }
+            </div>
         }
     </div>
 </div>

@@ -35,7 +35,7 @@ public class CriteriaManager : ICriteriaManager
     
     public Dictionary<string, ICollection<PanelMember>> GetPanelMembersGroupedByResponses(Guid panelId)
     {
-        Dictionary<string, ICollection<PanelMember>> result = new();
+        Dictionary<string, ICollection<PanelMember>> result = new Dictionary<string, ICollection<PanelMember>>();
         var panelMembers = _panelManager.GetAllPanelMembersForPanel(panelId);
         foreach (var member in panelMembers)
         {
@@ -47,6 +47,35 @@ public class CriteriaManager : ICriteriaManager
             result[groupName].Add(member);
         }
         return result;
+    }
+
+    public void SavePanelMemberCriteriaResponses(Guid panelId,Dictionary<string, string> CriteriaAnswers, PanelMember member)
+    {
+        foreach (var entry in CriteriaAnswers)
+        {
+            string criteriaName = entry.Key;
+            string selectedOption = entry.Value;
+            var criteria = GetCriteriaByNameWithAnswerOptions(panelId, criteriaName);
+            if (criteria != null)
+            {
+                var validOptions = criteria.AnswerOptions;
+                if (validOptions.Any(option => option.Option == selectedOption))
+                {
+                    member.Responses.Add(new CriteriaResponse
+                    {
+                        Criteria = criteria,
+                        SelectedOption = selectedOption,
+                    });
+                    member.HasAnsweredAllQuestions = true;
+                    _panelManager.UpdatePanelMember(member);
+                }
+                else
+                {
+                    _logger.Log(LogLevel.Critical, "Member " + member.PanelMemberId + " tried inserting an invalid option for a criteria question.");
+                }
+            }
+            _logger.Log(LogLevel.Critical, "Member " + member.PanelMemberId + " tried submitting a non existing criteria.");
+        }
     }
 
     /*public IEnumerable<CriteriaGroup> GetAllCriteriaGroupForPanel(Guid panelId)
@@ -63,50 +92,13 @@ public class CriteriaManager : ICriteriaManager
     {
         return _repo.ReadCriteriaGroupByid(criteriaGroupId);
     }*/
-
-    /*public CriteriaGroup AssignMemberToCriteriaGroup(Guid panelId, Dictionary<string, string> CriteriaAnswers, PanelMember member)
-    {
-        string groupName = string.Join("-", CriteriaAnswers.Values);
-
-        ICollection<CriteriaAnswer> criteriaAnswers = new List<CriteriaAnswer>();
-        foreach (var crit in CriteriaAnswers)
-        {
-            Criteria criteria = this.GetCriteriaByName(panelId, crit.Key);
-            //FIND CRITERIA BASED ON THE KEY 
-            CriteriaValue value = this.GetCriteriaValueBasedOnCriteriaAndValue(criteria.CriteriaId, crit.Value);
-
-            if (criteria != null && value != null)
-            {
-                CriteriaAnswer criteriaAnswer = new CriteriaAnswer(criteria, value);
-                criteriaAnswers.Add(criteriaAnswer);
-            }
-        }
-        
-        
-        var existingCriteriaGroup = _repo.ReadCriteriaGroupForPanel(panelId, groupName);
-        if (existingCriteriaGroup != null)
-        {
-            
-            existingCriteriaGroup.PanelMembers.Add(member);
-            _repo.UpdateCriteriaGroup(existingCriteriaGroup);
-            _logger.Log(LogLevel.Information, string.Format("Member {0} added to criteriaGroup {1}",member.PanelMemberId, groupName));
-        }else{
-            _logger.Log(LogLevel.Information, string.Format("Creating new criteriagroup for {0}",groupName));
-            var newCriteriaGroup = new CriteriaGroup
-            {
-                Name = groupName,
-                CriteriaAnswers = criteriaAnswers,
-            };
-            newCriteriaGroup.PanelMembers.Add(member);
-            _repo.CreateCriteriaGroup(newCriteriaGroup);
-
-        }
-        
-        return _repo.ReadCriteriaGroupForPanel(panelId, groupName);
-    }*/
-
+    
     public Criteria GetCriteriaByName(Guid panelId,string critName)
     {
         return _repo.ReadCriteriaByName(panelId, critName);
+    }
+    public Criteria GetCriteriaByNameWithAnswerOptions(Guid panelId,string critName)
+    {
+        return _repo.ReadCriteriaByNameWithAnswerOptions(panelId, critName);
     }
 }

@@ -9,6 +9,6 @@ public class NewPanelMemberDto
     public string Email { get; set; }
     public bool IsRegistrationOpen { get; set; }
     public bool HasAnsweredQuestions { get; set; }
-    public IEnumerable<CriteriaResponse> NonDefaultCriteria { get; set; }
+    public IEnumerable<Criteria> NonDefaultCriteria { get; set; }
     public IEnumerable<CriteriaResponse> DefaultCriteria { get; set; }
 }

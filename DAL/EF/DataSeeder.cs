@@ -25,17 +25,34 @@ public static class DataSeeder
         };
         
         //PanelMembers
-        var panelMember1 = new PanelMember { Panel = panel1 };
-        var panelMember2 = new PanelMember{ Panel = panel1 };
-        var panelMember3 = new PanelMember{ Panel = panel1 };
-        var panelMember4 = new PanelMember{ Panel = panel1 };
-        var panelMember5 = new PanelMember{ Panel = panel1 };
+        var panelMember1 = new PanelMember
+        {
+            Panel = panel1, 
+            Responses = new List<CriteriaResponse>()
+        };
+        var panelMember2 = new PanelMember
+        {
+            Panel = panel1,
+            Responses = new List<CriteriaResponse>()
+            
+        };
+        var panelMember3 = new PanelMember
+        {
+            Panel = panel1,
+            Responses = new List<CriteriaResponse>()
+        };
+        var panelMember4 = new PanelMember
+        {
+            Panel = panel1,
+            Responses = new List<CriteriaResponse>()
+        };
+        var panelMember5 = new PanelMember
+        {
+            Panel = panel1,
+            Responses = new List<CriteriaResponse>()
+        };
         
         //CriteriaGroup (default groups SHOULD be based on default values only)!
-        //TODO: REMOVE THESE LINES
-        //var criteriaGroup1 = new CriteriaGroup("Man",new List<PanelMember>{panelMember1,panelMember3,panelMember5}, true);
-        //var criteriaGroup2 = new CriteriaGroup("Vrouw",new List<PanelMember>{panelMember2, panelMember4}, true);
-        
         //CRITERIA
         var criteria1 = new Criteria
         {
@@ -58,6 +75,7 @@ public static class DataSeeder
             IsDefault=true,
             AnswerOptions =new List<CriteriaAnswerOption>()
         };
+        
         //criteriaAnswerOptions
         var cao1 = new CriteriaAnswerOption
         {
@@ -95,6 +113,41 @@ public static class DataSeeder
             Option = "Vrouw"
         };
         
+        //seeding default answers to default criteria
+        var cr1 = new CriteriaResponse
+        {
+            Criteria = criteria3,
+            SelectedOption = "Man"
+        };
+        var cr2 = new CriteriaResponse
+        {
+            Criteria = criteria3,
+            SelectedOption = "Man"
+        };
+        var cr3 = new CriteriaResponse
+        {
+            Criteria = criteria3,
+            SelectedOption = "Vrouw"
+        };
+        var cr4 = new CriteriaResponse
+        {
+            Criteria = criteria3,
+            SelectedOption = "Vrouw"
+        };
+        var cr5 = new CriteriaResponse
+        {
+            Criteria = criteria3,
+            SelectedOption = "Man"
+        };
+        
+        
+        //LINK PANELMEMBERS WITH CRITERIARESPONSES
+        panelMember1.Responses.Add(cr1);
+        panelMember2.Responses.Add(cr2);
+        panelMember3.Responses.Add(cr3);
+        panelMember4.Responses.Add(cr4);
+        panelMember5.Responses.Add(cr5);
+        
     
         //LINK REP. GROUP WITH PANEL
         rg1.Panel = panel1;
@@ -120,8 +173,9 @@ public static class DataSeeder
         context.RepresentationGroups.Add(rg1);
         context.Panels.Add(panel1);
         
-        AddMultipleEntities([panelMember1, panelMember2, panelMember3, panelMember4, panelMember5]);
         AddMultipleEntities([cao1, cao2,cao3,cao4,cao5,cao6,cao7]);
+        AddMultipleEntities([cr1,cr2,cr3,cr4,cr5]);
+        AddMultipleEntities([panelMember1, panelMember2, panelMember3, panelMember4, panelMember5]);
         AddMultipleEntities([criteria1, criteria2, criteria3]);
         //AddMultipleEntities([criteriaGroup1, criteriaGroup2 ]);
         //AddMultipleEntities([value1, value2, value3, value4, value5, value6, value7 ]);
