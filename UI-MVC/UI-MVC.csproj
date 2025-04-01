@@ -22,10 +22,30 @@
         <Content Remove="$(MpaRoot)**"/>
         <None Remove="$(MpaRoot)**"/>
         <None Include="$(MpaRoot)**" Exclude="$(MpaRoot)node_modules\**"/>
+        <Content Remove="Areas\Identity\Pages\_ViewStart.cshtml" />
+        <Content Remove="Areas\Identity\Pages\_ValidationScriptsPartial.cshtml" />
+        <Content Remove="Areas\Identity\Pages\Account\Register.cshtml" />
+        <Content Remove="Areas\Identity\Pages\Account\Logout.cshtml" />
     </ItemGroup>
 
     <ItemGroup>
+      <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="8.0.10" />
+      <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="8.0.10" />
+      <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.10">
+        <PrivateAssets>all</PrivateAssets>
+        <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      </PackageReference>
       <PackageReference Include="QRCoder" Version="1.6.0" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Compile Remove="Areas\Identity\Pages\Account\Register.cshtml.cs" />
+      <Compile Remove="Areas\Identity\Pages\Account\Logout.cshtml.cs" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Areas\Identity\Data\" />
+      <Folder Include="Areas\Identity\Pages\Account\" />
     </ItemGroup>
 
     <Target Name="NpmInstall" BeforeTargets="Build" Condition=" !Exists('$(MpaRoot)node_modules') ">
