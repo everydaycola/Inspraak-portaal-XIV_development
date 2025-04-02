@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DAL.EF;
 
-public class CitizenPanelDbContext : DbContext
+public class CitizenPanelDbContext : IdentityDbContext<IdentityUser>
 {
     public DbSet<Panel> Panels { get; set; }
     public DbSet<PanelMember> PanelMembers { get; set; }
@@ -51,4 +51,5 @@ public class CitizenPanelDbContext : DbContext
         }
         return Database.EnsureCreated();
     }
+    
 }

@@ -4,7 +4,8 @@ namespace DAL.EF;
 
 public static class DataSeeder
 {
-   private static CitizenPanelDbContext _context;
+    private static CitizenPanelDbContext _context;
+
     public static void Seed(CitizenPanelDbContext context)
     {
         Console.WriteLine("Seeding...");
@@ -168,7 +169,7 @@ public static class DataSeeder
         
         //SET REGISTRATION TO OPEN
         panel1.IsRegistrationOpen = true;
-        
+
         //SAVE TO DATABASE
         context.RepresentationGroups.Add(rg1);
         context.Panels.Add(panel1);
@@ -182,7 +183,7 @@ public static class DataSeeder
         context.SaveChanges();
         context.ChangeTracker.Clear();
     }
-    
+
     private static void AddMultipleEntities<T>(List<T> entities) where T : class
     {
         foreach (var entity in entities)
