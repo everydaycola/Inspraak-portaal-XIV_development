@@ -41,7 +41,7 @@ public class PanelManagementController : Controller
         pmd.ExtraCriteriaViewModel.uniqueCodesDto = new uniqueCodesDto
         {
             panelId = panel.Id, 
-            panelMembers = _criteriaManager.GetPanelMembersGroupedByResponses(panel.Id)
+            panelMembers = _criteriaManager.GetPanelMembersGroupedByResponsesForDefaultCriteria(panel.Id)
         };
         return View(pmd);
     }
