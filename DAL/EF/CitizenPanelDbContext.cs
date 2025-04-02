@@ -1,9 +1,11 @@
 ﻿using Domain.CitizenPanel;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace DAL.EF;
 
-public class CitizenPanelDbContext : DbContext
+public class CitizenPanelDbContext : IdentityDbContext<IdentityUser>
 {
     public DbSet<Panel> Panels { get; set; }
     public DbSet<PanelMember> PanelMembers { get; set; }
@@ -13,7 +15,7 @@ public class CitizenPanelDbContext : DbContext
     public DbSet<CriteriaValue> CriteriaValues { get; set; }
     public DbSet<CriteriaAnswer> CriteriaAnswers { get; set; }
 
-    public CitizenPanelDbContext(DbContextOptions options) : base(options)
+    public CitizenPanelDbContext(DbContextOptions<CitizenPanelDbContext> options) : base(options)
     {
     }
 

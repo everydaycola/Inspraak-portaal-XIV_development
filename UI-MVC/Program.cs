@@ -4,7 +4,9 @@ using BL.Managers;
 using DAL.EF;
 using DAL.Interfaces;
 using DAL.Repositories;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using UI_MVC;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -25,6 +27,12 @@ builder.Services.AddDbContext<CitizenPanelDbContext>(options =>
     options.UseNpgsql(connectionString);
 });
 
+builder.Services
+    .AddDefaultIdentity<IdentityUser>()
+    .AddRoles<IdentityRole>()
+    .AddEntityFrameworkStores<CitizenPanelDbContext>();
+
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -40,6 +48,11 @@ using (var scope = app.Services.CreateScope())
     var context = scope.ServiceProvider.GetRequiredService<CitizenPanelDbContext>();
     if (context.CreateDatabase(dropDatabase: true))
     {
+        // Identity
+        var userManager = scope.ServiceProvider.GetService<UserManager<IdentityUser>>();
+        IdentitySeeder identitySeeder = new IdentitySeeder(userManager);
+        await identitySeeder.SeedAsync();
+
         DataSeeder.Seed(context);
     }
 }
@@ -49,9 +62,10 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
-
+app.MapRazorPages();
 // todo: the /id thing isnt very relevant here, copied from .net project. 
 app.MapControllerRoute(
     name: "default",
