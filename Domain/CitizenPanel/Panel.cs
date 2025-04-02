@@ -4,7 +4,6 @@ public class Panel
 {
     public Guid Id { get; set; }
     public string Name { get; set; }
-    //public ICollection<PanelMember> PanelMembers { get; set; }
     public ICollection<Criteria> Criteria { get; set; }
     public RepresentationGroup RepresentationGroup { get; set; }
     public double SampleRate { get; set; }

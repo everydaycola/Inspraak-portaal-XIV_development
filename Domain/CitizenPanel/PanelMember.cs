@@ -7,6 +7,4 @@ public class PanelMember
     public string Email { get; set; }
     public Panel Panel { get; set; }
     public ICollection<CriteriaResponse> Responses { get; set; }
-    //public CriteriaGroup CriteriaGroup { get; set; }
-
 }

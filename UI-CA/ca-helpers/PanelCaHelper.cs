@@ -6,10 +6,14 @@ namespace UI_CA.ca_helpers;
 public class PanelCaHelper
 {
     private readonly IPanelManager _manager;
+    private readonly ICalculationManager _calcManager;
+    private readonly ICriteriaManager _critManager;
 
-    public PanelCaHelper(IPanelManager panelManager)
+    public PanelCaHelper(IPanelManager panelManager, ICriteriaManager criteriaManager, ICalculationManager calculationManager)
     {
         _manager = panelManager;
+        _critManager = criteriaManager;
+        _calcManager = calculationManager;
     }
 
     // Updated GetPanelGuidsPerGroup method
@@ -19,31 +23,18 @@ public class PanelCaHelper
 
         var sb = new StringBuilder();
         sb.AppendLine($"Name: {panel.Name}");
-        sb.AppendLine($"Size: {panel.PanelMembers.Count}");
+        sb.AppendLine($"Size: {_calcManager.CalculateAmountOfMembersInPanel(panel.Id)}");
 
-        // Extract member IDs and their associated criteria answers
-        var criteriaMemberPairs = panel.PanelMembers
-            .SelectMany(member => member.CriteriaGroup.CriteriaAnswers
-                .Select(answer => new
-                {
-                    MemberId = member.PanelMemberId,
-                    CriterionName = answer.Criteria.Name,
-                    CriterionValue = answer.CriteriaValue.Value
-                }));
 
-        // Group by criterion name and value
-        var groupedByCriteria = criteriaMemberPairs
-            .GroupBy(pair => new { pair.CriterionName, pair.CriterionValue })
-            .OrderBy(group => group.Key.CriterionName)
-            .ThenBy(group => group.Key.CriterionValue);
-
-        foreach (var group in groupedByCriteria)
+        var criteriaMemberPairs = _critManager.GetPanelMembersGroupedByResponsesForDefaultCriteria(panel.Id);
+        
+        foreach (var group in criteriaMemberPairs)
         {
-            sb.AppendLine($"Criterion: {group.Key.CriterionName}, Value: {group.Key.CriterionValue}");
+            sb.AppendLine($"Criterion: {group.Key}");
 
-            foreach (var member in group)
+            foreach (var member in group.Value)
             {
-                sb.AppendLine(member.MemberId.ToString());
+                sb.AppendLine(member.PanelMemberId.ToString());
             }
 
             sb.AppendLine();
@@ -59,32 +50,13 @@ public class PanelCaHelper
 
         var sb = new StringBuilder();
         sb.AppendLine($"Name: {panel.Name}");
-        sb.AppendLine($"Size: {panel.PanelMembers.Count}");
+        sb.AppendLine($"Size: {_calcManager.CalculateAmountOfMembersInPanel(panel.Id)}");
 
-        // Extract all criteria answers from members
-        var allCriteria = panel.PanelMembers
-            .SelectMany(member => member.CriteriaGroup.CriteriaAnswers
-                .Select(answer => new
-                {
-                    CriteriaName = answer.Criteria.Name,
-                    CriteriaValue = answer.CriteriaValue.Value
-                }));
-
-        // Group by criterion name and value, and count occurrences
-        var counts = allCriteria
-            .GroupBy(c => new { c.CriteriaName, c.CriteriaValue })
-            .Select(group => new
-            {
-                group.Key.CriteriaName,
-                group.Key.CriteriaValue,
-                Count = group.Count()
-            })
-            .OrderBy(item => item.CriteriaName)
-            .ThenBy(item => item.CriteriaValue);
+        var counts = _calcManager.CalculateAllCriteriaCountForPanel(panel.Id);
 
         foreach (var item in counts)
         {
-            sb.AppendLine($"Criterion: {item.CriteriaName}, Value: {item.CriteriaValue}, Count: {item.Count}");
+            sb.AppendLine($"Criterion: {item.Key},Count: {item.Value}");
         }
 
         return sb.ToString();

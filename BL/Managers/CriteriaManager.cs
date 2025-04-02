@@ -22,12 +22,7 @@ public class CriteriaManager : ICriteriaManager
     {
         return _repo.ReadAllCriteriaWithValuesForPanel(panelId);
     }
-
-    /*public CriteriaValue GetCriteriaValueBasedOnCriteriaAndValue(Guid CriteriaId, string criteriaValue)
-    {
-        return _repo.ReadCriteriaValueBasedOnCriteriaAndValue(CriteriaId, criteriaValue);
-    }*/
-
+    
     public IEnumerable<Criteria> GetAllNonDefaultCriteriaWithValuesForPanel(Guid panelId)
     {
         return _repo.ReadAllNonDefaultCriteriaWithValuesForPanel(panelId);
@@ -51,7 +46,7 @@ public class CriteriaManager : ICriteriaManager
         return result;
     }
     
-    public Dictionary<string, ICollection<PanelMember>> GetPanelMembersWhichCompletedExtraCriteriaGroupedByResponses(Guid panelId)
+    public Dictionary<string, ICollection<PanelMember>> GetPanelMembersWithCompletedCriteriaGroupedByResponse(Guid panelId)
     {
         var result = new Dictionary<string, ICollection<PanelMember>>();
         var panelMembers = _panelManager.GetAllPanelMembersWhichAnsweredAllQuestionsWithCriteria(panelId);
@@ -86,7 +81,17 @@ public class CriteriaManager : ICriteriaManager
         }
         return result;
     }
-
+    
+    
+    public Criteria GetCriteriaByName(Guid panelId,string critName)
+    {
+        return _repo.ReadCriteriaByName(panelId, critName);
+    }
+    public Criteria GetCriteriaByNameWithAnswerOptions(Guid panelId,string critName)
+    {
+        return _repo.ReadCriteriaByNameWithAnswerOptions(panelId, critName);
+    }
+    
     public void SavePanelMemberCriteriaResponses(Guid panelId,Dictionary<string, string> CriteriaAnswers, PanelMember member)
     {
         foreach (var entry in CriteriaAnswers)
@@ -114,29 +119,5 @@ public class CriteriaManager : ICriteriaManager
             }
             _logger.Log(LogLevel.Critical, "Member " + member.PanelMemberId + " tried submitting a non existing criteria.");
         }
-    }
-
-    /*public IEnumerable<CriteriaGroup> GetAllCriteriaGroupForPanel(Guid panelId)
-    {
-        return _repo.ReadAllCriteriaGroupForPanel(panelId);
-    }*/
-    
-    /*public CriteriaGroup GetCriteriaGroupByMemberId(Guid memberId)
-    {
-        return _repo.ReadCriteriaGroupByMemberId(memberId);
-    }*/
-
-    /*public CriteriaGroup GetCriteriaGroupById(Guid criteriaGroupId)
-    {
-        return _repo.ReadCriteriaGroupByid(criteriaGroupId);
-    }*/
-    
-    public Criteria GetCriteriaByName(Guid panelId,string critName)
-    {
-        return _repo.ReadCriteriaByName(panelId, critName);
-    }
-    public Criteria GetCriteriaByNameWithAnswerOptions(Guid panelId,string critName)
-    {
-        return _repo.ReadCriteriaByNameWithAnswerOptions(panelId, critName);
     }
 }

@@ -12,10 +12,6 @@ public class CitizenPanelDbContext : DbContext
     public DbSet<CriteriaAnswerOption> CriteriaAnswerOptions { get; set; }
     public DbSet<CriteriaResponse> CriteriaResponses { get; set; }
     
-    //public DbSet<CriteriaGroup> CriteriaGroups { get; set; }
-    //public DbSet<CriteriaValue> CriteriaValues { get; set; }
-    //public DbSet<CriteriaAnswer> CriteriaAnswers { get; set; }
-
     public CitizenPanelDbContext(DbContextOptions options) : base(options)
     {
     }
@@ -46,33 +42,7 @@ public class CitizenPanelDbContext : DbContext
         // Panelmember 1 - * CriteriaResponse
         modelBuilder.Entity<PanelMember>()
             .HasMany(pm => pm.Responses);
-
-        /*
-        //panelmember 1-* CriteriaGroup
-        modelBuilder.Entity<PanelMember>()
-            .HasOne(pm => pm.CriteriaGroup)
-            .WithMany(cg => cg.PanelMembers);
-        //criteriagroup 1-* criteriaAnswer
-        modelBuilder.Entity<CriteriaGroup>()
-            .HasMany(cg => cg.CriteriaAnswers)
-            .WithOne(c => c.CriteriaGroup);
-
-        //criteriaAnswer * - 1 criteria
-        modelBuilder.Entity<CriteriaAnswer>()
-            .HasOne(ca => ca.Criteria)
-            .WithMany(c => c.CriteriaAnswers);
-        modelBuilder.Entity<CriteriaAnswer>()
-            .HasOne(ca => ca.CriteriaValue)
-            .WithMany(c => c.CriteriaAnswers);
-    //public Criteria criteria { get; set; }
-    //public CriteriaValue criteriaValue { get; set; }
-        //criteria 1 - * criteriavalues
-        modelBuilder.Entity<Criteria>()
-            .HasMany(c => c.Values)
-            .WithOne(c => c.Criteria);*/
-
     }
-
     public bool CreateDatabase(bool dropDatabase)
     {
         if (dropDatabase)
@@ -81,5 +51,4 @@ public class CitizenPanelDbContext : DbContext
         }
         return Database.EnsureCreated();
     }
-    
 }

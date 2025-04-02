@@ -12,12 +12,17 @@ public class PanelManager : IPanelManager
     {
         _repo = repo;
     }
-
+    //GET
     public Panel GetPanel(Guid id)
     {
         return _repo.ReadPanel(id);
     }
 
+    public IEnumerable<Panel> GetAllPanels()
+    {
+        return _repo.ReadAllPanels();
+    }
+    
     public Panel GetPanelWithRepresentationGroup(Guid id)
     {
         return _repo.ReadPanelWithRepresentationGroup(id);
@@ -32,17 +37,7 @@ public class PanelManager : IPanelManager
     {
         return _repo.ReadPanelMembersWithCriteria(id);
     }
-
-    public PanelMember GetPanelByUserId(Guid memberId)
-    {
-        return _repo.ReadPanelByUserId(memberId);
-    }
-
-    public IEnumerable<Panel> GetAllPanels()
-    {
-        return _repo.ReadAllPanels();
-    }
-
+    
     public PanelMember GetPanelMemberById(Guid memberId)
     {
         return _repo.ReadPanelMember(memberId);
@@ -57,7 +52,22 @@ public class PanelManager : IPanelManager
     {
         return _repo.ReadPanelMemberWithPanel(id);
     }
+    public IEnumerable<PanelMember> GetAllPanelMembersForPanel(Guid panelId)
+    {
+        return _repo.ReadPanelMembersWithCriteria(panelId);
+    }
 
+    public IEnumerable<PanelMember> GetAllPanelMembersWhichAnsweredAllQuestionsWithCriteria(Guid id)
+    {
+        return _repo.ReadPanelMembersWhichAnsweredAllQuestionsWithCriteria(id);
+    }
+
+    public Panel GetPanelWithCriteriaAndCriteriaAnswerOptions(Guid panelId)
+    {
+        return _repo.ReadPanelWithCriteriaAndAnswerOptions(panelId);
+    }
+
+    //ADD
     public Panel AddPanel(string name, int size, double sampleRate,
         Dictionary<string, Dictionary<string, double>> distribution, int citizenCount, double reservePercentage,
         double responseRate)
@@ -219,40 +229,7 @@ public class PanelManager : IPanelManager
             }
         }
     }
-
-    public int CalculatePanelSize(int citizenCount, double samplePercentage)
-    {
-        //CitizenCount = amount of citizens in gemeente.
-        return (int)(citizenCount * samplePercentage);
-    }
-
-    public int CalculateAmountOfReserve(int panelSize, double samplePercentage)
-    {
-        //panelSize = calculatedByCalculatePanelSize
-        return (int)(panelSize * samplePercentage);
-    }
-
-    public int CalculateTotalInvitesNeeded(int panelSizeIncludingReserve, double responseRate)
-    {
-        //basePanelSize = calculated by CalculatePanelSize
-        //Response rate is a percentage which indicates the expected rate of response to invites.
-        return (int)(panelSizeIncludingReserve / responseRate);
-    }
-
-    public IEnumerable<PanelMember> GetAllPanelMembersForPanel(Guid panelId)
-    {
-        return _repo.ReadPanelMembersWithCriteria(panelId);
-    }
-
-    public IEnumerable<PanelMember> GetAllPanelMembersWhichAnsweredAllQuestionsWithCriteria(Guid id)
-    {
-        return _repo.ReadPanelMembersWhichAnsweredAllQuestionsWithCriteria(id);
-    }
-
-    public Panel GetPanelWithCriteriaAndCriteriaAnswerOptions(Guid panelId)
-    {
-        return _repo.ReadPanelWithCriteriaAndAnswerOptions(panelId);
-    }
+    //UPDATE
 
     public void UpdatePanel(Guid id, bool isRegistrationOpen)
     {
