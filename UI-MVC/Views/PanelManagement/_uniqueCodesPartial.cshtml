@@ -55,14 +55,6 @@
                         }
                         </tbody>
                     </table>
-                    //TODO Get this qr code generator working.
-                    <a asp-controller="QRCode"
-                       asp-action="DownloadQrCodesForSpecificCriteriaGroup"
-                        asp-route-groupMembers="@group.Value"
-                        asp-route-groupName="@group.Key"
-                       class="btn btn-primary mt-2">
-                        QR codes downloaden voor iedereen in deze criteria groep
-                    </a>
                 </div>
             </div>
         </div>
