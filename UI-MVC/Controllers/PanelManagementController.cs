@@ -38,7 +38,6 @@ public class PanelManagementController : Controller
         pmd.IsRegistrationOpen = panel.IsRegistrationOpen;
         pmd.ExtraCriteriaViewModel.CriteriaMemberCount = _calcManager.CalculateAllCriteriaCountForPanel(panel.Id);
         pmd.ExtraCriteriaViewModel.SuccesfulRegistrationCount = _calcManager.CalculateSuccesfulRegistrationCount(panel.Id);
-        pmd.ExtraCriteriaViewModel.TotalMemberCount = _calcManager.CalculateSuccesfulRegistrationCount(panel.Id);
         pmd.ExtraCriteriaViewModel.uniqueCodesDto = new uniqueCodesDto
         {
             panelId = panel.Id, 

@@ -8,6 +8,9 @@ public interface ICriteriaManager
     public IEnumerable<Criteria> GetAllNonDefaultCriteriaWithValuesForPanel(Guid panelId);
 
     public Dictionary<string, ICollection<PanelMember>> GetPanelMembersGroupedByResponses(Guid panelId);
+
+    public Dictionary<string, ICollection<PanelMember>>
+        GetPanelMembersWhichCompletedExtraCriteriaGroupedByResponses(Guid panelId);
     //public IEnumerable<CriteriaGroup> GetAllCriteriaGroupForPanel(Guid panelId);
     //public CriteriaGroup GetCriteriaGroupByMemberId(Guid memberId);
     //public CriteriaGroup GetCriteriaGroupById(Guid criteriaGroupId);

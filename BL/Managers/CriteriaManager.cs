@@ -50,6 +50,24 @@ public class CriteriaManager : ICriteriaManager
         }
         return result;
     }
+    
+    public Dictionary<string, ICollection<PanelMember>> GetPanelMembersWhichCompletedExtraCriteriaGroupedByResponses(Guid panelId)
+    {
+        var result = new Dictionary<string, ICollection<PanelMember>>();
+        var panelMembers = _panelManager.GetAllPanelMembersWhichAnsweredAllQuestionsWithCriteria(panelId);
+        foreach (var member in panelMembers)
+        {
+            var groupName = string.Join("-", member.Responses.OrderBy(r => r.Criteria.Name).Select(r => r.SelectedOption).ToList());
+            if (!result.TryGetValue(groupName, out var value))
+            {
+                value = new List<PanelMember>();
+                result[groupName] = value; 
+            }
+
+            value.Add(member);
+        }
+        return result;
+    }
 
     public void SavePanelMemberCriteriaResponses(Guid panelId,Dictionary<string, string> CriteriaAnswers, PanelMember member)
     {

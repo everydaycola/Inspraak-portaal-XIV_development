@@ -39,7 +39,7 @@ public class CalculationManager : ICalculationManager
     }
     private int CalculateAmountOfMembersWithSpecificCriteria(Guid panelId, string searchedCriteriaName, string searchedCriteriaValue)
     {
-        var responseGroups = _critManager.GetPanelMembersGroupedByResponses(panelId);
+        var responseGroups = _critManager.GetPanelMembersWhichCompletedExtraCriteriaGroupedByResponses(panelId);
         var count =  responseGroups
             .Where(group => GroupContainsCriteria(group.Key, searchedCriteriaName, searchedCriteriaValue))
             .SelectMany(group => group.Value)
