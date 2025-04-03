@@ -4,6 +4,7 @@ using DAL.Repositories;
 using Domain.CitizenPanel;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
+using UI_MVC;
 
 namespace BL.Managers;
 
@@ -93,7 +94,7 @@ public class PanelManager : IPanelManager
         }
 
         var userRole = _userRepo.ReadUserRole(userId);
-        if (userRole == null || (userRole.Name != "Admin" && userRole.Name != "Organisatie"))
+        if (userRole == null || (userRole.Name != CustomIdentityConstants.AdminRole && userRole.Name != CustomIdentityConstants.OrganisatieRole))
         {
             var errorMessage = "User with id " + userId + " is not in a valid role to create a panel!";
             _logger.Log(LogLevel.Critical, errorMessage);
