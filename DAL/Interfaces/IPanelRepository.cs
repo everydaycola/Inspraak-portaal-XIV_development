@@ -7,6 +7,7 @@ public interface IPanelRepository
     //READ
     public Panel ReadPanel(Guid id);
     public IEnumerable<Panel> ReadAllPanels();
+    IEnumerable<Panel> ReadAllPanelsOwnedBy(string userId);
     public PanelMember ReadPanelMember(Guid id);
     public PanelMember ReadPanelMemberWithCriteriaResponses(Guid id);
     public PanelMember ReadPanelMemberWithPanel(Guid id);

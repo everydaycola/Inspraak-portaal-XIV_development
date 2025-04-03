@@ -1,4 +1,6 @@
 using BL.Interfaces;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using UI_MVC.Models.Dto;
 
@@ -7,20 +9,25 @@ namespace UI_MVC.Controllers;
 public class PanelController : Controller
 {
     private readonly IPanelManager _manager;
+    private readonly UserManager<IdentityUser> _userManager;
 
-    public PanelController(IPanelManager manager)
+    public PanelController(IPanelManager manager, UserManager<IdentityUser> userManager)
     {
         _manager = manager;
+        _userManager = userManager;
     }
 
+    [Authorize]
     public IActionResult MakeNewPanel()
     {
         return View();
     }
     
     [HttpPost]
+    [Authorize]
     public IActionResult AddNewPanel(NewPanelDto newPanelDto)
     {
+        string userId = _userManager.GetUserId(User);
         var createdPanel = _manager.AddPanel(
             newPanelDto.Name,
             newPanelDto.Size,
@@ -28,7 +35,8 @@ public class PanelController : Controller
             newPanelDto.Distributions,
             newPanelDto.CitizenCount,
             newPanelDto.ReservePercentage,
-            newPanelDto.ResponseRate
+            newPanelDto.ResponseRate,
+            userId
         );
         
         return RedirectToAction("Index", "PanelManagement",new { id = createdPanel.Id });
@@ -37,6 +45,7 @@ public class PanelController : Controller
     [HttpPost]
     public IActionResult AddDefaultPanel()
     {
+        string userId = _userManager.GetUserId(User);
         var createdPanel = _manager.AddPanel(
             "Panel rond alcoholgebruik",
             150,
@@ -61,7 +70,8 @@ public class PanelController : Controller
             },
             10000,
             0.2,
-            0.005
+            0.005,
+            userId = userId
         );
         return RedirectToAction("Index", "PanelManagement",new { id = createdPanel.Id });
     }

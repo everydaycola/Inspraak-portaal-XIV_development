@@ -1,16 +1,23 @@
 ﻿using BL.Interfaces;
 using DAL.Interfaces;
+using DAL.Repositories;
 using Domain.CitizenPanel;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Logging;
 
 namespace BL.Managers;
 
 public class PanelManager : IPanelManager
 {
+    private readonly ILogger<PanelManager> _logger;
     private readonly IPanelRepository _repo;
+    private readonly IUserRepository _userRepo;
 
-    public PanelManager(IPanelRepository repo)
+    public PanelManager(ILogger<PanelManager> logger,IPanelRepository repo, IUserRepository userRepo)
     {
+        _logger = logger;
         _repo = repo;
+        _userRepo = userRepo;
     }
     //GET
     public Panel GetPanel(Guid id)
@@ -22,7 +29,12 @@ public class PanelManager : IPanelManager
     {
         return _repo.ReadAllPanels();
     }
-    
+
+    public IEnumerable<Panel> GetAllPanelsOwnedBy(string userId)
+    {
+        return _repo.ReadAllPanelsOwnedBy(userId);
+    }
+
     public Panel GetPanelWithRepresentationGroup(Guid id)
     {
         return _repo.ReadPanelWithRepresentationGroup(id);
@@ -70,8 +82,23 @@ public class PanelManager : IPanelManager
     //ADD
     public Panel AddPanel(string name, int size, double sampleRate,
         Dictionary<string, Dictionary<string, double>> distribution, int citizenCount, double reservePercentage,
-        double responseRate)
+        double responseRate,string userId)
     {
+        var user = _userRepo.ReadUser(userId);
+        if (user == null)
+        {
+            var errorMessage = "user with id " + userId + " is not a valid user!";
+            _logger.Log(LogLevel.Critical, errorMessage);
+            throw new UnauthorizedAccessException(errorMessage);
+        }
+
+        var userRole = _userRepo.ReadUserRole(userId);
+        if (userRole == null || (userRole.Name != "Admin" && userRole.Name != "Organisatie"))
+        {
+            var errorMessage = "User with id " + userId + " is not in a valid role to create a panel!";
+            _logger.Log(LogLevel.Critical, errorMessage);
+            throw new UnauthorizedAccessException(errorMessage);
+        }
         // Create and initialize the panel
         var panel = new Panel
         {
@@ -82,7 +109,8 @@ public class PanelManager : IPanelManager
                 CitizenCount = citizenCount,
                 ReservePercentage = reservePercentage,
                 ResponseRate = responseRate
-            }
+            },
+            Owner = user
         };
 
         // Generate members
