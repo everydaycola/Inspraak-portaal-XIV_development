@@ -7,10 +7,12 @@ public class ConsoleUi
 {
     private readonly IPanelManager _manager;
     private readonly PanelCaHelper panelCaHelper;
+    private readonly ICalculationManager calculationManager;
+    private readonly ICriteriaManager criteriaManager;
     public ConsoleUi(IPanelManager manager)
     {
         _manager = manager;
-        panelCaHelper = new PanelCaHelper(_manager);
+        panelCaHelper = new PanelCaHelper(_manager, criteriaManager, calculationManager);
     }
     
     public void Start()

@@ -23,11 +23,20 @@ public class PanelRepository : IPanelRepository
     {
         return _context.PanelMembers.Find(id);
     }
+
+    public PanelMember ReadPanelMemberWithCriteriaResponses(Guid id)
+    {
+        return _context.PanelMembers
+            .Include(pm => pm.Responses)
+            .Single(p => p.PanelMemberId == id);
+    }
     
     public PanelMember ReadPanelMemberWithPanel(Guid id)
     {
         return _context.PanelMembers
             .Include(pm => pm.Panel)
+            .Include(pm => pm.Responses)
+                .ThenInclude(pm => pm.Criteria)
             .Single(p => p.PanelMemberId == id);
     }
 
@@ -38,27 +47,33 @@ public class PanelRepository : IPanelRepository
             .Single(p => p.Id == id);
     }
 
-    public Panel ReadPanelWithPanelMembersAndCriteria(Guid id)
+    public IEnumerable<PanelMember> ReadPanelMembersWithCriteria(Guid id)
     {
-        return _context.Panels.Include(p => p.PanelMembers)
-            .ThenInclude(p => p.CriteriaGroup)
-            .ThenInclude(p => p.CriteriaAnswers)
-            .ThenInclude(p => p.Criteria)
-            .Single(p => p.Id == id);
+        return _context.PanelMembers
+            .Include(pm => pm.Panel)
+                .ThenInclude(p => p.Criteria)
+                .ThenInclude(c => c.AnswerOptions)
+            .Include(pm => pm.Responses)
+            .Where(pm => pm.Panel.Id == id) 
+            .ToList();
     }
 
+    public IEnumerable<PanelMember> ReadPanelMembersWhichAnsweredAllQuestionsWithCriteria(Guid id)
+    {
+        return _context.PanelMembers
+            .Include(pm => pm.Panel)
+            .ThenInclude(p => p.Criteria)
+            .ThenInclude(c => c.AnswerOptions)
+            .Include(pm => pm.Responses)
+            .Where(pm => pm.Panel.Id == id && pm.HasAnsweredAllQuestions == true) 
+            .ToList();
+    }
+    
     public IEnumerable<Panel> ReadAllPanels()
     {
         return _context.Panels.ToList();
     }
-
-    public PanelMember ReadPanelByUserId(Guid memberId)
-    {
-        return _context.PanelMembers
-            .Include(pm => pm.Panel)
-            .Single(pm => pm.PanelMemberId == memberId);
-    }
-
+    
     public PanelMember UpdatePanelMember(PanelMember member)
     {
         _context.PanelMembers.Update(member);
@@ -66,48 +81,27 @@ public class PanelRepository : IPanelRepository
 
         return ReadPanelMemberWithPanel(member.PanelMemberId);
     }
-
-    public void CreatePanel(Panel panel)
-    {
-        _context.Panels.Add(panel);
-        _context.SaveChanges();
-    }
-
-    public void CreateCriteriaGroup(CriteriaGroup criteriaGroup)
-    {
-        _context.CriteriaGroups.Add(criteriaGroup);
-        _context.SaveChanges();
-    }
+    
     public void CreatePanelMember(PanelMember panelMember)
     {
         _context.PanelMembers.Add(panelMember);
         _context.SaveChanges();
     }
 
-    public void DeletePanel(Panel panel)
+    public ICollection<PanelMember> ReadPanelMembersAndRepresentationGroup(Guid id)
     {
-        _context.Panels.Remove(panel);
-        _context.SaveChanges();
+        return _context.PanelMembers.Include(pm => pm.Panel)
+            .ThenInclude(pm => pm.RepresentationGroup)
+            .Where(pm => pm.Panel.Id == id)
+            .ToList();
     }
-
-    public void DeletePanelMember(PanelMember member)
-    {
-        _context.PanelMembers.Remove(member);
-        _context.SaveChanges();
-    }
-
-    public Panel ReadPanelWithMembersAndRepresentationGroup(Guid id)
+    
+    public Panel ReadPanelWithCriteriaAndAnswerOptions(Guid panelId)
     {
         return _context.Panels
-            .Include(p => p.PanelMembers)
-            .Include(p => p.RepresentationGroup)
-            .Single(p => p.Id == id);
-    }
-
-    public void CreateCriteria(Criteria criteria)
-    {
-        _context.Criteria.Update(criteria);
-        _context.SaveChanges();
+            .Include(p => p.Criteria)
+            .ThenInclude(p => p.AnswerOptions)
+            .Single(p => p.Id == panelId);
     }
 
     public void UpdatePanel(Panel panel)

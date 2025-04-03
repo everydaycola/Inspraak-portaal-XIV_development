@@ -10,5 +10,5 @@ public class NewPanelMemberDto
     public bool IsRegistrationOpen { get; set; }
     public bool HasAnsweredQuestions { get; set; }
     public IEnumerable<Criteria> NonDefaultCriteria { get; set; }
-    public IEnumerable<CriteriaAnswer> DefaultCriteria { get; set; }
+    public IEnumerable<CriteriaResponse> DefaultCriteria { get; set; }
 }

@@ -16,19 +16,7 @@ public class FileManager : IFileManager
         _qrCodeGenerator = qrCodeGenerator;
         _logger = logger;
     }
-
-    public byte[] CreateZipFileForAllCodesInAGroup(CriteriaGroup criteriaGroup, string defaultUri)
-    {
-        using var ms = new MemoryStream();
-        using (var archive = new ZipArchive(ms, ZipArchiveMode.Create, true))
-        {
-            AddGroupQrCodesToArchive(archive, criteriaGroup, defaultUri);
-        }
-
-        ms.Position = 0;
-        return ms.ToArray();
-    }
-
+    
     public byte[] CreateSingleQrCode(string qrCodeData)
     {
         try
@@ -42,14 +30,14 @@ public class FileManager : IFileManager
         }
     }
 
-    public byte[] CreateZipFileForAllCodesInAllGroups(IEnumerable<CriteriaGroup> criteriaGroups, string defaultUri)
+    public byte[] CreateZipFileForMultiplePanelMembers(IEnumerable<PanelMember> members, string defaultUri)
     {
         using var ms = new MemoryStream();
         using (var archive = new ZipArchive(ms, ZipArchiveMode.Create, true))
         {
-            foreach (var group in criteriaGroups)
+            foreach (var member in members)
             {
-                AddGroupQrCodesToArchive(archive, group, defaultUri);
+                AddGroupQrCodesToArchive(archive, member, defaultUri);
             }
         }
 
@@ -57,19 +45,13 @@ public class FileManager : IFileManager
         return ms.ToArray();
     }
     
-    private void AddGroupQrCodesToArchive(ZipArchive archive, CriteriaGroup group, string defaultUri)
+    private void AddGroupQrCodesToArchive(ZipArchive archive, PanelMember member, string defaultUri)
     {
-        foreach (var member in group.PanelMembers)
-        {
-            var qrCodeBytes = _qrCodeGenerator.GenerateQrCode($"{defaultUri}?UserId={member.PanelMemberId.ToString()}");
-
-            if (qrCodeBytes == null || qrCodeBytes.Length == 0)
-            {
-                throw new InvalidOperationException("Failed to generate QR code.");
-            }
-            var entry = archive.CreateEntry($"{group.Name}/qrcode_{member.PanelMemberId}.png");
-            using var entryStream = entry.Open();
-            entryStream.Write(qrCodeBytes, 0, qrCodeBytes.Length);
-        }
+        var qrCodeBytes = _qrCodeGenerator.GenerateQrCode($"{defaultUri}?UserId={member.PanelMemberId.ToString()}");
+        var memberCriteriaGroupName = member.Responses;
+        var groupName = string.Join("-", member.Responses.Select(r => r.SelectedOption));
+        var entry = archive.CreateEntry($"{groupName}/qrcode_{member.PanelMemberId}.png");
+        using var entryStream = entry.Open();
+        entryStream.Write(qrCodeBytes, 0, qrCodeBytes.Length);
     }
 }
