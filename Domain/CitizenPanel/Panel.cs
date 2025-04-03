@@ -1,4 +1,6 @@
-﻿namespace Domain.CitizenPanel;
+﻿using Microsoft.AspNetCore.Identity;
+
+namespace Domain.CitizenPanel;
 
 public class Panel
 {
@@ -9,4 +11,5 @@ public class Panel
     public double SampleRate { get; set; }
     public bool IsRegistrationOpen { get; set; }
     public int SuccesfulRegistrationCount { get; set; }
+    public IdentityUser Owner { get; set; }
 }

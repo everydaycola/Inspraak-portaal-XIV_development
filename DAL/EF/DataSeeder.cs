@@ -22,7 +22,8 @@ public static class DataSeeder
         var panel1 = new Panel
         {
             Name="Verkeersveiligheid in en rond Antwerpen.", 
-            SampleRate = 0.005
+            SampleRate = 0.005,
+            Owner = context.Users.Single(user => user.Email == "user@antwerpen.be")
         };
         
         //PanelMembers
