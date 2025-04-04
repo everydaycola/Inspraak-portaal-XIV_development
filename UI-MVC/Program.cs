@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Identity.Client;
 using UI_MVC;
+using UI_MVC.TempTenant;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -22,6 +23,14 @@ builder.Services.AddScoped<IFileManager, FileManager>();
 builder.Services.AddScoped<ICriteriaManager, CriteriaManager>();
 builder.Services.AddScoped<ICriteriaRepository, CriteriaRepository>();
 builder.Services.AddScoped<ICalculationManager, CalculationManager>();
+
+//Tenant specific logic
+builder.Services
+    .AddOrganisationContext()
+    .AddScoped<TenantMiddleware>();
+builder.Services.Configure<AvailableOrganisations>(
+    builder.Configuration.GetSection(AvailableOrganisations.SectionName)
+);
 
 var connectionString = Environment.GetEnvironmentVariable("ConnectionStrings__DefaultConnection");
 builder.Services.AddDbContext<CitizenPanelDbContext>(options =>
@@ -61,6 +70,7 @@ using (var scope = app.Services.CreateScope())
 }
 
 app.UseHttpsRedirection();
+app.UseMiddleware<TenantMiddleware>();
 app.UseStaticFiles();
 
 app.UseRouting();

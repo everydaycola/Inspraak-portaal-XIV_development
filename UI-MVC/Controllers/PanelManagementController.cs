@@ -58,7 +58,7 @@ public class PanelManagementController : Controller
     public IActionResult PanelSelection()
     {
         string userId = _userManager.GetUserId(User);
-        var panels = _manager.GetAllPanelsOwnedBy(userId);
+        var panels = _manager.GetAllPanels();
         return View(panels);
     }
     public IActionResult ToggleRegistration(Guid panelId)

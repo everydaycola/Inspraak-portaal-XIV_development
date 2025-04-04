@@ -1,8 +1,9 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using UI_MVC;
 
 namespace Domain.CitizenPanel;
 
-public class Panel
+public class Panel : IOrganisational
 {
     public Guid Id { get; set; }
     public string Name { get; set; }
@@ -12,4 +13,5 @@ public class Panel
     public bool IsRegistrationOpen { get; set; }
     public int SuccesfulRegistrationCount { get; set; }
     public IdentityUser Owner { get; set; }
+    public string OrganisationId { get; set; }
 }

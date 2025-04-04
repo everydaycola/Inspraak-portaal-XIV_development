@@ -1,16 +1,7 @@
-﻿using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
+using DAL;
 using Microsoft.Extensions.Options;
 
-namespace Domain.CitizenPanel;
-
-public class Organisation
-{
-    public string Id { get; set; }
-    public string Name { get; set; }
-    public string BackgroundColor { get; set; }
-    public string BackgroundImage { get; set; }
-}
+namespace UI_MVC.TempTenant;
 
 public class AvailableOrganisations
 {
@@ -25,17 +16,13 @@ public class AvailableOrganisationsSetup(IConfiguration configuration) : IConfig
         configuration.GetSection(AvailableOrganisations.SectionName).Bind(options);
     }
 }
-
-public class OrganisationContext
-{
-    public Organisation organisation { get; set; } = new();
-}
-
 public static class OrganisationExtensions
 {
     public static IServiceCollection AddOrganisationContext(this IServiceCollection services)
     {
         services.AddScoped<OrganisationContext>();
-        services.AddTransient<Organisation>();
+        services.AddTransient<Organisation>(p => p.GetRequiredService<OrganisationContext>().Organisation);
+        services.AddSingleton<IConfigureOptions<AvailableOrganisations>, AvailableOrganisationsSetup>();
+        return services;
     }
 }
