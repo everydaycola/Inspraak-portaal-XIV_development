@@ -22,20 +22,20 @@ public class IdentitySeeder
             Email = "admin@test.com"
         };
         await _userManager.CreateAsync(admin, "Admin123!");
-        await _userManager.AddToRoleAsync(admin, "Admin");
+        await _userManager.AddToRoleAsync(admin, CustomIdentityConstants.AdminRole);
 
         var organisatie1 = new IdentityUser("user@antwerpen.be")
         {
             Email = "user@antwerpen.be"
         };
         await _userManager.CreateAsync(organisatie1, "Antwerpen123!");
-        await _userManager.AddToRoleAsync(organisatie1, "Organisatie");
+        await _userManager.AddToRoleAsync(organisatie1, CustomIdentityConstants.OrganisatieRole);
 
     }
 
     private async Task SeedRoles()
     {
-        var roles = new[] { "Admin","Organisatie"};
+        var roles = new[] { CustomIdentityConstants.AdminRole,CustomIdentityConstants.OrganisatieRole};
         foreach (var role in roles)
         {
             if (!await _roleManager.RoleExistsAsync(role))

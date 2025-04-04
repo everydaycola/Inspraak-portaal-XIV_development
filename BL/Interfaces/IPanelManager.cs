@@ -7,6 +7,7 @@ public interface IPanelManager
     //GET
     public Panel GetPanel(Guid id);
     public IEnumerable<Panel> GetAllPanels();
+    IEnumerable<Panel> GetAllPanelsOwnedBy(string userId);
     public Panel GetPanelWithRepresentationGroup(Guid id);
     public ICollection<PanelMember> GetPanelMembersAndRepresentationGroup(Guid id);
     public IEnumerable<PanelMember> GetPanelWithPanelMembersAndCriteria(Guid id);
@@ -19,7 +20,7 @@ public interface IPanelManager
     //ADD
     public Panel AddPanel(string name, int size, double sampleRate,
         Dictionary<string, Dictionary<string, double>> distribution, int citizenCount, double reservePercentage,
-        double responseRate);
+        double responseRate, string userId);
     //UPDATE
     public void UpdatePanel(Guid id, bool isRegistrationOpen);
     public void UpdatePanelRegistrationCount(Guid id, bool increase);

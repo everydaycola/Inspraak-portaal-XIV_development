@@ -6,6 +6,7 @@ using DAL.Interfaces;
 using DAL.Repositories;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Identity.Client;
 using UI_MVC;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -13,6 +14,7 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
+builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IPanelRepository, PanelRepository>();
 builder.Services.AddScoped<IPanelManager, PanelManager>();
 builder.Services.AddScoped<QrCodeGenerator, QrCodeGenerator>();

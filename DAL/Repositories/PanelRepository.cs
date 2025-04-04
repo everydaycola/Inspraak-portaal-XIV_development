@@ -19,6 +19,11 @@ public class PanelRepository : IPanelRepository
         return _context.Panels.Find(id);
     }
 
+    public IEnumerable<Panel> ReadAllPanelsOwnedBy(string userId)
+    {
+        return _context.Panels.Where(p => p.Owner.Id == userId).ToList();
+    }
+
     public PanelMember ReadPanelMember(Guid id)
     {
         return _context.PanelMembers.Find(id);
