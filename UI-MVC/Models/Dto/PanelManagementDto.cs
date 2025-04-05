@@ -13,6 +13,7 @@ public class PanelManagementDto
     public int TotalInvitesNeeded { get; set; }
     public bool IsRegistrationOpen { get; set; }
     public ExtraCriteriaViewModel ExtraCriteriaViewModel { get; set; }
+    public IEnumerable<PlanningGroupMember> PlanningGroupMembers { get; set; }
 
     public PanelManagementDto(Guid panelId, string panelName, int citizenCount, int amountOfAcceptedInvites)
     {

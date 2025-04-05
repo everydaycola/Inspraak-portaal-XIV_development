@@ -6,7 +6,6 @@ using DAL.Interfaces;
 using DAL.Repositories;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Identity.Client;
 using UI_MVC;
 using UI_MVC.TempTenant;
 

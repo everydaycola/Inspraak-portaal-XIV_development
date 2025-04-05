@@ -21,6 +21,7 @@ public class CitizenPanelDbContext : IdentityDbContext<IdentityUser>
     public DbSet<Criteria> Criteria { get; set; }
     public DbSet<CriteriaAnswerOption> CriteriaAnswerOptions { get; set; }
     public DbSet<CriteriaResponse> CriteriaResponses { get; set; }
+    public DbSet<PlanningGroupMember> PlanningGroupMembers { get; set; }
     
     public CitizenPanelDbContext(DbContextOptions options, OrganisationContext organisationContext) : base(options)
     {
@@ -66,6 +67,10 @@ public class CitizenPanelDbContext : IdentityDbContext<IdentityUser>
         // Panelmember 1 - * CriteriaResponse
         modelBuilder.Entity<PanelMember>()
             .HasMany(pm => pm.Responses);
+        
+        //Planningroepmember 1..*-* Panel
+        modelBuilder.Entity<PlanningGroupMember>()
+            .HasOne(pgm => pgm.Panel);
     }
     public bool CreateDatabase(bool dropDatabase)
     {

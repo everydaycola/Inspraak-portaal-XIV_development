@@ -1,4 +1,5 @@
 ﻿using Domain.CitizenPanel;
+using Microsoft.AspNetCore.Identity;
 
 namespace DAL.EF;
 
@@ -25,6 +26,46 @@ public static class DataSeeder
             SampleRate = 0.005,
             Owner = context.Users.Single(user => user.Email == "user@antwerpen.be"),
             OrganisationId = "antwerpen"
+        };
+        //PlanningGroupMembers
+        var PlanningGroupUser1 = new IdentityUser
+        {
+            Email = "pgm@antwerpen.be",
+            NormalizedEmail = "PGM@ANTWERPEN.BE",
+            UserName = "PGM",
+            NormalizedUserName = "PGM"
+        };
+        var PlanningGroupUser2 = new IdentityUser
+        {
+            Email = "owner@antwerpen.be",
+            NormalizedEmail = "OWNER@ANTWERPEN.BE",
+            UserName = "Owner",
+            NormalizedUserName = "Owner"
+        };
+        var PlanningGroupUser3 = new IdentityUser
+        {
+            Email = "JanDeRijke@antwerpen.be",
+            NormalizedEmail = "JanDeRijke@ANTWERPEN.BE",
+            UserName = "Jan De Rijke",
+            NormalizedUserName = "JANDERIJKE"
+        };
+        _context.Users.Add(PlanningGroupUser1);
+        _context.Users.Add(PlanningGroupUser2);
+        _context.Users.Add(PlanningGroupUser3);
+        var pgm1 = new PlanningGroupMember
+        {
+            Panel = panel1,
+            User = PlanningGroupUser1
+        };
+        var pgm2 = new PlanningGroupMember
+        {
+            Panel = panel1,
+            User = PlanningGroupUser2
+        };
+        var pgm3 = new PlanningGroupMember
+        {
+            Panel = panel1,
+            User = PlanningGroupUser3
         };
         
         //PanelMembers
@@ -179,6 +220,7 @@ public static class DataSeeder
         AddMultipleEntities([cao1, cao2,cao3,cao4,cao5,cao6,cao7]);
         AddMultipleEntities([cr1,cr2,cr3,cr4,cr5]);
         AddMultipleEntities([panelMember1, panelMember2, panelMember3, panelMember4, panelMember5]);
+        AddMultipleEntities([pgm1, pgm2,pgm3]);
         AddMultipleEntities([criteria1, criteria2, criteria3]);
         //AddMultipleEntities([criteriaGroup1, criteriaGroup2 ]);
         //AddMultipleEntities([value1, value2, value3, value4, value5, value6, value7 ]);
