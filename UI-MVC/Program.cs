@@ -69,10 +69,10 @@ using (var scope = app.Services.CreateScope())
 }
 
 app.UseHttpsRedirection();
-app.UseMiddleware<TenantMiddleware>();
 app.UseStaticFiles();
 
 app.UseRouting();
+app.UseMiddleware<TenantMiddleware>();
 
 app.UseAuthentication();
 app.UseAuthorization();

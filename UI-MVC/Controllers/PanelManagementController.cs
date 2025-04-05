@@ -9,6 +9,7 @@ using UI_MVC.Models.Dto;
 
 namespace UI_MVC.Controllers;
 
+[RequiresOrganisation]
 public class PanelManagementController : Controller
 {
     private readonly ILogger<PanelManagementController> _logger;

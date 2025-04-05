@@ -1,4 +1,5 @@
-﻿using Domain.CitizenPanel;
+﻿using Domain;
+using Domain.CitizenPanel;
 using Microsoft.AspNetCore.Identity;
 
 namespace DAL.EF;
@@ -28,26 +29,29 @@ public static class DataSeeder
             OrganisationId = "antwerpen"
         };
         //PlanningGroupMembers
-        var PlanningGroupUser1 = new IdentityUser
+        var PlanningGroupUser1 = new ApplicationUser
         {
             Email = "pgm@antwerpen.be",
             NormalizedEmail = "PGM@ANTWERPEN.BE",
             UserName = "PGM",
-            NormalizedUserName = "PGM"
+            NormalizedUserName = "PGM",
+            OrganisationId = "antwerpen"
         };
-        var PlanningGroupUser2 = new IdentityUser
+        var PlanningGroupUser2 = new ApplicationUser
         {
             Email = "owner@antwerpen.be",
             NormalizedEmail = "OWNER@ANTWERPEN.BE",
             UserName = "Owner",
-            NormalizedUserName = "Owner"
+            NormalizedUserName = "Owner",
+            OrganisationId = "antwerpen"
         };
-        var PlanningGroupUser3 = new IdentityUser
+        var PlanningGroupUser3 = new ApplicationUser()
         {
             Email = "JanDeRijke@antwerpen.be",
             NormalizedEmail = "JanDeRijke@ANTWERPEN.BE",
             UserName = "Jan De Rijke",
-            NormalizedUserName = "JANDERIJKE"
+            NormalizedUserName = "JANDERIJKE",
+            OrganisationId = "antwerpen"
         };
         _context.Users.Add(PlanningGroupUser1);
         _context.Users.Add(PlanningGroupUser2);

@@ -8,7 +8,15 @@ public class TenantMiddleware(OrganisationContext organisationContext, IOptionsS
     public Task InvokeAsync(HttpContext context, RequestDelegate next)
     {
         var subdomain = context.Request.Host.Host.Split('.')[0];
+        
+        var endpoint = context.GetEndpoint();
+        var requiresOrg = endpoint?.Metadata.GetMetadata<RequiresOrganisation>();
 
+        if (requiresOrg == null)
+        {
+            return next(context);
+        }
+        
         var matchingTenant = availableTenants.Value.Organisations.FirstOrDefault(t => t.Id == subdomain);
         if (matchingTenant == null)
         {
