@@ -17,55 +17,66 @@
         <div class="card-body">
             <div class="mb-4">
                 <form method="post" asp-controller="Panel" asp-action="AddNewPanel">
-                <div class="d-flex flex-column">
-                    <h5 class="card-title">Informatie</h5>
-                    <div class="d-flex flex-row py-2">
-                        <label class="card-text pe-4" for="name"><strong>Naam:</strong></label>
-                        <input id="name" asp-for="Name" class="border border-1 rounded-2" type="text" placeholder="Panel rond alcoholgebruik"/>
-                    </div>
-                    @*
+                    <div class="d-flex flex-column">
+                        <h5 class="card-title">Informatie</h5>
+                        <div class="d-flex flex-row py-2">
+                            <label class="card-text pe-4" for="name"><strong>Naam:</strong></label>
+                            <input id="name" asp-for="Name" class="border border-1 rounded-2" type="text"
+                                   placeholder="Panel rond alcoholgebruik"/>
+                        </div>
+                        @*
                     TODO Deelgemeneent toevoegen
                     - knopje [deelgemeente/wijk toevoegen]
                     - Naam en Grootte
                     *@
-                    <div class="d-flex flex-row py-2">
-                        <button class="btn btn-primary">Deelgemeente of Wijk Toevoegen</button>
-                    </div>
-                    
-                    <div class="d-flex flex-row py-2">
-                        <label class="card-text pe-4" for="size"><strong>Grootte:</strong></label>
-                        <input id="size" asp-for="Size" class="border border-1 rounded-2" type="number" placeholder="150"/>
+
+                        <div id="subregions-container" class="d-flex flex-column py-2">
+                            <strong class="card-text">Aantal Inwoners</strong>
+                            <a id="sub-region-btn" type="button" class="btn btn-secondary col-3 my-2">Deelgemeente of Wijk Toevoegen</a>
+
+                            <div class="mb-2">
+                                <input name="subRegion-1-name" placeholder="Naam" type="text" class="form-control d-inline w-50 me-2"/>
+                                <input name="subRegions-1-size" placeholder="Grootte" type="number" class="form-control d-inline w-25"/>
+                            </div>
+
+                        </div>
+
+                        <div class="d-flex flex-row py-2">
+                            <label class="card-text pe-4" for="size"><strong>Grootte:</strong></label>
+                            <input id="size" asp-for="Size" class="border border-1 rounded-2" type="number"
+                                   placeholder="150"/>
+                        </div>
+
+                        <div class="d-flex flex-row py-2">
+                            <label class="card-text pe-4" for="sample-rate"><strong>Sample rate:</strong></label>
+                            <p><input id="sample-rate" asp-for="SampleRate" min="0.001" step=".001"
+                                      class="border border-1 rounded-2" type="number" placeholder="0.5"/>%</p>
+                        </div>
                     </div>
 
-                    <div class="d-flex flex-row py-2">
-                        <label class="card-text pe-4" for="sample-rate"><strong>Sample rate:</strong></label>
-                        <p><input id="sample-rate" asp-for="SampleRate" min="0.001" step=".001" class="border border-1 rounded-2" type="number" placeholder="0.5"/>%</p>
-                    </div>
-                </div>
+                    <div class="d-flex flex-column">
+                        <h5 class="card-title">Criteria</h5>
+                        <div class="mt-4">
+                            <h6><strong>Sex verdeling</strong></h6>
+                            <ul class="list-group list-group-flush">
+                                <li class="list-group-item"><strong>Man:</strong> 40%</li>
+                                <li class="list-group-item"><strong>Vrouw:</strong> 60%</li>
+                            </ul>
+                        </div>
 
-                <div class="d-flex flex-column">
-                    <h5 class="card-title">Criteria</h5>
+                        <div class="mt-4">
+                            <h6><strong>Leeftijd verdeling</strong></h6>
+                            <ul class="list-group list-group-flush">
+                                <li class="list-group-item"><strong>20-29:</strong> 20%</li>
+                                <li class="list-group-item"><strong>30-39:</strong> 60%</li>
+                                <li class="list-group-item"><strong>40-49:</strong> 20%</li>
+                            </ul>
+                        </div>
+                    </div>
+
                     <div class="mt-4">
-                        <h6><strong>Sex verdeling</strong></h6>
-                        <ul class="list-group list-group-flush">
-                            <li class="list-group-item"><strong>Man:</strong> 40%</li>
-                            <li class="list-group-item"><strong>Vrouw:</strong> 60%</li>
-                        </ul>
-                    </div>
-
-                    <div class="mt-4">
-                        <h6><strong>Leeftijd verdeling</strong></h6>
-                        <ul class="list-group list-group-flush">
-                            <li class="list-group-item"><strong>20-29:</strong> 20%</li>
-                            <li class="list-group-item"><strong>30-39:</strong> 60%</li>
-                            <li class="list-group-item"><strong>40-49:</strong> 20%</li>
-                        </ul>
-                    </div>
-                </div>
-
-                <div class="mt-4">
                         <button class="btn btn-primary" type="submit">Aanmaken</button>
-                </div>
+                    </div>
                 </form>
                 <div class="mt-4">
                     <h5 class="text-warning">TEMPORARY</h5>
