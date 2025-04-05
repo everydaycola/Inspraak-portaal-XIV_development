@@ -24,21 +24,15 @@
                             <input id="name" asp-for="Name" class="border border-1 rounded-2" type="text"
                                    placeholder="Panel rond alcoholgebruik"/>
                         </div>
-                        @*
-                    TODO Deelgemeneent toevoegen
-                    - knopje [deelgemeente/wijk toevoegen]
-                    - Naam en Grootte
-                    *@
-
+                        
                         <div id="subregions-container" class="d-flex flex-column py-2">
                             <strong class="card-text">Aantal Inwoners</strong>
                             <a id="sub-region-btn" type="button" class="btn btn-secondary col-3 my-2">Deelgemeente of Wijk Toevoegen</a>
 
                             <div class="mb-2">
-                                <input name="subRegion-1-name" placeholder="Naam" type="text" class="form-control d-inline w-50 me-2"/>
-                                <input name="subRegions-1-size" placeholder="Grootte" type="number" class="form-control d-inline w-25"/>
+                                <input name="SubRegions[0].Name" placeholder="Naam" type="text" class="form-control d-inline w-50 me-2"/>
+                                <input name="SubRegions[0].Size" placeholder="Grootte" type="number" class="form-control d-inline w-25"/>
                             </div>
-
                         </div>
 
                         <div class="d-flex flex-row py-2">
