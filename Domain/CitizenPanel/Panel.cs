@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Identity;
 
 namespace Domain.CitizenPanel;
 
-public class Panel
+public class Panel : IValidatableObject
 {
     public Guid Id { get; set; }
 
@@ -25,8 +25,17 @@ public class Panel
     public bool IsRegistrationOpen { get; set; }
 
     [Range(0, int.MaxValue, ErrorMessage = "Succesvol geregistreerde personen mag niet negatief zijn.")]
-    public int SuccesfulRegistrationCount { get; set; }
+    public int SuccessfulRegistrationCount { get; set; }
 
     [Required(ErrorMessage = "Panel moet een eigenaar hebben.")]
     public IdentityUser Owner { get; set; }
+
+    IEnumerable<ValidationResult> IValidatableObject.Validate(ValidationContext validationContext)
+    {
+        return (from c in Criteria
+            where Math.Abs(c.AnswerOptions.Select(o => o.DistributionPercentage).Sum() - 1) > 0.001
+            select new ValidationResult("De verdeling van de antwoord opties moet 100% zijn. " + 
+                                        "Nu: " + c.AnswerOptions.Select(c => c.DistributionPercentage).Sum() * 100,
+                [nameof(c)])).ToList();
+    }
 }

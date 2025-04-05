@@ -7,7 +7,7 @@ public class Criteria : IValidatableObject
     public Guid Id { get; set; }
 
     [Required(ErrorMessage = "Criteria moet een naam hebben.")]
-    [MinLength(4, ErrorMessage = "Criteria naam moet minimaal 4 karakters lang zijn.")]
+    [MinLength(2, ErrorMessage = "Criteria naam moet minimaal 2 karakters lang zijn.")]
     [MaxLength(20, ErrorMessage = "Criteria naam mag maximaal 20 karakters lang zijn.")]
     public string Name { get; set; }
 

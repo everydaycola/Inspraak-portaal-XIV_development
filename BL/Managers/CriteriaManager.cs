@@ -94,10 +94,8 @@ public class CriteriaManager : ICriteriaManager
     
     public void SavePanelMemberCriteriaResponses(Guid panelId,Dictionary<string, string> CriteriaAnswers, PanelMember member)
     {
-        foreach (var entry in CriteriaAnswers)
+        foreach (var (criteriaName, selectedOption) in CriteriaAnswers)
         {
-            string criteriaName = entry.Key;
-            string selectedOption = entry.Value;
             var criteria = GetCriteriaByNameWithAnswerOptions(panelId, criteriaName);
             if (criteria != null)
             {
