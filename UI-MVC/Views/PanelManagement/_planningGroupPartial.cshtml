@@ -1,0 +1,26 @@
+﻿@using Microsoft.AspNetCore.Mvc.TagHelpers
+@model IEnumerable<Domain.CitizenPanel.PlanningGroupMember>
+
+<div class="container mt-4">
+    <table class="table table-striped table-bordered">
+        <thead class="thead-dark">
+        <tr>
+            <th>ID</th>
+            <th>Email</th>
+            <th>Naam</th>
+            <th>Functie</th>
+        </tr>
+        </thead>
+        <tbody>
+        @foreach (var member in Model)
+        {
+            <tr>
+                <td>@member.Id</td>
+                <td>@member.User.Email</td>
+                <td>@member.User.UserName</td>
+                <td>Not implemented</td>
+            </tr>
+        }
+        </tbody>
+    </table>
+</div>

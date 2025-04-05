@@ -293,4 +293,9 @@ public class PanelManager : IPanelManager
     {
         return _repo.UpdatePanelMember(member);
     }
+
+    public IEnumerable<PlanningGroupMember> GetAllPlanningGroupMembersWithIdentityUserForPanel(Guid panelId)
+    {
+        return _repo.ReadAllPlanningGroupMembersWithIdentityUserForPanel(panelId);
+    }
 }

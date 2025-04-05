@@ -1,6 +1,10 @@
-﻿namespace Domain.CitizenPanel;
+﻿using Microsoft.AspNetCore.Identity;
+
+namespace Domain.CitizenPanel;
 
 public class PlanningGroupMember
 {
-    
+    public Guid Id { get; set; }
+    public Panel Panel { get; set; }
+    public IdentityUser User { get; set; }
 }

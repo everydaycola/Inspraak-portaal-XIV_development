@@ -63,6 +63,10 @@
                                 data-bs-target="#dataModal" data-panel-id="@Model.PanelId">
                             Unieke codes per criteria bekijken
                         </button>
+                        <button class="btn btn-primary mt-4" id="viewPlanningGroupButton" data-bs-toggle="modal"
+                                data-bs-target="#planningGroupModal" data-panel-id="@Model.PanelId">
+                            Planningsgroepsleden beheren
+                        </button>
                     </p>
                 </div>
             </div>
@@ -80,6 +84,22 @@
                 <div class="modal-body">
                     <div id="modalContent">
                         @Html.Partial("_uniqueCodesPartial", Model.ExtraCriteriaViewModel.uniqueCodesDto)
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="modal fade" id="planningGroupModal" tabindex="-1" aria-labelledby="planningGroupModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="planningGroupModalLabel">Unieke codes per criteria</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="planningGroupModalContent">
+                        @Html.Partial("_planningGroupPartial", Model.PlanningGroupMembers)
                     </div>
                 </div>
             </div>
