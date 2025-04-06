@@ -71,7 +71,7 @@ public class PanelController : Controller
             10000,
             0.2,
             0.005,
-            userId = userId
+            userId
         );
         return RedirectToAction("Index", "PanelManagement",new { id = createdPanel.Id });
     }

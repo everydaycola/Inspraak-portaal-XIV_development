@@ -51,6 +51,12 @@ public class PanelManager : IPanelManager
         return _repo.ReadPanelMembersWithCriteria(id);
     }
 
+    public Panel GetPanelWithCriteriaAndOptions(Guid id)
+    {
+        return _repo.ReadPanelWithCriteriaAndAnsweroptions(id);
+
+    }
+    
     public PanelMember GetPanelMemberById(Guid memberId)
     {
         return _repo.ReadPanelMember(memberId);

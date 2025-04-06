@@ -121,7 +121,7 @@ public class CriteriaManager : ICriteriaManager
                         throw new ValidationException(string.Join("\n", validationResults.Select(x => x.ErrorMessage)));
 
                     member.Responses.Add(criteriaResponse);
-                    member.HasAnsweredAllQuestions = true;
+                    member.HasRegistered = true;
                     _panelManager.UpdatePanelMember(member);
                 }
                 else
@@ -129,7 +129,11 @@ public class CriteriaManager : ICriteriaManager
                     _logger.Log(LogLevel.Critical, "Member " + member.PanelMemberId + " tried inserting an invalid option for a criteria question.");
                 }
             }
-            _logger.Log(LogLevel.Critical, "Member " + member.PanelMemberId + " tried submitting a non existing criteria.");
+            else
+            {
+                _logger.Log(LogLevel.Critical,
+                    "Member " + member.PanelMemberId + " tried submitting a non existing criteria.");
+            }
         }
     }
 }

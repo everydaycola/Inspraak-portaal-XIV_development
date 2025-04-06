@@ -45,6 +45,14 @@ public class PanelRepository : IPanelRepository
             .Single(p => p.PanelMemberId == id);
     }
 
+    public Panel ReadPanelWithCriteriaAndAnsweroptions(Guid id)
+    {
+        return _context.Panels
+            .Include(p => p.Criteria)
+            .ThenInclude(p => p.AnswerOptions)
+            .Single(p => p.Id == id);
+    }
+
     public Panel ReadPanelWithRepresentationGroup(Guid id)
     {
         return _context.Panels
@@ -70,7 +78,7 @@ public class PanelRepository : IPanelRepository
             .ThenInclude(p => p.Criteria)
             .ThenInclude(c => c.AnswerOptions)
             .Include(pm => pm.Responses)
-            .Where(pm => pm.Panel.Id == id && pm.HasAnsweredAllQuestions == true) 
+            .Where(pm => pm.Panel.Id == id && pm.HasRegistered == true) 
             .ToList();
     }
     

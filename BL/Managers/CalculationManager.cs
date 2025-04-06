@@ -17,7 +17,7 @@ public class CalculationManager : ICalculationManager
     public int CalculateSuccesfulRegistrationCount(Guid panelId)
     {
         return _panelManager.GetAllPanelMembersForPanel(panelId)
-            .Where(m => m.HasAnsweredAllQuestions)
+            .Where(m => m.HasRegistered)
             .Distinct()
             .Count();
     }

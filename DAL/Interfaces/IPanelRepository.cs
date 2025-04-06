@@ -11,6 +11,7 @@ public interface IPanelRepository
     public PanelMember ReadPanelMember(Guid id);
     public PanelMember ReadPanelMemberWithCriteriaResponses(Guid id);
     public PanelMember ReadPanelMemberWithPanel(Guid id);
+    public Panel ReadPanelWithCriteriaAndAnsweroptions(Guid id);
     public Panel ReadPanelWithRepresentationGroup(Guid id);
     public IEnumerable<PanelMember> ReadPanelMembersWithCriteria(Guid id);
     public IEnumerable<PanelMember> ReadPanelMembersWhichAnsweredAllQuestionsWithCriteria(Guid id);
