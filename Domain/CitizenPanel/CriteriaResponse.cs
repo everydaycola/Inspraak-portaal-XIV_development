@@ -10,7 +10,7 @@ public class CriteriaResponse
     public Criteria Criteria { get; set; }
 
     [Required(ErrorMessage = "Je moet een antwoord selecteren.")]
-    [MinLength(4, ErrorMessage = "Antwoord moet minimaal 4 karakters lang zijn.")]
+    [MinLength(2, ErrorMessage = "Antwoord moet minimaal 2 karakters lang zijn.")]
     [MaxLength(20, ErrorMessage = "Antwoord mag maximaal 20 karakters lang zijn.")]
     public string SelectedOption { get; set; }
 }
