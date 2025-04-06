@@ -21,4 +21,5 @@ public interface IPanelRepository
     public PanelMember UpdatePanelMember(PanelMember member);
     //CREATE
     public void CreatePanelMember(PanelMember panelMember);
+    IEnumerable<PlanningGroupMember> ReadAllPlanningGroupMembersWithIdentityUserForPanel(Guid panelId);
 }

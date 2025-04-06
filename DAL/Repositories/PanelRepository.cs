@@ -93,6 +93,14 @@ public class PanelRepository : IPanelRepository
         _context.SaveChanges();
     }
 
+    public IEnumerable<PlanningGroupMember> ReadAllPlanningGroupMembersWithIdentityUserForPanel(Guid panelId)
+    {
+        return _context.PlanningGroupMembers
+            .Include(pgm => pgm.User)
+            .Where(pgm => pgm.Panel.Id == panelId)
+            .ToList();
+    }
+
     public ICollection<PanelMember> ReadPanelMembersAndRepresentationGroup(Guid id)
     {
         return _context.PanelMembers.Include(pm => pm.Panel)
