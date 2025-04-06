@@ -1,4 +1,5 @@
 ﻿using System.Linq.Expressions;
+using Domain;
 using Domain.CitizenPanel;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
@@ -11,7 +12,7 @@ using UI_MVC;
 
 namespace DAL.EF;
 
-public class CitizenPanelDbContext : IdentityDbContext<IdentityUser>
+public class CitizenPanelDbContext : IdentityDbContext<ApplicationUser>
 {
     private readonly OrganisationContext _organisationContext;
     public string OrganisationId => _organisationContext.Organisation.Id;
@@ -31,7 +32,8 @@ public class CitizenPanelDbContext : IdentityDbContext<IdentityUser>
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         var organisationalModels = modelBuilder.Model.GetEntityTypes()
-                .Where(entity => typeof(IOrganisational).IsAssignableFrom(entity.ClrType));
+                .Where(entity => typeof(IOrganisational).IsAssignableFrom(entity.ClrType)
+                && !typeof(IdentityUser).IsAssignableFrom(entity.ClrType));
         foreach (var organisationalModel in organisationalModels)
         {
             modelBuilder.Entity(organisationalModel.ClrType)

@@ -4,9 +4,11 @@ using BL.Managers;
 using DAL.EF;
 using DAL.Interfaces;
 using DAL.Repositories;
+using Domain;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using UI_MVC;
+using UI_MVC.Models;
 using UI_MVC.TempTenant;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -38,7 +40,10 @@ builder.Services.AddDbContext<CitizenPanelDbContext>(options =>
 });
 
 builder.Services
-    .AddDefaultIdentity<IdentityUser>()
+    .AddDefaultIdentity<ApplicationUser>()
+    .AddEntityFrameworkStores<CitizenPanelDbContext>()
+    .AddUserStore<ApplicationUserStore>()
+    .AddSignInManager<MultiOrganisationSignInManager>()
     .AddRoles<IdentityRole>()
     .AddEntityFrameworkStores<CitizenPanelDbContext>();
 
@@ -59,7 +64,7 @@ using (var scope = app.Services.CreateScope())
     if (context.CreateDatabase(dropDatabase: true))
     {
         // Identity
-        var userManager = scope.ServiceProvider.GetService<UserManager<IdentityUser>>();
+        var userManager = scope.ServiceProvider.GetService<UserManager<ApplicationUser>>();
         var roleManager = scope.ServiceProvider.GetService <RoleManager<IdentityRole>>();
         IdentitySeeder identitySeeder = new IdentitySeeder(userManager,roleManager);
         await identitySeeder.SeedAsync();
