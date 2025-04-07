@@ -21,4 +21,11 @@ public class OrganisationRepository : IOrganisationRepository
     {
         return _context.Organisations.ToList();
     }
+
+    public Organisation UpdateOrganisation(Organisation existingOrganisation)
+    {
+        _context.Organisations.Update(existingOrganisation);
+        _context.SaveChanges();
+        return ReadOrganisationById(existingOrganisation.Id);
+    }
 }
