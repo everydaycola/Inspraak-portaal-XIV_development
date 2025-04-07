@@ -1,3 +1,6 @@
-﻿// Custom attribute definition
+// Custom attribute definition
 [AttributeUsage(AttributeTargets.Method | AttributeTargets.Class)]
-public class RequiresOrganisation : Attribute { }
+public class RequiresOrganisation : Attribute
+{
+    
+}

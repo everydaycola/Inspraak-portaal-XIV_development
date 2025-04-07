@@ -34,10 +34,7 @@ builder.Services.Configure<AvailableOrganisations>(
 );
 
 var connectionString = Environment.GetEnvironmentVariable("ConnectionStrings__DefaultConnection");
-builder.Services.AddDbContext<CitizenPanelDbContext>(options =>
-{
-    options.UseNpgsql(connectionString);
-});
+builder.Services.AddDbContext<CitizenPanelDbContext>(options => { options.UseNpgsql(connectionString); });
 
 builder.Services
     .AddDefaultIdentity<ApplicationUser>()
@@ -46,7 +43,6 @@ builder.Services
     .AddSignInManager<MultiOrganisationSignInManager>()
     .AddRoles<IdentityRole>()
     .AddEntityFrameworkStores<CitizenPanelDbContext>();
-
 
 var app = builder.Build();
 
@@ -65,8 +61,8 @@ using (var scope = app.Services.CreateScope())
     {
         // Identity
         var userManager = scope.ServiceProvider.GetService<UserManager<ApplicationUser>>();
-        var roleManager = scope.ServiceProvider.GetService <RoleManager<IdentityRole>>();
-        IdentitySeeder identitySeeder = new IdentitySeeder(userManager,roleManager);
+        var roleManager = scope.ServiceProvider.GetService<RoleManager<IdentityRole>>();
+        IdentitySeeder identitySeeder = new IdentitySeeder(userManager, roleManager);
         await identitySeeder.SeedAsync();
 
         DataSeeder.Seed(context);
@@ -75,9 +71,9 @@ using (var scope = app.Services.CreateScope())
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
-
-app.UseRouting();
 app.UseMiddleware<TenantMiddleware>();
+app.UseRouting();
+
 
 app.UseAuthentication();
 app.UseAuthorization();
@@ -90,4 +86,6 @@ app.MapControllerRoute(
 
 app.Run();
 
-public partial class Program { };//Nodig om de config binnen tests te kunnen gebruiken.
+public partial class Program
+{
+}; //Nodig om de config binnen tests te kunnen gebruiken.

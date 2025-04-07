@@ -12,6 +12,23 @@ public static class DataSeeder
     {
         Console.WriteLine("Seeding...");
         _context = context;
+        
+        //ORGANISATIONS
+        var organisation1 = new Organisation()
+        {
+            Id = "antwerpen",
+            Name = "Antwerpen",
+            BackgroundColor = "#cf252b",
+            BackgroundImage = ""
+        };
+        var organisation2 = new Organisation()
+        {
+            Id = "lwc",
+            Name = "Lokale Waterpolo Club",
+            BackgroundColor = "#42daf5",
+            BackgroundImage = ""
+        };
+        
         //REPRESENTATION GROUPS
         var rg1 = new RepresentationGroup
         {
@@ -221,6 +238,7 @@ public static class DataSeeder
         context.RepresentationGroups.Add(rg1);
         context.Panels.Add(panel1);
         
+        AddMultipleEntities([organisation1, organisation2]);
         AddMultipleEntities([cao1, cao2,cao3,cao4,cao5,cao6,cao7]);
         AddMultipleEntities([cr1,cr2,cr3,cr4,cr5]);
         AddMultipleEntities([panelMember1, panelMember2, panelMember3, panelMember4, panelMember5]);

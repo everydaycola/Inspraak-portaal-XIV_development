@@ -29,5 +29,4 @@ public class MultiOrganisationSignInManager(
 
         return base.PasswordSignInAsync(user, password, isPersistent, lockoutOnFailure);
     }
-    
 };

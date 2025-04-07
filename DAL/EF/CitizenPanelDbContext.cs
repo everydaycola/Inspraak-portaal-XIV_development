@@ -16,6 +16,7 @@ public class CitizenPanelDbContext : IdentityDbContext<ApplicationUser>
 {
     private readonly OrganisationContext _organisationContext;
     public string OrganisationId => _organisationContext.Organisation.Id;
+    public DbSet<Organisation> Organisations { get; set; }
     public DbSet<Panel> Panels { get; set; }
     public DbSet<PanelMember> PanelMembers { get; set; }
     public DbSet<RepresentationGroup> RepresentationGroups { get; set; }
