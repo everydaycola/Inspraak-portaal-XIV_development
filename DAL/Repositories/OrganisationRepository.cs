@@ -16,4 +16,9 @@ public class OrganisationRepository : IOrganisationRepository
     {
         return _context.Organisations.Single(o => o.Id == id);
     }
+
+    public IEnumerable<Organisation> GetAllOrganisations()
+    {
+        return _context.Organisations.ToList();
+    }
 }

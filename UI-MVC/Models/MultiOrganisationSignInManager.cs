@@ -22,6 +22,7 @@ public class MultiOrganisationSignInManager(
     public override Task<SignInResult> PasswordSignInAsync(ApplicationUser user, string password, bool isPersistent,
         bool lockoutOnFailure)
     {
+        
         if (user.OrganisationId != organisation.Id)
         {
             return Task.FromResult(SignInResult.Failed);
@@ -29,4 +30,5 @@ public class MultiOrganisationSignInManager(
 
         return base.PasswordSignInAsync(user, password, isPersistent, lockoutOnFailure);
     }
+    
 };

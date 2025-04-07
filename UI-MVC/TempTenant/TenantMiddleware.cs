@@ -2,7 +2,7 @@ using Microsoft.Extensions.Options;
 
 namespace UI_MVC.TempTenant;
 
-public class TenantMiddleware(OrganisationContext organisationContext, IOptionsSnapshot<AvailableOrganisations> availableTenants)
+public class TenantMiddleware(OrganisationContext organisationContext, AvailableOrganisations availableTenants)
     : IMiddleware
 {
     public async Task InvokeAsync(HttpContext context, RequestDelegate next)
@@ -14,7 +14,7 @@ public class TenantMiddleware(OrganisationContext organisationContext, IOptionsS
         // If the endpoint requires an organisation, proceed with tenanting logic
         if (requiresOrg != null)
         {
-            var matchingTenant = availableTenants.Value.Organisations.FirstOrDefault(t => t.Id == subdomain);
+            var matchingTenant = availableTenants.Organisations.FirstOrDefault(t => t.Id == subdomain);
             
             if (matchingTenant == null)
             {
@@ -26,7 +26,7 @@ public class TenantMiddleware(OrganisationContext organisationContext, IOptionsS
         }
         else
         {
-            var matchingTenant = availableTenants.Value.Organisations.FirstOrDefault(t => t.Id == subdomain);
+            var matchingTenant = availableTenants.Organisations.FirstOrDefault(t => t.Id == subdomain);
             
             if (matchingTenant != null)
             {

@@ -18,4 +18,9 @@ public class OrganisationManager : IOrganisationManager
     {
         return _repo.ReadOrganisationById(id);
     }
+
+    public IEnumerable<Organisation> GetAllOrganisations()
+    {
+        return _repo.GetAllOrganisations();
+    }
 }

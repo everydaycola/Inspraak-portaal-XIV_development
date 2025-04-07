@@ -1,4 +1,8 @@
+using BL.Interfaces;
+using BL.Managers;
 using DAL;
+using DAL.Interfaces;
+using DAL.Repositories;
 using Microsoft.Extensions.Options;
 
 namespace UI_MVC.TempTenant;
@@ -23,6 +27,16 @@ public static class OrganisationExtensions
         services.AddScoped<OrganisationContext>();
         services.AddTransient<Organisation>(p => p.GetRequiredService<OrganisationContext>().Organisation);
         services.AddSingleton<IConfigureOptions<AvailableOrganisations>, AvailableOrganisationsSetup>();
+        
+        services.AddScoped(provider =>
+        {
+            var manager = provider.GetRequiredService<IOrganisationManager>();
+            return new AvailableOrganisations
+            {
+                Organisations = manager.GetAllOrganisations().ToArray()
+            };
+        });
+
         return services;
     }
 }
