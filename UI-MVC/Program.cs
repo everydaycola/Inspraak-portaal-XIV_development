@@ -23,9 +23,18 @@ builder.Services.AddScoped<ICriteriaRepository, CriteriaRepository>();
 builder.Services.AddScoped<ICalculationManager, CalculationManager>();
 
 var connectionString = Environment.GetEnvironmentVariable("ConnectionStrings__DefaultConnection");
-builder.Services.AddDbContext<CitizenPanelDbContext>(options =>
+builder.Services.AddDbContext<CitizenPanelDbContext>(options => { options.UseNpgsql(connectionString); });
+builder.Services.AddStackExchangeRedisCache(options =>
 {
-    options.UseNpgsql(connectionString);
+    options.Configuration = builder.Configuration.GetValue<string>("Redis:Configuration");
+    options.InstanceName = builder.Configuration.GetValue<string>("Redis:InstanceName");
+});
+
+builder.Services.AddSession(options =>
+{
+    options.IdleTimeout = TimeSpan.FromMinutes(20);
+    options.Cookie.HttpOnly = true;
+    options.Cookie.IsEssential = true;
 });
 
 builder.Services
@@ -51,8 +60,8 @@ using (var scope = app.Services.CreateScope())
     {
         // Identity
         var userManager = scope.ServiceProvider.GetService<UserManager<IdentityUser>>();
-        var roleManager = scope.ServiceProvider.GetService <RoleManager<IdentityRole>>();
-        IdentitySeeder identitySeeder = new IdentitySeeder(userManager,roleManager);
+        var roleManager = scope.ServiceProvider.GetService<RoleManager<IdentityRole>>();
+        IdentitySeeder identitySeeder = new IdentitySeeder(userManager, roleManager);
         await identitySeeder.SeedAsync();
 
         DataSeeder.Seed(context);
@@ -63,6 +72,7 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();
+app.UseSession();
 
 app.UseAuthentication();
 app.UseAuthorization();
@@ -75,4 +85,6 @@ app.MapControllerRoute(
 
 app.Run();
 
-public partial class Program { };//Nodig om de config binnen tests te kunnen gebruiken.
+public partial class Program
+{
+}; //Nodig om de config binnen tests te kunnen gebruiken.
