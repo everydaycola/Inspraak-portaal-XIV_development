@@ -32,7 +32,7 @@ public class PanelController : Controller
             newPanelDto.Name,
             newPanelDto.Size,
             newPanelDto.SampleRate,
-            newPanelDto.Distributions,
+            CriteriaDtoDictionaryConverter(newPanelDto.Distributions),
             newPanelDto.CitizenCount,
             newPanelDto.ReservePercentage,
             newPanelDto.ResponseRate,
@@ -76,4 +76,17 @@ public class PanelController : Controller
         return RedirectToAction("Index", "PanelManagement",new { id = createdPanel.Id });
     }
 
+    private Dictionary<string, Dictionary<string, double>> CriteriaDtoDictionaryConverter(ICollection<CriteriaDto> criteriaDtos)
+    {
+        var distributionDictionary = new Dictionary<string, Dictionary<string, double>>();
+        foreach (var crit in criteriaDtos)
+        {
+            distributionDictionary.Add(crit.Name, new Dictionary<string, double>());
+            foreach (var answerOption in crit.AnswerOptions)
+            {
+                distributionDictionary[crit.Name].Add(answerOption.Option, answerOption.DistributionPercentage);
+            }
+        }
+        return distributionDictionary;
+    }
 }
