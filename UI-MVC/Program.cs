@@ -11,8 +11,6 @@ using StackExchange.Redis;
 using Microsoft.AspNetCore.DataProtection;
 
 var builder = WebApplication.CreateBuilder(args);
-var logger = builder.Services.BuildServiceProvider().GetRequiredService<ILogger<Program>>();
-
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
@@ -31,31 +29,18 @@ var redis = ConnectionMultiplexer.Connect(redisConfiguration);
 builder.Services.AddDataProtection()
     .PersistKeysToStackExchangeRedis(redis, "DataProtection-Keys");
 
-logger.LogInformation($"Redis Configuration: {redisConfiguration}");
-logger.LogInformation($"Redis Instance Name: {redisInstanceName}");
 
-try
-{
     builder.Services.AddStackExchangeRedisCache(options =>
     {
         options.Configuration = redisConfiguration;
         options.InstanceName = redisInstanceName;
     });
-    logger.LogInformation("Redis cache configured successfully.");
-}
-catch (Exception ex)
-{
-    logger.LogError(ex, "Error configuring Redis cache.");
-}
+
 var connectionString = Environment.GetEnvironmentVariable("ConnectionStrings__DefaultConnection");
 builder.Services.AddDbContext<CitizenPanelDbContext>(options => { options.UseNpgsql(connectionString); });
 
 builder.Services.AddSession(options =>
 {
-    logger.LogInformation($"Session Cookie HttpOnly: {options.Cookie.HttpOnly}");
-    logger.LogInformation($"Session Cookie IsEssential: {options.Cookie.IsEssential}");
-    logger.LogInformation($"Session Cookie IdleTimeout: {options.IdleTimeout}");
-
     options.IdleTimeout = TimeSpan.FromMinutes(20);
     options.Cookie.HttpOnly = true;
     options.Cookie.IsEssential = true;
@@ -97,13 +82,6 @@ app.UseStaticFiles();
 
 app.UseRouting();
 app.UseSession();
-
-app.Use(async (context, next) =>
-{
-    var sessionId = context.Session.Id;
-    logger.LogInformation($"Request Session ID: {sessionId}");
-    await next();
-});
 
 app.UseAuthentication();
 app.UseAuthorization();
