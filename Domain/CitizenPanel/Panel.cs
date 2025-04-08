@@ -25,7 +25,7 @@ public class Panel : IOrganisational,IValidatableObject
 
     public bool IsRegistrationOpen { get; set; }
     [Range(0, int.MaxValue, ErrorMessage = "Succesvol geregistreerde personen mag niet negatief zijn.")]
-    public int SuccesfulRegistrationCount { get; set; }
+    public int SuccessfulRegistrationCount { get; set; }
     [Required(ErrorMessage = "Panel moet een eigenaar hebben.")]
     public ApplicationUser Owner { get; set; }
     public string OrganisationId { get; set; }
