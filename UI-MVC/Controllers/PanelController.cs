@@ -56,16 +56,16 @@ public class PanelController : Controller
                 {
                     "sex", new Dictionary<string, double>
                     {
-                        { "m", 0.4 },
-                        { "v", 0.6 }
+                        { "Man", 0.4 },
+                        { "Vrouw", 0.6 }
                     }
                 },
                 {
-                    "leef", new Dictionary<string, double>
+                    "leeftijd", new Dictionary<string, double>
                     {
-                        { "20", 0.2 },
-                        { "30", 0.6 },
-                        { "40", 0.2 }
+                        { "20-29", 0.2 },
+                        { "30-39", 0.6 },
+                        { "40-49", 0.2 }
                     }
                 }
             },
