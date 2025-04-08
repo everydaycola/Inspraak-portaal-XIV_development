@@ -4,8 +4,9 @@ let criteriaCount = 0;
 
 export function addCriteria() {
     const criteriaContainer = document.getElementById("criteria-container") as HTMLDivElement;
+    const currentCount = criteriaCount++
 
-    const criteriaId = `criteria-${criteriaCount}`;
+    const criteriaId = `criteria-${currentCount}`;
 
     // Create the wrapper div
     const wrapper = document.createElement("div");
@@ -31,8 +32,8 @@ export function addCriteria() {
     nameInput.id = "criteria-name";
     nameInput.className = "border border-1 rounded-2";
     nameInput.type = "text";
-    nameInput.placeholder = `Criteria ${criteriaCount + 1}`;
-    nameInput.name = `Distributions[${criteriaCount}].Name`
+    nameInput.placeholder = `Criteria ${currentCount + 1}`;
+    nameInput.name = `Distributions[${currentCount}].Name`
     
     // Create isDefault div
     const isDefaultDiv = document.createElement("div");
@@ -49,7 +50,7 @@ export function addCriteria() {
     isDefaultInput.id = "is-default-criteria";
     isDefaultInput.className = "border border-1 rounded-2 form-check-input";
     isDefaultInput.type = "checkbox";
-    isDefaultInput.name = `Distributions[${criteriaCount}].isDefault`
+    isDefaultInput.name = `Distributions[${currentCount}].isDefault`
     
     // Create Delete Button
     const removeBtn = document.createElement("button");
@@ -73,8 +74,8 @@ export function addCriteria() {
     questionInput.id = "criteria-question";
     questionInput.className = "border border-1 rounded-2 col-8";
     questionInput.type = "text";
-    questionInput.placeholder = `Criteria ${criteriaCount + 1} vraag`;
-    questionInput.name = `Distributions[${criteriaCount}].Question`;
+    questionInput.placeholder = `Criteria ${currentCount + 1} vraag`;
+    questionInput.name = `Distributions[${currentCount}].Question`;
     
     // Create Answer Heading
     const answerHeading = document.createElement("h6");
@@ -93,7 +94,7 @@ export function addCriteria() {
     addAnswerOptionBtn.type = "button";
     addAnswerOptionBtn.className = "btn btn-primary col-2 ms-3 my-2";
     addAnswerOptionBtn.innerText = "Mogelijkheid Toevoegen";
-    addAnswerOptionBtn.addEventListener("click", () => addAnswerOption(criteriaCount, answerUl));
+    addAnswerOptionBtn.addEventListener("click", () => addAnswerOption(currentCount, answerUl));
     
     // Appending
     wrapper.append(headDiv,questionDiv,answerHeading,answerUl,addAnswerOptionBtn)
@@ -106,11 +107,10 @@ export function addCriteria() {
     questionDiv.append(questionLabel,questionInput);
     
     // add 2 Answer Options
-    addAnswerOption(criteriaCount, answerUl);
-    addAnswerOption(criteriaCount, answerUl);
+    addAnswerOption(currentCount, answerUl);
+    addAnswerOption(currentCount, answerUl);
     
     criteriaContainer.appendChild(wrapper);
-    criteriaCount++
 }
 
 

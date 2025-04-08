@@ -1,8 +1,14 @@
 ﻿import {round} from "@popperjs/core/lib/utils/math";
 
-let answerOptionCount = 0;
-export function addAnswerOption(criteriaId:number, answersContainer: HTMLUListElement){
-    const answerOptionId = `option-${criteriaId}-${answerOptionCount}`
+let answerOptionCounters: Map<number, number> = new Map()
+
+
+export function addAnswerOption(criteriaId: number, answersContainer: HTMLUListElement) {
+    const answerCount = answerOptionCounters.get(criteriaId) ?? 0;
+    answerOptionCounters.set(criteriaId, answerCount + 1);
+    
+    const answerOptionId = `option-${criteriaId}-${answerCount}`
+
     // Create answerOption li
     const answerOptionLi = document.createElement("li");
     answerOptionLi.id = answerOptionId
@@ -10,17 +16,17 @@ export function addAnswerOption(criteriaId:number, answersContainer: HTMLUListEl
 
     // Create answerOption input
     const answerOptionInput = document.createElement("input");
-    answerOptionInput.name = `Distributions[${criteriaId}][${answerOptionCount}].Option`;
+    answerOptionInput.name = `Distributions[${criteriaId}].AnswerOptions[${answerCount}].Option`;
     answerOptionInput.className = "border border-1 rounded-2 me-2";
     answerOptionInput.type = "text";
-    answerOptionInput.placeholder = `Antwoord ${answerOptionCount+1}`
+    answerOptionInput.placeholder = `Antwoord ${(answerCount + 1)}`
 
     // Create answerOptionPercentage input
     const answerOptionPercentageInput = document.createElement("input");
-    answerOptionPercentageInput.name = `Distributions[${criteriaId}][${answerOptionCount}].DistributionPercentage`;
+    answerOptionPercentageInput.name = `Distributions[${criteriaId}].AnswerOptions[${answerCount}].DistributionPercentage`;
     answerOptionPercentageInput.className = "border border-1 rounded-2 me-2";
     answerOptionPercentageInput.type = "number";
-    answerOptionPercentageInput.placeholder = `${round(100/(answerOptionCount+1))}`
+    answerOptionPercentageInput.placeholder = `${round(100 / (answerCount + 1))}`
 
     // Create Delete Button
     const removeBtn = document.createElement("button");
@@ -28,11 +34,13 @@ export function addAnswerOption(criteriaId:number, answersContainer: HTMLUListEl
     removeBtn.className = "btn btn-danger btn-sm";
     removeBtn.innerHTML = `<i class="bi-trash"></i>`;
     removeBtn.addEventListener("click", () => removeAnswerOption(answerOptionId));
-    
+
     // Appending
-    answerOptionLi.append(answerOptionInput, answerOptionPercentageInput, removeBtn)
-    answersContainer.append(answerOptionLi)
-    answerOptionCount++
+    answerOptionLi.append(answerOptionInput, answerOptionPercentageInput, removeBtn);
+    answersContainer.append(answerOptionLi);
+
+    // Counter ++
+    answerOptionCounters.set(criteriaId, answerCount + 1);
 }
 
 function removeAnswerOption(id: string) {
@@ -51,7 +59,7 @@ function reIndexCriteria() {
 
     // Re-index the remaining subregions
 
-    answerOptionCount = 0;
+    //answerOptionCount = 0;
     subRegionDivs.forEach((div, index) => {
         const nameInput = div.querySelector("input[name$='Name']") as HTMLInputElement;
 
@@ -65,6 +73,6 @@ function reIndexCriteria() {
         }
 
         // Update subregionCount to the correct next index
-        answerOptionCount++;
+        // answerOptionCount++;
     });
 }

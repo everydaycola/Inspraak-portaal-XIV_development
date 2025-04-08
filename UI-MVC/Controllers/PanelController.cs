@@ -31,11 +31,11 @@ public class PanelController : Controller
         var createdPanel = _manager.AddPanel(
             newPanelDto.Name,
             newPanelDto.Size,
-            newPanelDto.SampleRate,
+            newPanelDto.SampleRate/100,
             CriteriaDtoDictionaryConverter(newPanelDto.Distributions),
-            newPanelDto.CitizenCount,
-            newPanelDto.ReservePercentage,
-            newPanelDto.ResponseRate,
+            GetTotalCitizenCountFromSubRegionDtos(newPanelDto.SubRegions),
+            newPanelDto.ReservePercentage/100,
+            newPanelDto.ResponseRate/100,
             userId
         );
         
@@ -88,5 +88,15 @@ public class PanelController : Controller
             }
         }
         return distributionDictionary;
+    }
+
+    private int GetTotalCitizenCountFromSubRegionDtos(ICollection<SubRegionDto> subRegionDtos)
+    {
+        var total = 0;
+        foreach (var subRegion in subRegionDtos)
+        {
+            total += subRegion.Size;
+        }
+        return total;
     }
 }
