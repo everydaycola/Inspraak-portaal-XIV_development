@@ -1,6 +1,4 @@
-﻿import {addAnswerOption, reIndexAnswerOptions} from "./answersOption";
-import {resetAnswerCounter} from "./answersOption";
-import {answerOptionCounters} from "./answersOption";
+﻿import {addAnswerOption, reIndexAnswerOptions, resetAnswerCounters} from "./answersOption";
 
 let criteriaCount = 0;
 
@@ -123,10 +121,9 @@ function removeCriteria(criteriaId: number) {
     
     // Remove the element from the DOM
     wrapper.remove();
-    resetAnswerCounter(criteriaId)
     // Rebuild the subregions to fix the indices
     reIndexCriteria();
-    resetAnswerCounters()
+    resetAnswerCounters(criteriaId)
 }
 
 function reIndexCriteria() {
@@ -169,10 +166,3 @@ function reIndexCriteria() {
     });
 }
 
-function resetAnswerCounters() {
-    answerOptionCounters.forEach((value, key) => {
-        if (key >= criteriaCount) {
-            resetAnswerCounter(key)
-        }
-    })
-}

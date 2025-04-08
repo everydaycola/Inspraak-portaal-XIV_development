@@ -75,7 +75,15 @@ export function reIndexAnswerOptions(criteriaId: number, answersContainer: HTMLU
     });
 }
 
-export function resetAnswerCounter(criteriaId: number) {
+function resetAnswerCounter(criteriaId: number) {
     answerOptionCounters.set(criteriaId, 0)
+}
+
+export function resetAnswerCounters(criteriaCount:number) {
+    answerOptionCounters.forEach((value, key) => {
+        if (key >= criteriaCount) {
+            resetAnswerCounter(key)
+        }
+    })
 }
 
