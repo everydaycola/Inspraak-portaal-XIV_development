@@ -26,10 +26,10 @@ public class PanelManager : IPanelManager
         return _repo.ReadPanel(id);
     }
 
-    public IEnumerable<Panel> GetAllPanels()
-    {
-        return _repo.ReadAllPanels();
-    }
+    // public IEnumerable<Panel> GetAllPanels()
+    // {
+    //     return _repo.ReadAllPanels();
+    // }
 
     public IEnumerable<Panel> GetAllPanelsOwnedBy(string userId)
     {
@@ -41,26 +41,21 @@ public class PanelManager : IPanelManager
         return _repo.ReadPanelWithRepresentationGroup(id);
     }
 
-    public ICollection<PanelMember> GetPanelMembersAndRepresentationGroup(Guid id)
-    {
-        return _repo.ReadPanelMembersAndRepresentationGroup(id);
-    }
-
-    public IEnumerable<PanelMember> GetPanelWithPanelMembersAndCriteria(Guid id)
-    {
-        return _repo.ReadPanelMembersWithCriteria(id);
-    }
-
-    public Panel GetPanelWithCriteriaAndOptions(Guid id)
-    {
-        return _repo.ReadPanelWithCriteriaAndAnsweroptions(id);
-
-    }
+    // public IEnumerable<PanelMember> GetPanelWithPanelMembersAndCriteria(Guid id)
+    // {
+    //     return _repo.ReadPanelMembersWithCriteria(id);
+    // }
     
-    public PanelMember GetPanelMemberById(Guid memberId)
-    {
-        return _repo.ReadPanelMember(memberId);
-    }
+    // public Panel GetPanelWithCriteriaAndOptions(Guid id)
+    // {
+    //     return _repo.ReadPanelWithCriteriaAndAnsweroptions(id);
+    //
+    // }
+    
+    // public PanelMember GetPanelMemberById(Guid memberId)
+    // {
+    //     return _repo.ReadPanelMember(memberId);
+    // }
 
     public PanelMember GetPanelMemberWithCriteriaResponses(Guid id)
     {

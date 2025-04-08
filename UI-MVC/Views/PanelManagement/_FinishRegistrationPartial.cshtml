@@ -1,0 +1,30 @@
+﻿@model UI_MVC.Models.Dto.PanelManagementDto
+
+
+<div class="container mt-5">
+    <div class="alert alert-warning text-center" role="alert">
+        <h4 class="alert-heading">U gaat de inschrijvingsfase afronden</h4>
+        <p>
+            Er hebben <strong>@Model.SuccesfulRegistrationCount</strong> van de <strong>@Model.TotalInvitesNeeded</strong> inschrijvingen gelukt.
+        </p>
+        <hr>
+        <p class="mb-0">This action cannot be undone.</p>
+    </div>
+    <div class="d-flex justify-content-center mt-4 gap-3">
+
+        @* knop voor inschrijvingen afronden *@
+
+        @* knop voor volgende faze *@
+
+        <a asp-action="Index" class="btn btn-secondary px-4 py-2">Cancel</a>
+
+
+        <form method="post" asp-controller="Register" asp-action="RegisterRandomUsers"
+              class="d-flex align-items-center gap-2">
+            <input type="hidden" name="guid" value="@Model.PanelId"/>
+            <input type="number" name="count" min="1" class="form-control w-auto" placeholder="Enter count"/>
+            <button class="btn btn-primary px-4 py-2" type="submit">Create Panel</button>
+        </form>
+
+    </div>
+</div>

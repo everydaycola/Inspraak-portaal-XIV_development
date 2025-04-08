@@ -15,7 +15,6 @@ public interface IPanelRepository
     public Panel ReadPanelWithRepresentationGroup(Guid id);
     public IEnumerable<PanelMember> ReadPanelMembersWithCriteria(Guid id);
     public IEnumerable<PanelMember> ReadPanelMembersWhichAnsweredAllQuestionsWithCriteria(Guid id);
-    public ICollection<PanelMember> ReadPanelMembersAndRepresentationGroup(Guid id);
     public Panel ReadPanelWithCriteriaAndAnswerOptions(Guid panelId);
     //UPDATE
     public void UpdatePanel(Panel panel);

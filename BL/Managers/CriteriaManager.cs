@@ -22,29 +22,47 @@ public class CriteriaManager : ICriteriaManager
     {
         return _repo.ReadAllCriteriaWithValuesForPanel(panelId);
     }
-    
-    public IEnumerable<Criteria> GetAllNonDefaultCriteriaWithValuesForPanel(Guid panelId)
-    {
-        return _repo.ReadAllNonDefaultCriteriaWithValuesForPanel(panelId);
-    }
-    
-    public Dictionary<string, ICollection<PanelMember>> GetPanelMembersGroupedByResponses(Guid panelId)
-    {
-        var result = new Dictionary<string, ICollection<PanelMember>>();
-        var panelMembers = _panelManager.GetAllPanelMembersForPanel(panelId);
-        foreach (var member in panelMembers)
-        {
-            var groupName = string.Join("-", member.Responses.OrderBy(r => r.Criteria.Name).Select(r => r.SelectedOption).ToList());
-            if (!result.TryGetValue(groupName, out var value))
-            {
-                value = new List<PanelMember>();
-                result[groupName] = value; 
-            }
 
-            value.Add(member);
-        }
-        return result;
+    public Dictionary<string, Dictionary<string, int>> GetAllCriteriaCountsGroupedByValue(Guid panelId)
+    {
+        // this gives the exact counts but a criteria isn't present when it is 0
+        var counts = _repo.ReadAllCriteriaMemberCountsWithValuesForPanel(panelId);
+        // this gives all criteria values, including the ones that are 0
+        var all = _repo.ReadAllCriteriaNamesAndOptions(panelId);
+        // we have to merge the two so all criteria have a value, even if it is 0
+        return all.ToDictionary(
+            criteriaEntry => criteriaEntry.Key,
+            criteriaEntry => criteriaEntry.Value.ToDictionary(
+                option => option,
+                option => counts.TryGetValue(criteriaEntry.Key, out var criteriaValues) && 
+                          criteriaValues.TryGetValue(option, out var count) ? count : 0
+            )
+        );
+
+        
     }
+    // public IEnumerable<Criteria> GetAllNonDefaultCriteriaWithValuesForPanel(Guid panelId)
+    // {
+    //     return _repo.ReadAllNonDefaultCriteriaWithValuesForPanel(panelId);
+    // }
+    
+    // public Dictionary<string, ICollection<PanelMember>> GetPanelMembersGroupedByResponses(Guid panelId)
+    // {
+    //     var result = new Dictionary<string, ICollection<PanelMember>>();
+    //     var panelMembers = _panelManager.GetAllPanelMembersForPanel(panelId);
+    //     foreach (var member in panelMembers)
+    //     {
+    //         var groupName = string.Join("-", member.Responses.OrderBy(r => r.Criteria.Name).Select(r => r.SelectedOption).ToList());
+    //         if (!result.TryGetValue(groupName, out var value))
+    //         {
+    //             value = new List<PanelMember>();
+    //             result[groupName] = value; 
+    //         }
+    //
+    //         value.Add(member);
+    //     }
+    //     return result;
+    // }
     
     public Dictionary<string, ICollection<PanelMember>> GetPanelMembersWithCompletedCriteriaGroupedByResponse(Guid panelId)
     {
@@ -89,11 +107,12 @@ public class CriteriaManager : ICriteriaManager
     }
     
     
-    public Criteria GetCriteriaByName(Guid panelId,string critName)
-    {
-        return _repo.ReadCriteriaByName(panelId, critName);
-    }
-    public Criteria GetCriteriaByNameWithAnswerOptions(Guid panelId,string critName)
+    // public Criteria GetCriteriaByName(Guid panelId,string critName)
+    // {
+    //     return _repo.ReadCriteriaByName(panelId, critName);
+    // }
+    
+    private Criteria GetCriteriaByNameWithAnswerOptions(Guid panelId,string critName)
     {
         return _repo.ReadCriteriaByNameWithAnswerOptions(panelId, critName);
     }

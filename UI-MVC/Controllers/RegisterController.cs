@@ -76,9 +76,9 @@ public class RegisterController : Controller
     }
 
     [HttpPost]
-    public IActionResult Register150RandomUsers(Guid guid, int count)
+    public IActionResult RegisterRandomUsers(Guid guid, int count)
     {
-        // mostly a testing function to add randon users to your panel
+        // mostly a testing function to add random users to your panel
         
         var panel = _manager.GetPanelWithCriteriaAndCriteriaAnswerOptions(guid);
         var members = _manager.GetAllPanelMembersForPanel(guid)
@@ -91,7 +91,7 @@ public class RegisterController : Controller
         {
             var responses = new Dictionary<string, string>();
         
-            foreach (var criterion in panel.Criteria)
+            foreach (var criterion in panel.Criteria.Where(c => !c.IsDefault))
             {
                 var randomValue = random.NextDouble();
                 var accumulatedWeight = 0.0;
@@ -99,12 +99,10 @@ public class RegisterController : Controller
                 // Find the item whose accumulated weight range contains the random value
                 foreach (var option in criterion.AnswerOptions)
                 {
-                    if (randomValue <= accumulatedWeight)
-                    {
-                        responses.Add(criterion.Name, option.Option);
-                        break;
-                    }
                     accumulatedWeight += option.DistributionPercentage;
+                    if (randomValue > accumulatedWeight) continue;
+                    responses.Add(criterion.Name, option.Option);
+                    break;
                 }
             }
         

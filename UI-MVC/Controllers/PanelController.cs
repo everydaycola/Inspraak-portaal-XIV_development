@@ -49,7 +49,7 @@ public class PanelController : Controller
         var createdPanel = _manager.AddPanel(
             "Panel rond alcoholgebruik",
             150,
-            0.005,
+            0.07,
             new Dictionary<string, Dictionary<string, double>>
             {
                 {

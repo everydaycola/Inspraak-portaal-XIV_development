@@ -109,13 +109,13 @@ public class PanelRepository : IPanelRepository
             .ToList();
     }
 
-    public ICollection<PanelMember> ReadPanelMembersAndRepresentationGroup(Guid id)
-    {
-        return _context.PanelMembers.Include(pm => pm.Panel)
-            .ThenInclude(pm => pm.RepresentationGroup)
-            .Where(pm => pm.Panel.Id == id)
-            .ToList();
-    }
+    // public ICollection<PanelMember> ReadPanelMembersAndRepresentationGroup(Guid id)
+    // {
+    //     return _context.PanelMembers.Include(pm => pm.Panel)
+    //         .ThenInclude(pm => pm.RepresentationGroup)
+    //         .Where(pm => pm.Panel.Id == id)
+    //         .ToList();
+    // }
     
     public Panel ReadPanelWithCriteriaAndAnswerOptions(Guid panelId)
     {

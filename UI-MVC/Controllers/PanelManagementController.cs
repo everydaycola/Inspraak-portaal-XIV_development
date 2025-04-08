@@ -32,23 +32,32 @@ public class PanelManagementController : Controller
 
     public IActionResult Index(Guid id)
     {
-        var panelMembers = _manager.GetPanelMembersAndRepresentationGroup(id);
-        var panel = panelMembers.First().Panel;
-        var pmd = new PanelManagementDto(id, panel.Name, 20000, 0);
-        pmd.SuccesfulRegistrationCount = panel.SuccessfulRegistrationCount;
-        pmd.PanelSize = _calcManager.CalculatePanelSize(pmd.CitizenCount, 0.005);
-        pmd.AmountOfReserveInvites = _calcManager.CalculateAmountOfReserve(pmd.PanelSize, panel.RepresentationGroup.ReservePercentage);
-        pmd.TotalInvitesNeeded = _calcManager.CalculateTotalInvitesNeeded(pmd.PanelSize + pmd.AmountOfReserveInvites, panel.RepresentationGroup.ResponseRate);
-        pmd.IsRegistrationOpen = panel.IsRegistrationOpen;
-        pmd.ExtraCriteriaViewModel.CriteriaMemberCount = _calcManager.CalculateAllCriteriaCountForPanel(panel.Id);
-        pmd.ExtraCriteriaViewModel.SuccesfulRegistrationCount = _calcManager.CalculateSuccesfulRegistrationCount(panel.Id);
-        pmd.PlanningGroupMembers = _manager.GetAllPlanningGroupMembersWithIdentityUserForPanel(panel.Id);
-        pmd.ExtraCriteriaViewModel.uniqueCodesDto = new uniqueCodesDto
+        var panel = _manager.GetPanelWithRepresentationGroup(id);
+        var panelSize = _calcManager.CalculatePanelSize(panel.RepresentationGroup.CitizenCount, 0.005);
+        var amountOfReserveInvites =
+            _calcManager.CalculateAmountOfReserve(panelSize, panel.RepresentationGroup.ReservePercentage);
+        return View(new PanelManagementDto
         {
-            panelId = panel.Id, 
-            panelMembers = _criteriaManager.GetPanelMembersGroupedByResponsesForDefaultCriteria(panel.Id)
-        };
-        return View(pmd);
+            PanelId = id,
+            PanelName = panel.Name,
+            CitizenCount = panel.RepresentationGroup.CitizenCount,
+            PanelSize = panelSize,
+            AmountOfReserveInvites = amountOfReserveInvites,
+            TotalInvitesNeeded = _calcManager.CalculateTotalInvitesNeeded(panelSize + amountOfReserveInvites, panel.RepresentationGroup.ResponseRate),
+            IsRegistrationOpen = panel.IsRegistrationOpen,
+            SuccesfulRegistrationCount = panel.SuccessfulRegistrationCount,
+            PlanningGroupMembers = _manager.GetAllPlanningGroupMembersWithIdentityUserForPanel(panel.Id),
+            ExtraCriteriaViewModel = new ExtraCriteriaViewModel
+            {
+                CriteriaMemberCount = _criteriaManager.GetAllCriteriaCountsGroupedByValue(panel.Id),
+                SuccesfulRegistrationCount = _calcManager.CalculateSuccessfulRegistrationCount(panel.Id),
+                uniqueCodesDto = new uniqueCodesDto
+                {
+                    panelId = panel.Id, 
+                    panelMembers = _criteriaManager.GetPanelMembersGroupedByResponsesForDefaultCriteria(panel.Id)
+                }
+            }
+        });
     }
     [HttpPost]
     public IActionResult SelectPanel(Guid panelId)
