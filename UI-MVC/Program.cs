@@ -23,8 +23,8 @@ builder.Services.AddScoped<ICriteriaManager, CriteriaManager>();
 builder.Services.AddScoped<ICriteriaRepository, CriteriaRepository>();
 builder.Services.AddScoped<ICalculationManager, CalculationManager>();
 
-var redisConfiguration = builder.Configuration.GetValue<string>("Redis:Configuration");
-var redisInstanceName = builder.Configuration.GetValue<string>("Redis:InstanceName");
+var redisConfiguration = builder.Configuration.GetValue<string>("Redis_Configuration");
+var redisInstanceName = builder.Configuration.GetValue<string>("Redis_InstanceName");
 
 logger.LogInformation($"Redis Configuration: {redisConfiguration}");
 logger.LogInformation($"Redis Instance Name: {redisInstanceName}");
