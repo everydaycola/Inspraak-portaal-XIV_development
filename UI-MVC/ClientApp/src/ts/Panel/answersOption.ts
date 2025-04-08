@@ -1,12 +1,12 @@
 ﻿import {round} from "@popperjs/core/lib/utils/math";
 
-let answerOptionCounters: Map<number, number> = new Map()
+export let answerOptionCounters: Map<number, number> = new Map()
 
 
 export function addAnswerOption(criteriaId: number, answersContainer: HTMLUListElement) {
     const answerCount = answerOptionCounters.get(criteriaId) ?? 0;
     answerOptionCounters.set(criteriaId, answerCount + 1);
-    
+
     const answerOptionId = `option-${criteriaId}-${answerCount}`
 
     // Create answerOption li
@@ -33,7 +33,7 @@ export function addAnswerOption(criteriaId: number, answersContainer: HTMLUListE
     removeBtn.type = "button";
     removeBtn.className = "btn btn-danger btn-sm";
     removeBtn.innerHTML = `<i class="bi-trash"></i>`;
-    removeBtn.addEventListener("click", () => removeAnswerOption(answerOptionId));
+    removeBtn.addEventListener("click", () => removeAnswerOption(answerOptionId, criteriaId, answersContainer));
 
     // Appending
     answerOptionLi.append(answerOptionInput, answerOptionPercentageInput, removeBtn);
@@ -43,36 +43,39 @@ export function addAnswerOption(criteriaId: number, answersContainer: HTMLUListE
     answerOptionCounters.set(criteriaId, answerCount + 1);
 }
 
-function removeAnswerOption(id: string) {
-    const element = document.getElementById(id);
-    if (element) {
-        // Remove the element from the DOM
-        element.remove();
-        // Rebuild the subregions to fix the indices
-        //reIndexCriteria();
-    }
+function removeAnswerOption(id: string, criteriaId: number, answersContainer: HTMLUListElement) {
+    let e = event as Event
+    const btn = e.currentTarget as HTMLButtonElement;
+    const answerOptionLi = btn.parentElement as HTMLLIElement
+    answerOptionLi.remove();
+    reIndexAnswerOptions(criteriaId, answersContainer);
 }
 
-function reIndexCriteria() {
-    const subRegionContainer = document.getElementById("subregions-container") as HTMLDivElement;
-    const subRegionDivs = subRegionContainer.querySelectorAll("");
+export function reIndexAnswerOptions(criteriaId: number, answersContainer: HTMLUListElement) {
+    const answerLis = answersContainer.querySelectorAll<HTMLLIElement>("li");
 
-    // Re-index the remaining subregions
+    // Update the counter
+    answerOptionCounters.set(criteriaId, answerLis.length);
 
-    //answerOptionCount = 0;
-    subRegionDivs.forEach((div, index) => {
-        const nameInput = div.querySelector("input[name$='Name']") as HTMLInputElement;
+    answerLis.forEach((li, index) => {
+        const textInput = li.querySelector<HTMLInputElement>("input[type='text']") as HTMLInputElement;
+        const percentInput = li.querySelector<HTMLInputElement>("input[type='number']") as HTMLInputElement;
+        const removeBtn = li.querySelector<HTMLButtonElement>("button.btn-danger") as HTMLButtonElement;
 
-        if (nameInput) {
-            // Re-index Name input
-            nameInput.name = `SubRegions[${index + 1}].Name`;
+        li.id = `option-${criteriaId}-${index}`;
 
-            // Re-index Size input
-            const sizeInput = div.querySelector("input[name$='Size']") as HTMLInputElement;
-            sizeInput.name = `SubRegions[${index + 1}].Size`;
-        }
+        textInput.name = `Distributions[${criteriaId}].AnswerOptions[${index}].Option`;
+        textInput.placeholder = `Antwoord ${index + 1}`;
 
-        // Update subregionCount to the correct next index
-        // answerOptionCount++;
+        percentInput.name = `Distributions[${criteriaId}].AnswerOptions[${index}].DistributionPercentage`;
+
+        // Add the event listener for remove button
+        removeBtn.addEventListener('click', () => removeAnswerOption(li.id, criteriaId, answersContainer));
+
     });
 }
+
+export function resetAnswerCounter(criteriaId: number) {
+    answerOptionCounters.set(criteriaId, 0)
+}
+
