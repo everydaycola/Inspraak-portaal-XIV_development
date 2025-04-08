@@ -7,6 +7,8 @@ using DAL.Repositories;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using UI_MVC;
+using StackExchange.Redis;
+using Microsoft.AspNetCore.DataProtection;
 
 var builder = WebApplication.CreateBuilder(args);
 var logger = builder.Services.BuildServiceProvider().GetRequiredService<ILogger<Program>>();
@@ -25,6 +27,9 @@ builder.Services.AddScoped<ICalculationManager, CalculationManager>();
 
 var redisConfiguration = builder.Configuration.GetValue<string>("Redis_Configuration");
 var redisInstanceName = builder.Configuration.GetValue<string>("Redis_InstanceName");
+var redis = ConnectionMultiplexer.Connect(redisConfiguration);
+builder.Services.AddDataProtection()
+    .PersistKeysToStackExchangeRedis(redis, "DataProtection-Keys");
 
 logger.LogInformation($"Redis Configuration: {redisConfiguration}");
 logger.LogInformation($"Redis Instance Name: {redisInstanceName}");
