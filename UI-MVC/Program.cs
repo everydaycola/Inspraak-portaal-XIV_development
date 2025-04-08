@@ -30,7 +30,7 @@ builder.Services.AddScoped<ICalculationManager, CalculationManager>();
 //Tenant specific logic
 builder.Services
     .AddOrganisationContext()
-    .AddScoped<TenantMiddleware>();
+    .AddScoped<OrganisationMiddleware>();
 builder.Services.Configure<AvailableOrganisations>(
     builder.Configuration.GetSection(AvailableOrganisations.SectionName)
 );
@@ -73,7 +73,7 @@ using (var scope = app.Services.CreateScope())
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
-app.UseMiddleware<TenantMiddleware>();
+app.UseMiddleware<OrganisationMiddleware>();
 app.UseRouting();
 
 

@@ -1,8 +1,6 @@
-using Microsoft.Extensions.Options;
-
 namespace UI_MVC.TempTenant;
 
-public class TenantMiddleware(OrganisationContext organisationContext, AvailableOrganisations availableTenants)
+public class OrganisationMiddleware(OrganisationContext organisationContext, AvailableOrganisations availableTenants)
     : IMiddleware
 {
     public async Task InvokeAsync(HttpContext context, RequestDelegate next)
