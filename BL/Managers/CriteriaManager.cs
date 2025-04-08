@@ -1,4 +1,4 @@
-using System.Collections;
+using System.ComponentModel.DataAnnotations;
 using BL.Interfaces;
 using DAL.Interfaces;
 using Domain.CitizenPanel;
@@ -70,7 +70,12 @@ public class CriteriaManager : ICriteriaManager
         var panelMembers = _panelManager.GetAllPanelMembersForPanel(panelId);
         foreach (var member in panelMembers)
         {
-            var groupName = string.Join("-", member.Responses.Where(r => r.Criteria.IsDefault).Select(r => r.SelectedOption).ToList());
+            var groupName = string.Join("-", 
+                member.Responses
+                    .OrderBy(r => r.Criteria.Name)
+                    .Where(r => r.Criteria.IsDefault)
+                    .Select(r => r.SelectedOption)
+                    .ToList());
             if (!result.TryGetValue(groupName, out var value))
             {
                 value = new List<PanelMember>();
@@ -79,7 +84,8 @@ public class CriteriaManager : ICriteriaManager
 
             value.Add(member);
         }
-        return result;
+
+        return result.OrderBy(kvp => kvp.Key).ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
     }
     
     
@@ -94,21 +100,27 @@ public class CriteriaManager : ICriteriaManager
     
     public void SavePanelMemberCriteriaResponses(Guid panelId,Dictionary<string, string> CriteriaAnswers, PanelMember member)
     {
-        foreach (var entry in CriteriaAnswers)
+        foreach (var (criteriaName, selectedOption) in CriteriaAnswers)
         {
-            string criteriaName = entry.Key;
-            string selectedOption = entry.Value;
             var criteria = GetCriteriaByNameWithAnswerOptions(panelId, criteriaName);
             if (criteria != null)
             {
                 var validOptions = criteria.AnswerOptions;
                 if (validOptions.Any(option => option.Option == selectedOption))
                 {
-                    member.Responses.Add(new CriteriaResponse
+                    var criteriaResponse = new CriteriaResponse
                     {
                         Criteria = criteria,
                         SelectedOption = selectedOption,
-                    });
+                    };
+
+                    var validationResults = new List<ValidationResult>();
+
+                    if (!Validator.TryValidateObject(criteriaResponse, new ValidationContext(criteriaResponse), validationResults,
+                            true))
+                        throw new ValidationException(string.Join("\n", validationResults.Select(x => x.ErrorMessage)));
+
+                    member.Responses.Add(criteriaResponse);
                     member.HasAnsweredAllQuestions = true;
                     _panelManager.UpdatePanelMember(member);
                 }

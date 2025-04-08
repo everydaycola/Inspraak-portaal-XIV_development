@@ -35,13 +35,14 @@ public class PanelManagementController : Controller
         var panelMembers = _manager.GetPanelMembersAndRepresentationGroup(id);
         var panel = panelMembers.First().Panel;
         var pmd = new PanelManagementDto(id, panel.Name, 20000, 0);
-        pmd.SuccesfulRegistrationCount = panel.SuccesfulRegistrationCount;
+        pmd.SuccesfulRegistrationCount = panel.SuccessfulRegistrationCount;
         pmd.PanelSize = _calcManager.CalculatePanelSize(pmd.CitizenCount, 0.005);
         pmd.AmountOfReserveInvites = _calcManager.CalculateAmountOfReserve(pmd.PanelSize, panel.RepresentationGroup.ReservePercentage);
         pmd.TotalInvitesNeeded = _calcManager.CalculateTotalInvitesNeeded(pmd.PanelSize + pmd.AmountOfReserveInvites, panel.RepresentationGroup.ResponseRate);
         pmd.IsRegistrationOpen = panel.IsRegistrationOpen;
         pmd.ExtraCriteriaViewModel.CriteriaMemberCount = _calcManager.CalculateAllCriteriaCountForPanel(panel.Id);
         pmd.ExtraCriteriaViewModel.SuccesfulRegistrationCount = _calcManager.CalculateSuccesfulRegistrationCount(panel.Id);
+        pmd.PlanningGroupMembers = _manager.GetAllPlanningGroupMembersWithIdentityUserForPanel(panel.Id);
         pmd.ExtraCriteriaViewModel.uniqueCodesDto = new uniqueCodesDto
         {
             panelId = panel.Id, 

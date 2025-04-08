@@ -1,8 +1,7 @@
-﻿using BL.Interfaces;
+﻿using System.ComponentModel.DataAnnotations;
+using BL.Interfaces;
 using DAL.Interfaces;
-using DAL.Repositories;
 using Domain.CitizenPanel;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
 using UI_MVC;
 
@@ -14,12 +13,13 @@ public class PanelManager : IPanelManager
     private readonly IPanelRepository _repo;
     private readonly IUserRepository _userRepo;
 
-    public PanelManager(ILogger<PanelManager> logger,IPanelRepository repo, IUserRepository userRepo)
+    public PanelManager(ILogger<PanelManager> logger, IPanelRepository repo, IUserRepository userRepo)
     {
         _logger = logger;
         _repo = repo;
         _userRepo = userRepo;
     }
+
     //GET
     public Panel GetPanel(Guid id)
     {
@@ -40,7 +40,7 @@ public class PanelManager : IPanelManager
     {
         return _repo.ReadPanelWithRepresentationGroup(id);
     }
-    
+
     public ICollection<PanelMember> GetPanelMembersAndRepresentationGroup(Guid id)
     {
         return _repo.ReadPanelMembersAndRepresentationGroup(id);
@@ -50,7 +50,7 @@ public class PanelManager : IPanelManager
     {
         return _repo.ReadPanelMembersWithCriteria(id);
     }
-    
+
     public PanelMember GetPanelMemberById(Guid memberId)
     {
         return _repo.ReadPanelMember(memberId);
@@ -65,6 +65,7 @@ public class PanelManager : IPanelManager
     {
         return _repo.ReadPanelMemberWithPanel(id);
     }
+
     public IEnumerable<PanelMember> GetAllPanelMembersForPanel(Guid panelId)
     {
         return _repo.ReadPanelMembersWithCriteria(panelId);
@@ -83,8 +84,10 @@ public class PanelManager : IPanelManager
     //ADD
     public Panel AddPanel(string name, int size, double sampleRate,
         Dictionary<string, Dictionary<string, double>> distribution, int citizenCount, double reservePercentage,
-        double responseRate,string userId)
+        double responseRate, string userId)
     {
+        _logger.Log(LogLevel.Information, "Creating panel with name " + name + "...");
+        
         var user = _userRepo.ReadUser(userId);
         if (user == null)
         {
@@ -94,12 +97,17 @@ public class PanelManager : IPanelManager
         }
 
         var userRole = _userRepo.ReadUserRole(userId);
-        if (userRole == null || (userRole.Name != CustomIdentityConstants.AdminRole && userRole.Name != CustomIdentityConstants.OrganisatieRole))
+        if (userRole == null || (userRole.Name != CustomIdentityConstants.AdminRole &&
+                                 userRole.Name != CustomIdentityConstants.OrganisatieRole))
         {
             var errorMessage = "User with id " + userId + " is not in a valid role to create a panel!";
             _logger.Log(LogLevel.Critical, errorMessage);
             throw new UnauthorizedAccessException(errorMessage);
         }
+
+        // list of objects to validate
+        var objectsToValidate = new List<object>();
+
         // Create and initialize the panel
         var panel = new Panel
         {
@@ -114,11 +122,18 @@ public class PanelManager : IPanelManager
             Owner = user
         };
 
+        // validate panel and representationgroup
+        objectsToValidate.Add(panel);
+        objectsToValidate.Add(panel.RepresentationGroup);
+
         // Generate members
-        var PanelMembers = Enumerable
+        var panelMembers = Enumerable
             .Range(0, size)
             .Select(_ => new PanelMember { Panel = panel })
             .ToList();
+
+        // validate panelmembers
+        objectsToValidate.AddRange(panelMembers);
 
         // Create the criteria list from the dictionary, initializing all Criteria and CriteriaAnswerOptions
         panel.Criteria = distribution.Select(outerKvp => new Criteria
@@ -132,13 +147,38 @@ public class PanelManager : IPanelManager
             }).ToList() // Create the List<CriteriaAnswerOption> for the property
         }).ToList(); // Create the final List<Criteria>
 
+        // validate criteria & answer options
+        objectsToValidate.AddRange(panel.Criteria);
+        objectsToValidate.AddRange(panel.Criteria.SelectMany(c => c.AnswerOptions));
+
         // preforms an action very similar to a cartesian product, but with the options of each criteria
         var crossDistribution = CrossDistribution(panel.Criteria.ToList());
+
+        // validate created criteria
+        objectsToValidate.AddRange(crossDistribution.Keys
+            .SelectMany(r => r)
+            .GroupBy(r => r)); // to remove duplicates
+
         // finally, give panel members their distributions
-        HandOutAnsweredCriteriaToPanelMembers(PanelMembers, crossDistribution);
+        HandOutAnsweredCriteriaToPanelMembers(panelMembers, crossDistribution);
         
+        // // validation
+        var validationResults = new List<ValidationResult>();
+        // validate panel members criteria responses
+        var validationSuccess = objectsToValidate.All(r =>
+            Validator.TryValidateObject(r, new ValidationContext(r), validationResults, true));
+        // if validation failed
+        if (!validationSuccess)
+        {
+            // collect error messages and send as exception
+            throw new ValidationException(string.Join("\n", validationResults.Select(x => x.ErrorMessage)));
+        }
+        
+        // if validation succeeded
         // adding panel members to repo also has dependencies to everything else so everything gets added
-        PanelMembers.ForEach(member => _repo.CreatePanelMember(member));
+        panelMembers.ForEach(member => _repo.CreatePanelMember(member));
+        
+        _logger.Log(LogLevel.Information, "Panel with name " + panel.Name + " was created.");
 
         return panel;
     }
@@ -154,6 +194,7 @@ public class PanelManager : IPanelManager
         // Handle edge case: If the criteriaList is null or empty, return an empty dictionary
         if (criteriaList == null || criteriaList.Count == 0)
         {
+            _logger.Log(LogLevel.Warning, "CrossDistribution was called with an empty criteria list.");
             return new Dictionary<ICollection<CriteriaResponse>, double>();
         }
 
@@ -184,7 +225,7 @@ public class PanelManager : IPanelManager
             foreach (var subCombo in subCombinations)
             {
                 // Create a new combination by merging the current response with the sub-combination
-                var newCombo = new List<CriteriaResponse> {currentResponse};
+                var newCombo = new List<CriteriaResponse> { currentResponse };
                 newCombo.AddRange(subCombo.Key);
 
                 // Calculate the combined probability by multiplying the distribution percentages 
@@ -217,6 +258,7 @@ public class PanelManager : IPanelManager
             {
                 // if so assume this is the last criteria and just make the amount the remaining members
                 doingCount = totalCount - doneCount;
+                _logger.Log(LogLevel.Warning, "Calculated more criteria responses than members. Assuming last criteria");
             }
 
             // add distribution count and update 
@@ -227,6 +269,7 @@ public class PanelManager : IPanelManager
         // If we didn't assign enough, assign some more
         if (doneCount < totalCount)
         {
+            _logger.Log(LogLevel.Warning, "Not enough criteria responses calculated. Adding to most common criteria");
             // add whatever needed to the first one. should not be that much.
             allCounts[
                 allCounts
@@ -245,8 +288,12 @@ public class PanelManager : IPanelManager
             {
                 // Check if we have more members to process
                 if (!memberIterator.MoveNext())
+                {
                     // if so, whatever
+                    _logger.Log(LogLevel.Warning, "Not enough members to assign criteria responses. skipping");
                     break;
+                }
+
                 // rider is dumb, can never be null because of check above
                 // create a copy so EF recognises it as separate objects
                 memberIterator.Current.Responses = count.Key
@@ -271,26 +318,18 @@ public class PanelManager : IPanelManager
     public void UpdatePanelRegistrationCount(Guid id, bool increase)
     {
         var panel = _repo.ReadPanel(id);
-        if (panel != null)
-        {
-            if (increase)
-            {
-                panel.SuccesfulRegistrationCount++;
-            }
-            else
-            {
-                panel.SuccesfulRegistrationCount--;
-            }
-
-            _repo.UpdatePanel(panel);
-            return;
-        }
-
-        throw new NullReferenceException("Panel with id: " + id + " was not found");
+        if (panel == null) throw new NullReferenceException("Panel with id: " + id + " was not found");
+        panel.SuccessfulRegistrationCount += increase ? 1 : -1;
+        _repo.UpdatePanel(panel);
     }
 
     public PanelMember UpdatePanelMember(PanelMember member)
     {
         return _repo.UpdatePanelMember(member);
+    }
+
+    public IEnumerable<PlanningGroupMember> GetAllPlanningGroupMembersWithIdentityUserForPanel(Guid panelId)
+    {
+        return _repo.ReadAllPlanningGroupMembersWithIdentityUserForPanel(panelId);
     }
 }
