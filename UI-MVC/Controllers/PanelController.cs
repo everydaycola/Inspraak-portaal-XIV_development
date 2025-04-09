@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using UI_MVC.Models.Dto;
 
 namespace UI_MVC.Controllers;
-
+[RequiresOrganisation]
 public class PanelController : Controller
 {
     private readonly IPanelManager _manager;
@@ -85,7 +85,7 @@ public class PanelController : Controller
             distributionDictionary.Add(crit.Name, new Dictionary<string, double>());
             foreach (var answerOption in crit.AnswerOptions)
             {
-                distributionDictionary[crit.Name].Add(answerOption.Option, answerOption.DistributionPercentage);
+                distributionDictionary[crit.Name].Add(answerOption.Option, answerOption.DistributionPercentage/100);
             }
         }
         return distributionDictionary;
