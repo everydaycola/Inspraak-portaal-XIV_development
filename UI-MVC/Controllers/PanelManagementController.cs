@@ -1,6 +1,4 @@
-using System.Collections;
 using BL.Interfaces;
-using Domain.CitizenPanel;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -14,17 +12,15 @@ public class PanelManagementController : Controller
     private readonly ILogger<PanelManagementController> _logger;
 
     private readonly IPanelManager _manager;
-    private readonly IFileManager _fileManager;
     private readonly ICriteriaManager _criteriaManager;
     private readonly ICalculationManager _calcManager;
     private readonly UserManager<IdentityUser> _userManager;
 
 
-    public PanelManagementController(ILogger<PanelManagementController> logger, IPanelManager manager, IFileManager fileManager, ICriteriaManager criteriaManager, ICalculationManager calcHelper, UserManager<IdentityUser> userManager)
+    public PanelManagementController(ILogger<PanelManagementController> logger, IPanelManager manager, ICriteriaManager criteriaManager, ICalculationManager calcHelper, UserManager<IdentityUser> userManager)
     {
         _logger = logger;
         _manager = manager;
-        _fileManager = fileManager;
         _criteriaManager = criteriaManager;
         _calcManager = calcHelper;
         _userManager = userManager;
@@ -45,17 +41,16 @@ public class PanelManagementController : Controller
             AmountOfReserveInvites = amountOfReserveInvites,
             TotalInvitesNeeded = _calcManager.CalculateTotalInvitesNeeded(panelSize + amountOfReserveInvites, panel.RepresentationGroup.ResponseRate),
             IsRegistrationOpen = panel.IsRegistrationOpen,
-            SuccesfulRegistrationCount = panel.SuccessfulRegistrationCount,
             PlanningGroupMembers = _manager.GetAllPlanningGroupMembersWithIdentityUserForPanel(panel.Id),
             ExtraCriteriaViewModel = new ExtraCriteriaViewModel
             {
                 CriteriaMemberCount = _criteriaManager.GetAllCriteriaCountsGroupedByValue(panel.Id),
-                SuccesfulRegistrationCount = _calcManager.CalculateSuccessfulRegistrationCount(panel.Id),
-                uniqueCodesDto = new uniqueCodesDto
-                {
-                    panelId = panel.Id, 
-                    panelMembers = _criteriaManager.GetPanelMembersGroupedByResponsesForDefaultCriteria(panel.Id)
-                }
+                SuccesfulRegistrationCount = panel.SuccessfulRegistrationCount,
+            },
+            UniqueCodesDto = new uniqueCodesDto
+            {
+                panelId = panel.Id,
+                panelMembers = _criteriaManager.GetPanelMembersGroupedByResponsesForDefaultCriteria(panel.Id)
             }
         });
     }

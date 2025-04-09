@@ -24,10 +24,10 @@ public class PanelRepository : IPanelRepository
         return _context.Panels.Where(p => p.Owner.Id == userId).ToList();
     }
 
-    public PanelMember ReadPanelMember(Guid id)
-    {
-        return _context.PanelMembers.Find(id);
-    }
+    // public PanelMember ReadPanelMember(Guid id)
+    // {
+    //     return _context.PanelMembers.Find(id);
+    // }
 
     public PanelMember ReadPanelMemberWithCriteriaResponses(Guid id)
     {
@@ -45,13 +45,13 @@ public class PanelRepository : IPanelRepository
             .Single(p => p.PanelMemberId == id);
     }
 
-    public Panel ReadPanelWithCriteriaAndAnsweroptions(Guid id)
-    {
-        return _context.Panels
-            .Include(p => p.Criteria)
-            .ThenInclude(p => p.AnswerOptions)
-            .Single(p => p.Id == id);
-    }
+    // public Panel ReadPanelWithCriteriaAndAnsweroptions(Guid id)
+    // {
+    //     return _context.Panels
+    //         .Include(p => p.Criteria)
+    //         .ThenInclude(p => p.AnswerOptions)
+    //         .Single(p => p.Id == id);
+    // }
 
     public Panel ReadPanelWithRepresentationGroup(Guid id)
     {
@@ -82,10 +82,10 @@ public class PanelRepository : IPanelRepository
             .ToList();
     }
     
-    public IEnumerable<Panel> ReadAllPanels()
-    {
-        return _context.Panels.ToList();
-    }
+    // public IEnumerable<Panel> ReadAllPanels()
+    // {
+    //     return _context.Panels.ToList();
+    // }
     
     public PanelMember UpdatePanelMember(PanelMember member)
     {
