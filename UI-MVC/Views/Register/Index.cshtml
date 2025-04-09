@@ -1,5 +1,5 @@
-﻿@model UI_MVC.Models.Dto.NewPanelMemberDto
-
+﻿@using UI_MVC.TempTenant
+@model UI_MVC.Models.Dto.NewPanelMemberDto
 @{
     ViewBag.Title = "Welkom";
     Layout = "_Layout";
@@ -13,7 +13,7 @@
     @if (Model.IsRegistrationOpen || Model.HasAnsweredQuestions)
     {
         <div class="card shadow-sm border-0">
-            <h2>Welcome</h2>
+            <h2>Welcome to</h2>
             <p>welcome user @Model.UserId to panel @Model.PanelId</p>
             @if (Model.HasAnsweredQuestions)
             {

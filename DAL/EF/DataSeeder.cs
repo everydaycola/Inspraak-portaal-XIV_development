@@ -1,4 +1,5 @@
-﻿using Domain.CitizenPanel;
+﻿using Domain;
+using Domain.CitizenPanel;
 using Microsoft.AspNetCore.Identity;
 
 namespace DAL.EF;
@@ -11,6 +12,23 @@ public static class DataSeeder
     {
         Console.WriteLine("Seeding...");
         _context = context;
+        
+        //ORGANISATIONS
+        var organisation1 = new Organisation()
+        {
+            Id = "antwerpen",
+            Name = "Antwerpen",
+            BackgroundColor = "#cf252b",
+            BackgroundImage = ""
+        };
+        var organisation2 = new Organisation()
+        {
+            Id = "lwc",
+            Name = "Lokale Waterpolo Club",
+            BackgroundColor = "#42daf5",
+            BackgroundImage = ""
+        };
+        
         //REPRESENTATION GROUPS
         var rg1 = new RepresentationGroup
         {
@@ -24,29 +42,33 @@ public static class DataSeeder
         {
             Name="Verkeersveiligheid in en rond Antwerpen.", 
             SampleRate = 0.005,
-            Owner = context.Users.Single(user => user.Email == "user@antwerpen.be")
+            Owner = context.Users.Single(user => user.Email == "user@antwerpen.be"),
+            OrganisationId = "antwerpen"
         };
         //PlanningGroupMembers
-        var PlanningGroupUser1 = new IdentityUser
+        var PlanningGroupUser1 = new ApplicationUser
         {
             Email = "pgm@antwerpen.be",
             NormalizedEmail = "PGM@ANTWERPEN.BE",
             UserName = "PGM",
-            NormalizedUserName = "PGM"
+            NormalizedUserName = "PGM",
+            OrganisationId = "antwerpen"
         };
-        var PlanningGroupUser2 = new IdentityUser
+        var PlanningGroupUser2 = new ApplicationUser
         {
             Email = "owner@antwerpen.be",
             NormalizedEmail = "OWNER@ANTWERPEN.BE",
             UserName = "Owner",
-            NormalizedUserName = "Owner"
+            NormalizedUserName = "Owner",
+            OrganisationId = "antwerpen"
         };
-        var PlanningGroupUser3 = new IdentityUser
+        var PlanningGroupUser3 = new ApplicationUser()
         {
             Email = "JanDeRijke@antwerpen.be",
             NormalizedEmail = "JanDeRijke@ANTWERPEN.BE",
             UserName = "Jan De Rijke",
-            NormalizedUserName = "JANDERIJKE"
+            NormalizedUserName = "JANDERIJKE",
+            OrganisationId = "antwerpen"
         };
         _context.Users.Add(PlanningGroupUser1);
         _context.Users.Add(PlanningGroupUser2);
@@ -216,6 +238,7 @@ public static class DataSeeder
         context.RepresentationGroups.Add(rg1);
         context.Panels.Add(panel1);
         
+        AddMultipleEntities([organisation1, organisation2]);
         AddMultipleEntities([cao1, cao2,cao3,cao4,cao5,cao6,cao7]);
         AddMultipleEntities([cr1,cr2,cr3,cr4,cr5]);
         AddMultipleEntities([panelMember1, panelMember2, panelMember3, panelMember4, panelMember5]);

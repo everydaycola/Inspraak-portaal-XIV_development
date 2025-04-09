@@ -6,5 +6,5 @@ public class PlanningGroupMember
 {
     public Guid Id { get; set; }
     public Panel Panel { get; set; }
-    public IdentityUser User { get; set; }
+    public ApplicationUser User { get; set; }
 }

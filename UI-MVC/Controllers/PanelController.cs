@@ -1,4 +1,5 @@
 using BL.Interfaces;
+using Domain;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -9,9 +10,9 @@ namespace UI_MVC.Controllers;
 public class PanelController : Controller
 {
     private readonly IPanelManager _manager;
-    private readonly UserManager<IdentityUser> _userManager;
+    private readonly UserManager<ApplicationUser> _userManager;
 
-    public PanelController(IPanelManager manager, UserManager<IdentityUser> userManager)
+    public PanelController(IPanelManager manager, UserManager<ApplicationUser> userManager)
     {
         _manager = manager;
         _userManager = userManager;
