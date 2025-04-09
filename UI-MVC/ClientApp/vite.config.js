@@ -17,7 +17,8 @@ export default defineConfig({
                 site: resolve(__dirname, 'src/ts/site.ts'),
                 validation: resolve(__dirname, 'src/ts/validation.ts'),
                 register: resolve(__dirname, 'src/ts/register/register.ts'),
-                panelCreation: resolve(__dirname, 'src/ts/Panel/panelCreation.ts')
+                panelCreation: resolve(__dirname, 'src/ts/Panel/panelCreation.ts'),
+                adminOrgMan: resolve(__dirname, 'src/ts/organisationmanagement/adminOrgMan.ts')
             },
             output: {
                 entryFileNames: '[name].entry.js',

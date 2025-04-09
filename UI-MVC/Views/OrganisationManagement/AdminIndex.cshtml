@@ -1,0 +1,75 @@
+@model UI_MVC.Models.Dto.OrganisationManagementDto
+
+@{
+    Layout = "_Layout";
+    ViewData["Title"] = "Organisatiebeheer";
+}
+@section Scripts{
+    <script src="~/dist/adminOrgMan.entry.js" type="module"></script>
+}
+<div class="container mt-5">
+    <h2 class="mb-4">Organisatie beheer</h2>
+
+    <!-- Search Bar Section -->
+    <div class="row mb-4">
+        <div class="card shadow-sm border-0">
+            <div class="card-body">
+                <div class="input-group">
+                    <input type="text" id="searchBar" class="form-control" placeholder="Zoek op organisatienaam..." />
+                    <button class="btn btn-primary" type="button" id="searchButton">Zoeken</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Table Section -->
+    <div class="row">
+        <div class="col-4">
+            <div class="card shadow-sm border-0">
+                <div class="card-body">
+                    <h5 class="card-title">Algemene informatie</h5>
+                    <p>Totaal aantal organisaties: @Model.AmountOfOrganisations</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-8">
+            <div class="card shadow-sm border-0">
+                <div class="card-body">
+                    <h5 class="card-title">Organisaties</h5>
+                    <table class="table table-striped table-hover">
+                        <thead>
+                        <tr>
+                            <th>Id</th>
+                            <th>Naam</th>
+                            <th></th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        @if (Model.Organisations != null && Model.Organisations.Any())
+                        {
+                            foreach (var organisation in Model.Organisations)
+                            {
+                                <tr data-id="@organisation.Id">
+                                    <td>@organisation.Id</td>
+                                    <!-- Name Field -->
+                                    <td data-name>@organisation.Name</td>
+                                    <!-- Edit Button -->
+                                    <td><button class="btn btn-primary edit-button">Edit</button></td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="3" class="text-center">Geen organisaties gevonden.</td>
+                            </tr>
+                        }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>

@@ -12,7 +12,26 @@ public class OrganisationManagementController : Controller
     {
         _organisationManager = organisationManager;
     }
+    
+    //Onderstaande views behoren tot het beheren van organisaties door Admin accounts.
 
+    public IActionResult AdminIndex()
+    {
+        var organisationsDto = new OrganisationManagementDto
+        {
+            Organisations = _organisationManager.GetAllOrganisations(),
+            AmountOfOrganisations = _organisationManager.GetAllOrganisations().Count()
+        };
+        return View(organisationsDto);
+    }
+
+    public IActionResult AdminOrganisationUpdate()
+    {
+        //TODO: Actual update logic here for the organisations
+        return AdminIndex();
+    }
+    
+    //Onderstaande views behoren tot de pagina voor organisaties zelf
     public IActionResult Index(string organisationId)
     {
         var organisation = _organisationManager.GetOrganisationById(organisationId);
