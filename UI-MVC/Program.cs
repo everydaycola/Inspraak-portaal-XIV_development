@@ -10,6 +10,8 @@ using Microsoft.EntityFrameworkCore;
 using UI_MVC;
 using UI_MVC.Models;
 using UI_MVC.TempTenant;
+using StackExchange.Redis;
+using Microsoft.AspNetCore.DataProtection;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -35,8 +37,28 @@ builder.Services.Configure<AvailableOrganisations>(
     builder.Configuration.GetSection(AvailableOrganisations.SectionName)
 );
 
+var redisConfiguration = builder.Configuration.GetValue<string>("Redis_Configuration");
+var redisInstanceName = builder.Configuration.GetValue<string>("Redis_InstanceName");
+var redis = ConnectionMultiplexer.Connect(redisConfiguration);
+builder.Services.AddDataProtection()
+    .PersistKeysToStackExchangeRedis(redis, "DataProtection-Keys");
+
+
+    builder.Services.AddStackExchangeRedisCache(options =>
+    {
+        options.Configuration = redisConfiguration;
+        options.InstanceName = redisInstanceName;
+    });
+
 var connectionString = Environment.GetEnvironmentVariable("ConnectionStrings__DefaultConnection");
 builder.Services.AddDbContext<CitizenPanelDbContext>(options => { options.UseNpgsql(connectionString); });
+
+builder.Services.AddSession(options =>
+{
+    options.IdleTimeout = TimeSpan.FromMinutes(20);
+    options.Cookie.HttpOnly = true;
+    options.Cookie.IsEssential = true;
+});
 
 builder.Services
     .AddDefaultIdentity<ApplicationUser>()
@@ -45,6 +67,7 @@ builder.Services
     .AddSignInManager<MultiOrganisationSignInManager>()
     .AddRoles<IdentityRole>()
     .AddEntityFrameworkStores<CitizenPanelDbContext>();
+
 
 var app = builder.Build();
 
@@ -75,7 +98,7 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseMiddleware<OrganisationMiddleware>();
 app.UseRouting();
-
+app.UseSession();
 
 app.UseAuthentication();
 app.UseAuthorization();
