@@ -15,12 +15,12 @@ public class CriteriaRepository : ICriteriaRepository
         _context = context;
     }
 
-    public Panel ReadAllCriteriaWithValuesForPanel(Guid panelId)
-    {
-        return _context.Panels.Include(p => p.Criteria)
-            .ThenInclude(c => c.AnswerOptions)
-            .Single(p => p.Id == panelId);
-    }
+    // public Panel ReadAllCriteriaWithValuesForPanel(Guid panelId)
+    // {
+    //     return _context.Panels.Include(p => p.Criteria)
+    //         .ThenInclude(c => c.AnswerOptions)
+    //         .Single(p => p.Id == panelId);
+    // }
 
     // gives a list of criteria for a panel with the options as a list
     public Dictionary<string, IEnumerable<string>> ReadAllCriteriaNamesAndOptions(Guid panelId)
@@ -46,6 +46,7 @@ public class CriteriaRepository : ICriteriaRepository
     {
         return _context.PanelMembers
             .Where(panelMember => panelMember.Panel.Id == panelId)
+            .Where(panelMember => panelMember.HasRegistered)
             .SelectMany(panelMember => panelMember.Responses)
             .GroupBy(response => response.Criteria.Name)
             .ToDictionary(

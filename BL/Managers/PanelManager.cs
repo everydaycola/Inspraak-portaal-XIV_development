@@ -11,12 +11,14 @@ public class PanelManager : IPanelManager
 {
     private readonly ILogger<PanelManager> _logger;
     private readonly IPanelRepository _repo;
+    private readonly ICalculationManager _calculationManager;
     private readonly IUserRepository _userRepo;
 
-    public PanelManager(ILogger<PanelManager> logger, IPanelRepository repo, IUserRepository userRepo)
+    public PanelManager(ILogger<PanelManager> logger, IPanelRepository repo, ICalculationManager calcManager, IUserRepository userRepo)
     {
         _logger = logger;
         _repo = repo;
+        _calculationManager = calcManager;
         _userRepo = userRepo;
     }
 
@@ -126,7 +128,11 @@ public class PanelManager : IPanelManager
         // validate panel and representationgroup
         objectsToValidate.Add(panel);
         objectsToValidate.Add(panel.RepresentationGroup);
-
+        
+        // calculate panel size
+        var membersCount = _calculationManager.CalculateTotalInvitesNeeded(_calculationManager.CalculateAmountOfReserve(size, reservePercentage), responseRate);
+        // todo use this count 
+        
         // Generate members
         var panelMembers = Enumerable
             .Range(0, size)
