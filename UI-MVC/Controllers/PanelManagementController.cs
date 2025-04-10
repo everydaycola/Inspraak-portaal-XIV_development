@@ -37,7 +37,7 @@ public class PanelManagementController : Controller
         if (!panelMembers.Any())
         {
             // Handle the empty case — e.g., show an error, redirect, or log
-            TempData["Error"] = "Geen panellid gevonden voor dit panel.";
+            _logger.Log(LogLevel.Information, "No panelmember found for this panel.");
             return RedirectToAction("Index", "Home"); // or a view showing the error
         }
         var panel = panelMembers.First().Panel;

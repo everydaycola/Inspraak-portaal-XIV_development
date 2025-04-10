@@ -39,7 +39,7 @@ public class QRCodeController : Controller
     public async Task<IActionResult> MailQrCode(string email, string data)
     {
         await _sendMailManager.SendSingleQRCodeInMailAsync(email, data);
-        TempData["Success"] = "Email succesvol verzonden!";
+        _logger.Log(LogLevel.Information, "Email succesvol verzonden!");
         return RedirectToAction("Index", "PanelManagement");
     }
 }
