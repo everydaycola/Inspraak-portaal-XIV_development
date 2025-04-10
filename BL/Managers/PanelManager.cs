@@ -104,9 +104,13 @@ public class PanelManager : IPanelManager
             _logger.Log(LogLevel.Critical, errorMessage);
             throw new UnauthorizedAccessException(errorMessage);
         }
+        
 
         // list of objects to validate
         var objectsToValidate = new List<object>();
+        
+        // Calculate size of the Panel
+        size = (int)(citizenCount * sampleRate);
 
         // Create and initialize the panel
         var panel = new Panel
