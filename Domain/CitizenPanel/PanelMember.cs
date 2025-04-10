@@ -14,8 +14,7 @@ public class PanelMember
     [Required(ErrorMessage = "Panel member moet deel zijn van een panel.")]
     public Panel Panel { get; set; }
 
-    //[Required(ErrorMessage = "Answer options are required.")]
-    //[MinLength(1, ErrorMessage = "Criteria vraag moet minimaal 2 opties hebben.")]
-    //[MaxLength(12, ErrorMessage = "Criteria vraag mag maximaal 12 opties hebben.")]
+   
+    [MaxLength(10, ErrorMessage = "Criteria antwoord mag maximaal 10 opties hebben.")]
     public ICollection<CriteriaResponse> Responses { get; set; }
 }
