@@ -1,11 +1,13 @@
 using BL.Interfaces;
 using Domain;
+using Domain.CitizenPanel;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using UI_MVC.Models.Dto;
 
 namespace UI_MVC.Controllers;
+
 [RequiresOrganisation]
 public class PanelController : Controller
 {
@@ -23,7 +25,7 @@ public class PanelController : Controller
     {
         return View();
     }
-    
+
     [HttpPost]
     [Authorize]
     public IActionResult AddNewPanel(NewPanelDto newPanelDto)
@@ -32,17 +34,17 @@ public class PanelController : Controller
         var createdPanel = _manager.AddPanel(
             newPanelDto.Name,
             newPanelDto.Size,
-            newPanelDto.SampleRate/100,
-            CriteriaDtoDictionaryConverter(newPanelDto.Distributions),
+            newPanelDto.SampleRate / 100,
+            CriteriaDtoCriteriaConverter(newPanelDto.Distributions),
             GetTotalCitizenCountFromSubRegionDtos(newPanelDto.SubRegions),
-            newPanelDto.ReservePercentage/100,
-            newPanelDto.ResponseRate/100,
+            newPanelDto.ReservePercentage / 100,
+            newPanelDto.ResponseRate / 100,
             userId
         );
-        
-        return RedirectToAction("Index", "PanelManagement",new { id = createdPanel.Id });
+
+        return RedirectToAction("Index", "PanelManagement", new { id = createdPanel.Id });
     }
-    
+
     [HttpPost]
     public IActionResult AddDefaultPanel()
     {
@@ -51,21 +53,49 @@ public class PanelController : Controller
             "Panel rond alcoholgebruik",
             150,
             0.005,
-            new Dictionary<string, Dictionary<string, double>>
+            new List<Criteria>
             {
+                new Criteria
                 {
-                    "sex", new Dictionary<string, double>
+                    Name = "sex",
+                    IsDefault = true,
+                    Question = "Identificeert u zich als man of vrouw?",
+                    AnswerOptions = new List<CriteriaAnswerOption>
                     {
-                        { "Man", 0.4 },
-                        { "Vrouw", 0.6 }
+                        new CriteriaAnswerOption
+                        {
+                            Option = "Man",
+                            DistributionPercentage = 0.4
+                        },
+                        new CriteriaAnswerOption
+                        {
+                            Option = "Vrouw",
+                            DistributionPercentage = 0.6
+                        }
                     }
                 },
+                new Criteria()
                 {
-                    "leeftijd", new Dictionary<string, double>
+                    Name = "leeftijd",
+                    IsDefault = true,
+                    Question = "Tot welke leeftijdscategorie behoort u?",
+                    AnswerOptions = new List<CriteriaAnswerOption>
                     {
-                        { "20-29", 0.2 },
-                        { "30-39", 0.6 },
-                        { "40-49", 0.2 }
+                        new CriteriaAnswerOption
+                        {
+                            Option = "20-29",
+                            DistributionPercentage = 0.2
+                        },
+                        new CriteriaAnswerOption
+                        {
+                            Option = "30-39",
+                            DistributionPercentage = 0.6
+                        },
+                        new CriteriaAnswerOption
+                        {
+                            Option = "40-49",
+                            DistributionPercentage = 0.2
+                        }
                     }
                 }
             },
@@ -74,21 +104,33 @@ public class PanelController : Controller
             0.005,
             userId = userId
         );
-        return RedirectToAction("Index", "PanelManagement",new { id = createdPanel.Id });
+        return RedirectToAction("Index", "PanelManagement", new { id = createdPanel.Id });
     }
 
-    private Dictionary<string, Dictionary<string, double>> CriteriaDtoDictionaryConverter(ICollection<CriteriaDto> criteriaDtos)
+    private ICollection<Criteria> CriteriaDtoCriteriaConverter(ICollection<CriteriaDto> criteriaDtos)
     {
-        var distributionDictionary = new Dictionary<string, Dictionary<string, double>>();
+        var distributionList = new List<Criteria>();
         foreach (var crit in criteriaDtos)
         {
-            distributionDictionary.Add(crit.Name, new Dictionary<string, double>());
+            distributionList.Add(new Criteria
+            {
+                Name = crit.Name,
+                IsDefault = crit.IsDefault,
+                Question = crit.Question
+            });
             foreach (var answerOption in crit.AnswerOptions)
             {
-                distributionDictionary[crit.Name].Add(answerOption.Option, answerOption.DistributionPercentage/100);
+                distributionList.Find(c => c.Name == crit.Name)
+                    .AnswerOptions.Add(
+                    new CriteriaAnswerOption
+                    {
+                        Option = answerOption.Option,
+                        DistributionPercentage = answerOption.DistributionPercentage / 100
+                    });
             }
         }
-        return distributionDictionary;
+
+        return distributionList;
     }
 
     private int GetTotalCitizenCountFromSubRegionDtos(ICollection<SubRegionDto> subRegionDtos)
@@ -98,6 +140,7 @@ public class PanelController : Controller
         {
             total += subRegion.Size;
         }
+
         return total;
     }
 }
