@@ -28,6 +28,7 @@ builder.Services.AddScoped<IFileManager, FileManager>();
 builder.Services.AddScoped<ICriteriaManager, CriteriaManager>();
 builder.Services.AddScoped<ICriteriaRepository, CriteriaRepository>();
 builder.Services.AddScoped<ICalculationManager, CalculationManager>();
+builder.Services.AddScoped<ISendMailManager, SendMailManager>();
 
 //Tenant specific logic
 builder.Services
