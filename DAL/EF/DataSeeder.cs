@@ -1,4 +1,5 @@
-﻿using Domain.CitizenPanel;
+﻿using Domain;
+using Domain.CitizenPanel;
 using Microsoft.AspNetCore.Identity;
 
 namespace DAL.EF;
@@ -11,6 +12,23 @@ public static class DataSeeder
     {
         Console.WriteLine("Seeding...");
         _context = context;
+        
+        //ORGANISATIONS
+        var organisation1 = new Organisation()
+        {
+            Id = "antwerpen",
+            Name = "Antwerpen",
+            BackgroundColor = "#cf252b",
+            BackgroundImage = ""
+        };
+        var organisation2 = new Organisation()
+        {
+            Id = "lwc",
+            Name = "Lokale Waterpolo Club",
+            BackgroundColor = "#42daf5",
+            BackgroundImage = ""
+        };
+        
         //REPRESENTATION GROUPS
         //PANELS
         var panel1 = new Panel
@@ -167,6 +185,7 @@ public static class DataSeeder
         AddMultipleEntities(panelMembersMen);
         AddMultipleEntities(panelMembersWomen);
         AddMultipleEntities([pgm1, pgm2, pgm3]);
+        AddMultipleEntities([organisation1, organisation2]);
         context.SaveChanges();
         context.ChangeTracker.Clear();
     }

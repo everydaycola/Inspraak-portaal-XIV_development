@@ -1,4 +1,6 @@
 using BL.Interfaces;
+using Domain;
+using Domain.CitizenPanel;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -6,7 +8,7 @@ using UI_MVC.Models;
 using UI_MVC.Models.Dto;
 
 namespace UI_MVC.Controllers;
-
+[RequiresOrganisation]
 public class PanelManagementController : Controller
 {
     private readonly ILogger<PanelManagementController> _logger;
@@ -14,10 +16,10 @@ public class PanelManagementController : Controller
     private readonly IPanelManager _manager;
     private readonly ICriteriaManager _criteriaManager;
     private readonly ICalculationManager _calcManager;
-    private readonly UserManager<IdentityUser> _userManager;
+    private readonly UserManager<ApplicationUser> _userManager;
 
 
-    public PanelManagementController(ILogger<PanelManagementController> logger, IPanelManager manager, ICriteriaManager criteriaManager, ICalculationManager calcHelper, UserManager<IdentityUser> userManager)
+    public PanelManagementController(ILogger<PanelManagementController> logger, IPanelManager manager, ICriteriaManager criteriaManager, ICalculationManager calcHelper, UserManager<ApplicationUser> userManager)
     {
         _logger = logger;
         _manager = manager;
@@ -63,7 +65,7 @@ public class PanelManagementController : Controller
     public IActionResult PanelSelection()
     {
         string userId = _userManager.GetUserId(User);
-        var panels = _manager.GetAllPanelsOwnedBy(userId);
+        var panels = _manager.GetAllPanels();
         return View(panels);
     }
     public IActionResult ToggleRegistration(Guid panelId)

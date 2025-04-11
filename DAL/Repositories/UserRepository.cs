@@ -1,5 +1,6 @@
 using DAL.EF;
 using DAL.Interfaces;
+using Domain;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Identity.Client;
 
@@ -13,7 +14,7 @@ public class UserRepository : IUserRepository
         _context = context;
     }
 
-    public IdentityUser ReadUser(string userId)
+    public ApplicationUser ReadUser(string userId)
     {
         return _context.Users.SingleOrDefault(u => u.Id == userId);
     }

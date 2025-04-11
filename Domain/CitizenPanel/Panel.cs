@@ -1,9 +1,10 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Identity;
+using UI_MVC;
 
 namespace Domain.CitizenPanel;
 
-public class Panel : IValidatableObject
+public class Panel : IOrganisational,IValidatableObject
 {
     public Guid Id { get; set; }
 
@@ -23,13 +24,12 @@ public class Panel : IValidatableObject
     public double SampleRate { get; set; }
 
     public bool IsRegistrationOpen { get; set; }
-
     [Range(0, int.MaxValue, ErrorMessage = "Succesvol geregistreerde personen mag niet negatief zijn.")]
     public int SuccessfulRegistrationCount { get; set; }
-
     [Required(ErrorMessage = "Panel moet een eigenaar hebben.")]
-    public IdentityUser Owner { get; set; }
-
+    public ApplicationUser Owner { get; set; }
+    public string OrganisationId { get; set; }
+    
     IEnumerable<ValidationResult> IValidatableObject.Validate(ValidationContext validationContext)
     {
         return (from c in Criteria
@@ -38,4 +38,5 @@ public class Panel : IValidatableObject
                                         "Nu: " + c.AnswerOptions.Select(c => c.DistributionPercentage).Sum() * 100,
                 [nameof(c)])).ToList();
     }
+    
 }

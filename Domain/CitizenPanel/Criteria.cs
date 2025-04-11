@@ -17,7 +17,7 @@ public class Criteria : IValidatableObject
 
     public bool IsDefault { get; set; }
 
-    [Required(ErrorMessage = "Answer options are required.")]
+    [Required(ErrorMessage = "Criteria moet antwoord opties hebben.")]
     [MinLength(2, ErrorMessage = "Criteria vraag moet minimaal 2 opties hebben.")]
     [MaxLength(12, ErrorMessage = "Criteria vraag mag maximaal 12 opties hebben.")]
     public ICollection<CriteriaAnswerOption> AnswerOptions { get; set; } = new List<CriteriaAnswerOption>();

@@ -51,6 +51,13 @@
                                         QR code downloaden voor dit panellid
                                     </a>
                                 </td>
+                                <td>
+                                    <form asp-controller="QRCode" asp-action="MailQrCode" method="post">
+                                        <input type="hidden" name="data" value="@($"{baseUrl}/Register?UserId={member.PanelMemberId}")" />
+                                        <input type="email" name="email" placeholder="Emailadres" required class="form-control mb-1" />
+                                        <button type="submit" class="btn btn-primary">Mail QRCode</button>
+                                    </form>
+                                </td>
                             </tr>
                         }
                         </tbody>
