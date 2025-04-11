@@ -28,14 +28,9 @@ public class PanelManager : IPanelManager
         return _repo.ReadPanel(id);
     }
 
-    // public IEnumerable<Panel> GetAllPanels()
-    // {
-    //     return _repo.ReadAllPanels();
-    // }
-
-    public IEnumerable<Panel> GetAllPanelsOwnedBy(string userId)
+    public IEnumerable<Panel> GetAllPanels()
     {
-        return _repo.ReadAllPanelsOwnedBy(userId);
+        return _repo.ReadAllPanels();
     }
 
     public Panel GetPanelWithRepresentationGroup(Guid id)
@@ -74,10 +69,10 @@ public class PanelManager : IPanelManager
         return _repo.ReadPanelMembersWithCriteria(panelId);
     }
 
-    public IEnumerable<PanelMember> GetAllPanelMembersWhichAnsweredAllQuestionsWithCriteria(Guid id)
-    {
-        return _repo.ReadPanelMembersWhichAnsweredAllQuestionsWithCriteria(id);
-    }
+    // public IEnumerable<PanelMember> GetAllPanelMembersWhichAnsweredAllQuestionsWithCriteria(Guid id)
+    // {
+    //     return _repo.ReadPanelMembersWhichAnsweredAllQuestionsWithCriteria(id);
+    // }
 
     public Panel GetPanelWithCriteriaAndCriteriaAnswerOptions(Guid panelId)
     {
@@ -332,7 +327,8 @@ public class PanelManager : IPanelManager
 
     public PanelMember UpdatePanelMember(PanelMember member)
     {
-        return _repo.UpdatePanelMember(member);
+        _repo.UpdatePanelMember(member);
+        return member;
     }
 
     public IEnumerable<PlanningGroupMember> GetAllPlanningGroupMembersWithIdentityUserForPanel(Guid panelId)

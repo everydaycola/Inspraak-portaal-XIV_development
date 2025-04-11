@@ -12,113 +12,113 @@ public static class DataSeeder
     {
         Console.WriteLine("Seeding...");
         _context = context;
-        
+
         //ORGANISATIONS
-        var organisation1 = new Organisation()
+        var organisation1 = new Organisation
         {
             Id = "antwerpen",
             Name = "Antwerpen",
             BackgroundColor = "#cf252b",
             BackgroundImage = ""
         };
-        var organisation2 = new Organisation()
+        var organisation2 = new Organisation
         {
             Id = "lwc",
             Name = "Lokale Waterpolo Club",
             BackgroundColor = "#42daf5",
             BackgroundImage = ""
         };
-        
+
         //REPRESENTATION GROUPS
         //PANELS
-        var panel1 = new Panel
+        var newPanel = new Panel
         {
-            Name="Verkeersveiligheid in en rond Antwerpen.", 
+            Name = "Verkeersveiligheid in en rond Antwerpen.",
             SampleRate = 0.005,
             Owner = context.Users.Single(user => user.Email == "user@antwerpen.be"),
             IsRegistrationOpen = true,
+            OrganisationId = "antwerpen",
             RepresentationGroup = new RepresentationGroup
             {
                 CitizenCount = 20000,
-                ReservePercentage = 0.2, 
+                ReservePercentage = 0.2,
                 ResponseRate = 0.1
-            
             },
             Criteria = new List<Criteria>
             {
                 new()
                 {
-                Name = "Rijbewijs",
-                Question = "Beschikt u over een rijbewijs?",
-                IsDefault = false,
-                AnswerOptions = new List<CriteriaAnswerOption>
+                    Name = "Rijbewijs",
+                    Question = "Beschikt u over een rijbewijs?",
+                    IsDefault = false,
+                    AnswerOptions = new List<CriteriaAnswerOption>
+                    {
+                        new()
+                        {
+                            DistributionPercentage = 0.5,
+                            Option = "Ja"
+                        },
+                        new()
+                        {
+                            DistributionPercentage = 0.5,
+                            Option = "Nee"
+                        }
+                    }
+                },
+                new()
                 {
-                    new()
+                    Name = "Vervoermethode",
+                    Question = "Wat is uw voorkeurs vervoersmethode?",
+                    IsDefault = false,
+                    AnswerOptions = new List<CriteriaAnswerOption>
                     {
-                        DistributionPercentage = 0.5,
-                        Option = "Ja"
-                    },
-                    new()
+                        new()
+                        {
+                            DistributionPercentage = 0.33,
+                            Option = "Te voet"
+                        },
+                        new()
+                        {
+                            DistributionPercentage = 0.33,
+                            Option = "Fiets"
+                        },
+                        new()
+                        {
+                            DistributionPercentage = 0.33,
+                            Option = "Auto"
+                        }
+                    }
+                },
+                new()
+                {
+                    Name = "Geslacht",
+                    Question = "Wat is uw geslacht?",
+                    IsDefault = true,
+                    AnswerOptions = new List<CriteriaAnswerOption>
                     {
-                        DistributionPercentage = 0.5,
-                        Option = "Nee"
+                        new()
+                        {
+                            DistributionPercentage = 0.5,
+                            Option = "Man"
+                        },
+                        new()
+                        {
+                            DistributionPercentage = 0.5,
+                            Option = "Vrouw"
+                        }
                     }
                 }
-            },
-            new()
-            {
-            Name = "Vervoermethode",
-            Question = "Wat is uw voorkeurs vervoersmethode?",
-            IsDefault = false,
-            AnswerOptions = new List<CriteriaAnswerOption>
-            {
-                new()
-                {
-                    DistributionPercentage = 0.33,
-                    Option = "Te voet"
-                },
-                new()
-                {
-                    DistributionPercentage = 0.33,
-                    Option = "Fiets"
-                },
-                new()
-                {
-                    DistributionPercentage = 0.33,
-                    Option = "Auto"
-                }
-            }
-        },
-        new()
-        {
-            Name = "Geslacht",
-            Question = "Wat is uw geslacht?",
-            IsDefault = true,
-            AnswerOptions = new List<CriteriaAnswerOption>
-            {
-                new()
-                {
-                    DistributionPercentage = 0.5,
-                    Option = "Man"
-                },
-                new()
-                {
-                    DistributionPercentage = 0.5,
-                    Option = "Vrouw"
-                }
-            }
-        }
             }
         };
-        
+
         // link rpg both ways
-        panel1.RepresentationGroup.Panel = panel1;
-        
+        newPanel.RepresentationGroup.Panel = newPanel;
+
         //PlanningGroupMembers
         var pgm1 = new PlanningGroupMember
         {
-            Panel = panel1,
-            User = new IdentityUser
+            Panel = newPanel,
+            User = new ApplicationUser
             {
                 Email = "pgm@antwerpen.be",
                 NormalizedEmail = "PGM@ANTWERPEN.BE",
@@ -128,8 +128,8 @@ public static class DataSeeder
         };
         var pgm2 = new PlanningGroupMember
         {
-            Panel = panel1,
-            User = new IdentityUser
+            Panel = newPanel,
+            User = new ApplicationUser
             {
                 Email = "owner@antwerpen.be",
                 NormalizedEmail = "OWNER@ANTWERPEN.BE",
@@ -139,8 +139,8 @@ public static class DataSeeder
         };
         var pgm3 = new PlanningGroupMember
         {
-            Panel = panel1,
-            User = new IdentityUser
+            Panel = newPanel,
+            User = new ApplicationUser
             {
                 Email = "JanDeRijke@antwerpen.be",
                 NormalizedEmail = "JanDeRijke@ANTWERPEN.BE",
@@ -148,34 +148,34 @@ public static class DataSeeder
                 NormalizedUserName = "JANDERIJKE"
             }
         };
-        
+
         //PanelMembers
         var panelMembersMen = Enumerable.Range(1, 50).Select(_ => new PanelMember
         {
-            Panel = panel1,
+            Panel = newPanel,
             Responses = new List<CriteriaResponse>
             {
                 new()
                 {
-                    Criteria = panel1.Criteria.First(c => c.Name == "Geslacht"),
+                    Criteria = newPanel.Criteria.First(c => c.Name == "Geslacht"),
                     SelectedOption = "Man"
                 }
             }
         }).ToList();
-        
+
         var panelMembersWomen = Enumerable.Range(1, 50).Select(_ => new PanelMember
         {
-            Panel = panel1,
+            Panel = newPanel,
             Responses = new List<CriteriaResponse>
             {
                 new()
                 {
-                    Criteria = panel1.Criteria.First(c => c.Name == "Geslacht"),
+                    Criteria = newPanel.Criteria.First(c => c.Name == "Geslacht"),
                     SelectedOption = "Vrouw"
                 }
             }
         }).ToList();
-        
+
         // adding panel members also adds dependant objects
         // so panel member => panel
         //    panel => representation group

@@ -11,5 +11,5 @@ public interface ICriteriaManager
         Guid panelId);
     
     //SAVES
-    void SavePanelMemberCriteriaResponses(Guid panelId,Dictionary<string, string> CriteriaAnswers, PanelMember member);
+    public void SavePanelMemberCriteriaResponses(Guid panelId,Dictionary<string, string> CriteriaAnswers, PanelMember member);
 }

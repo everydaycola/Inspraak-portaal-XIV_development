@@ -19,9 +19,9 @@ public class PanelRepository : IPanelRepository
         return _context.Panels.Find(id);
     }
 
-    public IEnumerable<Panel> ReadAllPanelsOwnedBy(string userId)
+    public IEnumerable<Panel> ReadAllPanels()
     {
-        return _context.Panels.Where(p => p.Owner.Id == userId).ToList();
+        return _context.Panels.ToList();
     }
 
     // public PanelMember ReadPanelMember(Guid id)
@@ -71,28 +71,21 @@ public class PanelRepository : IPanelRepository
             .ToList();
     }
 
-    public IEnumerable<PanelMember> ReadPanelMembersWhichAnsweredAllQuestionsWithCriteria(Guid id)
-    {
-        return _context.PanelMembers
-            .Include(pm => pm.Panel)
-            .ThenInclude(p => p.Criteria)
-            .ThenInclude(c => c.AnswerOptions)
-            .Include(pm => pm.Responses)
-            .Where(pm => pm.Panel.Id == id && pm.HasRegistered == true) 
-            .ToList();
-    }
-    
-    // public IEnumerable<Panel> ReadAllPanels()
+    // public IEnumerable<PanelMember> ReadPanelMembersWhichAnsweredAllQuestionsWithCriteria(Guid id)
     // {
-    //     return _context.Panels.ToList();
+    //     return _context.PanelMembers
+    //         .Include(pm => pm.Panel)
+    //         .ThenInclude(p => p.Criteria)
+    //         .ThenInclude(c => c.AnswerOptions)
+    //         .Include(pm => pm.Responses)
+    //         .Where(pm => pm.Panel.Id == id && pm.HasRegistered == true) 
+    //         .ToList();
     // }
     
-    public PanelMember UpdatePanelMember(PanelMember member)
+    public void UpdatePanelMember(PanelMember member)
     {
         _context.PanelMembers.Update(member);
         _context.SaveChanges();
-
-        return ReadPanelMemberWithPanel(member.PanelMemberId);
     }
     
     public void CreatePanelMember(PanelMember panelMember)

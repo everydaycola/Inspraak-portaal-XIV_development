@@ -64,7 +64,6 @@ public class PanelManagementController : Controller
     [Authorize]
     public IActionResult PanelSelection()
     {
-        string userId = _userManager.GetUserId(User);
         var panels = _manager.GetAllPanels();
         return View(panels);
     }
