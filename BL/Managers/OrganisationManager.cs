@@ -21,7 +21,7 @@ public class OrganisationManager : IOrganisationManager
 
     public IEnumerable<Organisation> GetAllOrganisations()
     {
-        return _repo.GetAllOrganisations();
+        return _repo.ReadAllOrganisations();
     }
 
     public Organisation UpdateOrganisation(string organisationId, string name, string backgroundColor, string backgroundImage)
@@ -35,6 +35,11 @@ public class OrganisationManager : IOrganisationManager
             return _repo.UpdateOrganisation(existingOrganisation);
         }
 
-        return null;
+        throw new InvalidOperationException($"$No organisation found with ID: {organisationId}");
+    }
+
+    public void DeleteOrganisation(string organisationId)
+    {
+        _repo.RemoveOrganisation(organisationId);
     }
 }
