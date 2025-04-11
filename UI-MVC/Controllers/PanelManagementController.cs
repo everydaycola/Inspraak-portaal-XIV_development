@@ -34,6 +34,12 @@ public class PanelManagementController : Controller
     public IActionResult Index(Guid id)
     {
         var panelMembers = _manager.GetPanelMembersAndRepresentationGroup(id);
+        if (!panelMembers.Any())
+        {
+            // Handle the empty case — e.g., show an error, redirect, or log
+            _logger.Log(LogLevel.Information, "No panelmember found for this panel.");
+            return RedirectToAction("Index", "Home"); // or a view showing the error
+        }
         var panel = panelMembers.First().Panel;
         var pmd = new PanelManagementDto(id, panel.Name, 20000, 0);
         pmd.SuccesfulRegistrationCount = panel.SuccessfulRegistrationCount;
