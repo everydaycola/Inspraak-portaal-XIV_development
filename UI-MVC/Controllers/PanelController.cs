@@ -13,11 +13,14 @@ public class PanelController : Controller
 {
     private readonly IPanelManager _manager;
     private readonly UserManager<ApplicationUser> _userManager;
+    private readonly ICriteriaManager _criteriaManager;
 
-    public PanelController(IPanelManager manager, UserManager<ApplicationUser> userManager)
+    public PanelController(IPanelManager manager, UserManager<ApplicationUser> userManager,
+        ICriteriaManager criteriaManager)
     {
         _manager = manager;
         _userManager = userManager;
+        _criteriaManager = criteriaManager;
     }
 
     [Authorize]
@@ -55,49 +58,25 @@ public class PanelController : Controller
             0.005,
             new List<Criteria>
             {
-                new Criteria
-                {
-                    Name = "sex",
-                    IsDefault = true,
-                    Question = "Identificeert u zich als man of vrouw?",
-                    AnswerOptions = new List<CriteriaAnswerOption>
+                _criteriaManager.AddCriteria(
+                    "sex",
+                    "Identificeert u zich als man of vrouw?",
+                    true,
+                    new List<CriteriaAnswerOption>
                     {
-                        new CriteriaAnswerOption
-                        {
-                            Option = "Man",
-                            DistributionPercentage = 0.4
-                        },
-                        new CriteriaAnswerOption
-                        {
-                            Option = "Vrouw",
-                            DistributionPercentage = 0.6
-                        }
-                    }
-                },
-                new Criteria()
-                {
-                    Name = "leeftijd",
-                    IsDefault = true,
-                    Question = "Tot welke leeftijdscategorie behoort u?",
-                    AnswerOptions = new List<CriteriaAnswerOption>
+                        _criteriaManager.AddCriteriaAnswerOption("Man", 0.4),
+                        _criteriaManager.AddCriteriaAnswerOption("Vrouw", 0.6)
+                    }),
+                _criteriaManager.AddCriteria(
+                    "leeftijd",
+                    "Tot welke leeftijdscategorie behoort u?",
+                    true,
+                    new List<CriteriaAnswerOption>
                     {
-                        new CriteriaAnswerOption
-                        {
-                            Option = "20-29",
-                            DistributionPercentage = 0.2
-                        },
-                        new CriteriaAnswerOption
-                        {
-                            Option = "30-39",
-                            DistributionPercentage = 0.6
-                        },
-                        new CriteriaAnswerOption
-                        {
-                            Option = "40-49",
-                            DistributionPercentage = 0.2
-                        }
-                    }
-                }
+                        _criteriaManager.AddCriteriaAnswerOption("20-29", 0.2),
+                        _criteriaManager.AddCriteriaAnswerOption("30-39", 0.6),
+                        _criteriaManager.AddCriteriaAnswerOption("40-49", 0.2),
+                    })
             },
             10000,
             0.2,
@@ -110,24 +89,18 @@ public class PanelController : Controller
     private ICollection<Criteria> CriteriaDtoCriteriaConverter(ICollection<CriteriaDto> criteriaDtos)
     {
         var distributionList = new List<Criteria>();
+
         foreach (var crit in criteriaDtos)
         {
-            distributionList.Add(new Criteria
-            {
-                Name = crit.Name,
-                IsDefault = crit.IsDefault,
-                Question = crit.Question
-            });
+            var answerOptionsList = new List<CriteriaAnswerOption>();
             foreach (var answerOption in crit.AnswerOptions)
             {
-                distributionList.Find(c => c.Name == crit.Name)
-                    .AnswerOptions.Add(
-                    new CriteriaAnswerOption
-                    {
-                        Option = answerOption.Option,
-                        DistributionPercentage = answerOption.DistributionPercentage / 100
-                    });
+                answerOptionsList.Add(_criteriaManager.AddCriteriaAnswerOption(answerOption.Option,
+                    answerOption.DistributionPercentage));
             }
+
+            distributionList.Add(_criteriaManager.AddCriteria(crit.Name, crit.Question, crit.IsDefault,
+                answerOptionsList));
         }
 
         return distributionList;
