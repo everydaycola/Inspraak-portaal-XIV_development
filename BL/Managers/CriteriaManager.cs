@@ -169,7 +169,7 @@ public class CriteriaManager : ICriteriaManager
         var cao = new CriteriaAnswerOption
         {
             Option = option,
-            DistributionPercentage = distributionPercentage
+            DistributionPercentage = distributionPercentage/100
         };
         _logger.Log(LogLevel.Information, "Criteria answer option with " + cao.Option + " was created.");
         return cao;
