@@ -14,10 +14,10 @@ public class OrganisationRepository : IOrganisationRepository
 
     public Organisation ReadOrganisationById(string id)
     {
-        return _context.Organisations.Single(o => o.Id == id);
+        return _context.Organisations.SingleOrDefault(o => o.Id == id);
     }
 
-    public IEnumerable<Organisation> GetAllOrganisations()
+    public IEnumerable<Organisation> ReadAllOrganisations()
     {
         return _context.Organisations.ToList();
     }
@@ -27,5 +27,15 @@ public class OrganisationRepository : IOrganisationRepository
         _context.Organisations.Update(existingOrganisation);
         _context.SaveChanges();
         return ReadOrganisationById(existingOrganisation.Id);
+    }
+
+    public void RemoveOrganisation(string organisationId)
+    {
+        var organisation = ReadOrganisationById(organisationId);
+        if (organisation != null)
+        {
+            _context.Organisations.Remove(organisation);
+            _context.SaveChanges();
+        }
     }
 }

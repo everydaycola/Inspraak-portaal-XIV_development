@@ -28,7 +28,7 @@
                     <li class="nav-item">
                         <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
                     </li>
-                    @if (User.Identity != null && User.Identity.IsAuthenticated && User.IsInRole("Organisatie"))
+                    @if (User.Identity != null && User.Identity.IsAuthenticated && User.IsInRole(CustomIdentityConstants.OrganisatieRole))
                     {
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Panel" asp-action="MakeNewPanel">Nieuw
@@ -42,6 +42,15 @@
                             <a class="nav-link text-dark" asp-area="" asp-controller="OrganisationManagement"
                                asp-action="Index" asp-route-organisationId="@Organisation.Id">Organisatie instellingen</a>
                         </li>
+                    }
+                    @if (User.Identity != null && User.Identity.IsAuthenticated && User.IsInRole(CustomIdentityConstants.AdminRole))
+                    {
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" asp-controller="OrganisationManagement" asp-action="AdminIndex">
+                                Organisatie beheer
+                                </a>
+                        </li>
+                       
                     }
                     <li class="nav-item">
                         <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>

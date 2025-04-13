@@ -1,0 +1,108 @@
+@model UI_MVC.Models.Dto.OrganisationManagementDto
+
+@{
+    Layout = "_Layout";
+    ViewData["Title"] = "Organisatiebeheer";
+}
+
+@section Scripts{
+    <script src="~/dist/adminOrgMan.entry.js" type="module"></script>
+}
+
+<div class="container mt-5">
+    <h2 class="mb-4">Organisatie beheer</h2>
+
+    <!-- Search Bar Section -->
+    <div class="row mb-4">
+        <div class="card shadow-sm border-0">
+            <div class="card-body">
+                <div class="input-group">
+                    <input type="text" id="searchBar" class="form-control" placeholder="Zoek op organisatienaam..."/>
+                    <button class="btn btn-primary" type="button" id="searchButton">Zoeken</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Table Section -->
+    <div class="row">
+        <div class="col-4">
+            <div class="card shadow-sm border-0">
+                <div class="card-body">
+                    <h5 class="card-title">Algemene informatie</h5>
+                    <p>Totaal aantal organisaties: @Model.AmountOfOrganisations</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-8">
+            <div class="card shadow-sm border-0">
+                <div class="card-body">
+                    <h5 class="card-title">Organisaties</h5>
+                    <table class="table table-striped table-hover">
+                        <thead>
+                        <tr>
+                            <th>Id</th>
+                            <th>Naam</th>
+                            <th></th>
+                            <th></th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        @if (Model.Organisations != null && Model.Organisations.Any())
+                        {
+                            foreach (var organisation in Model.Organisations)
+                            {
+                                <tr data-id="@organisation.Id">
+                                    <td>@organisation.Id</td>
+                                    <td data-name>@organisation.Name</td>
+                                    <td>
+                                        <button class="btn btn-primary edit-button">Edit</button>
+                                    </td>
+                                    <td>
+                                        <form asp-action="AdminOrganisationDelete" asp-controller="OrganisationManagement" method="post">
+                                            <input type="hidden" asp-for="@organisation.Id" name="organisationId" />
+                                            <button type="submit"
+                                                    class="btn btn-danger"
+                                                    onclick="return confirm('Weet je zeker dat je deze organisatie wilt verwijderen?');">
+                                                Delete
+                                            </button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="3" class="text-center">Geen organisaties gevonden.</td>
+                            </tr>
+                        }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Delete Confirmation Modal -->
+        <div class="modal fade" id="deleteConfirmationModal" tabindex="-1"
+             aria-labelledby="deleteConfirmationModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="deleteConfirmationModalLabel">Bevestig Verwijderen</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Sluiten"></button>
+                    </div>
+                    <div class="modal-body">
+                        Weet je zeker dat je deze organisatie wilt verwijderen?
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuleren</button>
+                        <button type="button" class="btn btn-danger" id="confirmDeleteBtn">Verwijderen</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
