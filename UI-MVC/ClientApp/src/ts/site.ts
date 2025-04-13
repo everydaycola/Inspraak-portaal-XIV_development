@@ -9,5 +9,4 @@ import '../css/register.scss'
 
 // Custom Ts
 
-
 console.log('The \'site\' bundle has been loaded!');
