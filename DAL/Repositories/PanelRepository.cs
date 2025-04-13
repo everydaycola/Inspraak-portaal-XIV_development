@@ -110,6 +110,7 @@ public class PanelRepository : IPanelRepository
         {
             _context.Posts.Add(textPost);
             panel.Posts.Add(textPost);
+            _context.SaveChanges();
         }
     }
 
