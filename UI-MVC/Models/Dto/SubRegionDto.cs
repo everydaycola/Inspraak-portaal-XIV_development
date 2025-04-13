@@ -1,4 +1,6 @@
-﻿namespace UI_MVC.Models.Dto;
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace UI_MVC.Models.Dto;
 
 
 public class SubRegionDto

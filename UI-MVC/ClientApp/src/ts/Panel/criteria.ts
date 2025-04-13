@@ -36,6 +36,13 @@ export function addCriteria() {
     nameInput.placeholder = `Criteria ${currentCount + 1}`;
     nameInput.name = `Distributions[${currentCount}].Name`
 
+    nameInput.setAttribute("data-val", "true");
+    nameInput.setAttribute("data-val-required", "Criteria moet een naam hebben.");
+    nameInput.setAttribute("data-val-minlength", "Criteria naam moet minimaal 2 karakters lang zijn.");
+    nameInput.setAttribute("data-val-minlength-min", "2");
+    nameInput.setAttribute("data-val-maxlength", "Criteria naam mag maximaal 20 karakters lang zijn.");
+    nameInput.setAttribute("data-val-maxlength-max", "20");
+
     // Create isDefault div
     const isDefaultDiv = document.createElement("div");
     isDefaultDiv.className = "d-flex flex-row col-3 form-check form-switch"
@@ -78,6 +85,12 @@ export function addCriteria() {
     questionInput.placeholder = `Criteria ${currentCount + 1} vraag`;
     questionInput.name = `Distributions[${currentCount}].Question`;
 
+    questionInput.setAttribute("data-val", "true");
+    questionInput.setAttribute("data-val-minlength", "Criteria vraag moet minimaal 6 karakters lang zijn.");
+    questionInput.setAttribute("data-val-minlength-min", "6");
+    questionInput.setAttribute("data-val-maxlength", "Criteria vraag mag maximaal 100 karakters lang zijn.");
+    questionInput.setAttribute("data-val-maxlength-max", "100");
+
     // Create Answer Heading
     const answerHeading = document.createElement("h6");
     answerHeading.className = "card-title pt-2"
@@ -94,22 +107,37 @@ export function addCriteria() {
     addAnswerOptionBtn.className = "btn btn-primary col-2 ms-3 my-2";
     addAnswerOptionBtn.innerText = "Mogelijkheid Toevoegen";
     addAnswerOptionBtn.addEventListener("click", () => addAnswerOption(currentCount, answerUl));
+    
+    const nameValidationSpan = document.createElement("span");
+    nameValidationSpan.setAttribute("data-valmsg-for", `Distributions[${currentCount}].Name`);
+    nameValidationSpan.setAttribute("data-valmsg-replace", "true");
+    nameValidationSpan.className = "text-danger";
+
+    const questionValidationSpan = document.createElement("span");
+    nameValidationSpan.setAttribute("data-valmsg-for", `Distributions[${currentCount}].Question`);
+    nameValidationSpan.setAttribute("data-valmsg-replace", "true");
+    nameValidationSpan.className = "text-danger";
+
+    
+    
 
     // Appending
     wrapper.append(headDiv, questionDiv, answerHeading, answerUl, addAnswerOptionBtn)
 
     headDiv.append(nameDiv, isDefaultDiv, removeBtn)
 
-    nameDiv.append(nameLabel, nameInput);
+    nameDiv.append(nameLabel, nameInput, nameValidationSpan);
     isDefaultDiv.append(isDefaultInput, isDefaultLabel);
 
-    questionDiv.append(questionLabel, questionInput);
+    questionDiv.append(questionLabel, questionInput, questionValidationSpan);
 
     // add 2 Answer Options
     addAnswerOption(currentCount, answerUl);
     addAnswerOption(currentCount, answerUl);
 
     criteriaContainer.appendChild(wrapper);
+
+    $.validator.unobtrusive.parse("#new-panel-form");
 }
 
 

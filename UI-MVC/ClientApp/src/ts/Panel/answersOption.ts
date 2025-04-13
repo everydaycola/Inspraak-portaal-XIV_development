@@ -20,6 +20,20 @@ export function addAnswerOption(criteriaId: number, answersContainer: HTMLUListE
     answerOptionInput.className = "border border-1 rounded-2 me-2";
     answerOptionInput.type = "text";
     answerOptionInput.placeholder = `Antwoord ${(answerCount + 1)}`
+    
+    // Add validation attributes
+    answerOptionInput.setAttribute("data-val", "true");
+    answerOptionInput.setAttribute("data-val-required", "Antwoord optie moet een naam hebben.");
+    answerOptionInput.setAttribute("data-val-minlength", "2");
+    answerOptionInput.setAttribute("data-val-minlength-min", "2");
+    answerOptionInput.setAttribute("data-val-maxlength", "20");
+    answerOptionInput.setAttribute("data-val-maxlength-max", "20");
+
+    // Validation span for option
+    const answerOptionSpan = document.createElement("span");
+    answerOptionSpan.className = "text-danger field-validation-valid";
+    answerOptionSpan.setAttribute("data-valmsg-for", answerOptionInput.name);
+    answerOptionSpan.setAttribute("data-valmsg-replace", "true");
 
     // Create answerOptionPercentage input
     const answerOptionPercentageInput = document.createElement("input");
@@ -27,16 +41,30 @@ export function addAnswerOption(criteriaId: number, answersContainer: HTMLUListE
     answerOptionPercentageInput.className = "border border-1 rounded-2 me-2";
     answerOptionPercentageInput.type = "number";
     answerOptionPercentageInput.placeholder = `${round(100 / (answerCount + 1))}`
+    
+    // Add validation attributes
+    answerOptionPercentageInput.setAttribute("data-val", "true");
+    answerOptionPercentageInput.setAttribute("data-val-required", "Antwoord optie moet een verdeling waarde hebben.");
+    answerOptionPercentageInput.setAttribute("data-val-range", "Percentage moet tussen 0 en 100% zijn.");
+    answerOptionPercentageInput.setAttribute("data-val-range-min", "0");
+    answerOptionPercentageInput.setAttribute("data-val-range-max", "1");
 
+// Validation span for percentage
+    const answerOptionPercentageSpan = document.createElement("span");
+    answerOptionPercentageSpan.className = "text-danger field-validation-valid";
+    answerOptionPercentageSpan.setAttribute("data-valmsg-for", answerOptionPercentageInput.name);
+    answerOptionPercentageSpan.setAttribute("data-valmsg-replace", "true");
+    
     // Create Delete Button
     const removeBtn = document.createElement("button");
     removeBtn.type = "button";
     removeBtn.className = "btn btn-danger btn-sm";
     removeBtn.innerHTML = `<i class="bi-trash"></i>`;
     removeBtn.addEventListener("click", () => removeAnswerOption(answerOptionId, criteriaId, answersContainer));
+    
 
     // Appending
-    answerOptionLi.append(answerOptionInput, answerOptionPercentageInput, removeBtn);
+    answerOptionLi.append(answerOptionInput, answerOptionPercentageInput, removeBtn, answerOptionSpan, answerOptionPercentageSpan);
     answersContainer.append(answerOptionLi);
 
     // Counter ++
@@ -86,4 +114,3 @@ export function resetAnswerCounters(criteriaCount:number) {
         }
     })
 }
-

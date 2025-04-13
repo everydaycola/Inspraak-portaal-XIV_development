@@ -17,6 +17,8 @@ export function addSubRegion() {
     nameInput.placeholder = "Naam";
     nameInput.type = "text";
     nameInput.className = "form-control d-inline w-50 me-2";
+    nameInput.setAttribute("data-val", "true");
+    nameInput.setAttribute("data-val-required", "Naam is verplicht");
 
     // Create the Size input
     const sizeInput = document.createElement("input");
@@ -24,6 +26,8 @@ export function addSubRegion() {
     sizeInput.placeholder = "Grootte";
     sizeInput.type = "number";
     sizeInput.className = "form-control d-inline w-25 me-2";
+    nameInput.setAttribute("data-val", "true");
+    nameInput.setAttribute("data-val-required", "Grootte is verplicht");
 
     // Create the Remove button
     const removeButton = document.createElement("button");
@@ -32,12 +36,24 @@ export function addSubRegion() {
     removeButton.innerHTML = `<i class="bi-trash"></i>`;
     removeButton.addEventListener("click", () => removeSubRegion(subRegionId));
 
+    const nameError = document.createElement("span");
+    nameError.className = "text-danger field-validation-valid";
+    nameError.setAttribute("data-valmsg-for", `SubRegions[${subRegionCount}].Name`);
+    nameError.setAttribute("data-valmsg-replace", "true");
+    
+    const sizeError = document.createElement("span");
+    nameError.className = "text-danger field-validation-valid";
+    nameError.setAttribute("data-valmsg-for", `SubRegions[${subRegionCount}].Size`);
+    nameError.setAttribute("data-valmsg-replace", "true");
+    
+
     // Append the inputs and button to the wrapper
-    wrapper.append(nameInput, sizeInput, removeButton);
+    wrapper.append(nameInput, sizeInput, removeButton, nameError, sizeError);
 
     // Add the wrapper to the subregion container
     subRegionContainer.appendChild(wrapper);
 
+    $.validator.unobtrusive.parse("#new-panel-form");
     // Increment the count for the next subregion
     subRegionCount++;
 }
@@ -54,20 +70,20 @@ function removeSubRegion(id: string) {
 
 function reIndexSubRegions() {
     const subRegionContainer = document.getElementById("subregions-container") as HTMLDivElement;
-    const subRegionDivs = subRegionContainer.querySelectorAll(".subRegion");
+    const subRegionDivs = subRegionContainer.querySelectorAll(".subRegion") as NodeListOf<HTMLDivElement>;
 
     // Re-index the remaining subregions
-    subRegionCount = 1;
+    subRegionCount = 0;
     subRegionDivs.forEach((div, index) => {
         const nameInput = div.querySelector("input[name$='Name']") as HTMLInputElement;
 
         if (nameInput) {
             // Re-index Name input
-            nameInput.name = `SubRegions[${index+1}].Name`;
+            nameInput.name = `SubRegions[${index}].Name`;
 
             // Re-index Size input
             const sizeInput = div.querySelector("input[name$='Size']")  as HTMLInputElement;
-            sizeInput.name = `SubRegions[${index+1}].Size`;
+            sizeInput.name = `SubRegions[${index}].Size`;
         }
 
         // Update subregionCount to the correct next index
