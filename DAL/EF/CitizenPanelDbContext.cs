@@ -1,6 +1,7 @@
 ﻿using System.Linq.Expressions;
 using Domain;
 using Domain.CitizenPanel;
+using Domain.Interfaces;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
@@ -24,6 +25,7 @@ public class CitizenPanelDbContext : IdentityDbContext<ApplicationUser>
     public DbSet<CriteriaAnswerOption> CriteriaAnswerOptions { get; set; }
     public DbSet<CriteriaResponse> CriteriaResponses { get; set; }
     public DbSet<PlanningGroupMember> PlanningGroupMembers { get; set; }
+    public DbSet<Post> Posts { get; set; }
     
     public CitizenPanelDbContext(DbContextOptions options, OrganisationContext organisationContext) : base(options)
     {
@@ -74,6 +76,14 @@ public class CitizenPanelDbContext : IdentityDbContext<ApplicationUser>
         //Planningroepmember 1..*-* Panel
         modelBuilder.Entity<PlanningGroupMember>()
             .HasOne(pgm => pgm.Panel);
+        
+        //Panel 1 - * Posts
+        modelBuilder.Entity<Panel>()
+            .HasMany(p => p.Posts);
+        //Explain EF that we have implements of the abstract Post class.
+        modelBuilder.Entity<TextPost>();
+        modelBuilder.Entity<DocumentPost>();
+        modelBuilder.Entity<EmbeddedVideoPost>();
     }
     public bool CreateDatabase(bool dropDatabase)
     {
