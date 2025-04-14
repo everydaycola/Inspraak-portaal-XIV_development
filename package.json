@@ -1,0 +1,5 @@
+{
+  "devDependencies": {
+    "@types/jquery-validation-unobtrusive": "^3.2.35"
+  }
+}

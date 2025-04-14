@@ -31,7 +31,7 @@ public class PanelManagementController : Controller
     public IActionResult Index(Guid id)
     {
         var panel = _manager.GetPanelWithRepresentationGroup(id);
-        var panelSize = _calcManager.CalculatePanelSize(panel.RepresentationGroup.CitizenCount, 0.005);
+        var panelSize = _calcManager.CalculatePanelSize(panel.RepresentationGroup.CitizenCount, panel.SampleRate);
         var amountOfReserveInvites =
             _calcManager.CalculateAmountOfReserve(panelSize, panel.RepresentationGroup.ReservePercentage);
         return View(new PanelManagementDto

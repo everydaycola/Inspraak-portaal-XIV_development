@@ -14,7 +14,7 @@ public interface IPanelManager
     public Panel GetPanelWithCriteriaAndCriteriaAnswerOptions(Guid panelId);
     //ADD
     public Panel AddPanel(string name, int size, double sampleRate,
-        Dictionary<string, Dictionary<string, double>> distribution, int citizenCount, double reservePercentage,
+        ICollection<Criteria> distribution, int citizenCount, double reservePercentage,
         double responseRate, string userId);
     //UPDATE
     public void UpdatePanel(Guid id, bool isRegistrationOpen);

@@ -1,5 +1,6 @@
 using BL.Interfaces;
 using Domain;
+using Domain.CitizenPanel;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -7,15 +8,19 @@ using UI_MVC.Models.Dto;
 
 namespace UI_MVC.Controllers;
 
+[RequiresOrganisation]
 public class PanelController : Controller
 {
     private readonly IPanelManager _manager;
     private readonly UserManager<ApplicationUser> _userManager;
+    private readonly ICriteriaManager _criteriaManager;
 
-    public PanelController(IPanelManager manager, UserManager<ApplicationUser> userManager)
+    public PanelController(IPanelManager manager, UserManager<ApplicationUser> userManager,
+        ICriteriaManager criteriaManager)
     {
         _manager = manager;
         _userManager = userManager;
+        _criteriaManager = criteriaManager;
     }
 
     [Authorize]
@@ -23,7 +28,7 @@ public class PanelController : Controller
     {
         return View();
     }
-    
+
     [HttpPost]
     [Authorize]
     public IActionResult AddNewPanel(NewPanelDto newPanelDto)
@@ -32,17 +37,17 @@ public class PanelController : Controller
         var createdPanel = _manager.AddPanel(
             newPanelDto.Name,
             newPanelDto.Size,
-            newPanelDto.SampleRate,
-            newPanelDto.Distributions,
-            newPanelDto.CitizenCount,
-            newPanelDto.ReservePercentage,
-            newPanelDto.ResponseRate,
+            newPanelDto.SampleRate / 100,
+            CriteriaDtoCriteriaConverter(newPanelDto.Distributions),
+            GetTotalCitizenCountFromSubRegionDtos(newPanelDto.SubRegions),
+            newPanelDto.ReservePercentage / 100,
+            newPanelDto.ResponseRate / 100,
             userId
         );
-        
-        return RedirectToAction("Index", "PanelManagement",new { id = createdPanel.Id });
+
+        return RedirectToAction("Index", "PanelManagement", new { id = createdPanel.Id });
     }
-    
+
     [HttpPost]
     public IActionResult AddDefaultPanel()
     {
@@ -51,30 +56,64 @@ public class PanelController : Controller
             "Panel rond alcoholgebruik",
             150,
             0.07,
-            new Dictionary<string, Dictionary<string, double>>
+            new List<Criteria>
             {
-                {
-                    "sex", new Dictionary<string, double>
+                _criteriaManager.AddCriteria(
+                    "sex",
+                    "Identificeert u zich als man of vrouw?",
+                    true,
+                    new List<CriteriaAnswerOption>
                     {
-                        { "Man", 0.4 },
-                        { "Vrouw", 0.6 }
-                    }
-                },
-                {
-                    "leeftijd", new Dictionary<string, double>
+                        _criteriaManager.AddCriteriaAnswerOption("Man", 0.4),
+                        _criteriaManager.AddCriteriaAnswerOption("Vrouw", 0.6)
+                    }),
+                _criteriaManager.AddCriteria(
+                    "leeftijd",
+                    "Tot welke leeftijdscategorie behoort u?",
+                    true,
+                    new List<CriteriaAnswerOption>
                     {
-                        { "20-29", 0.2 },
-                        { "30-39", 0.6 },
-                        { "40-49", 0.2 }
-                    }
-                }
+                        _criteriaManager.AddCriteriaAnswerOption("20-29", 0.2),
+                        _criteriaManager.AddCriteriaAnswerOption("30-39", 0.6),
+                        _criteriaManager.AddCriteriaAnswerOption("40-49", 0.2),
+                    })
             },
             10000,
             0.2,
             0.005,
             userId
         );
-        return RedirectToAction("Index", "PanelManagement",new { id = createdPanel.Id });
+        return RedirectToAction("Index", "PanelManagement", new { id = createdPanel.Id });
     }
 
+    private ICollection<Criteria> CriteriaDtoCriteriaConverter(ICollection<CriteriaDto> criteriaDtos)
+    {
+        var distributionList = new List<Criteria>();
+
+        foreach (var crit in criteriaDtos)
+        {
+            var answerOptionsList = new List<CriteriaAnswerOption>();
+            foreach (var answerOption in crit.AnswerOptions)
+            {
+                answerOptionsList.Add(_criteriaManager.AddCriteriaAnswerOption(answerOption.Option,
+                    answerOption.DistributionPercentage));
+            }
+
+            distributionList.Add(_criteriaManager.AddCriteria(crit.Name, crit.Question, crit.IsDefault,
+                answerOptionsList));
+        }
+
+        return distributionList;
+    }
+
+    private int GetTotalCitizenCountFromSubRegionDtos(ICollection<SubRegionDto> subRegionDtos)
+    {
+        var total = 0;
+        foreach (var subRegion in subRegionDtos)
+        {
+            total += subRegion.Size;
+        }
+
+        return total;
+    }
 }

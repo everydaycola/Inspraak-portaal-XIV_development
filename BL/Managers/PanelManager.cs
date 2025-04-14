@@ -81,7 +81,7 @@ public class PanelManager : IPanelManager
 
     //ADD
     public Panel AddPanel(string name, int size, double sampleRate,
-        Dictionary<string, Dictionary<string, double>> distribution, int citizenCount, double reservePercentage,
+        ICollection<Criteria> distribution, int citizenCount, double reservePercentage,
         double responseRate, string userId)
     {
         _logger.Log(LogLevel.Information, "Creating panel with name " + name + "...");
@@ -102,9 +102,13 @@ public class PanelManager : IPanelManager
             _logger.Log(LogLevel.Critical, errorMessage);
             throw new UnauthorizedAccessException(errorMessage);
         }
+        
 
         // list of objects to validate
         var objectsToValidate = new List<object>();
+        
+        // Calculate size of the Panel
+        size = (int)(citizenCount * sampleRate);
 
         // Create and initialize the panel
         var panel = new Panel
@@ -137,6 +141,10 @@ public class PanelManager : IPanelManager
         // validate panelmembers
         objectsToValidate.AddRange(panelMembers);
 
+        // Fill in the criteria list with the given distribution
+        panel.Criteria = distribution;
+        
+        /*
         // Create the criteria list from the dictionary, initializing all Criteria and CriteriaAnswerOptions
         panel.Criteria = distribution.Select(outerKvp => new Criteria
         {
@@ -148,6 +156,7 @@ public class PanelManager : IPanelManager
                 DistributionPercentage = innerKvp.Value
             }).ToList() // Create the List<CriteriaAnswerOption> for the property
         }).ToList(); // Create the final List<Criteria>
+        */
 
         // validate criteria & answer options
         objectsToValidate.AddRange(panel.Criteria);

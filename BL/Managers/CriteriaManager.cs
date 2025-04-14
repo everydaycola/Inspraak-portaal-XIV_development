@@ -84,13 +84,14 @@ public class CriteriaManager : ICriteriaManager
     //     return result;
     // }
 
-    public Dictionary<string, ICollection<PanelMember>> GetPanelMembersGroupedByResponsesForDefaultCriteria(Guid panelId)
+    public Dictionary<string, ICollection<PanelMember>> GetPanelMembersGroupedByResponsesForDefaultCriteria(
+        Guid panelId)
     {
         var result = new Dictionary<string, ICollection<PanelMember>>();
         var panelMembers = _panelManager.GetAllPanelMembersForPanel(panelId);
         foreach (var member in panelMembers)
         {
-            var groupName = string.Join("-", 
+            var groupName = string.Join("-",
                 member.Responses
                     .OrderBy(r => r.Criteria.Name)
                     .Where(r => r.Criteria.IsDefault)
@@ -99,7 +100,7 @@ public class CriteriaManager : ICriteriaManager
             if (!result.TryGetValue(groupName, out var value))
             {
                 value = new List<PanelMember>();
-                result[groupName] = value; 
+                result[groupName] = value;
             }
 
             value.Add(member);
@@ -118,8 +119,9 @@ public class CriteriaManager : ICriteriaManager
     {
         return _repo.ReadCriteriaByNameWithAnswerOptions(panelId, critName);
     }
-    
-    public void SavePanelMemberCriteriaResponses(Guid panelId,Dictionary<string, string> CriteriaAnswers, PanelMember member)
+
+    public void SavePanelMemberCriteriaResponses(Guid panelId, Dictionary<string, string> CriteriaAnswers,
+        PanelMember member)
     {
         foreach (var (criteriaName, selectedOption) in CriteriaAnswers)
         {
@@ -137,8 +139,8 @@ public class CriteriaManager : ICriteriaManager
 
                     var validationResults = new List<ValidationResult>();
 
-                    if (!Validator.TryValidateObject(criteriaResponse, new ValidationContext(criteriaResponse), validationResults,
-                            true))
+                    if (!Validator.TryValidateObject(criteriaResponse, new ValidationContext(criteriaResponse),
+                            validationResults,true))
                         throw new ValidationException(string.Join("\n", validationResults.Select(x => x.ErrorMessage)));
 
                     member.Responses.Add(criteriaResponse);
@@ -147,7 +149,9 @@ public class CriteriaManager : ICriteriaManager
                 }
                 else
                 {
-                    _logger.Log(LogLevel.Critical, "Member " + member.PanelMemberId + " tried inserting an invalid option for a criteria question.");
+                    _logger.Log(LogLevel.Critical,
+                        "Member " + member.PanelMemberId +
+                        " tried inserting an invalid option for a criteria question.");
                 }
             }
             else
@@ -156,5 +160,33 @@ public class CriteriaManager : ICriteriaManager
                     "Member " + member.PanelMemberId + " tried submitting a non existing criteria.");
             }
         }
+    }
+
+    //ADD
+    public Criteria AddCriteria(string name, string question, bool isDefault,
+        ICollection<CriteriaAnswerOption> answerOptions)
+    {
+        _logger.Log(LogLevel.Information, "Creating criteria with name " + name + "...");
+        var criteria = new Criteria
+        {
+            Name = name,
+            IsDefault = isDefault,
+            Question = question,
+            AnswerOptions = answerOptions
+        };
+        _logger.Log(LogLevel.Information, "Criteria with name " + criteria.Name + " was created.");
+        return criteria;
+    }
+
+    public CriteriaAnswerOption AddCriteriaAnswerOption(string option, double distributionPercentage)
+    {
+        _logger.Log(LogLevel.Information, "Creating criteria answer option with name " + option + "...");
+        var cao = new CriteriaAnswerOption
+        {
+            Option = option,
+            DistributionPercentage = distributionPercentage/100
+        };
+        _logger.Log(LogLevel.Information, "Criteria answer option with " + cao.Option + " was created.");
+        return cao;
     }
 }
