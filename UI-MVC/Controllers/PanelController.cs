@@ -64,8 +64,8 @@ public class PanelController : Controller
                     true,
                     new List<CriteriaAnswerOption>
                     {
-                        _criteriaManager.AddCriteriaAnswerOption("Man", 0.4),
-                        _criteriaManager.AddCriteriaAnswerOption("Vrouw", 0.6)
+                        _criteriaManager.AddCriteriaAnswerOption("Man", 40),
+                        _criteriaManager.AddCriteriaAnswerOption("Vrouw", 60)
                     }),
                 _criteriaManager.AddCriteria(
                     "leeftijd",
@@ -73,9 +73,9 @@ public class PanelController : Controller
                     true,
                     new List<CriteriaAnswerOption>
                     {
-                        _criteriaManager.AddCriteriaAnswerOption("20-29", 0.2),
-                        _criteriaManager.AddCriteriaAnswerOption("30-39", 0.6),
-                        _criteriaManager.AddCriteriaAnswerOption("40-49", 0.2),
+                        _criteriaManager.AddCriteriaAnswerOption("20-29", 20),
+                        _criteriaManager.AddCriteriaAnswerOption("30-39", 60),
+                        _criteriaManager.AddCriteriaAnswerOption("40-49", 20),
                     })
             },
             10000,
