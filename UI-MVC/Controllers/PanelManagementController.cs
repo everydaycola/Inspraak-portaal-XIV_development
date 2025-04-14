@@ -30,6 +30,10 @@ public class PanelManagementController : Controller
 
     public IActionResult Index(Guid id)
     {
+        if (id == Guid.Empty)
+        {
+            return RedirectToAction("PanelSelection");
+        }
         var panel = _manager.GetPanelWithRepresentationGroup(id);
         var panelSize = _calcManager.CalculatePanelSize(panel.RepresentationGroup.CitizenCount, panel.SampleRate);
         var amountOfReserveInvites =
@@ -61,6 +65,14 @@ public class PanelManagementController : Controller
     {
         return RedirectToAction("Index", new { id = panelId });
     }
+    
+    [HttpPost]
+    public IActionResult NewPhase(Guid guid)
+    {
+        
+        return RedirectToAction("Index", new { id = guid });
+    }
+    
     [Authorize]
     public IActionResult PanelSelection()
     {

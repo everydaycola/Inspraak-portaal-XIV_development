@@ -4,27 +4,57 @@
 <div class="container mt-5">
     <div class="alert alert-warning text-center" role="alert">
         <h4 class="alert-heading">U gaat de inschrijvingsfase afronden</h4>
-        <p>
-            Er hebben <strong>@Model.SuccessfulRegistrationCount</strong> van de <strong>@Model.TotalInvitesNeeded</strong> inschrijvingen gelukt.
-        </p>
+        <p> Er zijn <strong>@Model.SuccessfulRegistrationCount</strong> van de <strong>@Model.PanelSize</strong>
+            inschrijvingen gelukt.</p>
+        @if (Model.SuccessfulRegistrationCount > Model.PanelSize)
+        {
+            <p>U heeft <strong>@(Model.SuccessfulRegistrationCount - Model.PanelSize)</strong> reserve inschrijvingen
+            </p>
+        }
+        else
+        {
+            <p>U mist nog <strong>@(Model.PanelSize - Model.SuccessfulRegistrationCount)</strong> inschrijvingen</p>
+            @* knop voor volgende faze *@
+            
+            <button class="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#collapseExample">
+                Begin een nieuwe fase voor loting van users
+            </button>
+
+            <!-- Collapsible content (hidden by default) -->
+            <div class="collapse" id="collapseExample">
+                
+                <div class="card m-3">
+                    <h5 class="card-header text-center">Extra Criteria Statistieken</h5>
+                    <div class="m-2 justify-content-center">
+                        @Html.Partial("_extraCriteriaStatsPartial", Model.ExtraCriteriaViewModel)
+                    </div>
+                </div>
+                <div class="d-flex justify-content-center">
+                    <form method="post" asp-controller="PanelManagement" asp-action="NewPhase"
+                          class="d-flex align-items-center gap-2">
+                        <input type="hidden" name="guid" value="@Model.PanelId"/>
+                        <button class="btn btn-primary px-4 py-2" type="submit">Begin een nieuwe fase voor loting van
+                            users
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            
+            
+        }
         <hr>
-        <p class="mb-0">Deze actie kan niet ongedaan gemaakt worden.</p>
+        <strong class="mb-0">Deze actie kan niet ongedaan gemaakt worden.</strong>
+        <strong class="mb-0">De oude QR-codes zullen blijven werken</strong>
     </div>
-    <div class="d-flex justify-content-center mt-4 gap-3">
 
-        @* knop voor inschrijvingen afronden *@
-
-        @* knop voor volgende faze *@
-
+    <div class="d-flex justify-content-center gap-2">
         <a asp-action="Index" class="btn btn-secondary px-4 py-2">Terug</a>
-
-
         <form method="post" asp-controller="Register" asp-action="RegisterRandomUsers"
               class="d-flex align-items-center gap-2">
             <input type="hidden" name="guid" value="@Model.PanelId"/>
             <input type="number" name="count" min="1" class="form-control w-auto" placeholder="Enter count"/>
             <button class="btn btn-primary px-4 py-2" type="submit">voeg dummy users toe</button>
         </form>
-
     </div>
 </div>
