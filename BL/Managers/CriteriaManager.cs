@@ -120,6 +120,11 @@ public class CriteriaManager : ICriteriaManager
         return _repo.ReadCriteriaByNameWithAnswerOptions(panelId, critName);
     }
 
+    public Dictionary<string, Dictionary<string, double>> GetAllDesiredCriteriaPercentages(Guid panelId)
+    {
+        return _repo.ReadAllDesiredCriteriaPercentages(panelId);
+    }
+
     public void SavePanelMemberCriteriaResponses(Guid panelId, Dictionary<string, string> CriteriaAnswers,
         PanelMember member)
     {
