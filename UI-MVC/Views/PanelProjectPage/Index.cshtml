@@ -11,10 +11,14 @@
 {
     <div class="mb-3">
         <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addTextModal">
-            Informatie toevoegen aan de project pagina.
+            Text toevoegen aan de project pagina.
+        </button>
+        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addBestandModal">
+            Bestand toevoegen aan de project pagina.
         </button>
     </div>
     
+    <!-- Text Modal -->
     <div class="modal fade" id="addTextModal" tabindex="-1" aria-labelledby="addTextModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-lg">
             <div class="modal-content shadow">
@@ -32,6 +36,33 @@
                         <div class="text-end">
                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuleren</button>
                             <button type="submit" class="btn btn-success">Opslaan</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Image Upload Modal -->
+    <div class="modal fade" id="addBestandModal" tabindex="-1" aria-labelledby="addBestandModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content shadow">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addBestandModalLabel">Bestand toevoegen aan de projectpagina</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Sluiten"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="addImageForm" asp-action="AddImagePost" method="post" enctype="multipart/form-data">
+                        <input type="hidden" name="panelId" value="@Model.Panel.Id" />
+                    
+                        <div class="mb-3">
+                            <label for="imageUpload" class="form-label">Afbeelding uploaden</label>
+                            <input type="file" class="form-control" id="imageUpload" name="imageFile" accept="image/*" required />
+                        </div>
+
+                        <div class="text-end">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuleren</button>
+                            <button type="submit" class="btn btn-success">Uploaden</button>
                         </div>
                     </form>
                 </div>
