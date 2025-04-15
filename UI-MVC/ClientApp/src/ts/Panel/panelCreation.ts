@@ -32,7 +32,7 @@ function validateCriteriaPercentages(): boolean {
         let message = criteriaDiv.querySelector(".distribution-error");
         if (message) message.remove();
 
-        if (Math.abs(sum) > 100) {
+        if (Math.abs(sum) != 100) {
             isValid = false;
 
             const error = document.createElement("div");
