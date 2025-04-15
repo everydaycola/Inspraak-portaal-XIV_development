@@ -48,17 +48,17 @@ public static class DataSeeder
             Posts = new List<Post>
             {
                 //PROJECT PAGE POSTS
-                new()
+                new TextPost()
                 {
                     Content = "Test post!",
                     CreatedAt = DateTime.UtcNow,
                 },
-                new()
+                new DocumentPost()
                 {
                     DocumentUrl = "/mydocument",
                     CreatedAt = DateTime.UtcNow,
                 },
-                new()
+                new EmbeddedVideoPost()
                 {
                     VideoUrl = "/myvideo",
                     CreatedAt = DateTime.UtcNow,

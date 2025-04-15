@@ -12,8 +12,6 @@ public interface IPanelManager
     public PanelMember GetPanelMemberWithPanel(Guid id);
     public IEnumerable<PanelMember> GetAllPanelMembersForPanel(Guid panelId);
     public Panel GetPanelWithCriteriaAndCriteriaAnswerOptions(Guid panelId);
-    public IEnumerable<PanelMember> GetAllPanelMembersWhichAnsweredAllQuestionsWithCriteria(Guid id);
-
     public Panel GetPanelWithPosts(Guid panelId);
     //ADD
     public Panel AddPanel(string name, int size, double sampleRate,
