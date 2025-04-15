@@ -114,6 +114,18 @@ public class PanelRepository : IPanelRepository
         }
     }
 
+    public void CreateDocumentPost(Guid panelId,DocumentPost docPost)
+    {
+        _context.Posts.Add(docPost);
+        var panel = ReadPanelWithPosts(panelId);
+        if (panel != null)
+        {
+            _context.Posts.Add(docPost);
+            panel.Posts.Add(docPost);
+            _context.SaveChanges();
+        }
+    }
+
 
     public ICollection<PanelMember> ReadPanelMembersAndRepresentationGroup(Guid id)
     {

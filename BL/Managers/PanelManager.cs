@@ -348,4 +348,14 @@ public class PanelManager : IPanelManager
     {
         return _repo.ReadAllPlanningGroupMembersWithIdentityUserForPanel(panelId);
     }
+
+    public void AddDocumentPost(Guid panelId, string documentUrl)
+    {
+        var docPost = new DocumentPost
+        {
+            DocumentUrl = documentUrl,
+            CreatedAt = DateTime.UtcNow
+        };
+        _repo.CreateDocumentPost(panelId, docPost);
+    }
 }

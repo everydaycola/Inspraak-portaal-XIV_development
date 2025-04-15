@@ -82,4 +82,13 @@
             <p class="mt-2 mb-0">@textPost.Content</p>
         </div>
     }
+    @if(post is DocumentPost docPost){
+        <div class="timeline-item mb-4 p-3 border rounded shadow-sm bg-white">
+            <div class="d-flex justify-content-between align-items-center">
+                <h5 class="mb-1">@docPost.Id</h5>
+                <small class="text-muted">@docPost.CreatedAt.ToString("dd MMM yyyy HH:mm")</small>
+            </div>
+            <img src="@Url.Content(docPost.DocumentUrl)" class="img-fluid" />
+        </div>
+    }
 }

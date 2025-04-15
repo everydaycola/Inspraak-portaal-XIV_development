@@ -29,4 +29,5 @@ public interface IPanelRepository
     public void CreatePanelMember(PanelMember panelMember);
     IEnumerable<PlanningGroupMember> ReadAllPlanningGroupMembersWithIdentityUserForPanel(Guid panelId);
     void CreateTextPost(Guid panelId, TextPost textPost);
+    void CreateDocumentPost(Guid panelId, DocumentPost docPost);
 }

@@ -29,4 +29,5 @@ public interface IPanelManager
     public void UpdatePanelRegistrationCount(Guid id, bool increase);
     public PanelMember UpdatePanelMember(PanelMember member);
     public IEnumerable<PlanningGroupMember> GetAllPlanningGroupMembersWithIdentityUserForPanel(Guid panelId);
+    void AddDocumentPost(Guid panelId, string documentUrl);
 }
