@@ -1,5 +1,6 @@
 ﻿using Domain;
 using Domain.CitizenPanel;
+using Domain.Interfaces;
 using Microsoft.AspNetCore.Identity;
 
 namespace DAL.EF;
@@ -43,6 +44,25 @@ public static class DataSeeder
                 CitizenCount = 20000,
                 ReservePercentage = 0.2,
                 ResponseRate = 0.1
+            },
+            Posts = new List<Post>
+            {
+                //PROJECT PAGE POSTS
+                new()
+                {
+                    Content = "Test post!",
+                    CreatedAt = DateTime.UtcNow,
+                },
+                new()
+                {
+                    DocumentUrl = "/mydocument",
+                    CreatedAt = DateTime.UtcNow,
+                },
+                new()
+                {
+                    VideoUrl = "/myvideo",
+                    CreatedAt = DateTime.UtcNow,
+                }
             },
             Criteria = new List<Criteria>
             {
@@ -175,7 +195,7 @@ public static class DataSeeder
                 }
             }
         }).ToList();
-
+        
         // adding panel members also adds dependant objects
         // so panel member => panel
         //    panel => representation group

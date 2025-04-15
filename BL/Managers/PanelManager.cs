@@ -2,6 +2,7 @@
 using BL.Interfaces;
 using DAL.Interfaces;
 using Domain.CitizenPanel;
+using Domain.Interfaces;
 using Microsoft.Extensions.Logging;
 using UI_MVC;
 
@@ -77,6 +78,11 @@ public class PanelManager : IPanelManager
     public Panel GetPanelWithCriteriaAndCriteriaAnswerOptions(Guid panelId)
     {
         return _repo.ReadPanelWithCriteriaAndAnswerOptions(panelId);
+    }
+
+    public Panel GetPanelWithPosts(Guid panelId)
+    {
+        return _repo.ReadPanelWithPosts(panelId);
     }
 
     //ADD
@@ -183,6 +189,16 @@ public class PanelManager : IPanelManager
         _logger.Log(LogLevel.Information, "Panel with name " + panel.Name + " was created.");
 
         return panel;
+    }
+
+    public void AddTextPost(Guid panelId, string content)
+    {
+        var textPost = new TextPost
+        {
+            Content = content,
+            CreatedAt = DateTime.UtcNow
+        };
+        _repo.CreateTextPost(panelId, textPost);
     }
 
     /// <summary>
