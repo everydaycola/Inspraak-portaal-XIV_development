@@ -1,4 +1,6 @@
-﻿@model UI_MVC.Models.Dto.PanelManagementDto
+﻿@using DAL
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@model UI_MVC.Models.Dto.PanelManagementDto
 
 @{
     ViewData["Title"] = "Panel beheer";
@@ -67,6 +69,8 @@
                                 data-bs-target="#planningGroupModal" data-panel-id="@Model.PanelId">
                             Planningsgroepsleden beheren
                         </button>
+                        <a class="btn btn-primary mt-4" asp-area="" asp-controller="PanelProjectPage"
+                           asp-action="Index" asp-route-panelId="@Model.PanelId">Project pagina</a>
                     </p>
                 </div>
             </div>

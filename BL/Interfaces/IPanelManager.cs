@@ -17,10 +17,13 @@ public interface IPanelManager
     IEnumerable<PanelMember> GetAllPanelMembersForPanel(Guid panelId);
     public IEnumerable<PanelMember> GetAllPanelMembersWhichAnsweredAllQuestionsWithCriteria(Guid id);
     Panel GetPanelWithCriteriaAndCriteriaAnswerOptions(Guid panelId);
+
+    Panel GetPanelWithPosts(Guid panelId);
     //ADD
     public Panel AddPanel(string name, int size, double sampleRate,
         Dictionary<string, Dictionary<string, double>> distribution, int citizenCount, double reservePercentage,
         double responseRate, string userId);
+    void AddTextPost(Guid panelId, string content);
     //UPDATE
     public void UpdatePanel(Guid id, bool isRegistrationOpen);
     public void UpdatePanelRegistrationCount(Guid id, bool increase);

@@ -1,6 +1,6 @@
 ﻿namespace Domain.Interfaces;
 
-public class DocumentPost: IPosts
+public class DocumentPost: Post
 {
-    
+    public string DocumentUrl { get; set; }
 }

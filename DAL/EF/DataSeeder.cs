@@ -1,5 +1,6 @@
 ﻿using Domain;
 using Domain.CitizenPanel;
+using Domain.Interfaces;
 using Microsoft.AspNetCore.Identity;
 
 namespace DAL.EF;
@@ -227,7 +228,25 @@ public static class DataSeeder
         criteria3.AnswerOptions.Add(cao6);
         criteria3.AnswerOptions.Add(cao7);
         
-
+        //PROJECT PAGE POSTS
+        Post post = new TextPost
+        {
+            Content = "Test post!",
+            CreatedAt = DateTime.UtcNow,
+        };
+        Post post2 = new DocumentPost
+        {
+            DocumentUrl = "/mydocument",
+            CreatedAt = DateTime.UtcNow,
+        };
+        Post post3 = new EmbeddedVideoPost
+        {
+            VideoUrl = "/myvideo",
+            CreatedAt = DateTime.UtcNow,
+        };
+        //LINK POSTS WITH PANEL
+        panel1.Posts = new List<Post> { post, post2,post3 };
+        
         //LINK CRITERIA WITH PANEL
         panel1.Criteria = new List<Criteria>() { criteria1, criteria2 , criteria3};
         
@@ -244,6 +263,7 @@ public static class DataSeeder
         AddMultipleEntities([panelMember1, panelMember2, panelMember3, panelMember4, panelMember5]);
         AddMultipleEntities([pgm1, pgm2,pgm3]);
         AddMultipleEntities([criteria1, criteria2, criteria3]);
+        AddMultipleEntities([post,post2,post3]);
         //AddMultipleEntities([criteriaGroup1, criteriaGroup2 ]);
         //AddMultipleEntities([value1, value2, value3, value4, value5, value6, value7 ]);
         context.SaveChanges();
