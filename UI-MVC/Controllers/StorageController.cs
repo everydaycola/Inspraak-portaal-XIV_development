@@ -1,5 +1,7 @@
 using Google.Cloud.Storage.V1;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
+using UI_MVC.Options;
 
 namespace UI_MVC.Controllers;
 
@@ -8,10 +10,12 @@ namespace UI_MVC.Controllers;
 public class StorageController : ControllerBase
 {
     private readonly ILogger<StorageController> _logger;
+    private readonly GoogleCloudOptions _googleCloudOptions;
 
-    public StorageController(ILogger<StorageController> logger)
+    public StorageController(ILogger<StorageController> logger, IOptions<GoogleCloudOptions> googleCloudOptions)
     {
         _logger = logger;
+        _googleCloudOptions = googleCloudOptions.Value;
     }
 
     [HttpGet]
@@ -22,7 +26,10 @@ public class StorageController : ControllerBase
         // Where to keep the file
         var stream = new MemoryStream();
         // Downloading the file - Downloads into the Stream, not into the obj
-        var obj = await client.DownloadObjectAsync("development-164899", fileName, stream);
+        var obj = await client.DownloadObjectAsync(
+            bucket: _googleCloudOptions.BucketName,
+            objectName: fileName,
+            destination: stream);
         stream.Position = 0;
         return File(stream, obj.ContentType, obj.Name);
     }
@@ -39,7 +46,7 @@ public class StorageController : ControllerBase
         var client = StorageClient.Create();
 
         var obj = await client.UploadObjectAsync(
-            bucket: "development-164899",
+            bucket: _googleCloudOptions.BucketName,
             objectName: file.FileName,
             contentType: file.ContentType,
             source: stream);
