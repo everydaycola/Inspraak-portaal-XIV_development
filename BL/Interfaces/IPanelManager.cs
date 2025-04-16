@@ -21,4 +21,6 @@ public interface IPanelManager
     public void UpdatePanel(Guid id, bool isRegistrationOpen);
     public void UpdatePanelRegistrationCount(Guid id, bool increase);
     public PanelMember UpdatePanelMember(PanelMember member);
+    //HELPERS
+    public void NewPanelPhase(Guid guid, double newResponseRate);
 }

@@ -13,6 +13,8 @@ public interface IPanelRepository
     public IEnumerable<PanelMember> ReadPanelMembersWithCriteria(Guid id);
     public Panel ReadPanelWithCriteriaAndAnswerOptions(Guid panelId);
     public IEnumerable<PlanningGroupMember> ReadAllPlanningGroupMembersWithIdentityUserForPanel(Guid panelId);
+
+    public IEnumerable<PanelMember> ReadPanelMembersWithResponses(Guid id);
     //UPDATE
     public void UpdatePanel(Panel panel);
     public void UpdatePanelMember(PanelMember member);

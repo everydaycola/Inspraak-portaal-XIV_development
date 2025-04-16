@@ -69,8 +69,9 @@ public class PanelManagementController : Controller
     }
     
     [HttpPost]
-    public IActionResult NewPhase(Guid guid)
+    public IActionResult NewPhase(Guid guid, double newResponseRate)
     {
+        _manager.NewPanelPhase(guid, newResponseRate);
         
         return RedirectToAction("Index", new { id = guid });
     }

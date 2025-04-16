@@ -70,6 +70,15 @@ public class PanelRepository : IPanelRepository
             .Where(pm => pm.Panel.Id == id) 
             .ToList();
     }
+    
+    public IEnumerable<PanelMember> ReadPanelMembersWithResponses(Guid id)
+    {
+        return _context.PanelMembers
+            .Include(pm => pm.Panel)
+            .Include(pm => pm.Responses)
+            .Where(pm => pm.Panel.Id == id) 
+            .ToList();
+    }
 
     // public IEnumerable<PanelMember> ReadPanelMembersWhichAnsweredAllQuestionsWithCriteria(Guid id)
     // {
@@ -101,7 +110,7 @@ public class PanelRepository : IPanelRepository
             .Where(pgm => pgm.Panel.Id == panelId)
             .ToList();
     }
-
+    
     // public ICollection<PanelMember> ReadPanelMembersAndRepresentationGroup(Guid id)
     // {
     //     return _context.PanelMembers.Include(pm => pm.Panel)

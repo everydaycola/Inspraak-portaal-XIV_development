@@ -13,13 +13,15 @@ public class PanelManager : IPanelManager
     private readonly IPanelRepository _repo;
     private readonly ICalculationManager _calculationManager;
     private readonly IUserRepository _userRepo;
+    private readonly ICriteriaRepository _criteriaRepo;
 
-    public PanelManager(ILogger<PanelManager> logger, IPanelRepository repo, ICalculationManager calcManager, IUserRepository userRepo)
+    public PanelManager(ILogger<PanelManager> logger, IPanelRepository repo, ICalculationManager calcManager, IUserRepository userRepo, ICriteriaRepository criteriaRepo)
     {
         _logger = logger;
         _repo = repo;
         _calculationManager = calcManager;
         _userRepo = userRepo;
+        _criteriaRepo = criteriaRepo;
     }
 
     //GET
@@ -338,6 +340,12 @@ public class PanelManager : IPanelManager
     {
         _repo.UpdatePanelMember(member);
         return member;
+    }
+
+    public void NewPanelPhase(Guid guid, double newResponseRate)
+    {
+        var panelMembers = _repo.ReadPanelMembersWithResponses(guid);
+        var panel = _criteriaRepo.ReadAllDesiredCriteriaPercentages(guid);
     }
 
     public IEnumerable<PlanningGroupMember> GetAllPlanningGroupMembersWithIdentityUserForPanel(Guid panelId)
