@@ -45,6 +45,19 @@ public class PanelRepository : IPanelRepository
             .Single(p => p.PanelMemberId == id);
     }
 
+    public void RemoveAllUnselectedPanelmembers(Guid panelId)
+    {
+        var unselectedMembers = _context.PanelMembers
+            .Include(pm => pm.Panel)
+            .Where(pm => pm.Panel.Id == panelId && !pm.Selected)
+            .ToList();
+
+        if (!unselectedMembers.Any()) return;
+        _context.PanelMembers.RemoveRange(unselectedMembers);
+        _context.SaveChanges();
+
+    }
+
     // public Panel ReadPanelWithCriteriaAndAnsweroptions(Guid id)
     // {
     //     return _context.Panels
@@ -96,7 +109,17 @@ public class PanelRepository : IPanelRepository
         _context.PanelMembers.Update(member);
         _context.SaveChanges();
     }
-    
+
+    public void UpdatePanelMembersToSelected(ICollection<PanelMember> selectedMembers)
+    {
+        foreach (var member in selectedMembers)
+        {
+            member.Selected = true;
+            _context.PanelMembers.Update(member);
+        }
+        _context.SaveChanges();
+    }
+
     public void CreatePanelMember(PanelMember panelMember)
     {
         _context.PanelMembers.Add(panelMember);

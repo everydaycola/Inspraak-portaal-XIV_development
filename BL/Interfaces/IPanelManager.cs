@@ -21,6 +21,11 @@ public interface IPanelManager
     public void UpdatePanel(Guid id, bool isRegistrationOpen);
     public void UpdatePanelRegistrationCount(Guid id, bool increase);
     public PanelMember UpdatePanelMember(PanelMember member);
+    public void ChangePanelMembersToSelected(ICollection<PanelMember> selectedMembers);
+    //DELETE
+    public void RemoveUnselectedPanelMembers(Guid panelId);
     //HELPERS
     public void NewPanelPhase(Guid guid, double newResponseRate);
+    public Dictionary<ICollection<CriteriaResponse>, double> HelperCalculateCrossDistribution(
+        List<Criteria> criteriaList);
 }

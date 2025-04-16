@@ -1,4 +1,5 @@
-﻿using Domain.CitizenPanel;
+﻿using System.Collections;
+using Domain.CitizenPanel;
 
 namespace DAL.Interfaces;
 
@@ -18,6 +19,10 @@ public interface IPanelRepository
     //UPDATE
     public void UpdatePanel(Panel panel);
     public void UpdatePanelMember(PanelMember member);
+
+    public void UpdatePanelMembersToSelected(ICollection<PanelMember> selectedMembers);
     //CREATE
     public void CreatePanelMember(PanelMember panelMember);
+    //DELETE
+    public void RemoveAllUnselectedPanelmembers(Guid panelId);
 }

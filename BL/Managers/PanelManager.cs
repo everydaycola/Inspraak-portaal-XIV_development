@@ -165,7 +165,7 @@ public class PanelManager : IPanelManager
         objectsToValidate.AddRange(panel.Criteria.SelectMany(c => c.AnswerOptions));
 
         // preforms an action very similar to a cartesian product, but with the options of each criteria
-        var crossDistribution = CrossDistribution(panel.Criteria.ToList());
+        var crossDistribution = HelperCalculateCrossDistribution(panel.Criteria.ToList());
 
         // validate created criteria
         objectsToValidate.AddRange(crossDistribution.Keys
@@ -202,7 +202,7 @@ public class PanelManager : IPanelManager
     /// It performs a recursive process similar to a Cartesian product, combining response options
     /// across multiple criteria and computes the combined distributions.
     /// </summary>
-    private Dictionary<ICollection<CriteriaResponse>, double> CrossDistribution(List<Criteria> criteriaList)
+    public Dictionary<ICollection<CriteriaResponse>, double> HelperCalculateCrossDistribution(List<Criteria> criteriaList)
     {
         // Handle edge case: If the criteriaList is null or empty, return an empty dictionary
         if (criteriaList == null || criteriaList.Count == 0)
@@ -232,7 +232,7 @@ public class PanelManager : IPanelManager
             }
 
             // Recursively generate combinations for the remaining Criteria
-            var subCombinations = CrossDistribution(criteriaList.Skip(1).ToList());
+            var subCombinations = HelperCalculateCrossDistribution(criteriaList.Skip(1).ToList());
 
             // Combine the current CriteriaResponse with each sub-combination
             foreach (var subCombo in subCombinations)
@@ -336,16 +336,33 @@ public class PanelManager : IPanelManager
         _repo.UpdatePanel(panel);
     }
 
+    public void RemoveUnselectedPanelMembers(Guid panelId)
+    {
+        _repo.RemoveAllUnselectedPanelmembers(panelId);
+    }
+
     public PanelMember UpdatePanelMember(PanelMember member)
     {
         _repo.UpdatePanelMember(member);
         return member;
     }
 
+    public void ChangePanelMembersToSelected(ICollection<PanelMember> selectedMembers)
+    {
+        _repo.UpdatePanelMembersToSelected(selectedMembers);
+    }
+
     public void NewPanelPhase(Guid guid, double newResponseRate)
     {
         var panelMembers = _repo.ReadPanelMembersWithResponses(guid);
         var panel = _criteriaRepo.ReadAllDesiredCriteriaPercentages(guid);
+        throw new NotImplementedException();
+    }
+
+    public void EndRegistration(Guid id)
+    {
+        _repo.UpdatePanel(GetPanel(id));
+        _repo.RemoveAllUnselectedPanelmembers(id);
     }
 
     public IEnumerable<PlanningGroupMember> GetAllPlanningGroupMembersWithIdentityUserForPanel(Guid panelId)

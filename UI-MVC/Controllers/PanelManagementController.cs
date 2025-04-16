@@ -88,5 +88,44 @@ public class PanelManagementController : Controller
         _manager.UpdatePanel(panelId, !panel.IsRegistrationOpen);
         return RedirectToAction("Index", new { id = panel.Id });
     }
+
+    public IActionResult EndRegistration(Guid panelId)
+    {
+        var panel = _manager.GetPanel(panelId);
+        var panelSize = _calcManager.CalculatePanelSize(panel.RepresentationGroup.CitizenCount, panel.SampleRate);
+        var amountOfReserveInvites = _calcManager.CalculateAmountOfReserve(panelSize, panel.RepresentationGroup.ReservePercentage);
+        var total = _calcManager.CalculateTotalInvitesNeeded(panelSize + amountOfReserveInvites,
+            panel.RepresentationGroup.ResponseRate);
+        var criteriaList = _criteriaManager.GetAllDesiredCriteriaPercentages(panelId)
+            .Select(kpv => new Criteria
+            {
+                Name = kpv.Key,
+                AnswerOptions = kpv.Value.Select(kpv2 => new CriteriaAnswerOption()
+                {
+                    Option = kpv2.Key,
+                    DistributionPercentage = kpv2.Value
+                }).ToList()
+            }).ToList();
+
+        var optionlist = _manager.HelperCalculateCrossDistribution(criteriaList)
+            .ToDictionary(k => k.Key.ToHashSet(), v => (int) v.Value * total);
+
+
+        var panelMembers = _manager.GetAllPanelMembersForPanel(panelId)
+            .Where(p => p.HasRegistered)
+            .GroupBy(pm => pm.Responses)
+            .SelectMany(group => group
+                .OrderBy(_ => Guid.NewGuid()) // shuffle
+                .Take(optionlist[group.Key.ToHashSet()]))
+            .ToList();
+        
+        _manager.ChangePanelMembersToSelected(panelMembers);
+        
+        _manager.RemoveUnselectedPanelMembers(panelId);
+    
+        // Additional logic to handle `selectedPanelMembers` can be added here
+    
+        return RedirectToAction("Index", new { id = panelId });
+    }
    
 }

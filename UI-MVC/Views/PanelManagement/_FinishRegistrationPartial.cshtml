@@ -15,49 +15,81 @@
         {
             <p>U mist nog <strong>@(Model.PanelSize - Model.ExtraCriteriaViewModel.SuccessfulRegistrationCount)</strong> inschrijvingen</p>
             @* knop voor volgende faze *@
-            
-            <button class="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#collapseExample">
-                Begin een nieuwe fase voor loting van users
-            </button>
+        }
+        <button class="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#newphase">
+            Begin een nieuwe fase voor loting van users (not working)
+        </button>
 
-            <!-- Collapsible content (hidden by default) -->
-            <div class="collapse" id="collapseExample">
-                
-                <div class="card m-3">
-                    <h5 class="card-header text-center">Extra Criteria Statistieken</h5>
-                    <div class="m-2 justify-content-center">
-                        @Html.Partial("_extraCriteriaStatsPartial", Model.ExtraCriteriaViewModel)
-                    </div>
-                </div>
-                <p>Dit panel heeft een actuele response rate van <strong>@((double) Model.ExtraCriteriaViewModel.SuccessfulRegistrationCount / Model.TotalInvitesNeeded)%</strong> (@Model.ExtraCriteriaViewModel.SuccessfulRegistrationCount out of @Model.TotalInvitesNeeded)</p>
-                <div class="d-flex justify-content-center">
-                    <form method="post" asp-controller="PanelManagement" asp-action="NewPhase"
-                          class="card p-4 shadow-lg border-light">
-                        <div class="mb-3">
-                            <input type="hidden" name="guid" value="@Model.PanelId"/>
-                        </div>
-                        <div class="mb-3">
-                            <p>Als u een correctie wilt doen aan de response rate, dan kan u dit hier doen. Er zal berekent worden hoeveel uitnodigingen er nog nodig zijn en deze zullen aangemaakt worden.</p>
-                            <label for="responseRate" class="form-label">Response Rate</label>
-                            <input id="responseRate" type="number" name="responseRate" min="0" max="1" step="0.01"
-                                   class="form-control"
-                                   placeholder="Laat leeg voor originele response rate"/>
-                        </div>
-                        <div class="text-center">
-                            <button class="btn btn-primary px-4 py-2" type="submit">Begin een nieuwe fase voor loting
-                                van users
-                            </button>
-                        </div>
-                    </form>
+        <!-- Collapsible content (hidden by default) -->
+        <div class="collapse" id="newphase">
+
+            <div class="card m-3">
+                <h5 class="card-header text-center">Extra Criteria Statistieken</h5>
+                <div class="m-2 justify-content-center">
+                    @Html.Partial("_extraCriteriaStatsPartial", Model.ExtraCriteriaViewModel)
                 </div>
             </div>
+            <p>Dit panel heeft een actuele response rate van <strong>@((double) Model.ExtraCriteriaViewModel.SuccessfulRegistrationCount / Model.TotalInvitesNeeded)%</strong> (@Model.ExtraCriteriaViewModel.SuccessfulRegistrationCount out of @Model.TotalInvitesNeeded)</p>
+            <div class="d-flex justify-content-center">
+                <form method="post" asp-controller="PanelManagement" asp-action="NewPhase"
+                      class="card p-4 shadow-lg border-light">
+                    <div class="mb-3">
+                        <input type="hidden" name="guid" value="@Model.PanelId"/>
+                    </div>
+                    <div class="mb-3">
+                        <p>Als u een correctie wilt doen aan de response rate, dan kan u dit hier doen. Er zal berekent worden hoeveel uitnodigingen er nog nodig zijn en deze zullen aangemaakt worden.</p>
+                        <label for="responseRate" class="form-label">Response Rate</label>
+                        <input id="responseRate" type="number" name="responseRate" min="0" max="1" step="0.01"
+                               class="form-control"
+                               placeholder="Laat leeg voor originele response rate"/>
+                    </div>
+                    <div class="text-center">
+                        <button class="btn btn-primary px-4 py-2" type="submit">Begin een nieuwe fase voor loting
+                            van users
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
 
-            
-            
-        }
+        <button class="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#end">
+            Begin een nieuwe fase voor loting van users
+        </button>
+
+        <!-- Collapsible content (hidden by default) -->
+        <div class="collapse" id="end">
+
+            <div class="card m-3">
+                <h5 class="card-header text-center">Extra Criteria Statistieken</h5>
+                <div class="m-2 justify-content-center">
+                    @Html.Partial("_extraCriteriaStatsPartial", Model.ExtraCriteriaViewModel)
+                </div>
+            </div>
+            <p>Dit panel heeft een actuele response rate van <strong>@((double) Model.ExtraCriteriaViewModel.SuccessfulRegistrationCount / Model.TotalInvitesNeeded)%</strong> (@Model.ExtraCriteriaViewModel.SuccessfulRegistrationCount out of @Model.TotalInvitesNeeded)</p>
+            <div class="d-flex justify-content-center">
+                <form method="post" asp-controller="PanelManagement" asp-action="EndRegistration"
+                      class="card p-4 shadow-lg border-light">
+                    <div class="mb-3">
+                        <input type="hidden" name="guid" value="@Model.PanelId"/>
+                    </div>
+                    <div class="mb-3">
+                        <p>Als u een correctie wilt doen aan de response rate, dan kan u dit hier doen. Er zal berekent worden hoeveel uitnodigingen er nog nodig zijn en deze zullen aangemaakt worden.</p>
+                        <label for="responseRate" class="form-label">Response Rate</label>
+                        <input id="responseRate" type="number" name="responseRate" min="0" max="1" step="0.01"
+                               class="form-control"
+                               placeholder="Laat leeg voor originele response rate"/>
+                    </div>
+                    <div class="text-center">
+                        <button class="btn btn-primary px-4 py-2" type="submit">Begin een nieuwe fase voor loting
+                            van users
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
         <hr>
         <strong class="mb-0">Deze actie kan niet ongedaan gemaakt worden.</strong>
-        <strong class="mb-0">De oude QR-codes zullen blijven werken</strong>
+        <strong class="mb-0">De oude QR-codes zullen blijven werken???</strong>
     </div>
 
     <div class="d-flex justify-content-center gap-2">
