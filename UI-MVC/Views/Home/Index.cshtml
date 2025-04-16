@@ -4,6 +4,7 @@
     ViewData["Title"] = "Home Page";
 }
 @inject Organisation Organisation
+
 @section Scripts{
     <script src="~/dist/index.entry.js" type="module"></script>
 }
@@ -11,4 +12,20 @@
 <div class="text-center">
     <h1 class="display-4">Welcome to @Organisation.Name</h1>
     <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+</div>
+
+<div class="mt-4">
+    <h6><strong>FileName</strong></h6>
+    <form method="get" asp-controller="Storage" asp-action="GetFile">
+        <input type="text" name="fileName" class="form-control">
+        <button class="btn btn-primary mt-2" type="submit">Get File</button>
+    </form>
+</div>
+
+<div class="mt-4">
+    <h6><strong>Upload File</strong></h6>
+    <form method="post" enctype="multipart/form-data" asp-controller="Storage" asp-action="PostFile">
+        <input type="file" name="file" class="form-control"/>
+        <button class="btn btn-success mt-2" type="submit">Upload</button>
+    </form>
 </div>
