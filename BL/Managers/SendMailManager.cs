@@ -1,16 +1,19 @@
 using BL.Interfaces;
 using Mailjet.Client;
 using Mailjet.Client.Resources;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
 
 namespace BL.Managers;
 
 public class SendMailManager : ISendMailManager
 {
+    private readonly ILogger<SendMailManager> _logger;
     private readonly IFileManager _fileManager;
 
-    public SendMailManager(IFileManager fileManager)
+    public SendMailManager(ILogger<SendMailManager> logger, IFileManager fileManager)
     {
+        _logger = logger;
         _fileManager = fileManager;
     }
     public async Task SendSingleQRCodeInMailAsync(string email, string data)
@@ -47,7 +50,7 @@ public class SendMailManager : ISendMailManager
         MailjetResponse response = await client.PostAsync(request);
         if (response.IsSuccessStatusCode)
         {
-            Console.WriteLine($"Email sent to {email} successfully.");
+            _logger.LogInformation($"Email sent to {email} successfully.");
         }
         else
         {

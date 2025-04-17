@@ -12,12 +12,14 @@ public class PanelManager : IPanelManager
 {
     private readonly ILogger<PanelManager> _logger;
     private readonly IPanelRepository _repo;
+    private readonly ICalculationManager _calculationManager;
     private readonly IUserRepository _userRepo;
 
-    public PanelManager(ILogger<PanelManager> logger, IPanelRepository repo, IUserRepository userRepo)
+    public PanelManager(ILogger<PanelManager> logger, IPanelRepository repo, ICalculationManager calcManager, IUserRepository userRepo)
     {
         _logger = logger;
         _repo = repo;
+        _calculationManager = calcManager;
         _userRepo = userRepo;
     }
 
@@ -32,30 +34,26 @@ public class PanelManager : IPanelManager
         return _repo.ReadAllPanels();
     }
 
-    public IEnumerable<Panel> GetAllPanelsOwnedBy(string userId)
-    {
-        return _repo.ReadAllPanelsOwnedBy(userId);
-    }
-
     public Panel GetPanelWithRepresentationGroup(Guid id)
     {
         return _repo.ReadPanelWithRepresentationGroup(id);
     }
 
-    public ICollection<PanelMember> GetPanelMembersAndRepresentationGroup(Guid id)
-    {
-        return _repo.ReadPanelMembersAndRepresentationGroup(id);
-    }
-
-    public IEnumerable<PanelMember> GetPanelWithPanelMembersAndCriteria(Guid id)
-    {
-        return _repo.ReadPanelMembersWithCriteria(id);
-    }
-
-    public PanelMember GetPanelMemberById(Guid memberId)
-    {
-        return _repo.ReadPanelMember(memberId);
-    }
+    // public IEnumerable<PanelMember> GetPanelWithPanelMembersAndCriteria(Guid id)
+    // {
+    //     return _repo.ReadPanelMembersWithCriteria(id);
+    // }
+    
+    // public Panel GetPanelWithCriteriaAndOptions(Guid id)
+    // {
+    //     return _repo.ReadPanelWithCriteriaAndAnsweroptions(id);
+    //
+    // }
+    
+    // public PanelMember GetPanelMemberById(Guid memberId)
+    // {
+    //     return _repo.ReadPanelMember(memberId);
+    // }
 
     public PanelMember GetPanelMemberWithCriteriaResponses(Guid id)
     {
@@ -72,10 +70,10 @@ public class PanelManager : IPanelManager
         return _repo.ReadPanelMembersWithCriteria(panelId);
     }
 
-    public IEnumerable<PanelMember> GetAllPanelMembersWhichAnsweredAllQuestionsWithCriteria(Guid id)
-    {
-        return _repo.ReadPanelMembersWhichAnsweredAllQuestionsWithCriteria(id);
-    }
+    // public IEnumerable<PanelMember> GetAllPanelMembersWhichAnsweredAllQuestionsWithCriteria(Guid id)
+    // {
+    //     return _repo.ReadPanelMembersWhichAnsweredAllQuestionsWithCriteria(id);
+    // }
 
     public Panel GetPanelWithCriteriaAndCriteriaAnswerOptions(Guid panelId)
     {
@@ -131,7 +129,11 @@ public class PanelManager : IPanelManager
         // validate panel and representationgroup
         objectsToValidate.Add(panel);
         objectsToValidate.Add(panel.RepresentationGroup);
-
+        
+        // calculate panel size
+        var membersCount = _calculationManager.CalculateTotalInvitesNeeded(_calculationManager.CalculateAmountOfReserve(size, reservePercentage), responseRate);
+        // todo use this count 
+        
         // Generate members
         var panelMembers = Enumerable
             .Range(0, size)
@@ -341,7 +343,8 @@ public class PanelManager : IPanelManager
 
     public PanelMember UpdatePanelMember(PanelMember member)
     {
-        return _repo.UpdatePanelMember(member);
+        _repo.UpdatePanelMember(member);
+        return member;
     }
 
     public IEnumerable<PlanningGroupMember> GetAllPlanningGroupMembersWithIdentityUserForPanel(Guid panelId)
