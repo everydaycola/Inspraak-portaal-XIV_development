@@ -1,0 +1,54 @@
+﻿@using Domain.Interfaces
+@model UI_MVC.Models.Dto.ProjectPage.ProjectPageDto
+
+@{
+    Layout = "_Layout";
+}
+<h2>Projectpagina</h2>
+<h2>@Model.Panel.Name</h2>
+
+@if (User.IsInRole(CustomIdentityConstants.OrganisatieRole))
+{
+    <div class="mb-3">
+        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addTextModal">
+            Informatie toevoegen aan de project pagina.
+        </button>
+    </div>
+    
+    <div class="modal fade" id="addTextModal" tabindex="-1" aria-labelledby="addTextModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content shadow">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addTextModalLabel">Informatie toevoegen aan de projectpagina</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Sluiten"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="addTextForm" asp-action="AddTextPost" method="post">
+                        <input type="hidden" name="panelId" value="@Model.Panel.Id"/>
+                        <div class="mb-3">
+                            <label for="projectTextInput" class="form-label">Voer je tekst in</label>
+                            <textarea class="form-control" id="projectTextInput" name="content" rows="6" placeholder="Voeg hier je projecttekst toe..."></textarea>
+                        </div>
+                        <div class="text-end">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuleren</button>
+                            <button type="submit" class="btn btn-success">Opslaan</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@foreach (var post in Model.Panel.Posts.OrderByDescending(p => p.CreatedAt))
+{
+    @if(post is TextPost textPost){
+        <div class="timeline-item mb-4 p-3 border rounded shadow-sm bg-white">
+            <div class="d-flex justify-content-between align-items-center">
+                <h5 class="mb-1">@textPost.Id</h5>
+                <small class="text-muted">@textPost.CreatedAt.ToString("dd MMM yyyy HH:mm")</small>
+            </div>
+            <p class="mt-2 mb-0">@textPost.Content</p>
+        </div>
+    }
+}
