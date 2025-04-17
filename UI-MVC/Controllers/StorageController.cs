@@ -21,17 +21,29 @@ public class StorageController : ControllerBase
     [HttpGet]
     public async Task<IActionResult> GetFile(string fileName)
     {
-        // Acts as me
-        var client = StorageClient.Create();
-        // Where to keep the file
-        var stream = new MemoryStream();
-        // Downloading the file - Downloads into the Stream, not into the obj
-        var obj = await client.DownloadObjectAsync(
-            bucket: _googleCloudOptions.BucketName,
-            objectName: fileName,
-            destination: stream);
-        stream.Position = 0;
-        return File(stream, obj.ContentType, obj.Name);
+        // Simple check needs to change but works in development. You guys can do with this what you deem to be best
+        if (string.IsNullOrEmpty(fileName))
+        {
+            return BadRequest("Filename must be provided.");
+        }
+        try
+        {
+            var client = StorageClient.Create();
+            var stream = new MemoryStream();
+
+            var obj = await client.DownloadObjectAsync(
+                bucket: _googleCloudOptions.BucketName,
+                objectName: fileName,
+                destination: stream);
+
+            stream.Position = 0;
+
+            return File(stream, obj.ContentType, obj.Name);
+        }
+        catch (Google.GoogleApiException ex) when (ex.HttpStatusCode == System.Net.HttpStatusCode.NotFound)
+        {
+            return NotFound();
+        }
     }
 
     [HttpPost]
