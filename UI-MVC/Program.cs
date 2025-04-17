@@ -39,8 +39,10 @@ builder.Services.Configure<AvailableOrganisations>(
     builder.Configuration.GetSection(AvailableOrganisations.SectionName)
 );
 
-builder.Services.Configure<GoogleCloudOptions>(
-    builder.Configuration.GetSection("GoogleCloud"));
+builder.Services.Configure<GoogleCloudOptions>(options =>
+{
+    options.BucketName = builder.Configuration["GoogleCloud_BucketName"];
+});
 var redisConfiguration = builder.Configuration.GetValue<string>("Redis_Configuration");
 var redisInstanceName = builder.Configuration.GetValue<string>("Redis_InstanceName");
 var redis = ConnectionMultiplexer.Connect(redisConfiguration);
