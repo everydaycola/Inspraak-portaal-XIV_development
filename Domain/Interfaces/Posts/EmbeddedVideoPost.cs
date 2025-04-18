@@ -1,6 +1,6 @@
 ﻿namespace Domain.Interfaces;
 
-public class EmbeddedVideoPost: IPosts
+public class EmbeddedVideoPost: Post
 {
-    
+    public string VideoUrl { get; set; }
 }

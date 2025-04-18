@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using Domain.Interfaces;
 using Microsoft.AspNetCore.Identity;
 using UI_MVC;
 
@@ -29,6 +30,7 @@ public class Panel : IOrganisational,IValidatableObject
     [Required(ErrorMessage = "Panel moet een eigenaar hebben.")]
     public ApplicationUser Owner { get; set; }
     public string OrganisationId { get; set; }
+    public ICollection<Post> Posts { get; set; }
     
     IEnumerable<ValidationResult> IValidatableObject.Validate(ValidationContext validationContext)
     {
