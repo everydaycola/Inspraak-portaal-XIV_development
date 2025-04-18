@@ -143,7 +143,7 @@ public class CriteriaManager : ICriteriaManager
                         throw new ValidationException(string.Join("\n", validationResults.Select(x => x.ErrorMessage)));
 
                     member.Responses.Add(criteriaResponse);
-                    member.HasAnsweredAllQuestions = true;
+                    member.HasRegistered = true;
                     _panelManager.UpdatePanelMember(member);
                 }
                 else
