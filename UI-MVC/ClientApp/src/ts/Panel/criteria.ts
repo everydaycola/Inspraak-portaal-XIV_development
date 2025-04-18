@@ -58,7 +58,8 @@ export function addCriteria() {
     isDefaultInput.id = "is-default-criteria";
     isDefaultInput.className = "border border-1 rounded-2 form-check-input";
     isDefaultInput.type = "checkbox";
-    isDefaultInput.name = `Distributions[${currentCount}].isDefault`
+    isDefaultInput.name = `Distributions[${currentCount}].IsDefault`;
+    isDefaultInput.value= "true";
 
     // Create Delete Button
     const removeBtn = document.createElement("button");
