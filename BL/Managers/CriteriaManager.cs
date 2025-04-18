@@ -88,7 +88,7 @@ public class CriteriaManager : ICriteriaManager
         Guid panelId)
     {
         var result = new Dictionary<string, ICollection<PanelMember>>();
-        var panelMembers = _panelManager.GetAllPanelMembersForPanel(panelId);
+        var panelMembers = _panelManager.GetAllPanelMembersForPanel(panelId).Where(p => !p.HasRegistered);
         foreach (var member in panelMembers)
         {
             var groupName = string.Join("-",
