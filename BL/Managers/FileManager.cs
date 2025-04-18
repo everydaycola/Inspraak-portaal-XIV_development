@@ -48,7 +48,6 @@ public class FileManager : IFileManager
     private void AddGroupQrCodesToArchive(ZipArchive archive, PanelMember member, string defaultUri)
     {
         var qrCodeBytes = _qrCodeGenerator.GenerateQrCode($"{defaultUri}?UserId={member.PanelMemberId.ToString()}");
-        var memberCriteriaGroupName = member.Responses;
         var groupName = string.Join("-", member.Responses.Select(r => r.SelectedOption));
         var entry = archive.CreateEntry($"{groupName}/qrcode_{member.PanelMemberId}.png");
         using var entryStream = entry.Open();

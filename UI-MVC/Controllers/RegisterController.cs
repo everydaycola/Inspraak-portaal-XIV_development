@@ -1,6 +1,8 @@
 ﻿using System.Collections;
+using System.Security.Permissions;
 using BL.Interfaces;
 using Domain.CitizenPanel;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using UI_MVC.Models.Dto;
 using UI_MVC.Models.Dto.Register;
@@ -36,7 +38,7 @@ public class RegisterController : Controller
             UserId = userId.ToString(),
             Email = member.Email,
             IsRegistrationOpen = member.Panel.IsRegistrationOpen,
-            HasAnsweredQuestions = member.HasAnsweredAllQuestions,
+            HasAnsweredQuestions = member.HasRegistered,
             NonDefaultCriteria = nonDefaultCriteriaWithoutResponse,
             DefaultCriteria= defaultCriteria
         });
@@ -50,7 +52,7 @@ public class RegisterController : Controller
             var email = formData.Email;
             PanelMember member = _manager.GetPanelMemberWithCriteriaResponses(formData.UserId);
             member.Email = email;
-            member.HasAnsweredAllQuestions = true;
+            member.HasRegistered = true;
             _manager.UpdatePanelRegistrationCount(formData.PanelId, true);
             _critManager.SavePanelMemberCriteriaResponses(formData.PanelId, formData.CriteriaAnswers,member);
             PanelMember updatedMember = _manager.UpdatePanelMember(member);
@@ -59,7 +61,7 @@ public class RegisterController : Controller
             {
                 PanelId = updatedMember.Panel.Id.ToString(),
                 UserId = updatedMember.PanelMemberId.ToString(),
-                HasAnsweredQuestions = updatedMember.HasAnsweredAllQuestions,
+                HasAnsweredQuestions = updatedMember.HasRegistered,
                 Email = updatedMember.Email
             });
         }
@@ -71,5 +73,46 @@ public class RegisterController : Controller
             UserId = formData.UserId.ToString(),
             HasAnsweredQuestions = false
         });
+    }
+
+    [HttpPost]
+    public IActionResult RegisterRandomUsers(Guid guid, int count)
+    {
+        // mostly a testing function to add random users to your panel
+        
+        var panel = _manager.GetPanelWithCriteriaAndCriteriaAnswerOptions(guid);
+        var members = _manager.GetAllPanelMembersForPanel(guid)
+            .Where(pm => !pm.HasRegistered)
+            .Take(count); // Limit to the first `count` members
+        
+        var random = new Random();
+        
+        foreach (var member in members)
+        {
+            var responses = new Dictionary<string, string>();
+        
+            foreach (var criterion in panel.Criteria.Where(c => !c.IsDefault))
+            {
+                var randomValue = random.NextDouble();
+                var accumulatedWeight = 0.0;
+    
+                // Find the item whose accumulated weight range contains the random value
+                foreach (var option in criterion.AnswerOptions)
+                {
+                    accumulatedWeight += option.DistributionPercentage;
+                    if (randomValue > accumulatedWeight) continue;
+                    responses.Add(criterion.Name, option.Option);
+                    break;
+                }
+            }
+        
+            _critManager.SavePanelMemberCriteriaResponses(panel.Id, responses, member);
+            _manager.UpdatePanelRegistrationCount(panel.Id, true);
+            member.HasRegistered = true;
+            member.Email = "placeholder@gmail.com";
+            _manager.UpdatePanelMember(member);
+        }
+        
+        return RedirectToAction("Index", "PanelManagement",new { id = guid });
     }
 }
