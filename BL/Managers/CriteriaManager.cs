@@ -190,32 +190,4 @@ public class CriteriaManager : ICriteriaManager
         _logger.Log(LogLevel.Information, "Criteria answer option with " + cao.Option + " was created.");
         return cao;
     }
-
-    //ADD
-    public Criteria AddCriteria(string name, string question, bool isDefault,
-        ICollection<CriteriaAnswerOption> answerOptions)
-    {
-        _logger.Log(LogLevel.Information, "Creating criteria with name " + name + "...");
-        var criteria = new Criteria
-        {
-            Name = name,
-            IsDefault = isDefault,
-            Question = question,
-            AnswerOptions = answerOptions
-        };
-        _logger.Log(LogLevel.Information, "Criteria with name " + criteria.Name + " was created.");
-        return criteria;
-    }
-
-    public CriteriaAnswerOption AddCriteriaAnswerOption(string option, double distributionPercentage)
-    {
-        _logger.Log(LogLevel.Information, "Creating criteria answer option with name " + option + "...");
-        var cao = new CriteriaAnswerOption
-        {
-            Option = option,
-            DistributionPercentage = distributionPercentage/100
-        };
-        _logger.Log(LogLevel.Information, "Criteria answer option with " + cao.Option + " was created.");
-        return cao;
-    }
 }

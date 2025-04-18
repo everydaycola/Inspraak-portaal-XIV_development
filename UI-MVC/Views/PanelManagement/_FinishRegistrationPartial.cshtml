@@ -4,88 +4,91 @@
 <div class="container mt-5">
     <div class="alert alert-warning text-center" role="alert">
         <h4 class="alert-heading">U gaat de inschrijvingsfase afronden</h4>
-        <p> Er zijn <strong>@Model.ExtraCriteriaViewModel.SuccessfulRegistrationCount</strong> van de <strong>@Model.PanelSize</strong>
+        <p> Er zijn <strong>@Model.ExtraCriteriaViewModel.SuccessfulRegistrationCount</strong> van de <strong>@(Model.PanelSize + Model.AmountOfReserveInvites)</strong>
             inschrijvingen gelukt.</p>
-        @if (Model.ExtraCriteriaViewModel.SuccessfulRegistrationCount > Model.PanelSize)
+        @if (Model.ExtraCriteriaViewModel.SuccessfulRegistrationCount > Model.PanelSize + Model.AmountOfReserveInvites)
         {
-            <p>U heeft <strong>@(Model.ExtraCriteriaViewModel.SuccessfulRegistrationCount - Model.PanelSize)</strong> reserve inschrijvingen
+            <p>U heeft <strong>@(Model.ExtraCriteriaViewModel.SuccessfulRegistrationCount - Model.PanelSize + Model.AmountOfReserveInvites)</strong> reserve inschrijvingen
             </p>
         }
         else
         {
-            <p>U mist nog <strong>@(Model.PanelSize - Model.ExtraCriteriaViewModel.SuccessfulRegistrationCount)</strong> inschrijvingen</p>
-            @* knop voor volgende faze *@
+            <p>U mist nog <strong>@(Model.PanelSize + Model.AmountOfReserveInvites - Model.ExtraCriteriaViewModel.SuccessfulRegistrationCount)</strong> inschrijvingen</p>
         }
         <button class="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#newphase">
-            Begin een nieuwe fase voor loting van users (not working)
+            Toon criteria statistieken
         </button>
 
         <!-- Collapsible content (hidden by default) -->
         <div class="collapse" id="newphase">
-
             <div class="card m-3">
                 <h5 class="card-header text-center">Extra Criteria Statistieken</h5>
                 <div class="m-2 justify-content-center">
                     @Html.Partial("_extraCriteriaStatsPartial", Model.ExtraCriteriaViewModel)
                 </div>
-            </div>
-            <p>Dit panel heeft een actuele response rate van <strong>@((double) Model.ExtraCriteriaViewModel.SuccessfulRegistrationCount / Model.TotalInvitesNeeded)%</strong> (@Model.ExtraCriteriaViewModel.SuccessfulRegistrationCount out of @Model.TotalInvitesNeeded)</p>
-            <div class="d-flex justify-content-center">
-                <form method="post" asp-controller="PanelManagement" asp-action="NewPhase"
-                      class="card p-4 shadow-lg border-light">
-                    <div class="mb-3">
-                        <input type="hidden" name="guid" value="@Model.PanelId"/>
-                    </div>
-                    <div class="mb-3">
-                        <p>Als u een correctie wilt doen aan de response rate, dan kan u dit hier doen. Er zal berekent worden hoeveel uitnodigingen er nog nodig zijn en deze zullen aangemaakt worden.</p>
-                        <label for="responseRate" class="form-label">Response Rate</label>
-                        <input id="responseRate" type="number" name="responseRate" min="0" max="1" step="0.01"
-                               class="form-control"
-                               placeholder="Laat leeg voor originele response rate"/>
-                    </div>
-                    <div class="text-center">
-                        <button class="btn btn-primary px-4 py-2" type="submit">Begin een nieuwe fase voor loting
-                            van users
-                        </button>
-                    </div>
-                </form>
             </div>
         </div>
 
-        <button class="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#end">
-            Begin een nieuwe fase voor loting van users
-        </button>
-
-        <!-- Collapsible content (hidden by default) -->
-        <div class="collapse" id="end">
-
-            <div class="card m-3">
-                <h5 class="card-header text-center">Extra Criteria Statistieken</h5>
-                <div class="m-2 justify-content-center">
-                    @Html.Partial("_extraCriteriaStatsPartial", Model.ExtraCriteriaViewModel)
+        <p>Dit panel heeft een actuele response rate van <strong>@((double)100 * Model.ExtraCriteriaViewModel.SuccessfulRegistrationCount / Model.TotalInvitesNeeded)%</strong> (@Model.ExtraCriteriaViewModel.SuccessfulRegistrationCount out of @Model.TotalInvitesNeeded)</p>
+        <!-- New Phase Form -->
+        <div class="d-flex justify-content-center my-4">
+            <form method="post" asp-controller="PanelManagement" asp-action="NewPhase"
+                  class="card shadow-lg border-0 rounded-3" style="max-width: 550px; width: 100%;">
+                <div class="card-header bg-primary text-white py-3">
+                    <h5 class="mb-0 text-center">Nieuwe Fase Starten</h5>
                 </div>
-            </div>
-            <p>Dit panel heeft een actuele response rate van <strong>@((double) Model.ExtraCriteriaViewModel.SuccessfulRegistrationCount / Model.TotalInvitesNeeded)%</strong> (@Model.ExtraCriteriaViewModel.SuccessfulRegistrationCount out of @Model.TotalInvitesNeeded)</p>
-            <div class="d-flex justify-content-center">
-                <form method="post" asp-controller="PanelManagement" asp-action="EndRegistration"
-                      class="card p-4 shadow-lg border-light">
-                    <div class="mb-3">
-                        <input type="hidden" name="guid" value="@Model.PanelId"/>
+                <div class="card-body p-4">
+                    <input type="hidden" name="guid" value="@Model.PanelId"/>
+
+                    <div class="alert alert-info mb-3">
+                        <i class="bi bi-info-circle me-2"></i>
+                        Als u een correctie wilt doen aan de response rate, dan kan u dit hier doen.
+                        Er zal berekent worden hoeveel uitnodigingen er nog nodig zijn en deze zullen aangemaakt worden.
                     </div>
-                    <div class="mb-3">
-                        <p>Als u een correctie wilt doen aan de response rate, dan kan u dit hier doen. Er zal berekent worden hoeveel uitnodigingen er nog nodig zijn en deze zullen aangemaakt worden.</p>
-                        <label for="responseRate" class="form-label">Response Rate</label>
-                        <input id="responseRate" type="number" name="responseRate" min="0" max="1" step="0.01"
-                               class="form-control"
-                               placeholder="Laat leeg voor originele response rate"/>
+
+                    <div class="mb-4">
+                        <label for="responseRate" class="form-label fw-bold">Response Rate</label>
+                        <div class="input-group">
+                            <input id="responseRate" type="number" name="responseRate"
+                                   min="0" max="1" step="0.01"
+                                   class="form-control form-control-lg"
+                                   placeholder="Laat leeg voor originele response rate"/>
+                            <span class="input-group-text">%</span>
+                        </div>
+                        <small class="text-muted">Voer een waarde tussen 0 en 1 in</small>
                     </div>
-                    <div class="text-center">
-                        <button class="btn btn-primary px-4 py-2" type="submit">Begin een nieuwe fase voor loting
-                            van users
+
+                    <div class="d-grid">
+                        <button class="btn btn-primary btn-lg" type="submit">
+                            <i class="bi bi-arrow-right-circle me-2"></i>Start Nieuwe Fase
                         </button>
                     </div>
-                </form>
-            </div>
+                </div>
+            </form>
+        </div>
+
+        <!-- End Registration Form -->
+        <div class="d-flex justify-content-center mb-4">
+            <form method="post" asp-controller="PanelManagement" asp-action="EndRegistration"
+                  class="card shadow-lg border-0 rounded-3" style="max-width: 550px; width: 100%;">
+                <div class="card-header bg-danger text-white py-3">
+                    <h5 class="mb-0 text-center">Registratie Afronden</h5>
+                </div>
+                <div class="card-body p-4">
+                    <input type="hidden" name="panelId" value="@Model.PanelId"/>
+
+                    <div class="alert alert-warning mb-3">
+                        <i class="bi bi-exclamation-triangle me-2"></i>
+                        Let op: Deze actie kan niet ongedaan worden gemaakt.
+                    </div>
+
+                    <div class="d-grid">
+                        <button class="btn btn-danger btn-lg" type="submit">
+                            <i class="bi bi-x-circle me-2"></i>Beëindig de Registratie
+                        </button>
+                    </div>
+                </div>
+            </form>
         </div>
         <hr>
         <strong class="mb-0">Deze actie kan niet ongedaan gemaakt worden.</strong>
@@ -97,7 +100,7 @@
         <form method="post" asp-controller="Register" asp-action="RegisterRandomUsers"
               class="d-flex align-items-center gap-2">
             <input type="hidden" name="guid" value="@Model.PanelId"/>
-            <input type="number" name="count" min="1" class="form-control w-auto" placeholder="Enter count"/>
+            <input type="number" name="count" min="1" class="form-control w-auto" placeholder="aantal"/>
             <button class="btn btn-primary px-4 py-2" type="submit">voeg dummy users toe</button>
         </form>
     </div>

@@ -159,7 +159,7 @@ public class PanelManager : IPanelManager
             objectsToValidate.AddRange(panel.Criteria.SelectMany(c => c.AnswerOptions));
             
             // preforms an action very similar to a cartesian product, but with the options of each criteria
-            var crossDistribution = CrossDistribution(panel.Criteria.ToList());
+            var crossDistribution = HelperCalculateCrossDistribution(panel.Criteria.ToList());
             
             // validate created criteria
             objectsToValidate.AddRange(crossDistribution.Keys
@@ -207,7 +207,7 @@ public class PanelManager : IPanelManager
     /// It performs a recursive process similar to a Cartesian product, combining response options
     /// across multiple criteria and computes the combined distributions.
     /// </summary>
-    public Dictionary<ICollection<CriteriaResponse>, double> HelperCalculateCrossDistribution(List<Criteria> criteriaList)
+    private Dictionary<ICollection<CriteriaResponse>, double> HelperCalculateCrossDistribution(List<Criteria> criteriaList)
     {
         // Handle edge case: If the criteriaList is null or empty, return an empty dictionary
         if (criteriaList == null || criteriaList.Count == 0)
@@ -341,20 +341,10 @@ public class PanelManager : IPanelManager
         _repo.UpdatePanel(panel);
     }
 
-    public void RemoveUnselectedPanelMembers(Guid panelId)
-    {
-        _repo.RemoveAllUnselectedPanelmembers(panelId);
-    }
-
     public PanelMember UpdatePanelMember(PanelMember member)
     {
         _repo.UpdatePanelMember(member);
         return member;
-    }
-
-    public void ChangePanelMembersToSelected(ICollection<PanelMember> selectedMembers)
-    {
-        _repo.UpdatePanelMembersToSelected(selectedMembers);
     }
 
     public void NewPanelPhase(Guid guid, double newResponseRate)
@@ -364,10 +354,57 @@ public class PanelManager : IPanelManager
         throw new NotImplementedException();
     }
 
-    public void EndRegistration(Guid id)
+    public void EndRegistration(Guid panelId, Dictionary<string,Dictionary<string,double>> allDesiredCriteriaPercentages)
     {
-        _repo.UpdatePanel(GetPanel(id));
-        _repo.RemoveAllUnselectedPanelmembers(id);
+        var panel = GetPanelWithRepresentationGroup(panelId);
+        var panelSize = _calculationManager.CalculatePanelSize(panel.RepresentationGroup.CitizenCount, panel.SampleRate);
+        var amountSelectedNeeded =
+            _calculationManager.CalculateAmountOfReserve(panelSize, panel.RepresentationGroup.ReservePercentage) + panelSize;
+        var criteriaList = allDesiredCriteriaPercentages.Select(kpv => new Criteria
+            {
+                Name = kpv.Key,
+                AnswerOptions = kpv.Value.Select(kpv2 => new CriteriaAnswerOption()
+                {
+                    Option = kpv2.Key,
+                    DistributionPercentage = kpv2.Value
+                }).ToList()
+            }).ToList();
+
+        var crossDistribution = HelperCalculateCrossDistribution(criteriaList);
+
+        // Create a dictionary with string keys
+        var optionlist = new Dictionary<string, int>();
+        foreach (var item in crossDistribution)
+        {
+            var key = string.Join("|", item.Key.OrderBy(r => r.SelectedOption).Select(r => r.SelectedOption));
+            optionlist[key] = (int)(item.Value * amountSelectedNeeded);
+        }
+
+        var registeredMembers = GetAllPanelMembersForPanel(panelId)
+            .Where(p => p.HasRegistered)
+            .ToList();
+
+        var selectedMembers = new List<PanelMember>();
+
+        // Group by responses and process each group
+        foreach (var group in registeredMembers.GroupBy(pm => string.Join("|", pm.Responses.OrderBy(r => r.SelectedOption).Select(r => r.SelectedOption))))
+        {
+            // Check if key exists in the dictionary
+            if (optionlist.TryGetValue(group.Key, out var count))
+            {
+                // Add shuffled selection to selected members
+                selectedMembers.AddRange(
+                    group.OrderBy(_ => Guid.NewGuid())
+                        .Take(count)
+                );
+            }
+            // If key doesn't exist, we can skip or handle as needed
+        }
+
+        _repo.UpdatePanelMembersToSelected(selectedMembers);
+        _repo.RemoveAllUnselectedPanelmembers(panelId);
+        panel.SuccessfulRegistrationCount = selectedMembers.Count;
+        _repo.UpdatePanel(panel);
     }
 
     public IEnumerable<PlanningGroupMember> GetAllPlanningGroupMembersWithIdentityUserForPanel(Guid panelId)
