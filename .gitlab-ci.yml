@@ -41,7 +41,7 @@ variables:
   NUGET_PACKAGES_DIRECTORY: '.nuget'
   # 3) A relative path to the source code from project repository root.
   # NOTE: Please edit this path so it matches the structure of your project!
-  SOURCE_CODE_PATH: '*/'
+  SOURCE_CODE_PATH: '.'
   NODE_IMAGE: node:lts # Using the LTS version of Node.js
 # ### Define global cache rule
 #
@@ -103,10 +103,10 @@ build:
     - apt-get update -yq
     - apt-get install -yq --no-install-recommends nodejs npm # Ensure Node.js and npm are installed
   script:
-    - cd UI-MVC # Navigate to your UI project directory
+    - cd development/UI-MVC/ClientApp # Navigate to your UI project directory
     - npm install # Install Node.js dependencies
     - npm run build # Or any other build script your UI uses
-    - cd .. # Go back to the root
+    - cd ../../.. # Go back to the root
     - 'dotnet build --no-restore' # Build your .NET project
 tests:
   stage: test
