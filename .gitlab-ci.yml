@@ -17,6 +17,21 @@
 # Learn more about Docker tags: https://docs.docker.com/glossary/?term=tag
 # and the Docker itself: https://opensource.com/resources/what-docker
 image: mcr.microsoft.com/dotnet/sdk:8.0
+
+stages:
+  - build
+  - test
+  - deploy
+
+services:
+  - name: redis:latest
+    alias: redis-cache # You can use this alias to connect within your build/test stages if needed
+  - name: postgres:17-alpine
+    alias: postgres-db # You can use this alias to connect within your build/test stages if needed
+    environment:
+      POSTGRES_DB: 'CitizenPanel_DB'
+      POSTGRES_USER: 'user'
+      POSTGRES_PASSWORD: 'password'
 # ### Define variables
 #
 variables:
@@ -27,6 +42,7 @@ variables:
   # 3) A relative path to the source code from project repository root.
   # NOTE: Please edit this path so it matches the structure of your project!
   SOURCE_CODE_PATH: '*/'
+  NODE_IMAGE: node:lts # Using the LTS version of Node.js
 # ### Define global cache rule
 #
 # Before building the project, all dependencies (e.g. third-party NuGet packages)
@@ -82,16 +98,16 @@ before_script:
   - 'dotnet restore --packages $NUGET_PACKAGES_DIRECTORY'
 build:
   stage: build
-  # ### Build all projects discovered from solution file.
-  #
-  # Note: this will fail if you have any projects in your solution that are not
-  # .NET Core-based projects (e.g. WCF service), which is based on .NET Framework,
-  # not .NET Core. In this scenario, you will need to build every .NET Core-based
-  # project by explicitly specifying a relative path to the directory
-  # where it is located (e.g. 'dotnet build ./src/ConsoleApp').
-  # Only one project path can be passed as a parameter to 'dotnet build' command.
+  image: "$NODE_IMAGE" # Override the default image for the build stage
+  before_script:
+    - apt-get update -yq
+    - apt-get install -yq --no-install-recommends nodejs npm # Ensure Node.js and npm are installed
   script:
-    - 'dotnet build --no-restore'
+    - cd UI-MVC # Navigate to your UI project directory
+    - npm install # Install Node.js dependencies
+    - npm run build # Or any other build script your UI uses
+    - cd .. # Go back to the root
+    - 'dotnet build --no-restore' # Build your .NET project
 tests:
   stage: test
   # ### Run the tests
@@ -132,8 +148,8 @@ deploy:
     STARTUP_SCRIPT: 'startup-script.sh' # Assuming your updated startup script is in the repository root
   before_script:
     - git submodule update --init --recursive
-    - export STARTUP_SCRIPT_CONTENT="$(cat ../deployment/scripts/startup-script.sh)"
-    - echo "$GCP_SA_KEY_JSON" > /tmp/gcloud-auth.json
+    - export STARTUP_SCRIPT_CONTENT="$(cat deployment/scripts/startup-script.sh)"
+    - echo "$GCP_SA_KEY_BASE64" | base64 -d > /tmp/gcloud-auth.json # Assuming you're using Base64 for the key
     - gcloud auth activate-service-account --key-file /tmp/gcloud-auth.json --project "$GCP_PROJECT_ID"
     - gcloud config set project "$GCP_PROJECT_ID"
     - gcloud config set compute/zone "$GCP_ZONE"
