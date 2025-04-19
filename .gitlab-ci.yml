@@ -28,7 +28,7 @@ services:
     alias: redis-cache # You can use this alias to connect within your build/test stages if needed
   - name: postgres:17-alpine
     alias: postgres-db # You can use this alias to connect within your build/test stages if needed
-    environment:
+    variables:
       POSTGRES_DB: 'CitizenPanel_DB'
       POSTGRES_USER: 'user'
       POSTGRES_PASSWORD: 'password'
