@@ -50,7 +50,7 @@ public class PanelRepository : IPanelRepository
     {
         var unselectedMembers = _context.PanelMembers
             .Include(pm => pm.Panel)
-            .Where(pm => pm.Panel.Id == panelId && !pm.Selected)
+            .Where(pm => pm.Panel.Id == panelId && !pm.Selected && pm.HasRegistered)
             .ToList();
 
         if (!unselectedMembers.Any()) return;
