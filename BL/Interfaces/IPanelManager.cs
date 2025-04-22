@@ -15,7 +15,7 @@ public interface IPanelManager
     public Panel GetPanelWithPosts(Guid panelId);
     //ADD
     public Panel AddPanel(string name, int size, double sampleRate,
-        Dictionary<string, Dictionary<string, double>> distribution, int citizenCount, double reservePercentage,
+        ICollection<Criteria> distribution, int citizenCount, double reservePercentage,
         double responseRate, string userId);
     public void AddTextPost(Guid panelId, string content);
     //UPDATE
