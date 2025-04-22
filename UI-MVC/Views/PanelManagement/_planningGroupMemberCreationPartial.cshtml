@@ -1,28 +1,26 @@
-﻿<div class="container mt-4">
+﻿@model UI_MVC.Models.Dto.PanelManagementDto
+<div class="container mt-4">
     <h2>Nieuw planningsgroepslid aanmaken</h2>
 
-    <button class="btn btn-secondary mb-3" type="button" data-bs-toggle="collapse" data-bs-target="#planningslidForm" aria-expanded="false" aria-controls="planningslidForm">
-        Formulier tonen/verbergen
-    </button>
+    <form method="post" asp-action="AddPlanningGroupmember">
+        <div class="mb-3">
+            <input type="hidden" class="form-control" id="PanelId" name="PanelId" value="@Model.PanelId" required>
+        </div>
+        <div class="mb-3">
+            <label for="Email" class="form-label">Email</label>
+            <input type="email" class="form-control" id="Email" name="Email" placeholder="email@voorbeeld.be" required>
+        </div>
 
-    <div class="collapse" id="planningslidForm">
-        <form method="post">
-            <div class="mb-3">
-                <label for="email" class="form-label">Email</label>
-                <input type="email" class="form-control" id="email" name="email" placeholder="email@voorbeeld.be" required>
-            </div>
+        <div class="mb-3">
+            <label for="Naam" class="form-label">Naam</label>
+            <input type="text" class="form-control" id="Naam" name="Naam" placeholder="Naam van het lid" required>
+        </div>
 
-            <div class="mb-3">
-                <label for="naam" class="form-label">Naam</label>
-                <input type="text" class="form-control" id="naam" name="naam" placeholder="Naam van het lid" required>
-            </div>
+        <div class="mb-3">
+            <label for="Functie" class="form-label">Functie</label>
+            <input type="text" class="form-control" id="Functie" name="Functie" placeholder="Functie">
+        </div>
 
-            <div class="mb-3">
-                <label for="functie" class="form-label">Functie</label>
-                <input type="text" class="form-control" id="functie" name="functie" placeholder="Functie">
-            </div>
-
-            <button type="submit" class="btn btn-primary">Toevoegen</button>
-        </form>
-    </div>
+        <button type="submit" class="btn btn-primary">Toevoegen</button>
+    </form>
 </div>

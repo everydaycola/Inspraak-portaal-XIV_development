@@ -19,11 +19,15 @@ public interface IPanelManager
         ICollection<Criteria> distribution, int citizenCount, double reservePercentage,
         double responseRate, string userId);
     public void AddTextPost(Guid panelId, string content);
+    public void AddPlanningsGroupMember(Guid panelId, string Email, string Naam, string Functie);
     //UPDATE
     public void UpdatePanel(Guid id, bool isRegistrationOpen);
     public void UpdatePanelRegistrationCount(Guid id, bool increase);
     public PanelMember UpdatePanelMember(PanelMember member);
+    //DELETE
+    public void DeletePlanningsGroupmember(Guid planningsGroupMemberId);
     //HELPERS
     public void NewPanelPhase(Guid guid, double newResponseRate);
     public void EndRegistration(Guid id, Dictionary<string,Dictionary<string,double>> allDesiredCriteriaPercentages);
-}
+
+    }

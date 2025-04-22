@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using UI_MVC.Models;
 using UI_MVC.Models.Dto;
+using UI_MVC.Models.ViewModels;
 
 namespace UI_MVC.Controllers;
 [RequiresOrganisation]
@@ -74,6 +75,23 @@ public class PanelManagementController : Controller
         _manager.NewPanelPhase(guid, newResponseRate);
         
         return RedirectToAction("Index", new { id = guid });
+    }
+
+    [HttpPost]
+    public IActionResult AddPlanningGroupmember(PlanningGroupMemberViewModel model)
+    {
+        if (!ModelState.IsValid)
+        {
+            return View(model);
+        }
+        _manager.AddPlanningsGroupMember(model.PanelId,model.Email, model.Naam, model.Functie);
+        return RedirectToAction("Index", model.PanelId);
+    }
+
+    public IActionResult DeletePlanningsGroupmember(Guid panelId, Guid planningsGroupMemberId)
+    {
+        _manager.DeletePlanningsGroupmember(planningsGroupMemberId);
+        return RedirectToAction("Index", panelId);
     }
     
     [Authorize]

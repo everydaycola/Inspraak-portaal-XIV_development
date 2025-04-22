@@ -46,6 +46,12 @@ public class PanelRepository : IPanelRepository
             .Single(p => p.PanelMemberId == id);
     }
 
+    public void CreatePlanningsGroupMember(PlanningGroupMember member)
+    {
+        _context.PlanningGroupMembers.Add(member);
+        _context.SaveChanges();
+    }
+
     public void RemoveAllUnselectedPanelmembers(Guid panelId)
     {
         var unselectedMembers = _context.PanelMembers
@@ -57,6 +63,13 @@ public class PanelRepository : IPanelRepository
         _context.PanelMembers.RemoveRange(unselectedMembers);
         _context.SaveChanges();
 
+    }
+
+    public void RemovePlanningGroupMember(Guid planningsGroupMemberId)
+    {
+        var member = _context.PlanningGroupMembers.Single(m => m.Id == planningsGroupMemberId);
+        _context.PlanningGroupMembers.Remove(member);
+        _context.SaveChanges();
     }
 
     // public Panel ReadPanelWithCriteriaAndAnsweroptions(Guid id)
