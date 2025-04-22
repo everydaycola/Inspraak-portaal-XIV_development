@@ -1,24 +1,29 @@
-﻿@model UI_MVC.Models.Dto.PanelManagementDto
+﻿@model UI_MVC.Models.ViewModels.PlanningGroupMemberViewModel
+
 <div class="container mt-4">
     <h2>Nieuw planningsgroepslid aanmaken</h2>
 
     <form method="post" asp-action="AddPlanningGroupmember">
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+        <input type="hidden" asp-for="PanelId" />
+
         <div class="mb-3">
-            <input type="hidden" class="form-control" id="PanelId" name="PanelId" value="@Model.PanelId" required>
-        </div>
-        <div class="mb-3">
-            <label for="Email" class="form-label">Email</label>
-            <input type="email" class="form-control" id="Email" name="Email" placeholder="email@voorbeeld.be" required>
+            <label asp-for="Email" class="form-label"></label>
+            <input asp-for="Email" type="email" class="form-control" required />
+            <span asp-validation-for="Email" class="text-danger"></span>
         </div>
 
         <div class="mb-3">
-            <label for="Naam" class="form-label">Naam</label>
-            <input type="text" class="form-control" id="Naam" name="Naam" placeholder="Naam van het lid" required>
+            <label asp-for="Naam" class="form-label"></label>
+            <input asp-for="Naam" type="text" class="form-control" required />
+            <span asp-validation-for="Naam" class="text-danger"></span>
         </div>
 
         <div class="mb-3">
-            <label for="Functie" class="form-label">Functie</label>
-            <input type="text" class="form-control" id="Functie" name="Functie" placeholder="Functie">
+            <label asp-for="Functie" class="form-label"></label>
+            <input asp-for="Functie" type="text" class="form-control" required/>
+            <span asp-validation-for="Functie" class="text-danger"></span>
         </div>
 
         <button type="submit" class="btn btn-primary">Toevoegen</button>

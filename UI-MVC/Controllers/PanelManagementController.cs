@@ -82,7 +82,7 @@ public class PanelManagementController : Controller
     {
         if (!ModelState.IsValid)
         {
-            return View(model);
+            return RedirectToAction("Index", model.PanelId);
         }
         _manager.AddPlanningsGroupMember(model.PanelId,model.Email, model.Naam, model.Functie);
         return RedirectToAction("Index", model.PanelId);

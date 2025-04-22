@@ -1,4 +1,5 @@
 ﻿@using Microsoft.AspNetCore.Mvc.TagHelpers
+@using UI_MVC.Models.ViewModels
 @model UI_MVC.Models.Dto.PanelManagementDto
 
 <div class="container mt-4">
@@ -26,4 +27,4 @@
         </tbody>
     </table>
 </div>
-@Html.Partial("_planningGroupMemberCreationPartial", @Model)
+@Html.Partial("_planningGroupMemberCreationPartial", new PlanningGroupMemberViewModel{PanelId = @Model.PanelId})

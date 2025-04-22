@@ -67,7 +67,7 @@ public class PanelRepository : IPanelRepository
 
     public void RemovePlanningGroupMember(Guid planningsGroupMemberId)
     {
-        var member = _context.PlanningGroupMembers.Single(m => m.Id == planningsGroupMemberId);
+        var member = _context.PlanningGroupMembers.Find(planningsGroupMemberId);
         _context.PlanningGroupMembers.Remove(member);
         _context.SaveChanges();
     }
@@ -181,6 +181,11 @@ public class PanelRepository : IPanelRepository
         return _context.Panels
             .Include(p => p.Posts)
             .Single(p => p.Id == panelId);
+    }
+
+    public PlanningGroupMember ReadPlanningGroupMember(Guid planningsGroupMemberId)
+    {
+        return _context.PlanningGroupMembers.Find(planningsGroupMemberId);
     }
 
     public void UpdatePanel(Panel panel)

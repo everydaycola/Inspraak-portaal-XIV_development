@@ -343,7 +343,6 @@ public class PanelManager : IPanelManager
         }
     }
     //UPDATE
-
     public void UpdatePanel(Guid id, bool isRegistrationOpen)
     {
         var panel = _repo.ReadPanel(id);
@@ -368,6 +367,10 @@ public class PanelManager : IPanelManager
 
     public void DeletePlanningsGroupmember(Guid planningsGroupMemberId)
     {
+        var planningGroupmember = _repo.ReadPlanningGroupMember(planningsGroupMemberId);
+        if (planningGroupmember == null)
+            throw new NullReferenceException("Planninggroupmember with id " + planningsGroupMemberId +
+                                             " was not found");
         _repo.RemovePlanningGroupMember(planningsGroupMemberId);
     }
 
