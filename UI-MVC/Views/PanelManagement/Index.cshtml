@@ -18,7 +18,7 @@
                     <p class="card-text">
                         <i class="bi bi-person-check-fill text-success"></i>
                         <strong>Aantal succesvol aangemelde mensen:</strong>
-                        @Model.ExtraCriteriaViewModel.SuccesfulRegistrationCount /
+                        @Model.ExtraCriteriaViewModel.SuccessfulRegistrationCount /
                         @(Model.PanelSize + Model.AmountOfReserveInvites) (waarvan @Model.AmountOfReserveInvites reserve)
                     </p>
                 </div>
@@ -84,7 +84,9 @@
                 </div>
             </div>
         </div>
-        @Html.Partial("_extraCriteriaStatsPartial", Model.ExtraCriteriaViewModel)
+        <div class="card shadow-sm border-0 col-8 me-4">
+            @Html.Partial("_extraCriteriaStatsPartial", Model.ExtraCriteriaViewModel)
+        </div>
     </div>
 
     <div class="modal fade" id="CodesModal" tabindex="-1" aria-labelledby="CodesModalLabel" aria-hidden="true">
@@ -118,20 +120,21 @@
             </div>
         </div>
     </div>
-</div>
 
-<div class="modal fade" id="FinnishModal" tabindex="-1" aria-labelledby="FinnishModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="FinnishModalLabel">Bent u zeker?</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <div id="FinnishModalContent">
-                    @Html.Partial("_FinishRegistrationPartial.cshtml", Model)
+    <div class="modal fade" id="FinnishModal" tabindex="-1" aria-labelledby="FinnishModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="FinnishModalLabel">Bent u zeker?</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="FinnishModalContent">
+                        @Html.Partial("_FinishRegistrationPartial.cshtml", Model)
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
+

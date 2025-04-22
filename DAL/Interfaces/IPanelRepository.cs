@@ -1,4 +1,5 @@
-﻿using Domain.CitizenPanel;
+using System.Collections;
+using Domain.CitizenPanel;
 using Domain.Interfaces;
 
 namespace DAL.Interfaces;
@@ -14,12 +15,18 @@ public interface IPanelRepository
     public IEnumerable<PanelMember> ReadPanelMembersWithCriteria(Guid id);
     public Panel ReadPanelWithCriteriaAndAnswerOptions(Guid panelId);
     public IEnumerable<PlanningGroupMember> ReadAllPlanningGroupMembersWithIdentityUserForPanel(Guid panelId);
+
+    public IEnumerable<PanelMember> ReadPanelMembersWithResponses(Guid id);
     public Panel ReadPanelWithPosts(Guid panelId);
 
     //UPDATE
     public void UpdatePanel(Panel panel);
     public void UpdatePanelMember(PanelMember member);
+
+    public void UpdatePanelMembersToSelected(ICollection<PanelMember> selectedMembers);
     //CREATE
     public void CreatePanelMember(PanelMember panelMember);
     public void CreateTextPost(Guid panelId, TextPost textPost);
+    //DELETE
+    public void RemoveAllUnselectedPanelmembers(Guid panelId);
 }

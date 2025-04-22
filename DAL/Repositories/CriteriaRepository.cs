@@ -59,6 +59,24 @@ public class CriteriaRepository : ICriteriaRepository
                     )
             );
     }
+    
+    public Dictionary<string, Dictionary<string, double>> ReadAllDesiredCriteriaPercentages(Guid panelId)
+    {
+        return _context.Panels
+            .Where(p => p.Id == panelId)
+            .Include(p => p.Criteria)
+            .ThenInclude(c => c.AnswerOptions)
+            .SelectMany(p => p.Criteria)
+            .GroupBy(c => c.Name)
+            .ToDictionary(
+                group => group.Key,
+                group => group
+                    .SelectMany(c => c.AnswerOptions)
+                    .ToDictionary(
+                        o => o.Option,
+                        o => o.DistributionPercentage)
+            );
+    }
 
 
     // public IEnumerable<Criteria> ReadAllNonDefaultCriteriaWithValuesForPanel(Guid panelId)

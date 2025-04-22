@@ -30,6 +30,10 @@ public class PanelManagementController : Controller
 
     public IActionResult Index(Guid id)
     {
+        if (id == Guid.Empty)
+        {
+            return RedirectToAction("PanelSelection");
+        }
         var panel = _manager.GetPanelWithRepresentationGroup(id);
         var panelSize = _calcManager.CalculatePanelSize(panel.RepresentationGroup.CitizenCount, panel.SampleRate);
         var amountOfReserveInvites =
@@ -47,7 +51,9 @@ public class PanelManagementController : Controller
             ExtraCriteriaViewModel = new ExtraCriteriaViewModel
             {
                 CriteriaMemberCount = _criteriaManager.GetAllCriteriaCountsGroupedByValue(panel.Id),
-                SuccesfulRegistrationCount = panel.SuccessfulRegistrationCount,
+                DesiredCriteriaCount = _criteriaManager.GetAllDesiredCriteriaPercentages(panel.Id),
+                SuccessfulRegistrationCount = panel.SuccessfulRegistrationCount,
+                DesiredRegistrationCount = panelSize,
             },
             UniqueCodesDto = new uniqueCodesDto
             {
@@ -61,6 +67,15 @@ public class PanelManagementController : Controller
     {
         return RedirectToAction("Index", new { id = panelId });
     }
+    
+    [HttpPost]
+    public IActionResult NewPhase(Guid guid, double newResponseRate)
+    {
+        _manager.NewPanelPhase(guid, newResponseRate);
+        
+        return RedirectToAction("Index", new { id = guid });
+    }
+    
     [Authorize]
     public IActionResult PanelSelection()
     {
@@ -74,5 +89,13 @@ public class PanelManagementController : Controller
         _manager.UpdatePanel(panelId, !panel.IsRegistrationOpen);
         return RedirectToAction("Index", new { id = panel.Id });
     }
-   
+
+    public IActionResult EndRegistration(Guid panelId)
+    {
+        var allDesiredCriteriaPercentages = _criteriaManager.GetAllDesiredCriteriaPercentages(panelId);
+        
+        _manager.EndRegistration(panelId, allDesiredCriteriaPercentages);
+
+        return RedirectToAction("Index", new { id = panelId });
+    }
 }
