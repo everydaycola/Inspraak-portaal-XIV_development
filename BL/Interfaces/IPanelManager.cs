@@ -24,6 +24,6 @@ public interface IPanelManager
     public void UpdatePanelRegistrationCount(Guid id, bool increase);
     public PanelMember UpdatePanelMember(PanelMember member);
     //HELPERS
-    public void NewPanelPhase(Guid guid, double newResponseRate);
+    public void NewPanelPhase(Guid guid, double newResponseRate, Dictionary<string,Dictionary<string,double>> allDesiredCriteriaPercentages);
     public void EndRegistration(Guid id, Dictionary<string,Dictionary<string,double>> allDesiredCriteriaPercentages);
 }

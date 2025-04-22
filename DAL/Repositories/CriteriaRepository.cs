@@ -60,13 +60,14 @@ public class CriteriaRepository : ICriteriaRepository
             );
     }
     
-    public Dictionary<string, Dictionary<string, double>> ReadAllDesiredCriteriaPercentages(Guid panelId)
+    public Dictionary<string, Dictionary<string, double>> ReadAllDesiredCriteriaPercentages(Guid panelId, bool onlyDefault)
     {
         return _context.Panels
             .Where(p => p.Id == panelId)
             .Include(p => p.Criteria)
             .ThenInclude(c => c.AnswerOptions)
             .SelectMany(p => p.Criteria)
+            .Where(c => !onlyDefault || c.IsDefault)
             .GroupBy(c => c.Name)
             .ToDictionary(
                 group => group.Key,

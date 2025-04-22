@@ -114,7 +114,7 @@ public class CriteriaManager : ICriteriaManager
                     .ToList());
             if (!result.TryGetValue(groupName, out var value))
             {
-                value = new List<PanelMember>();
+                value = [];
                 result[groupName] = value;
             }
 
@@ -143,9 +143,9 @@ public class CriteriaManager : ICriteriaManager
         return _repo.ReadCriteriaByNameWithAnswerOptions(panelId, critName);
     }
 
-    public Dictionary<string, Dictionary<string, double>> GetAllDesiredCriteriaPercentages(Guid panelId)
+    public Dictionary<string, Dictionary<string, double>> GetAllDesiredCriteriaPercentages(Guid panelId, bool onlyDefault = false)
     {
-        return _repo.ReadAllDesiredCriteriaPercentages(panelId);
+        return _repo.ReadAllDesiredCriteriaPercentages(panelId, onlyDefault);
     }
 
     public void SavePanelMemberCriteriaResponses(Guid panelId, Dictionary<string, string> CriteriaAnswers,

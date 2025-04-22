@@ -24,7 +24,9 @@ public class QRCodeController : Controller
 
     public IActionResult DownloadQrCodesForAllPanelMembers(Guid panelId, int phase)
     {
-        var panelMembers = _panelManager.GetAllPanelMembersForPanel(panelId);
+        var panelMembers = _panelManager.GetAllPanelMembersForPanel(panelId)
+            .Where(m => m.Phase == phase)
+            .Where(m => !m.HasRegistered);
         var baseUrl = $"{Request.Scheme}://{Request.Host}/Register";
         var zipFileBytes = _fileManager.CreateZipFileForMultiplePanelMembers(panelMembers, baseUrl);
         _logger.Log(LogLevel.Information, "Generating qr codes for all groups in panel{} ", panelId);
