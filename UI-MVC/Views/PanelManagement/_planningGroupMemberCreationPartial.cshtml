@@ -1,0 +1,28 @@
+﻿<div class="container mt-4">
+    <h2>Nieuw planningsgroepslid aanmaken</h2>
+
+    <button class="btn btn-secondary mb-3" type="button" data-bs-toggle="collapse" data-bs-target="#planningslidForm" aria-expanded="false" aria-controls="planningslidForm">
+        Formulier tonen/verbergen
+    </button>
+
+    <div class="collapse" id="planningslidForm">
+        <form method="post">
+            <div class="mb-3">
+                <label for="email" class="form-label">Email</label>
+                <input type="email" class="form-control" id="email" name="email" placeholder="email@voorbeeld.be" required>
+            </div>
+
+            <div class="mb-3">
+                <label for="naam" class="form-label">Naam</label>
+                <input type="text" class="form-control" id="naam" name="naam" placeholder="Naam van het lid" required>
+            </div>
+
+            <div class="mb-3">
+                <label for="functie" class="form-label">Functie</label>
+                <input type="text" class="form-control" id="functie" name="functie" placeholder="Functie">
+            </div>
+
+            <button type="submit" class="btn btn-primary">Toevoegen</button>
+        </form>
+    </div>
+</div>
