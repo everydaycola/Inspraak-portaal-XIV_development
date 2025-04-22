@@ -19,7 +19,7 @@ public class PanelManagementController : Controller
     private readonly UserManager<ApplicationUser> _userManager;
 
 
-    public PanelManagementController(ILogger<PanelManagementController> logger, IPanelManager manager, ICriteriaManager criteriaManager, ICalculationManager calcHelper, UserManager<ApplicationUser> userManager)
+    public PanelManagementController(ILogger<PanelManagementController> logger, IPanelManager manager, IFileManager fileManager, ICriteriaManager criteriaManager, ICalculationManager calcHelper, UserManager<ApplicationUser> userManager)
     {
         _logger = logger;
         _manager = manager;
@@ -31,7 +31,7 @@ public class PanelManagementController : Controller
     public IActionResult Index(Guid id)
     {
         var panel = _manager.GetPanelWithRepresentationGroup(id);
-        var panelSize = _calcManager.CalculatePanelSize(panel.RepresentationGroup.CitizenCount, 0.005);
+        var panelSize = _calcManager.CalculatePanelSize(panel.RepresentationGroup.CitizenCount, panel.SampleRate);
         var amountOfReserveInvites =
             _calcManager.CalculateAmountOfReserve(panelSize, panel.RepresentationGroup.ReservePercentage);
         return View(new PanelManagementDto
@@ -64,6 +64,7 @@ public class PanelManagementController : Controller
     [Authorize]
     public IActionResult PanelSelection()
     {
+        string userId = _userManager.GetUserId(User);
         var panels = _manager.GetAllPanels();
         return View(panels);
     }
