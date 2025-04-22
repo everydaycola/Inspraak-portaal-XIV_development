@@ -199,6 +199,13 @@ public static class DataSeeder
             }
         }).ToList();
         
+        // adding panel members also adds dependant objects
+        // so panel member => panel
+        //    panel => representation group
+        //    panel => criteria
+        //    criteria => criteria answer option
+        //    plannings group member => identityUser
+        
         AddMultipleEntities(panelMembersMen);
         AddMultipleEntities(panelMembersWomen);
         AddMultipleEntities([pgm1, pgm2, pgm3]);
