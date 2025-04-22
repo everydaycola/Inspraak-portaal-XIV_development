@@ -1,7 +1,6 @@
-﻿import {addAnswerOption, reIndexAnswerOptions, resetAnswerCounters} from "./answersOption";
+﻿import {addAnswerOption, reIndexAnswerOptions, resetAnswerCounters, createPercentageInput} from "./answersOption";
 
 let criteriaCount = 0;
-
 
 export function addCriteria() {
     const criteriaContainer = document.getElementById("criteria-container") as HTMLDivElement;
@@ -55,11 +54,11 @@ export function addCriteria() {
 
     // Create isDefault input
     const isDefaultInput = document.createElement("input")
-    isDefaultInput.id = "is-default-criteria";
+    isDefaultInput.id = `is-default-${criteriaId}`;
     isDefaultInput.className = "border border-1 rounded-2 form-check-input";
     isDefaultInput.type = "checkbox";
     isDefaultInput.name = `Distributions[${currentCount}].IsDefault`;
-    isDefaultInput.value= "true";
+    isDefaultInput.value = "true";
 
     // Create Delete Button
     const removeBtn = document.createElement("button");
@@ -101,14 +100,13 @@ export function addCriteria() {
     const answerUl = document.createElement("ul");
     answerUl.className = "list-group list-group-flush";
 
-
     // Create addAnswerOption Button
     const addAnswerOptionBtn = document.createElement("button")
     addAnswerOptionBtn.type = "button";
     addAnswerOptionBtn.className = "btn btn-primary col-2 ms-3 my-2";
     addAnswerOptionBtn.innerText = "Mogelijkheid Toevoegen";
-    addAnswerOptionBtn.addEventListener("click", () => addAnswerOption(currentCount, answerUl));
-    
+    addAnswerOptionBtn.addEventListener("click", () => addAnswerOption(currentCount, answerUl, isDistributionKnownInput.checked));
+
     const nameValidationSpan = document.createElement("span");
     nameValidationSpan.setAttribute("data-valmsg-for", `Distributions[${currentCount}].Name`);
     nameValidationSpan.setAttribute("data-valmsg-replace", "true");
@@ -119,10 +117,32 @@ export function addCriteria() {
     nameValidationSpan.setAttribute("data-valmsg-replace", "true");
     nameValidationSpan.className = "text-danger";
 
-    
-    
+    // Create isDistributionKnown div
+    const isDistributionKnownDiv = document.createElement("div");
+    isDistributionKnownDiv.className = "d-flex flex-row col-3 form-check form-switch"
+
+    // Create Distribution known Checkbox
+    const isDistributionKnownInput = document.createElement("input")
+    isDistributionKnownInput.id = `is-distribution-known-${currentCount}-criteria`;
+    isDistributionKnownInput.className = "border border-1 rounded-2 form-check-input";
+    isDistributionKnownInput.type = "checkbox";
+    isDistributionKnownInput.name = `Distributions[${criteriaId}].IsDistributionKnown`;
+    isDistributionKnownInput.value = "true";
+    isDistributionKnownInput.checked = true;
+    isDistributionKnownInput.addEventListener("click", () => {
+        toggleAnswerOptionPercentageInput(isDistributionKnownInput.checked, currentCount)
+    })
+
+    // Create isDistributionKnown label
+    const isDistributionKnownLabel = document.createElement("label")
+    isDistributionKnownLabel.className = "card-text pe-5";
+    isDistributionKnownLabel.htmlFor = isDistributionKnownInput.name;
+    isDistributionKnownLabel.innerText = "Verdeling gekend";
 
     // Appending
+    isDistributionKnownDiv.append(isDistributionKnownLabel, isDistributionKnownInput)
+    answerUl.append(isDistributionKnownDiv)
+
     wrapper.append(headDiv, questionDiv, answerHeading, answerUl, addAnswerOptionBtn)
 
     headDiv.append(nameDiv, isDefaultDiv, removeBtn)
@@ -133,26 +153,46 @@ export function addCriteria() {
     questionDiv.append(questionLabel, questionInput, questionValidationSpan);
 
     // add 2 Answer Options
-    addAnswerOption(currentCount, answerUl);
-    addAnswerOption(currentCount, answerUl);
+    addAnswerOption(currentCount, answerUl, true);
+    addAnswerOption(currentCount, answerUl, true);
 
     criteriaContainer.appendChild(wrapper);
 
     $.validator.unobtrusive.parse("#new-panel-form");
 }
 
-
 function removeCriteria(criteriaId: number) {
-    let e = event as Event
+    let e = event as Event;
     const btn = e.currentTarget as HTMLButtonElement;
     const headDiv = btn.parentElement as HTMLDivElement;
     const wrapper = headDiv.parentElement as HTMLDivElement;
-    
+
     // Remove the element from the DOM
     wrapper.remove();
     // Rebuild the subregions to fix the indices
     reIndexCriteria();
     resetAnswerCounters(criteriaId)
+}
+
+function toggleAnswerOptionPercentageInput(isChecked: boolean, criteriaId: number) {
+    let e = event as Event;
+    const checkbox = e.currentTarget as HTMLInputElement;
+    const div = checkbox.parentElement as HTMLDivElement;
+    const ul = div.parentElement as HTMLUListElement;
+    const ulChildren = ul.childNodes;
+    //removing the div form the NodeList
+    const lis: HTMLLIElement[] = [].slice.call(ulChildren, 1);
+    
+    lis.forEach((li, index) => {
+        const inputs = li.childNodes;
+        const percentageNode = inputs.item(1)
+        if (!isChecked) {
+            percentageNode.remove()
+        } else {
+            const percentageInput = createPercentageInput(criteriaId, index);
+            li.insertBefore(percentageInput,li.childNodes[1]);
+        }
+    })
 }
 
 function reIndexCriteria() {
@@ -166,30 +206,23 @@ function reIndexCriteria() {
 
         // Update Name input
         const nameInput = div.querySelector("input[name^='Distributions'][name$='Name']") as HTMLInputElement;
-        if (nameInput) {
-            nameInput.name = `Distributions[${newIndex}].Name`;
-        }
+        nameInput.name = `Distributions[${newIndex}].Name`;
 
         // Update Question input
         const questionInput = div.querySelector("input[name^='Distributions'][name$='Question']") as HTMLInputElement;
-        if (questionInput) {
-            questionInput.name = `Distributions[${newIndex}].Question`;
-        }
+        questionInput.name = `Distributions[${newIndex}].Question`;
 
         // Update isDefault checkbox
-        const isDefaultInput = div.querySelector("input[name^='Distributions'][name$='isDefault']") as HTMLInputElement;
-        if (isDefaultInput) {
-            isDefaultInput.name = `Distributions[${newIndex}].isDefault`;
-        }
+        const isDefaultInput = div.querySelector("input[name^='Distributions'][name$='IsDefault']") as HTMLInputElement;
+        isDefaultInput.name = `Distributions[${newIndex}].IsDefault`;
 
         // Update all answer option inputs
         const answerUl = div.querySelector<HTMLUListElement>("ul.list-group") as HTMLUListElement;
         reIndexAnswerOptions(newIndex, answerUl);
-        
-        const removeBtn = div.querySelector<HTMLButtonElement>("button.btn-danger.btn-sm") as HTMLButtonElement;
 
-        // Add the event listener for the remove button
-        removeBtn.addEventListener('click', () => removeCriteria(newIndex));
+        // Update isDistribution known checkbox
+        const isDistributionInput = div.querySelector("input[name^='Distributions'][name$='IsDistributionKnown']") as HTMLInputElement;
+        isDistributionInput.name = `Distributions[${newIndex}].IsDefault`
 
         criteriaCount++;
     });

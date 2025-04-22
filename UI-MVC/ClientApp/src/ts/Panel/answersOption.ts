@@ -3,7 +3,7 @@
 export let answerOptionCounters: Map<number, number> = new Map()
 
 
-export function addAnswerOption(criteriaId: number, answersContainer: HTMLUListElement) {
+export function addAnswerOption(criteriaId: number, answersContainer: HTMLUListElement, isDistributionKnown: boolean) {
     const answerCount = answerOptionCounters.get(criteriaId) ?? 0;
     answerOptionCounters.set(criteriaId, answerCount + 1);
 
@@ -20,7 +20,7 @@ export function addAnswerOption(criteriaId: number, answersContainer: HTMLUListE
     answerOptionInput.className = "border border-1 rounded-2 me-2";
     answerOptionInput.type = "text";
     answerOptionInput.placeholder = `Antwoord ${(answerCount + 1)}`
-    
+
     // Add validation attributes
     answerOptionInput.setAttribute("data-val", "true");
     answerOptionInput.setAttribute("data-val-required", "Antwoord optie moet een naam hebben.");
@@ -35,36 +35,28 @@ export function addAnswerOption(criteriaId: number, answersContainer: HTMLUListE
     answerOptionSpan.setAttribute("data-valmsg-for", answerOptionInput.name);
     answerOptionSpan.setAttribute("data-valmsg-replace", "true");
 
-    // Create answerOptionPercentage input
-    const answerOptionPercentageInput = document.createElement("input");
-    answerOptionPercentageInput.name = `Distributions[${criteriaId}].AnswerOptions[${answerCount}].DistributionPercentage`;
-    answerOptionPercentageInput.className = "border border-1 rounded-2 me-2";
-    answerOptionPercentageInput.type = "number";
-    answerOptionPercentageInput.placeholder = `${round(100 / (answerCount + 1))}`
-    
-    // Add validation attributes
-    answerOptionPercentageInput.setAttribute("data-val", "true");
-    answerOptionPercentageInput.setAttribute("data-val-required", "Antwoord optie moet een verdeling waarde hebben.");
-    answerOptionPercentageInput.setAttribute("data-val-range", "Percentage moet tussen 0 en 100% zijn.");
-    answerOptionPercentageInput.setAttribute("data-val-range-min", "0");
-    answerOptionPercentageInput.setAttribute("data-val-range-max", "1");
-
-// Validation span for percentage
-    const answerOptionPercentageSpan = document.createElement("span");
-    answerOptionPercentageSpan.className = "text-danger field-validation-valid";
-    answerOptionPercentageSpan.setAttribute("data-valmsg-for", answerOptionPercentageInput.name);
-    answerOptionPercentageSpan.setAttribute("data-valmsg-replace", "true");
-    
     // Create Delete Button
     const removeBtn = document.createElement("button");
     removeBtn.type = "button";
     removeBtn.className = "btn btn-danger btn-sm";
     removeBtn.innerHTML = `<i class="bi-trash"></i>`;
     removeBtn.addEventListener("click", () => removeAnswerOption(answerOptionId, criteriaId, answersContainer));
-    
 
-    // Appending
-    answerOptionLi.append(answerOptionInput, answerOptionPercentageInput, removeBtn, answerOptionSpan, answerOptionPercentageSpan);
+    if (isDistributionKnown) {
+        // Create answerOptionPercentage input
+        const answerOptionPercentageInput = createPercentageInput(criteriaId, answerCount);
+
+        // Validation span for percentage
+        const answerOptionPercentageSpan = document.createElement("span");
+        answerOptionPercentageSpan.className = "text-danger field-validation-valid";
+        answerOptionPercentageSpan.setAttribute("data-valmsg-for", answerOptionPercentageInput.name);
+        answerOptionPercentageSpan.setAttribute("data-valmsg-replace", "true");
+
+        answerOptionLi.append(answerOptionInput, answerOptionPercentageInput, removeBtn, answerOptionSpan, answerOptionPercentageSpan);
+    } else {
+        answerOptionLi.append(answerOptionInput, removeBtn, answerOptionSpan);
+    }
+    
     answersContainer.append(answerOptionLi);
 
     // Counter ++
@@ -88,7 +80,6 @@ export function reIndexAnswerOptions(criteriaId: number, answersContainer: HTMLU
     answerLis.forEach((li, index) => {
         const textInput = li.querySelector<HTMLInputElement>("input[type='text']") as HTMLInputElement;
         const percentInput = li.querySelector<HTMLInputElement>("input[type='number']") as HTMLInputElement;
-        const removeBtn = li.querySelector<HTMLButtonElement>("button.btn-danger") as HTMLButtonElement;
 
         li.id = `option-${criteriaId}-${index}`;
 
@@ -96,10 +87,6 @@ export function reIndexAnswerOptions(criteriaId: number, answersContainer: HTMLU
         textInput.placeholder = `Antwoord ${index + 1}`;
 
         percentInput.name = `Distributions[${criteriaId}].AnswerOptions[${index}].DistributionPercentage`;
-
-        // Add the event listener for remove button
-        removeBtn.addEventListener('click', () => removeAnswerOption(li.id, criteriaId, answersContainer));
-
     });
 }
 
@@ -107,10 +94,27 @@ function resetAnswerCounter(criteriaId: number) {
     answerOptionCounters.set(criteriaId, 0)
 }
 
-export function resetAnswerCounters(criteriaCount:number) {
+export function resetAnswerCounters(criteriaCount: number) {
     answerOptionCounters.forEach((value, key) => {
         if (key >= criteriaCount) {
             resetAnswerCounter(key)
         }
     })
+}
+
+export function createPercentageInput(criteriaId: number, answerCount: number) {
+    const answerOptionPercentageInput = document.createElement("input");
+    answerOptionPercentageInput.name = `Distributions[${criteriaId}].AnswerOptions[${answerCount}].DistributionPercentage`;
+    answerOptionPercentageInput.className = "border border-1 rounded-2 me-2";
+    answerOptionPercentageInput.type = "number";
+    answerOptionPercentageInput.placeholder = `${round(100 / (answerCount + 1))}`
+
+    // Add validation attributes
+    answerOptionPercentageInput.setAttribute("data-val", "true");
+    answerOptionPercentageInput.setAttribute("data-val-required", "Antwoord optie moet een verdeling waarde hebben.");
+    answerOptionPercentageInput.setAttribute("data-val-range", "Percentage moet tussen 0 en 100% zijn.");
+    answerOptionPercentageInput.setAttribute("data-val-range-min", "0");
+    answerOptionPercentageInput.setAttribute("data-val-range-max", "1");
+    
+    return answerOptionPercentageInput;
 }
