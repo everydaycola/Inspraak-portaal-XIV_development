@@ -13,11 +13,13 @@ public class PanelProjectPageController: Controller
     
     private readonly ILogger<PanelProjectPageController> _logger;
     private readonly IPanelManager _panelManager;
+    private readonly IStorageManager _storageManager;
 
-    public PanelProjectPageController(ILogger<PanelProjectPageController> logger, IPanelManager panelManager)
+    public PanelProjectPageController(ILogger<PanelProjectPageController> logger, IPanelManager panelManager, IStorageManager storageManager)
     {
         _logger = logger;
         _panelManager = panelManager;
+        _storageManager = storageManager;
     }
     
     [Authorize(Roles = "Organisatie")]
@@ -32,7 +34,7 @@ public class PanelProjectPageController: Controller
     }
 
     [HttpPost]
-    public IActionResult AddTextPost(Guid panelId, string content)
+    public IActionResult AddTextPost(Guid panelId, string title,string content)
     {
         if (string.IsNullOrWhiteSpace(content))
         {
@@ -45,7 +47,7 @@ public class PanelProjectPageController: Controller
             return View("Index", projectPageDto); 
         }
 
-        _panelManager.AddTextPost(panelId, content);
+        _panelManager.AddTextPost(panelId, title,content);
         var updatedPanel = _panelManager.GetPanelWithPosts(panelId); 
         var updatedProjectPageDto = new ProjectPageDto
         {
@@ -55,11 +57,11 @@ public class PanelProjectPageController: Controller
     }
     
     [HttpPost]
-    public async Task<IActionResult> AddImagePost(IFormFile imageFile, Guid panelId)
+    public async Task<IActionResult> AddDocumentPost(string title, IFormFile file, Guid panelId)
     {
-        if (imageFile == null || imageFile.Length == 0)
+        if (file == null || file.Length == 0)
         {
-            ModelState.AddModelError("imageFile", "Geen bestand geselecteerd.");
+            ModelState.AddModelError("file", "Geen bestand geselecteerd.");
             return RedirectToAction("ProjectPage", new { id = panelId });
         }
 
@@ -67,18 +69,12 @@ public class PanelProjectPageController: Controller
         var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads");
         if (!Directory.Exists(uploadsFolder))
             Directory.CreateDirectory(uploadsFolder);
-
         //Generate a unique filename
-        var uniqueFileName = Guid.NewGuid().ToString() + Path.GetExtension(imageFile.FileName);
-        var filePath = Path.Combine(uploadsFolder, uniqueFileName);
+        var uniqueFileName = Guid.NewGuid().ToString() + Path.GetExtension(file.FileName);
         // TEMP Save the file localy
-        using (var fileStream = new FileStream(filePath, FileMode.Create))
-        {
-            await imageFile.CopyToAsync(fileStream);
-        }
+        await _storageManager.AddFileAsync(uniqueFileName, file.ContentType, file.OpenReadStream());
         //SAVE META DATA IN DB
-        string documentUrl = "/uploads/"+uniqueFileName;
-        _panelManager.AddDocumentPost(panelId, documentUrl);
+        _panelManager.AddDocumentPost(panelId,title,uniqueFileName);
         var updatedPanel = _panelManager.GetPanelWithPosts(panelId); 
         var updatedProjectPageDto = new ProjectPageDto
         {
