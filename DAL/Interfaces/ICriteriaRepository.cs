@@ -5,8 +5,7 @@ namespace DAL.Interfaces;
 public interface ICriteriaRepository
 {
     //READ
-    Panel ReadAllCriteriaWithValuesForPanel(Guid panelId);
-    IEnumerable<Criteria> ReadAllNonDefaultCriteriaWithValuesForPanel(Guid panelId);
-    Criteria ReadCriteriaByName(Guid panelId,string critName);
+    public Dictionary<string, IEnumerable<string>> ReadAllCriteriaNamesAndOptions(Guid panelId);
+    public Dictionary<string, Dictionary<string, int>> ReadAllCriteriaMemberCountsWithValuesForPanel(Guid panelId);
     public Criteria ReadCriteriaByNameWithAnswerOptions(Guid panelId, string critName);
 }

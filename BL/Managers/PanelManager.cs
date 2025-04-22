@@ -12,12 +12,14 @@ public class PanelManager : IPanelManager
 {
     private readonly ILogger<PanelManager> _logger;
     private readonly IPanelRepository _repo;
+    private readonly ICalculationManager _calculationManager;
     private readonly IUserRepository _userRepo;
 
-    public PanelManager(ILogger<PanelManager> logger, IPanelRepository repo, IUserRepository userRepo)
+    public PanelManager(ILogger<PanelManager> logger, IPanelRepository repo, ICalculationManager calcManager, IUserRepository userRepo)
     {
         _logger = logger;
         _repo = repo;
+        _calculationManager = calcManager;
         _userRepo = userRepo;
     }
 
@@ -32,30 +34,26 @@ public class PanelManager : IPanelManager
         return _repo.ReadAllPanels();
     }
 
-    public IEnumerable<Panel> GetAllPanelsOwnedBy(string userId)
-    {
-        return _repo.ReadAllPanelsOwnedBy(userId);
-    }
-
     public Panel GetPanelWithRepresentationGroup(Guid id)
     {
         return _repo.ReadPanelWithRepresentationGroup(id);
     }
 
-    public ICollection<PanelMember> GetPanelMembersAndRepresentationGroup(Guid id)
-    {
-        return _repo.ReadPanelMembersAndRepresentationGroup(id);
-    }
-
-    public IEnumerable<PanelMember> GetPanelWithPanelMembersAndCriteria(Guid id)
-    {
-        return _repo.ReadPanelMembersWithCriteria(id);
-    }
-
-    public PanelMember GetPanelMemberById(Guid memberId)
-    {
-        return _repo.ReadPanelMember(memberId);
-    }
+    // public IEnumerable<PanelMember> GetPanelWithPanelMembersAndCriteria(Guid id)
+    // {
+    //     return _repo.ReadPanelMembersWithCriteria(id);
+    // }
+    
+    // public Panel GetPanelWithCriteriaAndOptions(Guid id)
+    // {
+    //     return _repo.ReadPanelWithCriteriaAndAnsweroptions(id);
+    //
+    // }
+    
+    // public PanelMember GetPanelMemberById(Guid memberId)
+    // {
+    //     return _repo.ReadPanelMember(memberId);
+    // }
 
     public PanelMember GetPanelMemberWithCriteriaResponses(Guid id)
     {
@@ -72,10 +70,10 @@ public class PanelManager : IPanelManager
         return _repo.ReadPanelMembersWithCriteria(panelId);
     }
 
-    public IEnumerable<PanelMember> GetAllPanelMembersWhichAnsweredAllQuestionsWithCriteria(Guid id)
-    {
-        return _repo.ReadPanelMembersWhichAnsweredAllQuestionsWithCriteria(id);
-    }
+    // public IEnumerable<PanelMember> GetAllPanelMembersWhichAnsweredAllQuestionsWithCriteria(Guid id)
+    // {
+    //     return _repo.ReadPanelMembersWhichAnsweredAllQuestionsWithCriteria(id);
+    // }
 
     public Panel GetPanelWithCriteriaAndCriteriaAnswerOptions(Guid panelId)
     {
@@ -89,7 +87,7 @@ public class PanelManager : IPanelManager
 
     //ADD
     public Panel AddPanel(string name, int size, double sampleRate,
-        Dictionary<string, Dictionary<string, double>> distribution, int citizenCount, double reservePercentage,
+        ICollection<Criteria> distribution, int citizenCount, double reservePercentage,
         double responseRate, string userId)
     {
         _logger.Log(LogLevel.Information, "Creating panel with name " + name + "...");
@@ -110,9 +108,13 @@ public class PanelManager : IPanelManager
             _logger.Log(LogLevel.Critical, errorMessage);
             throw new UnauthorizedAccessException(errorMessage);
         }
+        
 
         // list of objects to validate
         var objectsToValidate = new List<object>();
+        
+        // Calculate size of the Panel
+        size = (int)(citizenCount * sampleRate);
 
         // Create and initialize the panel
         var panel = new Panel
@@ -131,7 +133,11 @@ public class PanelManager : IPanelManager
         // validate panel and representationgroup
         objectsToValidate.Add(panel);
         objectsToValidate.Add(panel.RepresentationGroup);
-
+        
+        // calculate panel size
+        var membersCount = _calculationManager.CalculateTotalInvitesNeeded(_calculationManager.CalculateAmountOfReserve(size, reservePercentage), responseRate);
+        // todo use this count 
+        
         // Generate members
         var panelMembers = Enumerable
             .Range(0, size)
@@ -140,33 +146,27 @@ public class PanelManager : IPanelManager
 
         // validate panelmembers
         objectsToValidate.AddRange(panelMembers);
-
-        // Create the criteria list from the dictionary, initializing all Criteria and CriteriaAnswerOptions
-        panel.Criteria = distribution.Select(outerKvp => new Criteria
+        
+        if (distribution.Count > 0)
         {
-            Name = outerKvp.Key,
-            IsDefault = true,
-            AnswerOptions = outerKvp.Value.Select(innerKvp => new CriteriaAnswerOption
-            {
-                Option = innerKvp.Key,
-                DistributionPercentage = innerKvp.Value
-            }).ToList() // Create the List<CriteriaAnswerOption> for the property
-        }).ToList(); // Create the final List<Criteria>
+            // Fill in the criteria list with the given distribution
+            panel.Criteria = distribution;
+            
+            // validate criteria & answer options
+            objectsToValidate.AddRange(panel.Criteria);
+            objectsToValidate.AddRange(panel.Criteria.SelectMany(c => c.AnswerOptions));
+            
+            // preforms an action very similar to a cartesian product, but with the options of each criteria
+            var crossDistribution = CrossDistribution(panel.Criteria.ToList());
+            
+            // validate created criteria
+            objectsToValidate.AddRange(crossDistribution.Keys
+                .SelectMany(r => r)
+                .GroupBy(r => r)); // to remove duplicates
 
-        // validate criteria & answer options
-        objectsToValidate.AddRange(panel.Criteria);
-        objectsToValidate.AddRange(panel.Criteria.SelectMany(c => c.AnswerOptions));
-
-        // preforms an action very similar to a cartesian product, but with the options of each criteria
-        var crossDistribution = CrossDistribution(panel.Criteria.ToList());
-
-        // validate created criteria
-        objectsToValidate.AddRange(crossDistribution.Keys
-            .SelectMany(r => r)
-            .GroupBy(r => r)); // to remove duplicates
-
-        // finally, give panel members their distributions
-        HandOutAnsweredCriteriaToPanelMembers(panelMembers, crossDistribution);
+            // finally, give panel members their distributions
+            HandOutAnsweredCriteriaToPanelMembers(panelMembers, crossDistribution);
+        }
         
         // // validation
         var validationResults = new List<ValidationResult>();
@@ -341,7 +341,8 @@ public class PanelManager : IPanelManager
 
     public PanelMember UpdatePanelMember(PanelMember member)
     {
-        return _repo.UpdatePanelMember(member);
+        _repo.UpdatePanelMember(member);
+        return member;
     }
 
     public IEnumerable<PlanningGroupMember> GetAllPlanningGroupMembersWithIdentityUserForPanel(Guid panelId)

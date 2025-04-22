@@ -40,6 +40,6 @@ public class QRCodeController : Controller
     {
         await _sendMailManager.SendSingleQRCodeInMailAsync(email, data);
         _logger.Log(LogLevel.Information, "Email succesvol verzonden!");
-        return RedirectToAction("Index", "PanelManagement");
+        return Redirect(Request.Headers.Referer.ToString());
     }
 }
