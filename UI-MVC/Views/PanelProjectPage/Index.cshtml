@@ -18,6 +18,7 @@
         </button>
     </div>
 
+    @if(User.IsInRole(CustomIdentityConstants.OrganisatieRole)){
     <!-- Text Modal -->
     <div class="modal fade" id="addTextModal" tabindex="-1" aria-labelledby="addTextModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-lg">
@@ -81,6 +82,7 @@
             </div>
         </div>
     </div>
+    }
 }
 
 @foreach (var post in Model.Panel.Posts.OrderByDescending(p => p.CreatedAt))
