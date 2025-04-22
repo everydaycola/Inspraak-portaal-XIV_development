@@ -12,6 +12,7 @@ using UI_MVC.Models;
 using UI_MVC.TempTenant;
 using StackExchange.Redis;
 using Microsoft.AspNetCore.DataProtection;
+using UI_MVC.Options;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -38,6 +39,10 @@ builder.Services.Configure<AvailableOrganisations>(
     builder.Configuration.GetSection(AvailableOrganisations.SectionName)
 );
 
+builder.Services.Configure<GoogleCloudOptions>(options =>
+{
+    options.BucketName = builder.Configuration.GetValue<string>("GoogleCloud_BucketName");
+});
 var redisConfiguration = builder.Configuration.GetValue<string>("Redis_Configuration");
 var redisInstanceName = builder.Configuration.GetValue<string>("Redis_InstanceName");
 var redis = ConnectionMultiplexer.Connect(redisConfiguration);
