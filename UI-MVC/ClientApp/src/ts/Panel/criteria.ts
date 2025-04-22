@@ -163,9 +163,9 @@ export function addCriteria() {
 
 function removeCriteria(criteriaId: number) {
     let e = event as Event;
-    const btn = e.currentTarget as HTMLButtonElement;
-    const headDiv = btn.parentElement as HTMLDivElement;
-    const wrapper = headDiv.parentElement as HTMLDivElement;
+    const wrapper = ((e.currentTarget as HTMLButtonElement)
+        .parentElement as HTMLDivElement)
+        .parentElement as HTMLDivElement
 
     // Remove the element from the DOM
     wrapper.remove();
@@ -176,13 +176,13 @@ function removeCriteria(criteriaId: number) {
 
 function toggleAnswerOptionPercentageInput(isChecked: boolean, criteriaId: number) {
     let e = event as Event;
-    const checkbox = e.currentTarget as HTMLInputElement;
-    const div = checkbox.parentElement as HTMLDivElement;
-    const ul = div.parentElement as HTMLUListElement;
-    const ulChildren = ul.childNodes;
+    const ulChildren = (((e.currentTarget as HTMLInputElement)
+        .parentElement as HTMLDivElement)
+        .parentElement as HTMLUListElement)
+        .childNodes;
     //removing the div form the NodeList
     const lis: HTMLLIElement[] = [].slice.call(ulChildren, 1);
-    
+
     lis.forEach((li, index) => {
         const inputs = li.childNodes;
         const percentageNode = inputs.item(1)
@@ -190,7 +190,7 @@ function toggleAnswerOptionPercentageInput(isChecked: boolean, criteriaId: numbe
             percentageNode.remove()
         } else {
             const percentageInput = createPercentageInput(criteriaId, index);
-            li.insertBefore(percentageInput,li.childNodes[1]);
+            li.insertBefore(percentageInput, li.childNodes[1]);
         }
     })
 }

@@ -65,8 +65,7 @@ export function addAnswerOption(criteriaId: number, answersContainer: HTMLUListE
 
 function removeAnswerOption(id: string, criteriaId: number, answersContainer: HTMLUListElement) {
     let e = event as Event
-    const btn = e.currentTarget as HTMLButtonElement;
-    const answerOptionLi = btn.parentElement as HTMLLIElement
+    const answerOptionLi = (e.currentTarget as HTMLButtonElement).parentElement as HTMLLIElement
     answerOptionLi.remove();
     reIndexAnswerOptions(criteriaId, answersContainer);
 }
