@@ -84,13 +84,28 @@ public class CriteriaManager : ICriteriaManager
     //     return result;
     // }
 
-    public Dictionary<string, ICollection<PanelMember>> GetPanelMembersGroupedByResponsesForDefaultCriteria(
-        Guid panelId)
+    public Dictionary<int, Dictionary<string, List<PanelMember>>> GetPanelMembersGroupedByResponsesForDefaultCriteriaGroupedByPhase(Guid panelId)
     {
-        var result = new Dictionary<string, ICollection<PanelMember>>();
-        var panelMembers = _panelManager.GetAllPanelMembersForPanel(panelId).Where(p => !p.HasRegistered);
+        var outerResult = new Dictionary<int, Dictionary<string, List<PanelMember>>>();
+        var panelMembers = _panelManager.GetAllPanelMembersForPanel(panelId).Where(p => !p.HasRegistered).ToList();
+        // create all dictionary entries
+        for (var i = 1; i <= panelMembers.First().Panel.LastPhase; i++)
+        {
+            outerResult[i] = new Dictionary<string, List<PanelMember>>();
+        }
+        
         foreach (var member in panelMembers)
         {
+            var phase = member.Phase;
+            
+            if (!outerResult.ContainsKey(phase))
+            {
+                _logger.Log(LogLevel.Critical, "Panel member " + member.PanelMemberId + " is in a phase that doesn't exist.");
+                continue;
+            }
+            
+            var result = outerResult[phase];
+            
             var groupName = string.Join("-",
                 member.Responses
                     .OrderBy(r => r.Criteria.Name)
@@ -105,8 +120,16 @@ public class CriteriaManager : ICriteriaManager
 
             value.Add(member);
         }
-
-        return result.OrderBy(kvp => kvp.Key).ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
+        
+        // Order each inner dictionary
+        foreach (var phase in outerResult.Keys.ToList())
+        {
+            outerResult[phase] = outerResult[phase]
+                .OrderBy(kvp => kvp.Key)
+                .ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
+        }
+        
+        return outerResult;
     }
     
     
@@ -115,7 +138,7 @@ public class CriteriaManager : ICriteriaManager
     //     return _repo.ReadCriteriaByName(panelId, critName);
     // }
 
-    public Criteria GetCriteriaByNameWithAnswerOptions(Guid panelId,string critName)
+    private Criteria GetCriteriaByNameWithAnswerOptions(Guid panelId,string critName)
     {
         return _repo.ReadCriteriaByNameWithAnswerOptions(panelId, critName);
     }

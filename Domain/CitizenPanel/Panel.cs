@@ -31,6 +31,8 @@ public class Panel : IOrganisational,IValidatableObject
     public ApplicationUser Owner { get; set; }
     public string OrganisationId { get; set; }
     public ICollection<Post> Posts { get; set; }
+    [Range(1, int.MaxValue, ErrorMessage = "Fase moet een positief getal zijn.")]
+    public int LastPhase { get; set; } = 1;
     
     IEnumerable<ValidationResult> IValidatableObject.Validate(ValidationContext validationContext)
     {

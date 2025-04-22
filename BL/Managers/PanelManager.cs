@@ -88,7 +88,7 @@ public class PanelManager : IPanelManager
     }
 
     //ADD
-    public Panel AddPanel(string name, int size, double sampleRate,
+    public Panel AddPanel(string name, double sampleRate,
         ICollection<Criteria> distribution, int citizenCount, double reservePercentage,
         double responseRate, string userId)
     {
@@ -116,7 +116,7 @@ public class PanelManager : IPanelManager
         var objectsToValidate = new List<object>();
         
         // Calculate size of the Panel
-        size = (int)(citizenCount * sampleRate);
+        var size = (int)(citizenCount * sampleRate);
 
         // Create and initialize the panel
         var panel = new Panel
@@ -137,12 +137,11 @@ public class PanelManager : IPanelManager
         objectsToValidate.Add(panel.RepresentationGroup);
         
         // calculate panel size
-        var membersCount = _calculationManager.CalculateTotalInvitesNeeded(_calculationManager.CalculateAmountOfReserve(size, reservePercentage), responseRate);
-        // todo use this count 
+        var membersCount = _calculationManager.CalculateTotalInvitesNeeded(_calculationManager.CalculateAmountOfReserve(size, reservePercentage) + size, responseRate);
         
         // Generate members
         var panelMembers = Enumerable
-            .Range(0, size)
+            .Range(0, membersCount)
             .Select(_ => new PanelMember { Panel = panel })
             .ToList();
 

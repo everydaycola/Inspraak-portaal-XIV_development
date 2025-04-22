@@ -58,7 +58,8 @@ public class PanelManagementController : Controller
             UniqueCodesDto = new uniqueCodesDto
             {
                 panelId = panel.Id,
-                panelMembers = _criteriaManager.GetPanelMembersGroupedByResponsesForDefaultCriteria(panel.Id)
+                panelMembers = _criteriaManager.GetPanelMembersGroupedByResponsesForDefaultCriteriaGroupedByPhase(panel.Id),
+                Phases = panel.LastPhase
             }
         });
     }

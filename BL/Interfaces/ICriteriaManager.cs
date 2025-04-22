@@ -8,9 +8,8 @@ public interface ICriteriaManager
     public Dictionary<string, Dictionary<string, int>> GetAllCriteriaCountsGroupedByValue(Guid panelId);
     public Dictionary<string, Dictionary<string, double>> GetAllDesiredCriteriaPercentages(Guid panelId);
 
-    public Dictionary<string, ICollection<PanelMember>> GetPanelMembersGroupedByResponsesForDefaultCriteria(
+    public Dictionary<int, Dictionary<string, List<PanelMember>>> GetPanelMembersGroupedByResponsesForDefaultCriteriaGroupedByPhase(
         Guid panelId);
-    public Criteria GetCriteriaByNameWithAnswerOptions(Guid panelId, string critName);
     
     //SAVES
     public void SavePanelMemberCriteriaResponses(Guid panelId,Dictionary<string, string> CriteriaAnswers, PanelMember member);

@@ -22,7 +22,7 @@ public class QRCodeController : Controller
         _sendMailManager = sendMailManager;
     }
 
-    public IActionResult DownloadQrCodesForAllPanelMembers(Guid panelId)
+    public IActionResult DownloadQrCodesForAllPanelMembers(Guid panelId, int phase)
     {
         var panelMembers = _panelManager.GetAllPanelMembersForPanel(panelId);
         var baseUrl = $"{Request.Scheme}://{Request.Host}/Register";

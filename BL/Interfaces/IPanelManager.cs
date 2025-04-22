@@ -15,7 +15,7 @@ public interface IPanelManager
     public IEnumerable<PlanningGroupMember> GetAllPlanningGroupMembersWithIdentityUserForPanel(Guid panelId);
     public Panel GetPanelWithPosts(Guid panelId);
     //ADD
-    public Panel AddPanel(string name, int size, double sampleRate,
+    public Panel AddPanel(string name, double sampleRate,
         ICollection<Criteria> distribution, int citizenCount, double reservePercentage,
         double responseRate, string userId);
     public void AddTextPost(Guid panelId, string content);
