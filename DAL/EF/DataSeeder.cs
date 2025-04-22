@@ -144,7 +144,8 @@ public static class DataSeeder
                 NormalizedEmail = "PGM@ANTWERPEN.BE",
                 UserName = "PGM",
                 NormalizedUserName = "PGM"
-            }
+            },
+            Functie = "Boekhouder"
         };
         var pgm2 = new PlanningGroupMember
         {
@@ -155,7 +156,8 @@ public static class DataSeeder
                 NormalizedEmail = "OWNER@ANTWERPEN.BE",
                 UserName = "Owner",
                 NormalizedUserName = "Owner"
-            }
+            },
+            Functie = "CEO"
         };
         var pgm3 = new PlanningGroupMember
         {
@@ -166,7 +168,8 @@ public static class DataSeeder
                 NormalizedEmail = "JanDeRijke@ANTWERPEN.BE",
                 UserName = "Jan De Rijke",
                 NormalizedUserName = "JANDERIJKE"
-            }
+            },
+            Functie = "Software Architect"
         };
 
         //PanelMembers
@@ -196,12 +199,6 @@ public static class DataSeeder
             }
         }).ToList();
         
-        // adding panel members also adds dependant objects
-        // so panel member => panel
-        //    panel => representation group
-        //    panel => criteria
-        //    criteria => criteria answer option
-        //    plannings group member => identityUser
         AddMultipleEntities(panelMembersMen);
         AddMultipleEntities(panelMembersWomen);
         AddMultipleEntities([pgm1, pgm2, pgm3]);
