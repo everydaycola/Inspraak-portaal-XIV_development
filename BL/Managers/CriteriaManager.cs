@@ -88,7 +88,7 @@ public class CriteriaManager : ICriteriaManager
         Guid panelId)
     {
         var result = new Dictionary<string, ICollection<PanelMember>>();
-        var panelMembers = _panelManager.GetAllPanelMembersForPanel(panelId);
+        var panelMembers = _panelManager.GetAllPanelMembersForPanel(panelId).Where(p => !p.HasRegistered);
         foreach (var member in panelMembers)
         {
             var groupName = string.Join("-",
@@ -119,8 +119,14 @@ public class CriteriaManager : ICriteriaManager
     {
         return _repo.ReadCriteriaByNameWithAnswerOptions(panelId, critName);
     }
-    
-    public void SavePanelMemberCriteriaResponses(Guid panelId,Dictionary<string, string> CriteriaAnswers, PanelMember member)
+
+    public Dictionary<string, Dictionary<string, double>> GetAllDesiredCriteriaPercentages(Guid panelId)
+    {
+        return _repo.ReadAllDesiredCriteriaPercentages(panelId);
+    }
+
+    public void SavePanelMemberCriteriaResponses(Guid panelId, Dictionary<string, string> CriteriaAnswers,
+        PanelMember member)
     {
         foreach (var (criteriaName, selectedOption) in CriteriaAnswers)
         {
@@ -138,8 +144,8 @@ public class CriteriaManager : ICriteriaManager
 
                     var validationResults = new List<ValidationResult>();
 
-                    if (!Validator.TryValidateObject(criteriaResponse, new ValidationContext(criteriaResponse), validationResults,
-                            true))
+                    if (!Validator.TryValidateObject(criteriaResponse, new ValidationContext(criteriaResponse),
+                            validationResults,true))
                         throw new ValidationException(string.Join("\n", validationResults.Select(x => x.ErrorMessage)));
 
                     member.Responses.Add(criteriaResponse);
@@ -148,7 +154,9 @@ public class CriteriaManager : ICriteriaManager
                 }
                 else
                 {
-                    _logger.Log(LogLevel.Critical, "Member " + member.PanelMemberId + " tried inserting an invalid option for a criteria question.");
+                    _logger.Log(LogLevel.Critical,
+                        "Member " + member.PanelMemberId +
+                        " tried inserting an invalid option for a criteria question.");
                 }
             }
             _logger.Log(LogLevel.Critical, "Member " + member.PanelMemberId + " tried submitting a non existing criteria.");

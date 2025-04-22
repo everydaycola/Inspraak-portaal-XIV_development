@@ -170,7 +170,7 @@ public static class DataSeeder
         };
 
         //PanelMembers
-        var panelMembersMen = Enumerable.Range(1, 50).Select(_ => new PanelMember
+        var panelMembersMen = Enumerable.Range(1, 100).Select(_ => new PanelMember
         {
             Panel = newPanel,
             Responses = new List<CriteriaResponse>
@@ -183,7 +183,7 @@ public static class DataSeeder
             }
         }).ToList();
 
-        var panelMembersWomen = Enumerable.Range(1, 50).Select(_ => new PanelMember
+        var panelMembersWomen = Enumerable.Range(1, 100).Select(_ => new PanelMember
         {
             Panel = newPanel,
             Responses = new List<CriteriaResponse>

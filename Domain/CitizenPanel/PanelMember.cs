@@ -13,6 +13,8 @@ public class PanelMember
 
     [Required(ErrorMessage = "Panel member moet deel zijn van een panel.")]
     public Panel Panel { get; set; }
+    
+    public bool Selected { get; set; }
 
    
     [MaxLength(10, ErrorMessage = "Criteria antwoord mag maximaal 10 opties hebben.")]

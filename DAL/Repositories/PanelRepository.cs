@@ -42,6 +42,28 @@ public class PanelRepository : IPanelRepository
             .Single(p => p.PanelMemberId == id);
     }
     
+
+    public void RemoveAllUnselectedPanelmembers(Guid panelId)
+    {
+        var unselectedMembers = _context.PanelMembers
+            .Include(pm => pm.Panel)
+            .Where(pm => pm.Panel.Id == panelId && !pm.Selected && pm.HasRegistered)
+            .ToList();
+
+        if (!unselectedMembers.Any()) return;
+        _context.PanelMembers.RemoveRange(unselectedMembers);
+        _context.SaveChanges();
+
+    }
+
+    // public Panel ReadPanelWithCriteriaAndAnsweroptions(Guid id)
+    // {
+    //     return _context.Panels
+    //         .Include(p => p.Criteria)
+    //         .ThenInclude(p => p.AnswerOptions)
+    //         .Single(p => p.Id == id);
+    // }
+
     public Panel ReadPanelWithRepresentationGroup(Guid id)
     {
         return _context.Panels
@@ -59,21 +81,30 @@ public class PanelRepository : IPanelRepository
             .Where(pm => pm.Panel.Id == id)
             .ToList();
     }
-
-    // public IEnumerable<PanelMember> ReadPanelMembersWhichAnsweredAllQuestionsWithCriteria(Guid id)
-    // {
-    //     return _context.PanelMembers
-    //         .Include(pm => pm.Panel)
-    //         .ThenInclude(p => p.Criteria)
-    //         .ThenInclude(c => c.AnswerOptions)
-    //         .Include(pm => pm.Responses)
-    //         .Where(pm => pm.Panel.Id == id && pm.HasRegistered == true) 
-    //         .ToList();
-    // }
+    
+    public IEnumerable<PanelMember> ReadPanelMembersWithResponses(Guid id)
+    {
+        return _context.PanelMembers
+            .Include(pm => pm.Panel)
+            .Include(pm => pm.Responses)
+            .Where(pm => pm.Panel.Id == id) 
+            .ToList();
+    }
+    
     
     public void UpdatePanelMember(PanelMember member)
     {
         _context.PanelMembers.Update(member);
+        _context.SaveChanges();
+    }
+
+    public void UpdatePanelMembersToSelected(ICollection<PanelMember> selectedMembers)
+    {
+        foreach (var member in selectedMembers)
+        {
+            member.Selected = true;
+            _context.PanelMembers.Update(member);
+        }
         _context.SaveChanges();
     }
 
@@ -123,14 +154,6 @@ public class PanelRepository : IPanelRepository
             .Where(pm => pm.Panel.Id == id)
             .ToList();
     }
-
-    // public ICollection<PanelMember> ReadPanelMembersAndRepresentationGroup(Guid id)
-    // {
-    //     return _context.PanelMembers.Include(pm => pm.Panel)
-    //         .ThenInclude(pm => pm.RepresentationGroup)
-    //         .Where(pm => pm.Panel.Id == id)
-    //         .ToList();
-    // }
     
     public Panel ReadPanelWithCriteriaAndAnswerOptions(Guid panelId)
     {
