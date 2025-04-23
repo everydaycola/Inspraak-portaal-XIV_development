@@ -79,6 +79,7 @@ public class RegisterController : Controller
     public IActionResult RegisterRandomUsers(Guid guid, int count)
     {
         // mostly a testing function to add random users to your panel
+        // way too much logic for a controller, but ok since it's a dev feature
         
         var panel = _manager.GetPanelWithCriteriaAndCriteriaAnswerOptions(guid);
         var members = _manager.GetAllPanelMembersForPanel(guid)
