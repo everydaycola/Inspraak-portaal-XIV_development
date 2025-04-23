@@ -400,7 +400,6 @@ public class PanelManager : IPanelManager
             }
             // If key doesn't exist, we can skip or handle as needed
         }
-
         _repo.UpdatePanelMembersToSelected(selectedMembers);
         _repo.RemoveAllUnselectedPanelmembers(panelId);
         panel.SuccessfulRegistrationCount = selectedMembers.Count;

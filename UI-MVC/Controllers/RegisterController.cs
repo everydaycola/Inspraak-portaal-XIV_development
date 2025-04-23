@@ -1,9 +1,12 @@
 ﻿using System.Collections;
 using System.Security.Permissions;
 using BL.Interfaces;
+using Domain;
 using Domain.CitizenPanel;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using UI_MVC.Models;
 using UI_MVC.Models.Dto;
 using UI_MVC.Models.Dto.Register;
 
@@ -14,14 +17,21 @@ public class RegisterController : Controller
     private readonly ILogger<RegisterController> _logger;
     private readonly IPanelManager _manager;
     private readonly ICriteriaManager _critManager;
+    private readonly RoleManager<IdentityRole> _roleManager;
+    private readonly UserManager<ApplicationUser> _userManager;
+    private readonly SignInManager<ApplicationUser> _signInManager;
 
-    public RegisterController(ILogger<RegisterController> logger,IPanelManager manager, ICriteriaManager critManager)
+    public RegisterController(ILogger<RegisterController> logger,IPanelManager manager, ICriteriaManager critManager, UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager, SignInManager<ApplicationUser> signInManager)
     {
         _logger = logger;
         _manager = manager;
         _critManager = critManager;
+        _userManager = userManager;
+        _roleManager = roleManager;
+        _signInManager = signInManager;
     }
 
+    //This method returns the page with criteria which a user can answer.
     [HttpGet]
     public IActionResult Index(Guid userId)
     {
@@ -43,7 +53,7 @@ public class RegisterController : Controller
             DefaultCriteria= defaultCriteria
         });
     }
-    
+    //The user has answered the extra questions succesfully.
     [HttpPost]
     public IActionResult SubmitExtraQuestionForm(ExtraQuestionFormAnswersDto formData)
     {
@@ -74,12 +84,10 @@ public class RegisterController : Controller
             HasAnsweredQuestions = false
         });
     }
-
+    //Testing function to add random users to panel.
     [HttpPost]
     public IActionResult RegisterRandomUsers(Guid guid, int count)
     {
-        // mostly a testing function to add random users to your panel
-        
         var panel = _manager.GetPanelWithCriteriaAndCriteriaAnswerOptions(guid);
         var members = _manager.GetAllPanelMembersForPanel(guid)
             .Where(pm => !pm.HasRegistered)
@@ -114,5 +122,45 @@ public class RegisterController : Controller
         }
         
         return RedirectToAction("Index", "PanelManagement",new { id = guid });
+    }
+
+    [HttpGet]
+    public IActionResult AccountCreation(Guid userId)
+    {
+        var model = new RegisterViewModel
+        {
+            UserUniqueCode = userId
+        };
+        return View(model);
+    }
+    [HttpPost]
+    public async Task<IActionResult> AccountCreation(RegisterViewModel model)
+    {
+        if (!ModelState.IsValid)
+        {
+            return View(model);
+        }
+        var panelMember = _manager.GetPanelMemberWithPanel(model.UserUniqueCode);
+        panelMember.User = new ApplicationUser()
+        {
+            UserName = model.Email,
+            NormalizedUserName = model.Email.ToUpper(),
+            Email = model.Email,
+            NormalizedEmail = model.Email.ToUpper()
+        };
+        var user = panelMember.User;
+        var result = await _userManager.CreateAsync(user, model.Password);
+
+        if (result.Succeeded)
+        {
+            await _userManager.AddToRoleAsync(user, CustomIdentityConstants.PanelMemberRole);
+            await _signInManager.SignInAsync(user, isPersistent: false);
+            return RedirectToAction("Index", "Home");
+        }
+        foreach (var error in result.Errors)
+        {
+            ModelState.AddModelError(string.Empty, error.Description);
+        }
+        return View(model);
     }
 }

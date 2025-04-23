@@ -40,7 +40,7 @@ public class IdentitySeeder
 
     private async Task SeedRoles()
     {
-        var roles = new[] { CustomIdentityConstants.AdminRole,CustomIdentityConstants.OrganisatieRole};
+        var roles = new[] { CustomIdentityConstants.AdminRole,CustomIdentityConstants.OrganisatieRole, CustomIdentityConstants.PanelMemberRole};
         foreach (var role in roles)
         {
             if (!await _roleManager.RoleExistsAsync(role))
