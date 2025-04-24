@@ -63,27 +63,29 @@ public class SendMailManager : ISendMailManager
     
     public async Task SendBulkMails(ICollection<string> emails, string mailSubject, string textPart, string HTMLPart)
     {
-        var client = new MailjetClient(
-            Environment.GetEnvironmentVariable("MJ_APIKEY_PUBLIC"),
+        var client = new MailjetClient(Environment.GetEnvironmentVariable("MJ_APIKEY_PUBLIC"),
             Environment.GetEnvironmentVariable("MJ_APIKEY_PRIVATE"));
 
         var messages = new JArray();
         foreach (var email in emails)
-        { 
+        {
+            if (string.IsNullOrWhiteSpace(email) || !email.Contains("@")) continue;
+
             var message = new JObject
             {
                 { "From", new JObject { { "Email", "ipveertien@outlook.com" }, { "Name", "ipveertien" } } },
                 { "To", new JArray { new JObject { { "Email", email } } } },
                 { "Subject", mailSubject },
                 { "TextPart", textPart },
-                { "HTMLPart", HTMLPart}
+                { "HTMLPart", HTMLPart }
             };
             messages.Add(message);
         }
+
         var request = new MailjetRequest
         {
-            Resource = Send.Resource,
-        }.Property(Send.Messages, messages);
+            Resource = Mailjet.Client.Resources.SendV31.Resource,
+        }.Property("Messages", messages);
 
         MailjetResponse response = await client.PostAsync(request);
 
@@ -93,7 +95,7 @@ public class SendMailManager : ISendMailManager
         }
         else
         {
-            _logger.LogError($"Bulk email failed. StatusCode: {response.StatusCode}, Error: {response.GetErrorMessage()}");
+            _logger.LogError($"Bulk email failed. StatusCode: {response.StatusCode}, Error: {response.GetErrorMessage()}, Info: {response.GetErrorInfo()}");
         }
     }
     
