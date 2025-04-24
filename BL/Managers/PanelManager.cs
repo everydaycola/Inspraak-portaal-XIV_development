@@ -350,42 +350,19 @@ public class PanelManager : IPanelManager
         return member;
     }
 
-    public void NewPanelPhase(Guid panelId, double newResponseRate,
-        Dictionary<string, Dictionary<string, double>> allDesiredCriteriaPercentages)
+    public void NewPanelPhase(Guid panelId, double newResponseRate)
     {
-        // get panelmembers with panel, all crit responsesn, criteria and answeroptions
-        // this repo call should not be pulling in this much, but I don't want to fix it right now
-        // So i might as well benefit from it
+        // get panel members with panel, all crit responses, criteria and answer options
+        // this repo call should not be pulling in this much.
         var panelMembers = GetAllPanelMembersForPanel(panelId).ToList();
-        // get the panel with representationgroup
+        // get the panel with representation group
         var panel = GetPanelWithRepresentationGroup(panelId);
-        // get a dictionary which maps crit name to crit id. needed so new criteriaResponses have correct ID's
-        var criteriaIds = panelMembers
-            .SelectMany(pm => pm.Responses)
-            .Select(r => r.Criteria)
-            .Distinct()
-            .ToDictionary(
-                c => c.Name,
-                c => c.Id
-            );
         // get the amount of invites sent originally
         var panelSize = _calculationManager.CalculatePanelSize(panel.RepresentationGroup.CitizenCount, panel.SampleRate);
         // get the amount of people that you want to be registered, including reserve
         var amountNeeded = _calculationManager.CalculateAmountOfReserve(panelSize, panel.RepresentationGroup.ReservePercentage) + panelSize;
-        // convert the dictionary to actual criteria objects for `HelperCalculateCrossDistribution` method
-        // !! allDesiredCriteriaPercentages only has default criteria in it
-        var criteriaList = allDesiredCriteriaPercentages.Select(kpv => new Criteria
-        {
-            Id = criteriaIds[kpv.Key], // needed so it links properly when adding it via 
-            // todo: my trick here with copying the id's is not allowed since it's not the actual object and i guess it knows
-            // I assumed that adding an object with an existing id would just attach it but guess not sadge.
-            Name = kpv.Key,
-            AnswerOptions = kpv.Value.Select(kpv2 => new CriteriaAnswerOption
-            {
-                Option = kpv2.Key,
-                DistributionPercentage = kpv2.Value
-            }).ToList()
-        }).ToList();
+        // get all default criteria with answer option and thus distribution percentages for the panel
+        var criteriaList = _criteriaRepo.ReadAllCriteriaForPanelWithAnswerOptions(panelId, onlyDefault: true).ToList();
         
         // Create a dictionary with string keys of criteria groups, and value the ammount of
         // like key:"Man|30-39", value:60
@@ -423,13 +400,13 @@ public class PanelManager : IPanelManager
             // Check if key exists in the dictionaries
             if (!amountOfRegistrationsDesired.TryGetValue(key, out var desired))
             {
-                _logger.Log(LogLevel.Critical, "key: " + key + " does not exist in desired dictionary");
+                _logger.Log(LogLevel.Critical, "key: " + key + " does not exist in \"desired\" dictionary");
                 continue; // skip
             }
 
             if (!amountOfRegistrationsActual.TryGetValue(key, out var actual))
             {
-                _logger.Log(LogLevel.Critical, "key: " + key + " does not exist in actual dictionary");
+                _logger.Log(LogLevel.Critical, "key: " + key + " does not exist in \"actual\" dictionary");
                 continue; // skip
             }
 

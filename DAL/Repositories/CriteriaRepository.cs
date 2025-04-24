@@ -22,22 +22,22 @@ public class CriteriaRepository : ICriteriaRepository
     //         .Single(p => p.Id == panelId);
     // }
 
-    // gives a list of criteria for a panel with the options as a list
-    public Dictionary<string, IEnumerable<string>> ReadAllCriteriaNamesAndOptions(Guid panelId)
-    {
-        return _context.Panels
-            .Where(p => p.Id == panelId)
-            .Include(p => p.Criteria)
-            .ThenInclude(c => c.AnswerOptions)
-            .SelectMany(p => p.Criteria)
-            .GroupBy(c => c.Name)
-            .ToDictionary(
-                group => group.Key,
-                group => group
-                    .SelectMany(c => c.AnswerOptions
-                        .Select(ao => ao.Option))
-            );
-    }
+    // // gives a list of criteria for a panel with the options as a list
+    // public Dictionary<string, IEnumerable<string>> ReadAllCriteriaNamesAndOptions(Guid panelId)
+    // {
+    //     return _context.Panels
+    //         .Where(p => p.Id == panelId)
+    //         .Include(p => p.Criteria)
+    //         .ThenInclude(c => c.AnswerOptions)
+    //         .SelectMany(p => p.Criteria)
+    //         .GroupBy(c => c.Name)
+    //         .ToDictionary(
+    //             group => group.Key,
+    //             group => group
+    //                 .SelectMany(c => c.AnswerOptions
+    //                     .Select(ao => ao.Option))
+    //         );
+    // }
 
     // counts how many members have answers what how many times. 
     // outer key is criteria name, inner key is answer name, int is count
@@ -60,23 +60,33 @@ public class CriteriaRepository : ICriteriaRepository
             );
     }
     
-    public Dictionary<string, Dictionary<string, double>> ReadAllDesiredCriteriaPercentages(Guid panelId, bool onlyDefault)
+    // public Dictionary<string, Dictionary<string, double>> ReadAllDesiredCriteriaPercentages(Guid panelId, bool onlyDefault)
+    // {
+    //     return _context.Panels
+    //         .Where(p => p.Id == panelId)
+    //         .Include(p => p.Criteria)
+    //         .ThenInclude(c => c.AnswerOptions)
+    //         .SelectMany(p => p.Criteria)
+    //         .Where(c => !onlyDefault || c.IsDefault)
+    //         .GroupBy(c => c.Name)
+    //         .ToDictionary(
+    //             group => group.Key,
+    //             group => group
+    //                 .SelectMany(c => c.AnswerOptions)
+    //                 .ToDictionary(
+    //                     o => o.Option,
+    //                     o => o.DistributionPercentage)
+    //         );
+    // }
+
+    public IEnumerable<Criteria> ReadAllCriteriaForPanelWithAnswerOptions(Guid panelId, bool onlyDefault = false)
     {
         return _context.Panels
             .Where(p => p.Id == panelId)
-            .Include(p => p.Criteria)
-            .ThenInclude(c => c.AnswerOptions)
             .SelectMany(p => p.Criteria)
+            .Include(c => c.AnswerOptions)
             .Where(c => !onlyDefault || c.IsDefault)
-            .GroupBy(c => c.Name)
-            .ToDictionary(
-                group => group.Key,
-                group => group
-                    .SelectMany(c => c.AnswerOptions)
-                    .ToDictionary(
-                        o => o.Option,
-                        o => o.DistributionPercentage)
-            );
+            .ToList();
     }
 
 

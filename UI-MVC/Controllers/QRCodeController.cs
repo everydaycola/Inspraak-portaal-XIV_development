@@ -30,7 +30,7 @@ public class QRCodeController : Controller
         var baseUrl = $"{Request.Scheme}://{Request.Host}/Register";
         var zipFileBytes = _fileManager.CreateZipFileForMultiplePanelMembers(panelMembers, baseUrl);
         _logger.Log(LogLevel.Information, "Generating qr codes for all groups in panel{} ", panelId);
-        return File(zipFileBytes, "application/zip", "qrcodes.zip");
+        return File(zipFileBytes, "application/zip", "Qrcodes" + ((phase == 1) ? "" : "Phase" + phase) + ".zip");
     }
     public IActionResult DownloadSingleQrCode(string data)
     {

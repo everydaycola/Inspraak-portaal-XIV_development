@@ -72,9 +72,7 @@ public class PanelManagementController : Controller
     [HttpPost]
     public IActionResult NewPhase(Guid guid, double newResponseRate)
     {
-        var allDesiredCriteriaPercentages = _criteriaManager.GetAllDesiredCriteriaPercentages(guid, onlyDefault: true);
-        
-        _manager.NewPanelPhase(guid, newResponseRate / 100, allDesiredCriteriaPercentages);
+        _manager.NewPanelPhase(guid, newResponseRate / 100);
         
         return RedirectToAction("Index", new { id = guid });
     }

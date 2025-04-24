@@ -8,7 +8,7 @@ public interface ICriteriaManager
     public Dictionary<string, Dictionary<string, int>> GetAllCriteriaCountsGroupedByValue(Guid panelId);
     public Dictionary<string, Dictionary<string, double>> GetAllDesiredCriteriaPercentages(Guid panelId, bool onlyDefault = false);
 
-    public Dictionary<int, Dictionary<string, List<PanelMember>>> GetPanelMembersGroupedByResponsesForDefaultCriteriaGroupedByPhase(
+    public Dictionary<string, Dictionary<int, List<PanelMember>>> GetPanelMembersGroupedByResponsesForDefaultCriteriaGroupedByPhase(
         Guid panelId);
     
     //SAVES
