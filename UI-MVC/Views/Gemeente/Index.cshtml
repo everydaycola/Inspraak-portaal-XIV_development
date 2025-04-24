@@ -1,0 +1,23 @@
+@model List<GemeenteViewModel>
+
+<h2>Inwonersaantal per Gemeente</h2>
+
+<table class="table table-bordered">
+    <thead>
+    <tr>
+        <th>Gemeente</th>
+        <th>Code</th>
+        <th>Aantal Inwoners</th>
+    </tr>
+    </thead>
+    <tbody>
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>@item.GemeenteNaam</td>
+            <td>@item.GemeenteCode</td>
+            <td>@item.AantalInwoners</td>
+        </tr>
+    }
+    </tbody>
+</table>
