@@ -60,7 +60,43 @@ public class SendMailManager : ISendMailManager
             Console.WriteLine($"ErrorMessage: {response.GetErrorMessage()}");
         }
     }
+    
+    public async Task SendBulkMails(ICollection<string> emails, string mailSubject, string textPart, string HTMLPart)
+    {
+        var client = new MailjetClient(
+            Environment.GetEnvironmentVariable("MJ_APIKEY_PUBLIC"),
+            Environment.GetEnvironmentVariable("MJ_APIKEY_PRIVATE"));
 
+        var messages = new JArray();
+        foreach (var email in emails)
+        { 
+            var message = new JObject
+            {
+                { "From", new JObject { { "Email", "ipveertien@outlook.com" }, { "Name", "ipveertien" } } },
+                { "To", new JArray { new JObject { { "Email", email } } } },
+                { "Subject", mailSubject },
+                { "TextPart", textPart },
+                { "HTMLPart", HTMLPart}
+            };
+            messages.Add(message);
+        }
+        var request = new MailjetRequest
+        {
+            Resource = Send.Resource,
+        }.Property(Send.Messages, messages);
+
+        MailjetResponse response = await client.PostAsync(request);
+
+        if (response.IsSuccessStatusCode)
+        {
+            _logger.LogInformation("Bulk email sent successfully.");
+        }
+        else
+        {
+            _logger.LogError($"Bulk email failed. StatusCode: {response.StatusCode}, Error: {response.GetErrorMessage()}");
+        }
+    }
+    
     public async Task SendMultipleMails(IDictionary<string, string> emailAndData)
     {
         foreach (var pair in emailAndData)
