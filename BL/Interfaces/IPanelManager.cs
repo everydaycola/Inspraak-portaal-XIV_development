@@ -25,5 +25,5 @@ public interface IPanelManager
     public PanelMember UpdatePanelMember(PanelMember member);
     //HELPERS
     public void NewPanelPhase(Guid guid, double newResponseRate);
-    public void EndRegistration(Guid id, Dictionary<string,Dictionary<string,double>> allDesiredCriteriaPercentages);
+    public void EndRegistration(Guid id, Dictionary<string,Dictionary<string,double>> allDesiredCriteriaPercentages, bool sendInvitationMails, string currentBaseUrl);
 }

@@ -60,6 +60,42 @@ public class SendMailManager : ISendMailManager
             Console.WriteLine($"ErrorMessage: {response.GetErrorMessage()}");
         }
     }
+    public async Task SendSingleMailAsync(string email,string mailSubject, string textPart, string HTMLPart)
+    {
+        var client =
+            new MailjetClient(Environment.GetEnvironmentVariable("MJ_APIKEY_PUBLIC"),
+                Environment.GetEnvironmentVariable("MJ_APIKEY_PRIVATE"));
+        
+        var request = new MailjetRequest
+            {
+                Resource = Send.Resource,
+            }
+            .Property(Send.FromEmail, "ipveertien@outlook.com")
+            .Property(Send.FromName, "ipveertien")
+            .Property(Send.Subject, mailSubject)
+            .Property(Send.TextPart, textPart)
+            .Property(Send.HtmlPart, HTMLPart)
+            .Property(Send.Recipients, new JArray
+            {
+                new JObject
+                {
+                    { "Email", email }
+                }
+            });
+
+        MailjetResponse response = await client.PostAsync(request);
+        if (response.IsSuccessStatusCode)
+        {
+            _logger.LogInformation($"Email sent to {email} successfully.");
+        }
+        else
+        {
+            Console.WriteLine($"Failed to send email to {email}");
+            Console.WriteLine($"StatusCode: {response.StatusCode}");
+            Console.WriteLine($"ErrorInfo: {response.GetErrorInfo()}");
+            Console.WriteLine($"ErrorMessage: {response.GetErrorMessage()}");
+        }
+    }
     
     public async Task SendBulkMails(ICollection<string> emails, string mailSubject, string textPart, string HTMLPart)
     {
