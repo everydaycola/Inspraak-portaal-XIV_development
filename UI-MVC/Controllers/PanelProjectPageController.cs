@@ -64,7 +64,7 @@ public class PanelProjectPageController: Controller
         {
             Panel = updatedPanel
         };
-        if (informPanelMembersViaMail)
+        if (informPanelMembersViaMail && visibleForPanelMember)
         {
             var panelMembers = _panelManager.GetAllPanelMembersForPanel(updatedPanel.Id);
             _logger.Log(LogLevel.Information, "Panelmembers op de hoogte brengen.");
@@ -109,7 +109,7 @@ public class PanelProjectPageController: Controller
         {
             Panel = updatedPanel
         };
-        if (informPanelMembersViaMail)
+        if (informPanelMembersViaMail && visibleForPanelMember)
         {
             var panelMembers = _panelManager.GetAllPanelMembersForPanel(updatedPanel.Id);
             _logger.Log(LogLevel.Information, "Panelmembers op de hoogte brengen.");
