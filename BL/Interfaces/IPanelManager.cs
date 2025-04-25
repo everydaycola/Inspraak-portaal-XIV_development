@@ -17,7 +17,7 @@ public interface IPanelManager
     public IEnumerable<PlanningGroupMember> GetAllPlanningGroupMembersWithIdentityUserForPanel(Guid panelId);
 
     //ADD
-    public Panel AddPanel(string name, int size, double sampleRate,
+    public Panel AddPanel(string name, double sampleRate,
         ICollection<Criteria> distribution, int citizenCount, double reservePercentage,
         double responseRate, string userId);
 
@@ -32,5 +32,5 @@ public interface IPanelManager
     public void DeletePlanningsGroupmember(Guid planningsGroupMemberId);
     //HELPERS
     public void NewPanelPhase(Guid guid, double newResponseRate);
-    public void EndRegistration(Guid id, Dictionary<string, Dictionary<string, double>> allDesiredCriteriaPercentages);
+    public void EndRegistration(Guid id, Dictionary<string,Dictionary<string,double>> allDesiredCriteriaPercentages, bool sendInvitationMails, string currentBaseUrl);
 }

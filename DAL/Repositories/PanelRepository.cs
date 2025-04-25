@@ -41,7 +41,6 @@ public class PanelRepository : IPanelRepository
             .ThenInclude(pm => pm.Criteria)
             .Single(p => p.PanelMemberId == id);
     }
-    
 
     public void CreatePlanningsGroupMember(PlanningGroupMember member)
     {
@@ -124,6 +123,12 @@ public class PanelRepository : IPanelRepository
     public void CreatePanelMember(PanelMember panelMember)
     {
         _context.PanelMembers.Add(panelMember);
+        _context.SaveChanges();
+    }
+
+    public void CreatePanelMembers(List<PanelMember> panelMembers)
+    {
+        panelMembers.ForEach(pm => _context.PanelMembers.Add(pm));
         _context.SaveChanges();
     }
 

@@ -36,10 +36,9 @@ public class PanelController : Controller
         string userId = _userManager.GetUserId(User);
         var createdPanel = _manager.AddPanel(
             newPanelDto.Name,
-            newPanelDto.Size,
             newPanelDto.SampleRate / 100,
             CriteriaDtoCriteriaConverter(newPanelDto.Distributions),
-            GetTotalCitizenCountFromSubRegionDtos(newPanelDto.SubRegions),
+            newPanelDto.SubRegions.Sum(subRegion => subRegion.Size),
             newPanelDto.ReservePercentage / 100,
             newPanelDto.ResponseRate / 100,
             userId
@@ -54,8 +53,7 @@ public class PanelController : Controller
         string userId = _userManager.GetUserId(User);
         var createdPanel = _manager.AddPanel(
             "Panel rond alcoholgebruik",
-            150,
-            0.07,
+            0.01,
             new List<Criteria>
             {
                 _criteriaManager.AddCriteria(
@@ -78,10 +76,10 @@ public class PanelController : Controller
                         _criteriaManager.AddCriteriaAnswerOption("40-49", 20),
                     }, true)
             },
-            10000,
+            7463,
             0.2,
-            0.005,
-            userId = userId
+            0.1,
+            userId
         );
         return RedirectToAction("Index", "PanelManagement", new { id = createdPanel.Id });
     }
@@ -104,16 +102,5 @@ public class PanelController : Controller
         }
 
         return distributionList;
-    }
-
-    private int GetTotalCitizenCountFromSubRegionDtos(ICollection<SubRegionDto> subRegionDtos)
-    {
-        var total = 0;
-        foreach (var subRegion in subRegionDtos)
-        {
-            total += subRegion.Size;
-        }
-
-        return total;
     }
 }
