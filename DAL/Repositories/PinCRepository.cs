@@ -32,88 +32,39 @@ public class PinCRepository : IPinCRepository
         return await response.Content.ReadAsStringAsync();
     }
 
-    private async Task<JsonDocument> GetJsonDocument(string url)
+    private async Task<Dictionary<string, string>> GetKeyValuePairsFromEndpointAsync(string url, string keyPropertyName,
+        string valuePropertyName)
     {
         string jsonResult = await GetData(url);
-        return JsonDocument.Parse(jsonResult);
+        // just some JSON magic for getting the data from the API
+        JsonDocument document = JsonDocument.Parse(jsonResult);
+        JsonElement root = document.RootElement;
+        JsonElement valueArray = root.GetProperty("value");
+
+        // We'll collect 2 values key = the Code of the 'Gemeente' and the value which depends on what we put in the filter
+        var data = new Dictionary<string, string>();
+        foreach (JsonElement element in valueArray.EnumerateArray())
+        {
+            string communeCode = element.GetProperty(keyPropertyName).GetString();
+            string value = element.GetProperty(valuePropertyName).GetString();
+            data.Add(communeCode, value);
+        }
+
+        return data;
     }
 
-    private T Deserialize<T>(string json)
-    {
-        var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
-        return JsonSerializer.Deserialize<T>(json, options);
-    }
-
-    public async Task<List<PopulationRecord>> GetPopulationDataAsync()
-    {
-        string url =
-            $"{BaseUrl}Variables('v1111a_tot_bevolking')/GeoLevels('gemeente')/PeriodLevels('year')/Periods('mrp')/Values";
-        string json = await _httpClient.GetStringAsync(url); // Use GetStringAsync directly
-        var data = Deserialize<ODataResponse<PopulationRecord>>(json);
-        return data?.Value ?? new();
-    }
 
     public async Task<Dictionary<string, string>> GetCommuneNamesAsync()
     {
         string url = BaseUrl + "GeoLevels('gemeente')/GeoItems";
-        JsonDocument document = await GetJsonDocument(url);
-        JsonElement root = document.RootElement;
-        JsonElement valueArray = root.GetProperty("value");
-        Console.WriteLine(valueArray.ToString());
-
-        var communeNames = new Dictionary<string, string>();
-        foreach (JsonElement element in valueArray.EnumerateArray())
-        {
-            string externalCode = element.GetProperty("ExternalCode").GetString();
-            string name = element.GetProperty("Name").GetString();
-            communeNames.Add(externalCode, name);
-        }
-
-        return communeNames;
+        return await GetKeyValuePairsFromEndpointAsync(url, "ExternalCode", "Name");
     }
 
-    public async Task<Dictionary<string, string>> GetPercentageOfMenAsync()
+    public async Task<Dictionary<string, string>> GetDataFromAPI(string filter)
     {
+        // This is the endpoint for the API
         string url =
-            $"{BaseUrl}Variables('vp1111a_mannen')/GeoLevels('gemeente')/PeriodLevels('year')/Periods('mrp')/Values";
-        string json = await GetData(url);
-        var document = JsonDocument.Parse(json);
-        JsonElement root = document.RootElement;
-        JsonElement valueArray = root.GetProperty("value");
-
-        var percentageMenData = new Dictionary<string, string>();
-        foreach (JsonElement element in valueArray.EnumerateArray())
-        {
-            string communeCode = element.GetProperty("ExternalCode").GetString();
-            string percentageMen = element.GetProperty("ValueString").GetString();
-            percentageMenData.Add(communeCode, percentageMen);
-        }
-
-        return percentageMenData;
-    }
-
-    public async Task<Dictionary<string, string>> GetHigherEducationAsync()
-    {
-        string url =
-            $"{BaseUrl}Variables('v2390_hoog')/GeoLevels('gemeente')/PeriodLevels('year')/Periods('mrp')/Values";
-        string json = await GetData(url);
-        var document = JsonDocument.Parse(json);
-        JsonElement root = document.RootElement;
-        JsonElement valueArray = root.GetProperty("value");
-
-        var higherEducData = new Dictionary<string, string>();
-        foreach (JsonElement element in valueArray.EnumerateArray())
-        {
-            string communeCode = element.GetProperty("ExternalCode").GetString();
-            string higherEduc = element.GetProperty("ValueString").GetString();
-            higherEducData.Add(communeCode, higherEduc);
-        }
-
-        return higherEducData;
-    }
-
-    private class ODataResponse<T>
-    {
-        public List<T> Value { get; set; }
+            $"{BaseUrl}Variables('{filter}')/GeoLevels('gemeente')/PeriodLevels('year')/Periods('mrp')/Values";
+        return await GetKeyValuePairsFromEndpointAsync(url, "ExternalCode", "ValueString");
     }
 }
