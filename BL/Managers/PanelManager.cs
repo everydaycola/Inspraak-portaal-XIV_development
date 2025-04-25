@@ -16,14 +16,16 @@ public class PanelManager : IPanelManager
     private readonly ICalculationManager _calculationManager;
     private readonly IUserRepository _userRepo;
     private readonly ICriteriaRepository _criteriaRepo;
+    private readonly ISendMailManager _mailManager;
 
-    public PanelManager(ILogger<PanelManager> logger, IPanelRepository repo, ICalculationManager calcManager, IUserRepository userRepo, ICriteriaRepository criteriaRepo)
+    public PanelManager(ILogger<PanelManager> logger, IPanelRepository repo, ICalculationManager calcManager, IUserRepository userRepo, ICriteriaRepository criteriaRepo, ISendMailManager mailManager)
     {
         _logger = logger;
         _repo = repo;
         _calculationManager = calcManager;
         _userRepo = userRepo;
         _criteriaRepo = criteriaRepo;
+        _mailManager = mailManager;
     }
 
     //GET
@@ -382,7 +384,8 @@ public class PanelManager : IPanelManager
         throw new NotImplementedException();
     }
 
-    public void EndRegistration(Guid panelId, Dictionary<string,Dictionary<string,double>> allDesiredCriteriaPercentages)
+    //sendInvitationMails is a development method so that we have control over the mail sending logic.
+    public void EndRegistration(Guid panelId, Dictionary<string,Dictionary<string,double>> allDesiredCriteriaPercentages, bool sendInvitationMails, string currentBaseUrl)
     {
         var panel = GetPanelWithRepresentationGroup(panelId);
         var panelSize = _calculationManager.CalculatePanelSize(panel.RepresentationGroup.CitizenCount, panel.SampleRate);
@@ -428,10 +431,30 @@ public class PanelManager : IPanelManager
             }
             // If key doesn't exist, we can skip or handle as needed
         }
-
         _repo.UpdatePanelMembersToSelected(selectedMembers);
         _repo.RemoveAllUnselectedPanelmembers(panelId);
         panel.SuccessfulRegistrationCount = selectedMembers.Count;
+        
+        //send out invites to slected members for account creation
+        if(sendInvitationMails){
+            var emailData = selectedMembers
+                .ToDictionary(
+                    m => m.PanelMemberId,
+                    m => m.Email
+                );
+            foreach (var member in selectedMembers)
+            {
+                string signUpUrl = $"{currentBaseUrl}/Register/AccountCreation?UserId={member.PanelMemberId}";
+                _mailManager.SendSingleMailAsync(emailData[member.PanelMemberId], 
+                    "Je bent geselecteerd voor een panel!",
+                    "Gefeliciteerd, je bent geselecteerd voor het panel " + panel.Name,
+                    "<h1>Gefeliciteerd, je bent geselecteerd voor het panel" + panel.Name+"</h1>" +
+                    "<p> gebruik onderstaande link om je account aan te maken!</p>" +
+                    $"<a href=\"{signUpUrl}\">Account aanmaken</a>");
+                _logger.LogInformation("Email send to " + emailData[member.PanelMemberId]);
+            }
+            _logger.LogInformation("Emails have been send out for panel " + panel.Id);
+        }
         _repo.UpdatePanel(panel);
     }
 
