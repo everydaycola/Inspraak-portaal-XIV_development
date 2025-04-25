@@ -194,13 +194,14 @@ public class PanelManager : IPanelManager
         return panel;
     }
 
-    public void AddTextPost(Guid panelId,string title,string content)
+    public void AddTextPost(Guid panelId, string title, string content, bool isVisibleForPanelMembers)
     {
         var textPost = new TextPost
         {
             Title =title,
             Content = content,
-            CreatedAt = DateTime.UtcNow
+            CreatedAt = DateTime.UtcNow,
+            isVisibleForPanelMembers = isVisibleForPanelMembers
         };
         _repo.CreateTextPost(panelId, textPost);
     }
@@ -557,13 +558,14 @@ public class PanelManager : IPanelManager
         return _repo.ReadAllPlanningGroupMembersWithIdentityUserForPanel(panelId);
     }
 
-    public void AddDocumentPost(Guid panelId,string title, string documentUrl)
+    public void AddDocumentPost(Guid panelId,string title, string documentUrl, bool isVisibleForPanelMembers)
     {
         var docPost = new DocumentPost
         {
             Title = title,
             DocumentName = documentUrl,
-            CreatedAt = DateTime.UtcNow
+            CreatedAt = DateTime.UtcNow,
+            isVisibleForPanelMembers = isVisibleForPanelMembers
         };
         _repo.CreateDocumentPost(panelId, docPost);
     }

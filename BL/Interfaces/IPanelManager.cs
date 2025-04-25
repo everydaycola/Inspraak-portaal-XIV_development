@@ -21,9 +21,10 @@ public interface IPanelManager
         ICollection<Criteria> distribution, int citizenCount, double reservePercentage,
         double responseRate, string userId);
 
-    public void AddTextPost(Guid panelId,string title, string content);
+    public void AddTextPost(Guid panelId,string title, string content, bool isVisibleForPanelMembers);
     public void AddPlanningsGroupMember(Guid panelId, string Email, string Naam, string Functie);
-    public void AddDocumentPost(Guid panelId,string title, string documentUrl);
+
+    public void AddDocumentPost(Guid panelId, string title, string documentUrl, bool isVisibleForPanelMembers);
     //UPDATE
     public void UpdatePanel(Guid id, bool isRegistrationOpen);
     public void UpdatePanelRegistrationCount(Guid id, bool increase);
