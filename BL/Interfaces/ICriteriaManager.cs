@@ -16,7 +16,7 @@ public interface ICriteriaManager
     public void SavePanelMemberCriteriaResponses(Guid panelId,Dictionary<string, string> CriteriaAnswers, PanelMember member);
     
     //ADD
-    public Criteria AddCriteria(string name, string question, bool isDefault, ICollection<CriteriaAnswerOption> answerOptions);
+    public Criteria AddCriteria(string name, string question, bool isDefault, ICollection<CriteriaAnswerOption> answerOptions, bool isDistributionKnown);
 
     public CriteriaAnswerOption AddCriteriaAnswerOption(string option, double distributionPercentage);
 }

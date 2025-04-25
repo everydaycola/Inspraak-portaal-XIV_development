@@ -20,28 +20,32 @@ function validateCriteriaPercentages(): boolean {
     const criteriaBlocks = document.querySelectorAll(".criteria");
 
     criteriaBlocks.forEach((criteriaDiv, index) => {
-        const inputs = criteriaDiv.querySelectorAll<HTMLInputElement>(
-            `input[name^="Distributions[${index}].AnswerOptions"][name$="DistributionPercentage"]`
-        );
+        const distKnownCheck = criteriaDiv.querySelector<HTMLInputElement>(`input[name$="IsDistributionKnown"]`) as HTMLInputElement
+        
+        if (distKnownCheck.checked){
+            const inputs = criteriaDiv.querySelectorAll<HTMLInputElement>(
+                `input[name^="Distributions[${index}].AnswerOptions"][name$="DistributionPercentage"]`
+            );
 
-        const sum = Array.from(inputs)
-            .map(input => parseFloat(input.value) || 0)
-            .reduce((acc, val) => acc + val, 0);
+            const sum = Array.from(inputs)
+                .map(input => parseFloat(input.value) || 0)
+                .reduce((acc, val) => acc + val, 0);
 
-        // Remove existing message if any
-        let message = criteriaDiv.querySelector(".distribution-error");
-        if (message) message.remove();
+            // Remove existing message if any
+            let message = criteriaDiv.querySelector(".distribution-error");
+            if (message) message.remove();
 
-        if (Math.abs(sum) != 100) {
-            isValid = false;
+            if (Math.abs(sum) != 100) {
+                isValid = false;
 
-            const error = document.createElement("div");
-            error.className = "text-danger distribution-error";
-            error.innerText = `De verdeling van de antwoord opties moet 100% zijn. Nu: ${sum}%`;
+                const error = document.createElement("div");
+                error.className = "text-danger distribution-error";
+                error.innerText = `De verdeling van de antwoord opties moet 100% zijn. Nu: ${sum}%`;
 
-            // Place below answer list
-            const ul = criteriaDiv.querySelector("ul.list-group");
-            ul?.after(error);
+                // Place below answer list
+                const ul = criteriaDiv.querySelector("ul.list-group");
+                ul?.after(error);
+            }
         }
     });
 

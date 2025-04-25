@@ -126,7 +126,7 @@ export function addCriteria() {
     isDistributionKnownInput.id = `is-distribution-known-${currentCount}-criteria`;
     isDistributionKnownInput.className = "border border-1 rounded-2 form-check-input";
     isDistributionKnownInput.type = "checkbox";
-    isDistributionKnownInput.name = `Distributions[${criteriaId}].IsDistributionKnown`;
+    isDistributionKnownInput.name = `Distributions[${currentCount}].IsDistributionKnown`;
     isDistributionKnownInput.value = "true";
     isDistributionKnownInput.checked = true;
     isDistributionKnownInput.addEventListener("click", () => {

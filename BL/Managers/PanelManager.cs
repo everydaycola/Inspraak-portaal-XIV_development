@@ -160,7 +160,9 @@ public class PanelManager : IPanelManager
             objectsToValidate.AddRange(panel.Criteria.SelectMany(c => c.AnswerOptions));
             
             // preforms an action very similar to a cartesian product, but with the options of each criteria
-            var crossDistribution = HelperCalculateCrossDistribution(panel.Criteria.ToList());
+            var crossDistribution = HelperCalculateCrossDistribution(panel.Criteria
+                .Where(c => c.IsDistributionKnown)
+                .ToList());
             
             // validate created criteria
             objectsToValidate.AddRange(crossDistribution.Keys
