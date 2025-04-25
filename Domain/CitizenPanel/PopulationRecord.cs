@@ -1,4 +1,4 @@
-namespace UI_MVC.Models;
+namespace Domain.CitizenPanel;
 
 public class PopulationRecord
 {

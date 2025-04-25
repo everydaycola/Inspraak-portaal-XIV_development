@@ -1,4 +1,4 @@
-@model List<GemeenteViewModel>
+@model List<Domain.CitizenPanel.Commune>
 
 <h2>Inwonersaantal per Gemeente</h2>
 
@@ -14,9 +14,9 @@
     @foreach (var item in Model)
     {
         <tr>
-            <td>@item.GemeenteNaam</td>
-            <td>@item.GemeenteCode</td>
-            <td>@item.AantalInwoners</td>
+            <td>@item.CommuneName</td>
+            <td>@item.CommuneCode</td>
+            <td>@item.TotalPopulation</td>
         </tr>
     }
     </tbody>

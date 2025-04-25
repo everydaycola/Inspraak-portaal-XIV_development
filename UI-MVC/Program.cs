@@ -13,7 +13,6 @@ using UI_MVC.TempTenant;
 using StackExchange.Redis;
 using Microsoft.AspNetCore.DataProtection;
 using UI_MVC.Options;
-using UI_MVC.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -31,7 +30,8 @@ builder.Services.AddScoped<ICriteriaManager, CriteriaManager>();
 builder.Services.AddScoped<ICriteriaRepository, CriteriaRepository>();
 builder.Services.AddScoped<ICalculationManager, CalculationManager>();
 builder.Services.AddScoped<ISendMailManager, SendMailManager>();
-builder.Services.AddScoped<IPinCService, PinCService>();
+builder.Services.AddScoped<IPinCRepository, PinCRepository>();
+builder.Services.AddScoped<ICommuneManager, CommuneManager>();
 
 //Tenant specific logic
 builder.Services

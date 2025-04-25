@@ -26,6 +26,4 @@ public class NewPanelDto
     [Required(ErrorMessage = "Panel moet een reserve percentage hebben")]
     [Range(0, 100, ErrorMessage = "Percentage moet tussen 0 en 100 liggen")]
     public double ResponseRate { get; set; }
-    public List<string> SelectedGemeenten { get; set; } = new List<string>();
-    public List<PopulationRecord> SelectedGemeentenData { get; set; } = new List<PopulationRecord>();
 }

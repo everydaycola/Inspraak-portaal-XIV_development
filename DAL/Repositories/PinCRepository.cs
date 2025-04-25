@@ -1,24 +1,23 @@
-using UI_MVC.Models;
-using UI_MVC.Models.Dto;
-
-namespace UI_MVC.Services;
-
-using System.Net.Http.Headers;
 using System.Text.Json;
+using DAL.Interfaces;
+using Domain.CitizenPanel;
 
-public class PinCService : IPinCService
+namespace DAL.Repositories;
+
+public class PinCRepository : IPinCRepository
 {
     private readonly string _apiKey;
     private const string BaseUrl = "https://provincies.incijfers.be/jiveservices/odata/";
     private readonly HttpClient _httpClient;
 
-    public PinCService()
+    public PinCRepository()
     {
-        _apiKey = Environment.GetEnvironmentVariable("PINC_API_KEY"); // Haal de sleutel hier op
+        _apiKey = Environment.GetEnvironmentVariable("PINC_API_KEY");
         if (string.IsNullOrEmpty(_apiKey))
         {
             throw new InvalidOperationException("API key is not set in environment variables.");
         }
+
         _httpClient = new HttpClient();
         _httpClient.DefaultRequestHeaders.Add("apikey", _apiKey);
     }
@@ -31,7 +30,6 @@ public class PinCService : IPinCService
         response.EnsureSuccessStatusCode();
 
         var json = await response.Content.ReadAsStringAsync();
-        Console.WriteLine("API 1 Response: " + json);
         var options = new JsonSerializerOptions
         {
             PropertyNameCaseInsensitive = true
@@ -41,7 +39,7 @@ public class PinCService : IPinCService
         return data?.Value ?? new();
     }
 
-    public async Task<Dictionary<string, string>> GetGemeenteNamenAsync()
+    public async Task<Dictionary<string, string>> GetCommuneNamesAsync()
     {
         var url = $"{BaseUrl}GeoLevels('gemeente')/GeoItems";
         var response = await _httpClient.GetAsync(url);
@@ -53,8 +51,13 @@ public class PinCService : IPinCService
         {
             PropertyNameCaseInsensitive = true
         };
-        var data = JsonSerializer.Deserialize<ODataResponse<GemeenteItem>>(json, options);
+        var data = JsonSerializer.Deserialize<ODataResponse<CommuneItem>>(json, options);
 
         return data?.Value.ToDictionary(x => x.ExternalCode, x => x.Name) ?? new();
+    }
+
+    private class ODataResponse<T>
+    {
+        public List<T> Value { get; set; }
     }
 }

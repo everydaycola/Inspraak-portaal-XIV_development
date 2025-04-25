@@ -1,6 +1,6 @@
-namespace UI_MVC.Models;
+namespace Domain.CitizenPanel;
 
-public class GemeenteItem
+public class CommuneItem
 {
     public string ExternalCode { get; set; }
     public string Name { get; set; }
