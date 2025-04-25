@@ -22,13 +22,15 @@ public class QRCodeController : Controller
         _sendMailManager = sendMailManager;
     }
 
-    public IActionResult DownloadQrCodesForAllPanelMembers(Guid panelId)
+    public IActionResult DownloadQrCodesForAllPanelMembers(Guid panelId, int phase)
     {
-        var panelMembers = _panelManager.GetAllPanelMembersForPanel(panelId);
+        var panelMembers = _panelManager.GetAllPanelMembersForPanel(panelId)
+            .Where(m => m.Phase == phase)
+            .Where(m => !m.HasRegistered);
         var baseUrl = $"{Request.Scheme}://{Request.Host}/Register";
         var zipFileBytes = _fileManager.CreateZipFileForMultiplePanelMembers(panelMembers, baseUrl);
         _logger.Log(LogLevel.Information, "Generating qr codes for all groups in panel{} ", panelId);
-        return File(zipFileBytes, "application/zip", "qrcodes.zip");
+        return File(zipFileBytes, "application/zip", "Qrcodes" + ((phase == 1) ? "" : "Phase" + phase) + ".zip");
     }
     public IActionResult DownloadSingleQrCode(string data)
     {

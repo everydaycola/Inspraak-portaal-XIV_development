@@ -22,7 +22,7 @@
                     </div>
                 </div>
                 <p><strong>@innerKpv.Value</strong> out of
-                    <strong>@(Model.DesiredCriteriaCount[kpv.Key][innerKpv.Key] * Model.DesiredRegistrationCount)</strong>
+                    <strong>@((int)(Model.DesiredCriteriaCount[kpv.Key][innerKpv.Key] * Model.DesiredRegistrationCount))</strong>
                     (<strong>@(Model.DesiredCriteriaCount[kpv.Key][innerKpv.Key] * 100)%</strong> of
                     <strong>@(Model.DesiredRegistrationCount))</strong></p>
 

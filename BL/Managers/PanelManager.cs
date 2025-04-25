@@ -91,7 +91,7 @@ public class PanelManager : IPanelManager
     }
 
     //ADD
-    public Panel AddPanel(string name, int size, double sampleRate,
+    public Panel AddPanel(string name, double sampleRate,
         ICollection<Criteria> distribution, int citizenCount, double reservePercentage,
         double responseRate, string userId)
     {
@@ -119,7 +119,7 @@ public class PanelManager : IPanelManager
         var objectsToValidate = new List<object>();
         
         // Calculate size of the Panel
-        size = (int)(citizenCount * sampleRate);
+        var size = (int)(citizenCount * sampleRate);
 
         // Create and initialize the panel
         var panel = new Panel
@@ -140,12 +140,12 @@ public class PanelManager : IPanelManager
         objectsToValidate.Add(panel.RepresentationGroup);
         
         // calculate panel size
-        var membersCount = _calculationManager.CalculateTotalInvitesNeeded(_calculationManager.CalculateAmountOfReserve(size, reservePercentage), responseRate);
-        // todo use this count 
-        
+        var membersCount = _calculationManager.CalculateTotalInvitesNeeded(
+            _calculationManager.CalculateAmountOfReserve(size, reservePercentage) + size, responseRate);
+
         // Generate members
         var panelMembers = Enumerable
-            .Range(0, size)
+            .Range(0, membersCount)
             .Select(_ => new PanelMember { Panel = panel })
             .ToList();
 
@@ -377,38 +377,132 @@ public class PanelManager : IPanelManager
         _repo.RemovePlanningGroupMember(planningsGroupMemberId);
     }
 
-    public void NewPanelPhase(Guid guid, double newResponseRate)
+    public void NewPanelPhase(Guid panelId, double newResponseRate)
     {
-        var panelMembers = _repo.ReadPanelMembersWithResponses(guid);
-        var panel = _criteriaRepo.ReadAllDesiredCriteriaPercentages(guid);
-        throw new NotImplementedException();
+        // get panel members with panel, all crit responses, criteria and answer options
+        // this repo call should not be pulling in this much.
+        var panelMembers = GetAllPanelMembersForPanel(panelId).ToList();
+        // get the panel with representation group
+        var panel = GetPanelWithRepresentationGroup(panelId);
+        // get the amount of invites sent originally
+        var panelSize = _calculationManager.CalculatePanelSize(panel.RepresentationGroup.CitizenCount, panel.SampleRate);
+        // get the amount of people that you want to be registered, including reserve
+        var amountNeeded = _calculationManager.CalculateAmountOfReserve(panelSize, panel.RepresentationGroup.ReservePercentage) + panelSize;
+        // get all default criteria with answer option and thus distribution percentages for the panel
+        var criteriaList = _criteriaRepo.ReadAllCriteriaForPanelWithAnswerOptions(panelId, onlyDefault: true).ToList();
+        
+        // Create a dictionary with string keys of criteria groups, and value the ammount of
+        // like key:"Man|30-39", value:60
+        // !! criteriaList only has default criteria in it
+        var amountOfRegistrationsDesired = HelperCalculateCrossDistribution(criteriaList)
+            .ToDictionary(
+                item => string.Join("|", item.Key
+                    .OrderBy(r => r.Criteria.Name)
+                    .Select(r => r.SelectedOption)),
+                item => (int)(item.Value * amountNeeded)
+            );
+        
+        // Gets the actual counts of registered people per default criteria group (same key as dict above)
+        var amountOfRegistrationsActual = panelMembers
+            .Where(pm => pm.HasRegistered)
+            .GroupBy(pm =>
+                string.Join("|", pm.Responses
+                    .Where(r => r.Criteria.IsDefault)
+                    .OrderBy(r => r.Criteria.Name)
+                    .Select(r => r.SelectedOption))
+            )
+            .OrderBy(g => g.Key)
+            .ToDictionary(
+                kpv => kpv.Key,
+                kpv => kpv.Count()
+            );
+        
+        // list of all new made panelMembers
+        var newPanelMembers = new List<PanelMember>();
+
+        // Go through each criteria group
+        // (amountOfRegistrationsActual and amountOfRegistrationsDesired should have the exact same keys)
+        foreach (var key in amountOfRegistrationsActual.Keys.Union(amountOfRegistrationsDesired.Keys))
+        {
+            // Check if key exists in the dictionaries
+            if (!amountOfRegistrationsDesired.TryGetValue(key, out var desired))
+            {
+                _logger.Log(LogLevel.Critical, "There are " + amountOfRegistrationsActual[key] + " people registered with a response combo that should not be possible.");
+                continue; // skip, no codes will be created for this combo
+            }
+
+            if (!amountOfRegistrationsActual.TryGetValue(key, out var actual))
+            {
+                _logger.Log(LogLevel.Critical, "key: " + key + " does not exist in \"actual\" dictionary");
+                actual = amountOfRegistrationsActual[key] = 0; // if not, set it to 0
+            }
+
+            // desired - actual = needed
+            var needed = _calculationManager.CalculateTotalInvitesNeeded(desired - actual, newResponseRate);
+            if (needed <= 0) continue; // we have enough
+            newPanelMembers.AddRange(Enumerable.Range(1, needed).Select(_ => new PanelMember
+            {
+                Panel = panel,
+                Responses = criteriaList
+                    .SelectMany(criteria => criteria.AnswerOptions
+                            .Where(option => key.Contains(option.Option))
+                            .Select(option => new CriteriaResponse
+                            {
+                                Criteria = criteria,
+                                SelectedOption = option.Option
+                            }
+                        )
+                    ).ToList(),
+                Phase = panel.LastPhase + 1 
+            }));
+        }
+
+        // // validation
+        var validationResults = new List<ValidationResult>();
+        // validate panel members criteria responses
+        var validationSuccess = newPanelMembers.All(r =>
+            Validator.TryValidateObject(r, new ValidationContext(r), validationResults, true));
+        // if validation failed
+        if (!validationSuccess)
+        {
+            // collect error messages and send as exception
+            _logger.Log(LogLevel.Critical,
+                "Validation failed where it shouldn't: \n" +
+                string.Join("\n", validationResults.Select(x => x.ErrorMessage)));
+            throw new ValidationException(string.Join("\n", validationResults.Select(x => x.ErrorMessage)));
+        }
+
+        panel.LastPhase++;
+        _repo.UpdatePanel(panel);
+        _repo.CreatePanelMembers(newPanelMembers);
     }
 
-    //sendInvitationMails is a development method so that we have control over the mail sending logic.
-    public void EndRegistration(Guid panelId, Dictionary<string,Dictionary<string,double>> allDesiredCriteriaPercentages, bool sendInvitationMails, string currentBaseUrl)
+    public void EndRegistration(Guid panelId,
+        Dictionary<string, Dictionary<string, double>> allDesiredCriteriaPercentages, bool sendInvitationMails, string currentBaseUrl)
     {
         var panel = GetPanelWithRepresentationGroup(panelId);
-        var panelSize = _calculationManager.CalculatePanelSize(panel.RepresentationGroup.CitizenCount, panel.SampleRate);
+        var panelSize =
+            _calculationManager.CalculatePanelSize(panel.RepresentationGroup.CitizenCount, panel.SampleRate);
         var amountSelectedNeeded =
             _calculationManager.CalculateAmountOfReserve(panelSize, panel.RepresentationGroup.ReservePercentage) + panelSize;
         var criteriaList = allDesiredCriteriaPercentages.Select(kpv => new Criteria
+        {
+            Name = kpv.Key,
+            AnswerOptions = kpv.Value.Select(kpv2 => new CriteriaAnswerOption
             {
-                Name = kpv.Key,
-                AnswerOptions = kpv.Value.Select(kpv2 => new CriteriaAnswerOption()
-                {
-                    Option = kpv2.Key,
-                    DistributionPercentage = kpv2.Value
-                }).ToList()
-            }).ToList();
+                Option = kpv2.Key,
+                DistributionPercentage = kpv2.Value
+            }).ToList()
+        }).ToList();
 
         var crossDistribution = HelperCalculateCrossDistribution(criteriaList);
 
         // Create a dictionary with string keys
-        var optionlist = new Dictionary<string, int>();
+        var optionList = new Dictionary<string, int>();
         foreach (var item in crossDistribution)
         {
             var key = string.Join("|", item.Key.OrderBy(r => r.SelectedOption).Select(r => r.SelectedOption));
-            optionlist[key] = (int)(item.Value * amountSelectedNeeded);
+            optionList[key] = (int)(item.Value * amountSelectedNeeded);
         }
 
         var registeredMembers = GetAllPanelMembersForPanel(panelId)
@@ -421,7 +515,7 @@ public class PanelManager : IPanelManager
         foreach (var group in registeredMembers.GroupBy(pm => string.Join("|", pm.Responses.OrderBy(r => r.SelectedOption).Select(r => r.SelectedOption))))
         {
             // Check if key exists in the dictionary
-            if (optionlist.TryGetValue(group.Key, out var count))
+            if (optionList.TryGetValue(group.Key, out var count))
             {
                 // Add shuffled selection to selected members
                 selectedMembers.AddRange(
