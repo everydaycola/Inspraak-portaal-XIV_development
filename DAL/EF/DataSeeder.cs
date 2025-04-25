@@ -55,7 +55,7 @@ public static class DataSeeder
                 },
                 new DocumentPost()
                 {
-                    DocumentUrl = "/mydocument",
+                    DocumentName = "/mydocument",
                     CreatedAt = DateTime.UtcNow,
                 },
                 new EmbeddedVideoPost()
@@ -104,7 +104,7 @@ public static class DataSeeder
                         },
                         new()
                         {
-                            DistributionPercentage = 0.33,
+                            DistributionPercentage = 0.34,
                             Option = "Auto"
                         }
                     }

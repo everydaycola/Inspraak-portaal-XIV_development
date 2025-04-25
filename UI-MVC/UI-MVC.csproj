@@ -39,6 +39,11 @@
         <PackageReference Include="QRCoder" Version="1.6.0" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="Options\" />
+      <Folder Include="wwwroot\uploads\" />
+    </ItemGroup>
+
 
     <Target Name="NpmInstall" BeforeTargets="Build" Condition=" !Exists('$(MpaRoot)node_modules') ">
         <!-- Ensure Node.js is installed -->
