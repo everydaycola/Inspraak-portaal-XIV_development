@@ -40,7 +40,6 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Options\" />
       <Folder Include="wwwroot\uploads\" />
     </ItemGroup>
 

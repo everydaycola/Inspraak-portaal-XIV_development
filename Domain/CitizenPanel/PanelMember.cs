@@ -16,6 +16,7 @@ public class PanelMember
     
     public bool Selected { get; set; }
 
+    public ApplicationUser User { get; set; }
    
     [MaxLength(10, ErrorMessage = "Criteria antwoord mag maximaal 10 opties hebben.")]
     public ICollection<CriteriaResponse> Responses { get; set; }
