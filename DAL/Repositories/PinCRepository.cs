@@ -1,3 +1,4 @@
+using System.Net.Http.Headers;
 using System.Text.Json;
 using DAL.Interfaces;
 using Domain.CitizenPanel;
@@ -20,40 +21,75 @@ public class PinCRepository : IPinCRepository
 
         _httpClient = new HttpClient();
         _httpClient.DefaultRequestHeaders.Add("apikey", _apiKey);
+        _httpClient.DefaultRequestHeaders.Accept.Clear();
+        _httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+    }
+
+    private async Task<string> GetData(string url)
+    {
+        HttpResponseMessage response = await _httpClient.GetAsync(url);
+        response.EnsureSuccessStatusCode();
+        return await response.Content.ReadAsStringAsync();
+    }
+
+    private async Task<JsonDocument> GetJsonDocument(string url)
+    {
+        string jsonResult = await GetData(url);
+        return JsonDocument.Parse(jsonResult);
+    }
+
+    private T Deserialize<T>(string json)
+    {
+        var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
+        return JsonSerializer.Deserialize<T>(json, options);
     }
 
     public async Task<List<PopulationRecord>> GetPopulationDataAsync()
     {
-        var url =
+        string url =
             $"{BaseUrl}Variables('v1111a_tot_bevolking')/GeoLevels('gemeente')/PeriodLevels('year')/Periods('mrp')/Values";
-        var response = await _httpClient.GetAsync(url);
-        response.EnsureSuccessStatusCode();
-
-        var json = await response.Content.ReadAsStringAsync();
-        var options = new JsonSerializerOptions
-        {
-            PropertyNameCaseInsensitive = true
-        };
-        var data = JsonSerializer.Deserialize<ODataResponse<PopulationRecord>>(json, options);
-
+        string json = await _httpClient.GetStringAsync(url); // Use GetStringAsync directly
+        var data = Deserialize<ODataResponse<PopulationRecord>>(json);
         return data?.Value ?? new();
     }
 
     public async Task<Dictionary<string, string>> GetCommuneNamesAsync()
     {
-        var url = $"{BaseUrl}GeoLevels('gemeente')/GeoItems";
-        var response = await _httpClient.GetAsync(url);
-        response.EnsureSuccessStatusCode();
+        string url = BaseUrl + "GeoLevels('gemeente')/GeoItems";
+        JsonDocument document = await GetJsonDocument(url);
+        JsonElement root = document.RootElement;
+        JsonElement valueArray = root.GetProperty("value");
+        Console.WriteLine(valueArray.ToString());
 
-        var json = await response.Content.ReadAsStringAsync();
-        Console.WriteLine("API 2 Response: " + json);
-        var options = new JsonSerializerOptions
+        var communeNames = new Dictionary<string, string>();
+        foreach (JsonElement element in valueArray.EnumerateArray())
         {
-            PropertyNameCaseInsensitive = true
-        };
-        var data = JsonSerializer.Deserialize<ODataResponse<CommuneItem>>(json, options);
+            string externalCode = element.GetProperty("ExternalCode").GetString();
+            string name = element.GetProperty("Name").GetString();
+            communeNames.Add(externalCode, name);
+        }
 
-        return data?.Value.ToDictionary(x => x.ExternalCode, x => x.Name) ?? new();
+        return communeNames;
+    }
+
+    public async Task<Dictionary<string, string>> GetPercentageOfMenAsync()
+    {
+        string url =
+            $"{BaseUrl}Variables('vp1111a_mannen')/GeoLevels('gemeente')/PeriodLevels('year')/Periods('mrp')/Values";
+        string json = await GetData(url);
+        var document = JsonDocument.Parse(json);
+        JsonElement root = document.RootElement;
+        JsonElement valueArray = root.GetProperty("value");
+
+        var percentageMenData = new Dictionary<string, string>();
+        foreach (JsonElement element in valueArray.EnumerateArray())
+        {
+            string communeCode = element.GetProperty("ExternalCode").GetString();
+            string percentageMen = element.GetProperty("ValueString").GetString();
+            percentageMenData.Add(communeCode, percentageMen);
+        }
+
+        return percentageMenData;
     }
 
     private class ODataResponse<T>

@@ -17,6 +17,7 @@ public class CommuneManager : ICommuneManager
     {
         var populationData = await _pinCRepository.GetPopulationDataAsync();
         var gemeenteNamen = await _pinCRepository.GetCommuneNamesAsync();
+        var percentageMenData = await _pinCRepository.GetPercentageOfMenAsync();
 
         return populationData
             .Where(p => gemeenteNamen.ContainsKey(p.ExternalCode))
@@ -24,7 +25,8 @@ public class CommuneManager : ICommuneManager
             {
                 CommuneCode = p.ExternalCode,
                 CommuneName = gemeenteNamen[p.ExternalCode],
-                TotalPopulation = p.ValueString
+                TotalPopulation = p.ValueString,
+                PercentageMen = percentageMenData.GetValueOrDefault(p.ExternalCode)
             })
             .ToList();
     }
