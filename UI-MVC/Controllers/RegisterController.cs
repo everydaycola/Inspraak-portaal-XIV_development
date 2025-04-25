@@ -95,6 +95,7 @@ public class RegisterController : Controller
             {
                 var randomValue = random.NextDouble();
                 var accumulatedWeight = 0.0;
+                var selectedOption = false;
     
                 // Find the item whose accumulated weight range contains the random value
                 foreach (var option in criterion.AnswerOptions)
@@ -102,8 +103,12 @@ public class RegisterController : Controller
                     accumulatedWeight += option.DistributionPercentage;
                     if (randomValue > accumulatedWeight) continue;
                     responses.Add(criterion.Name, option.Option);
+                    selectedOption = true;
                     break;
                 }
+                
+                // In case, due to rounding errors, nothing is selected, select the last one
+                if (!selectedOption) responses.Add(criterion.Name, criterion.AnswerOptions.Last().Option);
             }
         
             _critManager.SavePanelMemberCriteriaResponses(panel.Id, responses, member);

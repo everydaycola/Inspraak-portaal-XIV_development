@@ -14,6 +14,7 @@ public interface IPanelManager
     public Panel GetPanelWithCriteriaAndCriteriaAnswerOptions(Guid panelId);
 
     public Panel GetPanelWithPosts(Guid panelId);
+    public IEnumerable<PlanningGroupMember> GetAllPlanningGroupMembersWithIdentityUserForPanel(Guid panelId);
 
     //ADD
     public Panel AddPanel(string name, int size, double sampleRate,
@@ -21,15 +22,14 @@ public interface IPanelManager
         double responseRate, string userId);
 
     public void AddTextPost(Guid panelId,string title, string content);
-
+    public void AddPlanningsGroupMember(Guid panelId, string Email, string Naam, string Functie);
+    public void AddDocumentPost(Guid panelId,string title, string documentUrl);
     //UPDATE
     public void UpdatePanel(Guid id, bool isRegistrationOpen);
     public void UpdatePanelRegistrationCount(Guid id, bool increase);
     public PanelMember UpdatePanelMember(PanelMember member);
-    public IEnumerable<PlanningGroupMember> GetAllPlanningGroupMembersWithIdentityUserForPanel(Guid panelId);
-
-    public void AddDocumentPost(Guid panelId,string title, string documentUrl);
-
+    //DELETE
+    public void DeletePlanningsGroupmember(Guid planningsGroupMemberId);
     //HELPERS
     public void NewPanelPhase(Guid guid, double newResponseRate);
     public void EndRegistration(Guid id, Dictionary<string, Dictionary<string, double>> allDesiredCriteriaPercentages);
