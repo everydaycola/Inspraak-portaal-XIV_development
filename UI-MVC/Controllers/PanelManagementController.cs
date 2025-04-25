@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using UI_MVC.Models;
 using UI_MVC.Models.Dto;
+using UI_MVC.Models.ViewModels;
 
 namespace UI_MVC.Controllers;
 [RequiresOrganisation]
@@ -75,12 +76,32 @@ public class PanelManagementController : Controller
         
         return RedirectToAction("Index", new { id = guid });
     }
+
+    [HttpPost]
+    public IActionResult AddPlanningGroupmember(PlanningGroupMemberViewModel model)
+    {
+        if (!ModelState.IsValid)
+        {
+            return RedirectToAction("Index", model.PanelId);
+        }
+        _manager.AddPlanningsGroupMember(model.PanelId,model.Email, model.Naam, model.Functie);
+        return RedirectToAction("Index", model.PanelId);
+    }
+
+    public IActionResult DeletePlanningsGroupmember(Guid panelId, Guid planningsGroupMemberId)
+    {
+        _manager.DeletePlanningsGroupmember(planningsGroupMemberId);
+        return RedirectToAction("Index", panelId);
+    }
     
     [Authorize]
     public IActionResult PanelSelection()
     {
-        string userId = _userManager.GetUserId(User);
-        var panels = _manager.GetAllPanels();
+        var panels = _manager.GetAllPanels().ToList(); // Materialize the collection
+        if (panels.Count == 1)
+        {
+            return RedirectToAction("Index", new { id = panels[0].Id });
+        }
         return View(panels);
     }
     public IActionResult ToggleRegistration(Guid panelId)
