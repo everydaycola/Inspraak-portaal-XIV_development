@@ -59,6 +59,10 @@ export function addCriteria() {
     isDefaultInput.type = "checkbox";
     isDefaultInput.name = `Distributions[${currentCount}].IsDefault`;
     isDefaultInput.value = "true";
+    isDefaultInput.checked = true;
+    isDefaultInput.addEventListener("click", () => {
+        toggleIsDistributionKnownInput(isDefaultInput.checked)
+    })
 
     // Create Delete Button
     const removeBtn = document.createElement("button");
@@ -129,6 +133,7 @@ export function addCriteria() {
     isDistributionKnownInput.name = `Distributions[${currentCount}].IsDistributionKnown`;
     isDistributionKnownInput.value = "true";
     isDistributionKnownInput.checked = true;
+    isDistributionKnownInput.disabled = true;
     isDistributionKnownInput.addEventListener("click", () => {
         toggleAnswerOptionPercentageInput(isDistributionKnownInput.checked, currentCount)
     })
@@ -172,6 +177,18 @@ function removeCriteria(criteriaId: number) {
     // Rebuild the subregions to fix the indices
     reIndexCriteria();
     resetAnswerCounters(criteriaId)
+}
+
+function toggleIsDistributionKnownInput(isChecked: boolean) {
+    let e = event as Event
+    const isDistributionKnownInput = ((((((e.currentTarget as HTMLInputElement) //isDefaultInput
+        .parentElement as HTMLDivElement) //isDefaultDiv
+        .parentElement as HTMLDivElement) //headDiv
+        .parentElement as HTMLDivElement) //wrapper
+        .childNodes[3] as HTMLUListElement) //answersUl
+        .childNodes[0] as HTMLDivElement) //isDistributionKnownDiv
+        .childNodes[1] as HTMLInputElement //isDistributionKnownInput
+    isDistributionKnownInput.disabled = isChecked
 }
 
 function toggleAnswerOptionPercentageInput(isChecked: boolean, criteriaId: number) {
@@ -227,4 +244,3 @@ function reIndexCriteria() {
         criteriaCount++;
     });
 }
-
