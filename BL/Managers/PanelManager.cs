@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using BL.Interfaces;
 using DAL.Interfaces;
+using Domain;
 using Domain.CitizenPanel;
 using Domain.Interfaces;
 using Microsoft.Extensions.Logging;
@@ -201,6 +202,24 @@ public class PanelManager : IPanelManager
         _repo.CreateTextPost(panelId, textPost);
     }
 
+    public void AddPlanningsGroupMember(Guid panelId, string Email, string Naam, string Functie)
+    {
+        Panel panel = GetPanel(panelId);
+        PlanningGroupMember member = new PlanningGroupMember
+        {
+            Panel = panel,
+            User = new ApplicationUser()
+            {
+                Email = Email,
+                NormalizedEmail = Email.ToUpper(),
+                UserName = Naam,
+                NormalizedUserName = Naam.ToUpper()
+            },
+            Functie = Functie
+        };
+        _repo.CreatePlanningsGroupMember(member);
+    }
+
     /// <summary>
     /// Generates all possible combinations of criteria responses and calculates their percentage
     /// based on the distribution percentages of each answer option in the criteria list, multiplied.
@@ -324,7 +343,6 @@ public class PanelManager : IPanelManager
         }
     }
     //UPDATE
-
     public void UpdatePanel(Guid id, bool isRegistrationOpen)
     {
         var panel = _repo.ReadPanel(id);
@@ -345,6 +363,15 @@ public class PanelManager : IPanelManager
     {
         _repo.UpdatePanelMember(member);
         return member;
+    }
+
+    public void DeletePlanningsGroupmember(Guid planningsGroupMemberId)
+    {
+        var planningGroupmember = _repo.ReadPlanningGroupMember(planningsGroupMemberId);
+        if (planningGroupmember == null)
+            throw new NullReferenceException("Planninggroupmember with id " + planningsGroupMemberId +
+                                             " was not found");
+        _repo.RemovePlanningGroupMember(planningsGroupMemberId);
     }
 
     public void NewPanelPhase(Guid guid, double newResponseRate)
