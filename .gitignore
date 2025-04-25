@@ -1,5 +1,7 @@
 .idea
 /IP1_Infrastructure
+## This uploads folder is a temp folder to test image uploads.
+/UI-MVC/wwwroot/uploads 
 /UI-MVC/wwwroot/dist/
 /UI-MVC/wwwroot/assets/
 /UI-MVC/ClientApp/node_modules/

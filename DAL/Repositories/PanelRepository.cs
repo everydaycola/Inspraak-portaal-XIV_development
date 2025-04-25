@@ -24,11 +24,7 @@ public class PanelRepository : IPanelRepository
     {
         return _context.Panels.ToList();
     }
-
-    // public PanelMember ReadPanelMember(Guid id)
-    // {
-    //     return _context.PanelMembers.Find(id);
-    // }
+    
 
     public PanelMember ReadPanelMemberWithCriteriaResponses(Guid id)
     {
@@ -45,6 +41,7 @@ public class PanelRepository : IPanelRepository
             .ThenInclude(pm => pm.Criteria)
             .Single(p => p.PanelMemberId == id);
     }
+    
 
     public void CreatePlanningsGroupMember(PlanningGroupMember member)
     {
@@ -106,17 +103,7 @@ public class PanelRepository : IPanelRepository
             .Where(pm => pm.Panel.Id == id) 
             .ToList();
     }
-
-    // public IEnumerable<PanelMember> ReadPanelMembersWhichAnsweredAllQuestionsWithCriteria(Guid id)
-    // {
-    //     return _context.PanelMembers
-    //         .Include(pm => pm.Panel)
-    //         .ThenInclude(p => p.Criteria)
-    //         .ThenInclude(c => c.AnswerOptions)
-    //         .Include(pm => pm.Responses)
-    //         .Where(pm => pm.Panel.Id == id && pm.HasRegistered == true) 
-    //         .ToList();
-    // }
+    
     
     public void UpdatePanelMember(PanelMember member)
     {
@@ -160,13 +147,26 @@ public class PanelRepository : IPanelRepository
         }
     }
 
-    // public ICollection<PanelMember> ReadPanelMembersAndRepresentationGroup(Guid id)
-    // {
-    //     return _context.PanelMembers.Include(pm => pm.Panel)
-    //         .ThenInclude(pm => pm.RepresentationGroup)
-    //         .Where(pm => pm.Panel.Id == id)
-    //         .ToList();
-    // }
+    public void CreateDocumentPost(Guid panelId,DocumentPost docPost)
+    {
+        _context.Posts.Add(docPost);
+        var panel = ReadPanelWithPosts(panelId);
+        if (panel != null)
+        {
+            _context.Posts.Add(docPost);
+            panel.Posts.Add(docPost);
+            _context.SaveChanges();
+        }
+    }
+
+
+    public ICollection<PanelMember> ReadPanelMembersAndRepresentationGroup(Guid id)
+    {
+        return _context.PanelMembers.Include(pm => pm.Panel)
+            .ThenInclude(pm => pm.RepresentationGroup)
+            .Where(pm => pm.Panel.Id == id)
+            .ToList();
+    }
     
     public Panel ReadPanelWithCriteriaAndAnswerOptions(Guid panelId)
     {

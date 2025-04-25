@@ -55,7 +55,7 @@ public static class DataSeeder
                 },
                 new DocumentPost()
                 {
-                    DocumentUrl = "/mydocument",
+                    DocumentName = "/mydocument",
                     CreatedAt = DateTime.UtcNow,
                 },
                 new EmbeddedVideoPost()

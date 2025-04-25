@@ -192,10 +192,11 @@ public class PanelManager : IPanelManager
         return panel;
     }
 
-    public void AddTextPost(Guid panelId, string content)
+    public void AddTextPost(Guid panelId,string title,string content)
     {
         var textPost = new TextPost
         {
+            Title =title,
             Content = content,
             CreatedAt = DateTime.UtcNow
         };
@@ -437,5 +438,16 @@ public class PanelManager : IPanelManager
     public IEnumerable<PlanningGroupMember> GetAllPlanningGroupMembersWithIdentityUserForPanel(Guid panelId)
     {
         return _repo.ReadAllPlanningGroupMembersWithIdentityUserForPanel(panelId);
+    }
+
+    public void AddDocumentPost(Guid panelId,string title, string documentUrl)
+    {
+        var docPost = new DocumentPost
+        {
+            Title = title,
+            DocumentName = documentUrl,
+            CreatedAt = DateTime.UtcNow
+        };
+        _repo.CreateDocumentPost(panelId, docPost);
     }
 }

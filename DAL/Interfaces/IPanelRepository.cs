@@ -28,9 +28,10 @@ public interface IPanelRepository
     //CREATE
     public void CreatePanelMember(PanelMember panelMember);
     public void CreateTextPost(Guid panelId, TextPost textPost);
+    public void CreateDocumentPost(Guid panelId, DocumentPost docPost);
     public void CreatePlanningsGroupMember(PlanningGroupMember member);
+    
     //REMOVE
     public void RemoveAllUnselectedPanelmembers(Guid panelId);
-
     public void RemovePlanningGroupMember(Guid planningsGroupMemberId);
 }
