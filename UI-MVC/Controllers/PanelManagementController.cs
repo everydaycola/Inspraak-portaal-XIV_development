@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using UI_MVC.Models;
 using UI_MVC.Models.Dto;
+using UI_MVC.Models.ViewModels;
 
 namespace UI_MVC.Controllers;
 [RequiresOrganisation]
@@ -58,7 +59,8 @@ public class PanelManagementController : Controller
             UniqueCodesDto = new uniqueCodesDto
             {
                 panelId = panel.Id,
-                panelMembers = _criteriaManager.GetPanelMembersGroupedByResponsesForDefaultCriteria(panel.Id)
+                panelMembers = _criteriaManager.GetPanelMembersGroupedByResponsesForDefaultCriteriaGroupedByPhase(panel.Id),
+                Phases = panel.LastPhase
             }
         });
     }
@@ -71,16 +73,36 @@ public class PanelManagementController : Controller
     [HttpPost]
     public IActionResult NewPhase(Guid guid, double newResponseRate)
     {
-        _manager.NewPanelPhase(guid, newResponseRate);
+        _manager.NewPanelPhase(guid, newResponseRate / 100);
         
         return RedirectToAction("Index", new { id = guid });
+    }
+
+    [HttpPost]
+    public IActionResult AddPlanningGroupmember(PlanningGroupMemberViewModel model)
+    {
+        if (!ModelState.IsValid)
+        {
+            return RedirectToAction("Index", model.PanelId);
+        }
+        _manager.AddPlanningsGroupMember(model.PanelId,model.Email, model.Naam, model.Functie);
+        return RedirectToAction("Index", model.PanelId);
+    }
+
+    public IActionResult DeletePlanningsGroupmember(Guid panelId, Guid planningsGroupMemberId)
+    {
+        _manager.DeletePlanningsGroupmember(planningsGroupMemberId);
+        return RedirectToAction("Index", panelId);
     }
     
     [Authorize]
     public IActionResult PanelSelection()
     {
-        string userId = _userManager.GetUserId(User);
-        var panels = _manager.GetAllPanels();
+        var panels = _manager.GetAllPanels().ToList(); // Materialize the collection
+        if (panels.Count == 1)
+        {
+            return RedirectToAction("Index", new { id = panels[0].Id });
+        }
         return View(panels);
     }
     public IActionResult ToggleRegistration(Guid panelId)
@@ -93,8 +115,9 @@ public class PanelManagementController : Controller
     public IActionResult EndRegistration(Guid panelId)
     {
         var allDesiredCriteriaPercentages = _criteriaManager.GetAllDesiredCriteriaPercentages(panelId);
-        
-        _manager.EndRegistration(panelId, allDesiredCriteriaPercentages);
+
+        var baseUrl = $"{Request.Scheme}://{Request.Host}{Request.PathBase}";
+        _manager.EndRegistration(panelId, allDesiredCriteriaPercentages, false,baseUrl);
 
         return RedirectToAction("Index", new { id = panelId });
     }

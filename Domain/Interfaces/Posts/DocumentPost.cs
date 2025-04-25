@@ -2,5 +2,6 @@
 
 public class DocumentPost: Post
 {
-    public string DocumentUrl { get; set; }
+    public string DocumentName { get; set; }
+    public bool isImage { get; set; } = false;
 }
