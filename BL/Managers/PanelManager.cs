@@ -427,14 +427,14 @@ public class PanelManager : IPanelManager
             // Check if key exists in the dictionaries
             if (!amountOfRegistrationsDesired.TryGetValue(key, out var desired))
             {
-                _logger.Log(LogLevel.Critical, "key: " + key + " does not exist in \"desired\" dictionary");
-                continue; // skip
+                _logger.Log(LogLevel.Critical, "There are " + amountOfRegistrationsActual[key] + " people registered with a response combo that should not be possible.");
+                continue; // skip, no codes will be created for this combo
             }
 
             if (!amountOfRegistrationsActual.TryGetValue(key, out var actual))
             {
                 _logger.Log(LogLevel.Critical, "key: " + key + " does not exist in \"actual\" dictionary");
-                continue; // skip
+                actual = amountOfRegistrationsActual[key] = 0; // if not, set it to 0
             }
 
             // desired - actual = needed
