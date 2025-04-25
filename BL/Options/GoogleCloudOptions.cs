@@ -1,4 +1,4 @@
-namespace UI_MVC.Options;
+namespace BL.Options;
 
 public class GoogleCloudOptions
 {

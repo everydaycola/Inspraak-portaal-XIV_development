@@ -16,6 +16,7 @@ public interface IPanelRepository
     public Panel ReadPanelWithCriteriaAndAnswerOptions(Guid panelId);
     public IEnumerable<PlanningGroupMember> ReadAllPlanningGroupMembersWithIdentityUserForPanel(Guid panelId);
     public Panel ReadPanelWithPosts(Guid panelId);
+    public PlanningGroupMember ReadPlanningGroupMember(Guid planningsGroupMemberId);
 
     //UPDATE
     public void UpdatePanel(Panel panel);
@@ -26,6 +27,10 @@ public interface IPanelRepository
     public void CreatePanelMember(PanelMember panelMember);
     public void CreatePanelMembers(List<PanelMember> panelMembers);
     public void CreateTextPost(Guid panelId, TextPost textPost);
-    //DELETE
+    public void CreateDocumentPost(Guid panelId, DocumentPost docPost);
+    public void CreatePlanningsGroupMember(PlanningGroupMember member);
+    
+    //REMOVE
     public void RemoveAllUnselectedPanelmembers(Guid panelId);
+    public void RemovePlanningGroupMember(Guid planningsGroupMemberId);
 }
