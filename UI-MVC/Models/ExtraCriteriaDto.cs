@@ -1,6 +1,6 @@
 namespace UI_MVC.Models;
 
-public class ExtraCriteriaViewModel
+public class ExtraCriteriaDto
 {
     public Dictionary<string, Dictionary<string, int>> CriteriaMemberCount { get; set; }
     public Dictionary<string, Dictionary<string, double>> DesiredCriteriaCount { get; set; }

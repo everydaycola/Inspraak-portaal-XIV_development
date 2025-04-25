@@ -49,7 +49,7 @@ public class PanelManagementController : Controller
             TotalInvitesNeeded = _calcManager.CalculateTotalInvitesNeeded(panelSize + amountOfReserveInvites, panel.RepresentationGroup.ResponseRate),
             IsRegistrationOpen = panel.IsRegistrationOpen,
             PlanningGroupMembers = _manager.GetAllPlanningGroupMembersWithIdentityUserForPanel(panel.Id),
-            ExtraCriteriaViewModel = new ExtraCriteriaViewModel
+            ExtraCriteriaDto = new ExtraCriteriaDto
             {
                 CriteriaMemberCount = _criteriaManager.GetAllCriteriaCountsGroupedByValue(panel.Id),
                 DesiredCriteriaCount = _criteriaManager.GetAllDesiredCriteriaPercentages(panel.Id),
