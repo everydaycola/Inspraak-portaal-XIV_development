@@ -132,9 +132,11 @@ public class RegisterController : Controller
     [HttpGet]
     public IActionResult AccountCreation(Guid userId)
     {
+        var panelMember = _manager.GetPanelMemberWithPanel(userId);
         var model = new RegisterViewModel
         {
-            UserUniqueCode = userId
+            UserUniqueCode = userId,
+            Email = panelMember.Email
         };
         return View(model);
     }

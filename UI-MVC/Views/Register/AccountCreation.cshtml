@@ -22,7 +22,7 @@
                 <input asp-for="UserUniqueCode" type="hidden" />
 
                 <div class="form-floating mb-3">
-                    <input asp-for="Email" class="form-control" autocomplete="username" placeholder="name@example.com" />
+                    <input asp-for="Email" class="form-control" value="@Model.Email" readonly />
                     <label asp-for="Email">Email</label>
                     <span asp-validation-for="Email" class="text-danger"></span>
                 </div>
