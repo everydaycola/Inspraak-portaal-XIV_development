@@ -11,7 +11,7 @@ public class PanelManagementDto
     public int AmountOfReserveInvites { get; set; }
     public int TotalInvitesNeeded { get; set; }
     public bool IsRegistrationOpen { get; set; }
-    public ExtraCriteriaViewModel ExtraCriteriaViewModel { get; set; } 
+    public ExtraCriteriaDto ExtraCriteriaDto { get; set; } 
     public uniqueCodesDto UniqueCodesDto { get; set; }
     public IEnumerable<PlanningGroupMember> PlanningGroupMembers { get; set; }
 }
