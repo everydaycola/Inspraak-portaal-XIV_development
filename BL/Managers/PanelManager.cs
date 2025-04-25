@@ -163,7 +163,7 @@ public class PanelManager : IPanelManager
             
             // preforms an action very similar to a cartesian product, but with the options of each criteria
             var crossDistribution = HelperCalculateCrossDistribution(panel.Criteria
-                .Where(c => c.IsDistributionKnown)
+                .Where(c=> c.IsDefault)
                 .ToList());
             
             // validate created criteria
@@ -172,7 +172,10 @@ public class PanelManager : IPanelManager
                 .GroupBy(r => r)); // to remove duplicates
 
             // finally, give panel members their distributions
-            HandOutAnsweredCriteriaToPanelMembers(panelMembers, crossDistribution);
+            if (crossDistribution.Count > 0)
+            {
+                HandOutAnsweredCriteriaToPanelMembers(panelMembers, crossDistribution);
+            }
         }
         
         // // validation
@@ -480,6 +483,7 @@ public class PanelManager : IPanelManager
         _repo.CreatePanelMembers(newPanelMembers);
     }
 
+    //TODO Fix the Dictionaries
     public void EndRegistration(Guid panelId,
         Dictionary<string, Dictionary<string, double>> allDesiredCriteriaPercentages, bool sendInvitationMails, string currentBaseUrl)
     {
@@ -498,7 +502,9 @@ public class PanelManager : IPanelManager
             }).ToList()
         }).ToList();
 
-        var crossDistribution = HelperCalculateCrossDistribution(criteriaList);
+        var crossDistribution = HelperCalculateCrossDistribution(criteriaList
+            .Where(c => c.IsDefault)
+            .ToList());
 
         // Create a dictionary with string keys
         var optionList = new Dictionary<string, int>();
