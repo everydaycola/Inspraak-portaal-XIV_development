@@ -59,7 +59,8 @@ public class PanelManagementController : Controller
             UniqueCodesDto = new uniqueCodesDto
             {
                 panelId = panel.Id,
-                panelMembers = _criteriaManager.GetPanelMembersGroupedByResponsesForDefaultCriteria(panel.Id)
+                panelMembers = _criteriaManager.GetPanelMembersGroupedByResponsesForDefaultCriteriaGroupedByPhase(panel.Id),
+                Phases = panel.LastPhase
             }
         });
     }
@@ -72,7 +73,7 @@ public class PanelManagementController : Controller
     [HttpPost]
     public IActionResult NewPhase(Guid guid, double newResponseRate)
     {
-        _manager.NewPanelPhase(guid, newResponseRate);
+        _manager.NewPanelPhase(guid, newResponseRate / 100);
         
         return RedirectToAction("Index", new { id = guid });
     }

@@ -84,10 +84,14 @@ public class RegisterController : Controller
             HasAnsweredQuestions = false
         });
     }
-    //Testing function to add random users to panel.
+    
+    // mostly a testing function to add random users to your panel
+    // way too much logic for a controller, but ok since it's a dev feature
     [HttpPost]
     public IActionResult RegisterRandomUsers(Guid guid, int count)
     {
+        
+        
         var panel = _manager.GetPanelWithCriteriaAndCriteriaAnswerOptions(guid);
         var members = _manager.GetAllPanelMembersForPanel(guid)
             .Where(pm => !pm.HasRegistered)
