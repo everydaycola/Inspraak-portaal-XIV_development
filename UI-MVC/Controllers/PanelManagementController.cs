@@ -53,6 +53,7 @@ public class PanelManagementController : Controller
             {
                 CriteriaMemberCount = _criteriaManager.GetAllCriteriaCountsGroupedByValue(panel.Id),
                 DesiredCriteriaCount = _criteriaManager.GetAllDesiredCriteriaPercentages(panel.Id),
+                Criteria = _criteriaManager.GetAllCriteriaForPanelWithAnswerOptions(panel.Id).ToList(),
                 SuccessfulRegistrationCount = panel.SuccessfulRegistrationCount,
                 DesiredRegistrationCount = panelSize,
             },

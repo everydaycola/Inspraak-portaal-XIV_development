@@ -1,0 +1,122 @@
+﻿@model List<Dictionary<string, int>>
+
+<table class="table">
+    <thead>
+        @{
+            var genderValues = new[] { "vrouw", "man" };
+            var transportValues = new[] { "fiets", "te voet", "auto" };
+            var answerValues = new[] { "ja", "nee" };
+            
+            // For the header (vrouw)
+            foreach (var gender in genderValues.Take(1))
+            {
+                var rowCount = transportValues.Length * answerValues.Length;
+                
+                foreach (var transport in transportValues)
+                {
+                    foreach (var answer in answerValues)
+                    {
+                        if (answer == answerValues[0])
+                        {
+                            <tr>
+                                @if (transport == transportValues[0])
+                                {
+                                    <th rowspan="@rowCount">@gender</th>
+                                }
+                                <th rowspan="@answerValues.Length">@transport</th>
+                                <th>@answer</th>
+                                <th>
+                                    @{
+                                        // Calculate distribution based on your data
+                                        // This is a placeholder - you'll need to adapt this to your actual data structure
+                                        var distribution = GetDistributionValue(Model, gender, transport, answer);
+                                    }
+                                    @distribution
+                                </th>
+                            </tr>
+                        }
+                        else
+                        {
+                            <tr>
+                                <th>@answer</th>
+                                <th>
+                                    @{
+                                        var distribution = GetDistributionValue(Model, gender, transport, answer);
+                                    }
+                                    @distribution
+                                </th>
+                            </tr>
+                        }
+                    }
+                }
+            }
+        }
+    </thead>
+    <tbody>
+        @{
+            // For the body (man)
+            foreach (var gender in genderValues.Skip(1))
+            {
+                var rowCount = transportValues.Length * answerValues.Length;
+                
+                foreach (var transport in transportValues)
+                {
+                    foreach (var answer in answerValues)
+                    {
+                        if (answer == answerValues[0])
+                        {
+                            <tr>
+                                @if (transport == transportValues[0])
+                                {
+                                    <td rowspan="@rowCount">@gender</td>
+                                }
+                                <td rowspan="@answerValues.Length">@transport</td>
+                                <td>@answer</td>
+                                <td>
+                                    @{
+                                        var distribution = GetDistributionValue(Model, gender, transport, answer);
+                                    }
+                                    @distribution
+                                </td>
+                            </tr>
+                        }
+                        else
+                        {
+                            <tr>
+                                <td>@answer</td>
+                                <td>
+                                    @{
+                                        var distribution = GetDistributionValue(Model, gender, transport, answer);
+                                    }
+                                    @distribution
+                                </td>
+                            </tr>
+                        }
+                    }
+                }
+            }
+        }
+    </tbody>
+</table>
+
+@functions {
+    private int GetDistributionValue(List<Dictionary<string, int>> data, string gender, string transport, string answer)
+    {
+        // This is a simplified implementation - you'll need to adapt this based on your actual data structure
+        // and how you want to calculate the distribution
+        
+        // Example implementation assuming:
+        // - First dictionary contains gender values
+        // - Second dictionary contains transport values  
+        // - Third dictionary contains answer values
+        
+        if (data.Count < 3) return 0;
+        
+        var genderValue = data[0].ContainsKey(gender) ? data[0][gender] : 0;
+        var transportValue = data[1].ContainsKey(transport) ? data[1][transport] : 0;
+        var answerValue = data[2].ContainsKey(answer) ? data[2][answer] : 0;
+        
+        // Multiply values to get distribution
+        return genderValue * transportValue * answerValue;
+    }
+}

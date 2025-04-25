@@ -47,6 +47,11 @@ public class CriteriaManager : ICriteriaManager
             )
         );
     }
+
+    public IEnumerable<Criteria> GetAllCriteriaForPanelWithAnswerOptions(Guid panelId, bool onlyDefault = false)
+    {
+        return _repo.ReadAllCriteriaForPanelWithAnswerOptions(panelId, onlyDefault);
+    } 
     
     // public IEnumerable<Criteria> GetAllNonDefaultCriteriaWithValuesForPanel(Guid panelId)
     // {

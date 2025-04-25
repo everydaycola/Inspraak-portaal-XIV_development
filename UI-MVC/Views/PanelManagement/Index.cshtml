@@ -86,7 +86,7 @@
             </div>
         </div>
         <div class="card shadow-sm border-0 col-8 me-4">
-            @Html.Partial("_extraCriteriaStatsPartial", Model.ExtraCriteriaDto)
+            @Html.Partial("_extraCriteriaStatsCrossPartial", Model.ExtraCriteriaDto.CriteriaMemberCount.Values.ToList())
         </div>
     </div>
 
