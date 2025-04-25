@@ -92,6 +92,26 @@ public class PinCRepository : IPinCRepository
         return percentageMenData;
     }
 
+    public async Task<Dictionary<string, string>> GetHigherEducationAsync()
+    {
+        string url =
+            $"{BaseUrl}Variables('v2390_hoog')/GeoLevels('gemeente')/PeriodLevels('year')/Periods('mrp')/Values";
+        string json = await GetData(url);
+        var document = JsonDocument.Parse(json);
+        JsonElement root = document.RootElement;
+        JsonElement valueArray = root.GetProperty("value");
+
+        var higherEducData = new Dictionary<string, string>();
+        foreach (JsonElement element in valueArray.EnumerateArray())
+        {
+            string communeCode = element.GetProperty("ExternalCode").GetString();
+            string higherEduc = element.GetProperty("ValueString").GetString();
+            higherEducData.Add(communeCode, higherEduc);
+        }
+
+        return higherEducData;
+    }
+
     private class ODataResponse<T>
     {
         public List<T> Value { get; set; }
