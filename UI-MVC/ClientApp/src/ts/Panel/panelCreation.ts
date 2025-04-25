@@ -20,9 +20,9 @@ function validateCriteriaPercentages(): boolean {
     const criteriaBlocks = document.querySelectorAll(".criteria");
 
     criteriaBlocks.forEach((criteriaDiv, index) => {
-        const distKnownCheck = criteriaDiv.querySelector<HTMLInputElement>(`input[name$="IsDistributionKnown"]`) as HTMLInputElement
-        
-        if (distKnownCheck.checked){
+        const distKnownCheck = criteriaDiv.querySelector(`input[name$="IsDistributionKnown"]`) as HTMLInputElement
+        const defaultCheck = criteriaDiv.querySelector(`input[name$="IsDefault"]`) as HTMLInputElement
+        if (distKnownCheck.checked || defaultCheck.checked){
             const inputs = criteriaDiv.querySelectorAll<HTMLInputElement>(
                 `input[name^="Distributions[${index}].AnswerOptions"][name$="DistributionPercentage"]`
             );
