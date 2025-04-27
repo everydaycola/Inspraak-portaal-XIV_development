@@ -482,29 +482,17 @@ public class PanelManager : IPanelManager
         _repo.UpdatePanel(panel);
         _repo.CreatePanelMembers(newPanelMembers);
     }
-
-    //TODO Fix the Dictionaries
+    
     public void EndRegistration(Guid panelId,
-        Dictionary<string, Dictionary<string, double>> allDesiredCriteriaPercentages, bool sendInvitationMails, string currentBaseUrl)
+        IEnumerable<Criteria> allDesiredCriteriaPercentages, bool sendInvitationMails, string currentBaseUrl)
     {
         var panel = GetPanelWithRepresentationGroup(panelId);
         var panelSize =
             _calculationManager.CalculatePanelSize(panel.RepresentationGroup.CitizenCount, panel.SampleRate);
         var amountSelectedNeeded =
             _calculationManager.CalculateAmountOfReserve(panelSize, panel.RepresentationGroup.ReservePercentage) + panelSize;
-        var criteriaList = allDesiredCriteriaPercentages.Select(kpv => new Criteria
-        {
-            Name = kpv.Key,
-            AnswerOptions = kpv.Value.Select(kpv2 => new CriteriaAnswerOption
-            {
-                Option = kpv2.Key,
-                DistributionPercentage = kpv2.Value
-            }).ToList()
-        }).ToList();
-
-        var crossDistribution = HelperCalculateCrossDistribution(criteriaList
-            .Where(c => c.IsDefault)
-            .ToList());
+        
+        var crossDistribution = HelperCalculateCrossDistribution(allDesiredCriteriaPercentages.Where(c => c.IsDistributionKnown).ToList());
 
         // Create a dictionary with string keys
         var optionList = new Dictionary<string, int>();
@@ -521,11 +509,12 @@ public class PanelManager : IPanelManager
         var selectedMembers = new List<PanelMember>();
 
         // Group by responses and process each group
-        foreach (var group in registeredMembers.GroupBy(pm => string.Join("|", pm.Responses.OrderBy(r => r.SelectedOption).Select(r => r.SelectedOption))))
+        foreach (var group in registeredMembers.GroupBy(pm => string.Join("|", pm.Responses.OrderBy(r => r.SelectedOption).Where(r=>r.Criteria.IsDistributionKnown).Select(r => r.SelectedOption))))
         {
             // Check if key exists in the dictionary
             if (optionList.TryGetValue(group.Key, out var count))
             {
+                Console.WriteLine(count);
                 // Add shuffled selection to selected members
                 selectedMembers.AddRange(
                     group.OrderBy(_ => Guid.NewGuid())

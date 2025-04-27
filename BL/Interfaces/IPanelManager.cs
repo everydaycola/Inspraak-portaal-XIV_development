@@ -33,5 +33,5 @@ public interface IPanelManager
     public void DeletePlanningsGroupmember(Guid planningsGroupMemberId);
     //HELPERS
     public void NewPanelPhase(Guid guid, double newResponseRate);
-    public void EndRegistration(Guid id, Dictionary<string,Dictionary<string,double>> allDesiredCriteriaPercentages, bool sendInvitationMails, string currentBaseUrl);
+    public void EndRegistration(Guid id, IEnumerable<Criteria> allDesiredCriteriaPercentages, bool sendInvitationMails, string currentBaseUrl);
 }
