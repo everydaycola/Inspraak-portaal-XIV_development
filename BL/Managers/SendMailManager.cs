@@ -21,7 +21,7 @@ public class SendMailManager : ISendMailManager
         var qrCodeBytes = _fileManager.CreateSingleQrCode(data);
         var base64QrCode = Convert.ToBase64String(qrCodeBytes);
         var imgSrc = $"data:image/png;base64,{base64QrCode}";
-
+        
         var client =
             new MailjetClient(Environment.GetEnvironmentVariable("MJ_APIKEY_PUBLIC"),
                 Environment.GetEnvironmentVariable("MJ_APIKEY_PRIVATE"));
