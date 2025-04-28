@@ -16,6 +16,9 @@
         <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addBestandModal">
             Bestand toevoegen aan de project pagina.
         </button>
+        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addWerksessieModal">
+            Werksessie inplannen
+        </button>
     </div>
 
     @if(User.IsInRole(CustomIdentityConstants.OrganisatieRole)){
@@ -116,6 +119,49 @@
             </div>
         </div>
     </div>
+    
+    /*WERKSESSIE AANMAKEN.*/
+    <div class="modal fade" id="addWerksessieModal" tabindex="-1" aria-labelledby="addWerksessieModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content shadow">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addWerksessieModalLabel">Werksessie aanmaken</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Sluiten"></button>
+            </div>
+            <div class="modal-body">
+                <form id="addWerksessieForm" asp-action="CreateWerksessiePost" method="post">
+                    <input type="hidden" name="panelId" value="@Model.Panel.Id"/>
+
+                    <div class="mb-3">
+                        <label for="sessionTitleInput" class="form-label">Titel van de werksessie</label>
+                        <input type="text" class="form-control" id="sessionTitleInput" name="title" placeholder="Voer de titel in" required />
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="summaryCountInput" class="form-label">Aantal samenvattingen</label>
+                        <input type="number" class="form-control" id="summaryCountInput" name="amountOfSummary" placeholder="Bijvoorbeeld: 3" min="1" required />
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="sessionDateInput" class="form-label">Datum van de werksessie</label>
+                            <input type="date" class="form-control" id="sessionDateInput" name="sessionDate" required />
+                        </div>
+                        <div class="col-md-6">
+                            <label for="sessionTimeInput" class="form-label">Tijdstip</label>
+                            <input type="time" class="form-control" id="sessionTimeInput" name="sessionTime" required />
+                        </div>
+                    </div>
+                    
+                    <div class="text-end">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuleren</button>
+                        <button type="submit" class="btn btn-primary">Inplannen</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
     }
 }
 
