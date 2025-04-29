@@ -1,4 +1,5 @@
 ﻿@using Domain.Interfaces
+@using Domain.Interfaces.Posts
 @model UI_MVC.Models.Dto.ProjectPage.ProjectPageDto
 
 @{
@@ -129,17 +130,12 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Sluiten"></button>
             </div>
             <div class="modal-body">
-                <form id="addWerksessieForm" asp-action="CreateWerksessiePost" method="post">
+                <form id="addWerksessieForm" asp-action="AddWerksessiePost" method="post">
                     <input type="hidden" name="panelId" value="@Model.Panel.Id"/>
 
                     <div class="mb-3">
                         <label for="sessionTitleInput" class="form-label">Titel van de werksessie</label>
                         <input type="text" class="form-control" id="sessionTitleInput" name="title" placeholder="Voer de titel in" required />
-                    </div>
-
-                    <div class="mb-3">
-                        <label for="summaryCountInput" class="form-label">Aantal samenvattingen</label>
-                        <input type="number" class="form-control" id="summaryCountInput" name="amountOfSummary" placeholder="Bijvoorbeeld: 3" min="1" required />
                     </div>
 
                     <div class="row mb-3">
@@ -152,7 +148,14 @@
                             <input type="time" class="form-control" id="sessionTimeInput" name="sessionTime" required />
                         </div>
                     </div>
-                    
+                    <h3>Panelleden op de hoogte brengen?</h3>
+                    <div class="form-check mb-3">
+                        <input class="form-check-input" type="checkbox" id="informPeopleViaMail" value="true" name="informPeopleViaMail" checked/>
+                        <label class="form-check-label" for="informPeopleViaMail"
+                               title="Wanneer dit vakje is aangevinkt worden de betreffende personen op de hoogte gebracht.">
+                            Iedereen op de hoogte brengen via mail?
+                        </label>
+                    </div>
                     <div class="text-end">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuleren</button>
                         <button type="submit" class="btn btn-primary">Inplannen</button>
@@ -205,5 +208,40 @@
                 }
             </div>
         }
+         @if (post is MeetingPost meetingPost)
+         {
+             <div class="timeline-item mb-4 p-3 border rounded shadow-sm bg-white">
+                 <div class="d-flex justify-content-between align-items-center">
+                     <h5 class="mb-1">@meetingPost.Title</h5>
+                     <small class="text-muted">@meetingPost.CreatedAt.ToString("dd MMM yyyy HH:mm")</small>
+                 </div>
+                 <h6 class="text-muted mt-3">Verslagen:</h6>
+                 <div class="d-flex flex-column gap-2">
+                     @foreach(string documentName in meetingPost.DocumentNames)
+                     {
+                         <a href="@Url.Action("GetFile", "Storage", new { fileName = documentName })" target="_blank" class="btn btn-outline-primary">
+                             Document bekijken
+                         </a>
+                     }
+                 </div>
+                 <!-- Dropdown toggle for upload -->
+                 <div class="mt-3">
+                     <button class="btn btn-secondary" type="button" data-bs-toggle="collapse" data-bs-target="#uploadCollapse-@meetingPost.Id" aria-expanded="false" aria-controls="uploadCollapse-@meetingPost.Id">
+                         + Voeg verslag toe
+                     </button>
+                     <div class="collapse mt-2" id="uploadCollapse-@meetingPost.Id">
+                         <form method="post" enctype="multipart/form-data" asp-action="AddSummaryToMeetingPost">
+                             <input type="hidden" name="MeetingId" value="@meetingPost.Id" />
+                             <input type="hidden" name="panelId" value="@Model.Panel.Id"/>
+                             <div class="mb-2">
+                                 <input type="file" class="form-control" name="VerslagFile" required />
+                             </div>
+                             <button type="submit" class="btn btn-primary">Uploaden</button>
+                         </form>
+                     </div>
+                 </div>
+             </div>
+         }
     }
+    
 }

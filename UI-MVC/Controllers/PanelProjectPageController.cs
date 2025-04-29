@@ -142,4 +142,105 @@ public class PanelProjectPageController : Controller
             }
         }
     }
+
+    [HttpPost]
+    public async Task<IActionResult> AddWerksessiePost(
+        Guid panelId,
+        string title,
+        DateTime sessionDate,
+        string sessionTime,
+        bool informPeopleViaMail)
+    {
+        // Check if all required fields are filled
+        if (string.IsNullOrWhiteSpace(title) || sessionDate == default || string.IsNullOrWhiteSpace(sessionTime))
+        {
+            ModelState.AddModelError("", "Vul alle verplichte velden correct in.");
+            var panel = _panelManager.GetPanelWithPosts(panelId);
+            var projectPageDto = new ProjectPageDto { Panel = panel };
+            return View("Index", projectPageDto);
+        }
+
+        // Check if sessionDate is not in the past
+        if (sessionDate < DateTime.Now.Date)
+        {
+            ModelState.AddModelError("", "De datum mag niet in het verleden liggen.");
+            var panel = _panelManager.GetPanelWithPosts(panelId);
+            var projectPageDto = new ProjectPageDto { Panel = panel };
+            return View("Index", projectPageDto);
+        }
+
+        // Check if the sessionTime is valid
+        if (!TimeSpan.TryParse(sessionTime, out var parsedTime))
+        {
+            ModelState.AddModelError("", "Ongeldig tijdstip.");
+            var panel = _panelManager.GetPanelWithPosts(panelId);
+            var projectPageDto = new ProjectPageDto { Panel = panel };
+            return View("Index", projectPageDto);
+        }
+
+        var meetingDateTime = sessionDate.Date + parsedTime;
+        DateTime utcMeetingTime = TimeZoneInfo.ConvertTimeToUtc(meetingDateTime);
+
+        // Add the meeting post to the panel
+        _panelManager.AddMeetingPost(panelId, title, utcMeetingTime, true);
+        var updatedPanel = _panelManager.GetPanelWithPosts(panelId);
+        var updatedProjectPageDto = new ProjectPageDto { Panel = updatedPanel };
+
+        // Notify panel members if requested
+        if (informPeopleViaMail)
+        {
+            var projectGroupmembers = _panelManager.GetAllPlanningGroupMembersWithIdentityUserForPanel(panelId);
+            var baseUrl = $"{Request.Scheme}://{Request.Host}{Request.PathBase}";
+            var mailSubject = "Er is een nieuwe werksessie ingepland op een panel waaraan jij deelneemt!";
+            var textPart = "Nieuwe serksessie op " + updatedPanel.Name + "ingepland";
+            var htmlPart = "<h1>Nieuwe werksessie op panel " + updatedPanel.Name + "</h1>" +
+                           $"<p>Gebruik onderstaande link om deze te bekijken</p><a href={baseUrl}/PanelProjectPage?panelId={updatedPanel.Id}>Project pagina bezoeken.</a>";
+
+            foreach (var member in projectGroupmembers)
+            {
+               await _sendMailManager.SendSingleMailAsync(member.User.Email,
+                    mailSubject, textPart, htmlPart);
+                _logger.Log(LogLevel.Information, "Mail succesvol verstuurd!");
+            }
+
+            var panelMembers = _panelManager.GetAllPanelMembersForPanel(updatedPanel.Id);
+            _logger.Log(LogLevel.Information, "Panelmembers op de hoogte brengen.");
+            foreach (var panelMember in panelMembers)
+            {
+                if (panelMember.HasRegistered && panelMember.Selected)
+                {
+                    await _sendMailManager.SendSingleMailAsync(
+                        panelMember.Email,
+                        mailSubject,
+                        textPart,
+                        htmlPart
+                    );
+                    _logger.Log(LogLevel.Information, "Mail succesvol verstuurd!");
+                }
+            }
+        }
+
+        return View("Index", updatedProjectPageDto);
+    }
+
+
+    [HttpPost]
+    public async Task<IActionResult> AddSummaryToMeetingPost(Guid panelId, Guid MeetingId, IFormFile VerslagFile)
+    {
+        if (VerslagFile == null || VerslagFile.Length == 0)
+        {
+            ModelState.AddModelError("VerslagFile", "Geen bestand geselecteerd.");
+            return RedirectToAction("Index");
+        }
+
+        var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads");
+        if (!Directory.Exists(uploadsFolder))
+            Directory.CreateDirectory(uploadsFolder);
+        var uniqueFileName = Guid.NewGuid().ToString() + Path.GetExtension(VerslagFile.FileName);
+        await _storageManager.AddFileAsync(uniqueFileName, VerslagFile.ContentType, VerslagFile.OpenReadStream());
+        _panelManager.AddSummaryToMeetingPost(MeetingId, uniqueFileName);
+        var updatedPanel = _panelManager.GetPanelWithPosts(panelId);
+        var updatedProjectPageDto = new ProjectPageDto { Panel = updatedPanel };
+        return View("Index", updatedProjectPageDto);
+    }
 }
