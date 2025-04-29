@@ -5,7 +5,7 @@ const subRegionBtn = document.getElementById("sub-region-btn") as HTMLAnchorElem
 subRegionBtn.addEventListener("click", addSubRegion);
 
 const addCriteriaBtn = document.getElementById("criteria-btn") as HTMLAnchorElement;
-addCriteriaBtn.addEventListener("click",addCriteria);
+addCriteriaBtn.addEventListener("click", addCriteria);
 
 const panelForm = document.getElementById("new-panel-form") as HTMLFormElement;
 panelForm.addEventListener("submit", (e) => {
@@ -22,7 +22,13 @@ function validateCriteriaPercentages(): boolean {
     criteriaBlocks.forEach((criteriaDiv, index) => {
         const distKnownCheck = criteriaDiv.querySelector(`input[name$="IsDistributionKnown"]`) as HTMLInputElement
         const defaultCheck = criteriaDiv.querySelector(`input[name$="IsDefault"]`) as HTMLInputElement
-        if (distKnownCheck.checked || defaultCheck.checked){
+        const error = document.createElement("div");
+        if (defaultCheck.checked && !distKnownCheck.checked) {
+            isValid = false
+
+            error.className = "text-danger distribution-error";
+            error.innerText = `Een standaard criteria moet een verdeling hebben.`;
+        } else if (distKnownCheck.checked) {
             const inputs = criteriaDiv.querySelectorAll<HTMLInputElement>(
                 `input[name^="Distributions[${index}].AnswerOptions"][name$="DistributionPercentage"]`
             );
@@ -38,15 +44,13 @@ function validateCriteriaPercentages(): boolean {
             if (Math.abs(sum) != 100) {
                 isValid = false;
 
-                const error = document.createElement("div");
                 error.className = "text-danger distribution-error";
                 error.innerText = `De verdeling van de antwoord opties moet 100% zijn. Nu: ${sum}%`;
-
-                // Place below answer list
-                const ul = criteriaDiv.querySelector("ul.list-group");
-                ul?.after(error);
             }
         }
+        // Place below answer list
+        const ul = criteriaDiv.querySelector("ul.list-group");
+        ul?.after(error);
     });
 
     return isValid;
