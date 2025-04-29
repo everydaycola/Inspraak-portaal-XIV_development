@@ -1,4 +1,6 @@
-﻿let subRegionCount = 1;
+﻿import {newSubregionInputAddedHandler} from "./apiAutofill/apiDataFiller";
+
+let subRegionCount = 1;
 
 export function addSubRegion() {
     const subRegionContainer = document.getElementById("subregions-container") as HTMLDivElement;
@@ -52,8 +54,10 @@ export function addSubRegion() {
 
     // Add the wrapper to the subregion container
     subRegionContainer.appendChild(wrapper);
+    //Call apiDataFillerScript to repopulate.
+    newSubregionInputAddedHandler()
 
-    $.validator.unobtrusive.parse("#new-panel-form");
+    //TODO:Gewoon in commentaar voor Stijn$.validator.unobtrusive.parse("#new-panel-form");
     // Increment the count for the next subregion
     subRegionCount++;
 }
@@ -65,6 +69,8 @@ function removeSubRegion(id: string) {
         element.remove();
         // Rebuild the subregions to fix the indices
         reIndexSubRegions();
+        //Call apiDataFillerScript
+        newSubregionInputAddedHandler();
     }
 }
 

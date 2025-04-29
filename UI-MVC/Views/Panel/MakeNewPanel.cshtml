@@ -11,6 +11,7 @@
     <script
         src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validation-unobtrusive/3.2.12/jquery.validate.unobtrusive.min.js"></script>
     <script src="~/dist/panelCreation.entry.js" type="module"></script>
+    <script src="~/dist/apiDataFiller.entry.js" type="module"></script>
 }
 
 <div class="container mt-5">
@@ -38,7 +39,7 @@
                                 Toevoegen</a>
                             <span id="error-subregions" class="text-danger"></span>
 
-                            <div class="mb-2 subregion-0">
+                            <div class="mb-2 subRegion subregion-0">
                                 <input name="SubRegions[0].Name" placeholder="Naam" type="text"
                                        class="form-control d-inline w-50 me-2"
                                        data-val="true"

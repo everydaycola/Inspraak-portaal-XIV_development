@@ -1,6 +1,7 @@
 using BL.Interfaces;
 using DAL.Interfaces;
 using Domain.CitizenPanel;
+using UI_MVC.Models.Dto.communeDtos;
 
 namespace BL.Managers;
 
@@ -45,6 +46,23 @@ public class CommuneManager : ICommuneManager
                 PeopleInjuredInTrafficAccident = peopleInjuredInTrafficAccident.GetValueOrDefault(p.Key),
                 DeathsByTrafficAccident = deathsByTrafficAccident.GetValueOrDefault(p.Key),
                 TotaLRegisteredCats = totalRegisteredCats.GetValueOrDefault(p.Key),
+            })
+            .ToList();
+    }
+
+    public async Task<List<CommuneBasicDto>> GetCommunesBasic()
+    {
+        var gemeenteNamen = await _pinCRepository.GetCommuneNamesAsync();
+        var populationData = await _pinCRepository.GetDataFromAPI("v1111a_tot_bevolking");
+        var percentageMenData = await _pinCRepository.GetDataFromAPI("vp1111a_mannen");
+        return populationData
+            .Where(p => gemeenteNamen.ContainsKey(p.Key))
+            .Select(p => new CommuneBasicDto
+            {
+                CommuneCode = p.Key,
+                CommuneName = gemeenteNamen[p.Key],
+                TotalPopulation = p.Value,
+                PercentageMen = percentageMenData.GetValueOrDefault(p.Key)
             })
             .ToList();
     }
