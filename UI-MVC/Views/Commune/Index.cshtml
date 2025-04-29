@@ -1,0 +1,43 @@
+@model List<Domain.CitizenPanel.Commune>
+
+<h2>Inwonersaantal per Gemeente</h2>
+
+<table class="table table-bordered">
+    <thead>
+    <tr>
+        <th>Gemeente</th>
+        <th>Code</th>
+        <th>Aantal Inwoners</th>
+        <th>Percentage of Men</th>
+        <th>Total Students in secundary education (VP van school)</th>
+        <th>Total with higher education</th>
+        <th>Working</th>
+        <th>Looking for work</th>
+        <th>Not working</th>
+        <th>Caught drinking and driving</th>
+        <th>Injured in Traffic Accident</th>
+        <th>Death by Traffic Dccident</th>
+        <th>Total registered Cats</th>
+    </tr>
+    </thead>
+    <tbody>
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>@item.CommuneName</td>
+            <td>@item.CommuneCode</td>
+            <td>@item.TotalPopulation</td>
+            <td>@item.PercentageMen</td>
+            <td>@item.SecondarySchoolSctudents</td>
+            <td>@item.HigherEducation</td>
+            <td>@item.TotalPeopleWorking</td>
+            <td>@item.TotalPeopleLookingForWork</td>
+            <td>@item.TotalNotWorking</td>
+            <td>@item.CaughtDrivingWhileDrunk</td>
+            <td>@item.PeopleInjuredInTrafficAccident</td>
+            <td>@item.DeathsByTrafficAccident</td>
+            <td>@item.TotaLRegisteredCats</td>
+        </tr>
+    }
+    </tbody>
+</table>

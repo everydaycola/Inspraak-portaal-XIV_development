@@ -32,6 +32,8 @@ builder.Services.AddScoped<ICriteriaRepository, CriteriaRepository>();
 builder.Services.AddScoped<ICalculationManager, CalculationManager>();
 builder.Services.AddScoped<ISendMailManager, SendMailManager>();
 builder.Services.AddScoped<IStorageManager, StorageManager>();
+builder.Services.AddScoped<IPinCRepository, PinCRepository>();
+builder.Services.AddScoped<ICommuneManager, CommuneManager>();
 
 //Tenant specific logic
 builder.Services
