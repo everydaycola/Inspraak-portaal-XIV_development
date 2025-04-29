@@ -1,5 +1,6 @@
 ﻿using BL.Interfaces;
 using Domain;
+using Domain.CitizenPanel;
 using Domain.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -8,24 +9,27 @@ using UI_MVC.Models.Dto.ProjectPage;
 
 namespace UI_MVC.Controllers;
 
-public class PanelProjectPageController: Controller
+public class PanelProjectPageController : Controller
 {
-    
     private readonly ILogger<PanelProjectPageController> _logger;
     private readonly IPanelManager _panelManager;
     private readonly IStorageManager _storageManager;
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly ICustomUserManager _customUserManager;
+    private readonly ISendMailManager _sendMailManager;
 
-    public PanelProjectPageController(ILogger<PanelProjectPageController> logger, IPanelManager panelManager, IStorageManager storageManager, ICustomUserManager customUserManager, UserManager<ApplicationUser> userManager)
+    public PanelProjectPageController(ILogger<PanelProjectPageController> logger, IPanelManager panelManager,
+        IStorageManager storageManager, ICustomUserManager customUserManager, UserManager<ApplicationUser> userManager,
+        ISendMailManager sendMailManager)
     {
         _logger = logger;
         _panelManager = panelManager;
         _storageManager = storageManager;
         _customUserManager = customUserManager;
         _userManager = userManager;
+        _sendMailManager = sendMailManager;
     }
-    
+
     [Authorize(Roles = "Organisatie,PanelMember")]
     public async Task<IActionResult> Index(Guid? PanelId)
     {
@@ -34,6 +38,7 @@ public class PanelProjectPageController: Controller
             var user = await _userManager.GetUserAsync(HttpContext.User);
             PanelId = _customUserManager.getPanelForUser(user.Id).Id;
         }
+
         var panel = _panelManager.GetPanelWithPosts(PanelId.Value);
         var projectPageDto = new ProjectPageDto
         {
@@ -43,7 +48,8 @@ public class PanelProjectPageController: Controller
     }
 
     [HttpPost]
-    public IActionResult AddTextPost(Guid panelId, string title,string content, bool visibleForPanelMember)
+    public async Task<IActionResult> AddTextPost(Guid panelId, string title, string content, bool visibleForPanelMember,
+        bool informPeopleViaMail)
     {
         if (string.IsNullOrWhiteSpace(content))
         {
@@ -53,20 +59,23 @@ public class PanelProjectPageController: Controller
             {
                 Panel = panel
             };
-            return View("Index", projectPageDto); 
+            return View("Index", projectPageDto);
         }
-        
-        _panelManager.AddTextPost(panelId, title,content, visibleForPanelMember);
-        var updatedPanel = _panelManager.GetPanelWithPosts(panelId); 
+
+        _panelManager.AddTextPost(panelId, title, content, visibleForPanelMember);
+        var updatedPanel = _panelManager.GetPanelWithPosts(panelId);
         var updatedProjectPageDto = new ProjectPageDto
         {
             Panel = updatedPanel
         };
-        return View("Index", updatedProjectPageDto); 
+        await HandleMailSending(informPeopleViaMail, visibleForPanelMember, updatedPanel);
+
+        return View("Index", updatedProjectPageDto);
     }
-    
+
     [HttpPost]
-    public async Task<IActionResult> AddDocumentPost(string title, IFormFile file, Guid panelId, bool visibleForPanelMember)
+    public async Task<IActionResult> AddDocumentPost(string title, IFormFile file, Guid panelId,
+        bool visibleForPanelMember, bool informPeopleViaMail)
     {
         if (file == null || file.Length == 0)
         {
@@ -83,12 +92,54 @@ public class PanelProjectPageController: Controller
         // TEMP Save the file localy
         await _storageManager.AddFileAsync(uniqueFileName, file.ContentType, file.OpenReadStream());
         //SAVE META DATA IN DB
-        _panelManager.AddDocumentPost(panelId,title,uniqueFileName, visibleForPanelMember);
-        var updatedPanel = _panelManager.GetPanelWithPosts(panelId); 
+        _panelManager.AddDocumentPost(panelId, title, uniqueFileName, visibleForPanelMember);
+        var updatedPanel = _panelManager.GetPanelWithPosts(panelId);
         var updatedProjectPageDto = new ProjectPageDto
         {
             Panel = updatedPanel
         };
-        return View("Index", updatedProjectPageDto); 
+        await HandleMailSending(informPeopleViaMail, visibleForPanelMember, updatedPanel);
+
+        return View("Index", updatedProjectPageDto);
+    }
+
+    private async Task HandleMailSending(bool informPeopleViaMail, bool visibleForPanelMember, Panel panel)
+    {
+        var baseUrl = $"{Request.Scheme}://{Request.Host}{Request.PathBase}";
+        if (informPeopleViaMail)
+        {
+            //Informeer project group.
+            var projectGroupmembers = _panelManager.GetAllPlanningGroupMembersWithIdentityUserForPanel(panel.Id);
+            _logger.Log(LogLevel.Information, "Projectgroep op de hoogte brengen.");
+            string mailSubject = "Er is een nieuwe post geplaatst op een panel waaraan jij deelneemt!";
+            string textPart = "Nieuwe post op" + panel.Name + "geplaats";
+            string htmlPart =
+                $"<p>Gebruik onderstaande link om deze te bekijken</p><a href={baseUrl}/PanelProjectPage?panelId={panel.Id}>Project pagina bezoeken.</a>";
+            foreach (var member in projectGroupmembers)
+            {
+                await _sendMailManager.SendSingleMailAsync(member.User.Email,
+                    mailSubject, textPart, htmlPart);
+                _logger.Log(LogLevel.Information, "Mail succesvol verstuurd!");
+            }
+
+            //Breng panelleden op de hoogte wanneer dit zichtbaar is voor hen.
+            if (visibleForPanelMember)
+            {
+                var panelMembers = _panelManager.GetAllPanelMembersForPanel(panel.Id);
+                _logger.Log(LogLevel.Information, "Panelmembers op de hoogte brengen.");
+                foreach (var panelMember in panelMembers)
+                {
+                    if (panelMember.HasRegistered && panelMember.Selected)
+                    {
+                        await _sendMailManager.SendSingleMailAsync(panelMember.Email,
+                            mailSubject,
+                            "Nieuwe post op " + panel.Name + " geplaatst",
+                            "<h1>Nieuwe post op panel " + panel.Name + "</h1>" +
+                            $"<p>Gebruik onderstaande link om deze te bekijken</p><a href={baseUrl}/PanelProjectPage?panelId={panel.Id}>Project pagina bezoeken.</a>");
+                        _logger.Log(LogLevel.Information, "Mail succesvol verstuurd!");
+                    }
+                }
+            }
+        }
     }
 }
