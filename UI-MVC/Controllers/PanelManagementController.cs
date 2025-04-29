@@ -51,6 +51,7 @@ public class PanelManagementController : Controller
             PlanningGroupMembers = _manager.GetAllPlanningGroupMembersWithIdentityUserForPanel(panel.Id),
             ExtraCriteriaDto = new ExtraCriteriaDto
             {
+                CriteriaGroupAbsoluteMemberCount = _manager.CalculateCrossDistributionAbsolute(panel.Id),
                 CriteriaMemberCount = _criteriaManager.GetAllCriteriaCountsGroupedByValue(panel.Id),
                 DesiredCriteriaCount = _criteriaManager.GetAllDesiredCriteriaPercentages(panel.Id),
                 Criteria = _criteriaManager.GetAllCriteriaForPanelWithAnswerOptions(panel.Id).ToList(),

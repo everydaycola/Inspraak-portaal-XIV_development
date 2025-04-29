@@ -1,122 +1,77 @@
-﻿@model List<Dictionary<string, int>>
+﻿@model ExtraCriteriaDto
+@{
+    var critCount = Model.CriteriaMemberCount.Values.Count;
+    var criteriaList = Model.CriteriaMemberCount.Keys.Order().ToList();
+    var options = criteriaList.Select(key => Model.CriteriaMemberCount[key].Keys.ToList()).ToList();
+    var lengths = options.Select(k => k.Count).ToList();
+    // creates a list of the multiple of all numbers behind it in the original list.
+    var rowCounts = lengths
+        .Select((_, index) => lengths
+            .Skip(index + 1)
+            .DefaultIfEmpty(1)
+            .Aggregate(1, (product, num) => product * num))
+        .ToList();
+
+    var indexes = Enumerable.Repeat(0, options.Count).ToList();
+    var rowcount = lengths.Aggregate(1, (product, num) => product * num);
+}
 
 <table class="table">
-    <thead>
-        @{
-            var genderValues = new[] { "vrouw", "man" };
-            var transportValues = new[] { "fiets", "te voet", "auto" };
-            var answerValues = new[] { "ja", "nee" };
-            
-            // For the header (vrouw)
-            foreach (var gender in genderValues.Take(1))
-            {
-                var rowCount = transportValues.Length * answerValues.Length;
-                
-                foreach (var transport in transportValues)
-                {
-                    foreach (var answer in answerValues)
-                    {
-                        if (answer == answerValues[0])
-                        {
-                            <tr>
-                                @if (transport == transportValues[0])
-                                {
-                                    <th rowspan="@rowCount">@gender</th>
-                                }
-                                <th rowspan="@answerValues.Length">@transport</th>
-                                <th>@answer</th>
-                                <th>
-                                    @{
-                                        // Calculate distribution based on your data
-                                        // This is a placeholder - you'll need to adapt this to your actual data structure
-                                        var distribution = GetDistributionValue(Model, gender, transport, answer);
-                                    }
-                                    @distribution
-                                </th>
-                            </tr>
-                        }
-                        else
-                        {
-                            <tr>
-                                <th>@answer</th>
-                                <th>
-                                    @{
-                                        var distribution = GetDistributionValue(Model, gender, transport, answer);
-                                    }
-                                    @distribution
-                                </th>
-                            </tr>
-                        }
-                    }
-                }
-            }
+    <thead class="table-primary">
+    <tr>
+        @foreach (var critName in criteriaList)
+        {
+            <th scope="col" class="text-center">@critName</th>
         }
+        <th>registrations</th>
+    </tr>
     </thead>
     <tbody>
-        @{
-            // For the body (man)
-            foreach (var gender in genderValues.Skip(1))
-            {
-                var rowCount = transportValues.Length * answerValues.Length;
-                
-                foreach (var transport in transportValues)
-                {
-                    foreach (var answer in answerValues)
-                    {
-                        if (answer == answerValues[0])
-                        {
-                            <tr>
-                                @if (transport == transportValues[0])
-                                {
-                                    <td rowspan="@rowCount">@gender</td>
-                                }
-                                <td rowspan="@answerValues.Length">@transport</td>
-                                <td>@answer</td>
-                                <td>
-                                    @{
-                                        var distribution = GetDistributionValue(Model, gender, transport, answer);
-                                    }
-                                    @distribution
-                                </td>
-                            </tr>
-                        }
-                        else
-                        {
-                            <tr>
-                                <td>@answer</td>
-                                <td>
-                                    @{
-                                        var distribution = GetDistributionValue(Model, gender, transport, answer);
-                                    }
-                                    @distribution
-                                </td>
-                            </tr>
-                        }
-                    }
-                }
+    @* every table row *@
+    @for (var i = 0; i < rowcount; i++)
+    {
+        <tr>
+            @* variable for keeping track of the distribution and key for dict *@
+            @{
+                var distribution = 1.0;
+                var key = new List<string>();
             }
-        }
+            @* every table column for criteria. *@
+            @for (var j = 0; j < critCount; j++)
+            {
+                var option = options[j][indexes[j] % lengths[j]];
+                distribution *= Model.DesiredCriteriaCount[criteriaList[j]][option];
+                key.Add(option);
+                if (i % rowCounts[j] > 0) continue;
+                <th class="align-middle text-center border-top border-black" rowspan="@rowCounts[j]">@option</th>
+                indexes[j]++;
+            }
+            <th class="text-center">
+                @{
+                    var stringKey = string.Join("|", key);
+                    if (!Model.CriteriaGroupAbsoluteMemberCount.TryGetValue(stringKey, out var count))
+                    {
+                        <div class="p-3 text-danger-emphasis bg-danger-subtle border border-danger-subtle">
+                            Something went wrong
+                        </div>
+                    }
+
+                    var needed = (int) (distribution * Model.DesiredRegistrationCount);
+                    if (needed == 0) continue;
+                }
+                @count out of @needed (@(distribution * 100)% of total)
+                <div class="progress"
+                     role="progressbar"
+                     aria-valuenow="@count"
+                     aria-valuemin="0"
+                     aria-valuemax="@needed">
+                    <div class="progress-bar"
+                         style="width: @((int)((double)count / needed * 100))%">
+                        @((double) count / needed * 100)%
+                    </div>
+                </div>
+            </th>
+        </tr>
+    }
     </tbody>
 </table>
-
-@functions {
-    private int GetDistributionValue(List<Dictionary<string, int>> data, string gender, string transport, string answer)
-    {
-        // This is a simplified implementation - you'll need to adapt this based on your actual data structure
-        // and how you want to calculate the distribution
-        
-        // Example implementation assuming:
-        // - First dictionary contains gender values
-        // - Second dictionary contains transport values  
-        // - Third dictionary contains answer values
-        
-        if (data.Count < 3) return 0;
-        
-        var genderValue = data[0].ContainsKey(gender) ? data[0][gender] : 0;
-        var transportValue = data[1].ContainsKey(transport) ? data[1][transport] : 0;
-        var answerValue = data[2].ContainsKey(answer) ? data[2][answer] : 0;
-        
-        // Multiply values to get distribution
-        return genderValue * transportValue * answerValue;
-    }
-}

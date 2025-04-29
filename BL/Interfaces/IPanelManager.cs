@@ -16,6 +16,8 @@ public interface IPanelManager
     public Panel GetPanelWithPosts(Guid panelId);
     public IEnumerable<PlanningGroupMember> GetAllPlanningGroupMembersWithIdentityUserForPanel(Guid panelId);
 
+    public Dictionary<string, int> CalculateCrossDistributionAbsolute(Guid panelId);
+
     //ADD
     public Panel AddPanel(string name, double sampleRate,
         ICollection<Criteria> distribution, int citizenCount, double reservePercentage,

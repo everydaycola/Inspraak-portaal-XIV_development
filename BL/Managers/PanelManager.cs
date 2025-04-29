@@ -278,6 +278,61 @@ public class PanelManager : IPanelManager
         // Return the dictionary of all generated combinations and their probabilities
         return combinations;
     }
+    
+        /// <summary>
+    /// Similar method to the one above, but it calculates absolute counts of panel members per group
+    /// </summary>
+    public Dictionary<string, int> CalculateCrossDistributionAbsolute(Guid panelId)
+    {
+        // List of all keys
+        var groups = new List<string>{""};
+
+        // for each criteria
+        foreach (var criteria in _criteriaRepo.ReadAllCriteriaForPanelWithAnswerOptions(panelId).OrderBy(c => c.Name))
+        {
+            // Create a copy of the groups to iterate through, because changes get made to "groups" while iterating. 
+            var keys = new List<string>(groups);
+            
+            // for each existing combination
+            foreach (var key in keys)
+            {
+                // for each option in the criteria,
+                // remove the option
+                groups.Remove(key);
+                // split the criteriagroup into multiple new groups, each with a different option appended
+                foreach (var option in criteria.AnswerOptions)
+                {
+                    var newKey = key;
+                    newKey = newKey + "|" + option.Option;
+                    groups.Add(newKey);
+                }
+            }
+        }
+        
+        // Remove first character (pipe symbol) from each group
+        groups = groups.Select(g => g[1..]).ToList();
+        
+        // now we have a dictionary with all correct combo's and need to fill it. 
+        var combinations = new Dictionary<string, int>();
+        
+        // get all panelmembers
+        var panelMembers = _repo.ReadPanelMembersWithCriteria(panelId).ToList();
+
+        // for each combo
+        foreach (var key in groups)
+        {
+            // set the value of that combo
+            combinations[key] = panelMembers.Where(pm => pm.HasRegistered)
+                // count how many panelmembers have the same reponses as the key
+                .Count(pm => string.Join('|', pm.Responses
+                        .OrderBy(r => r.Criteria.Name)
+                        .Select(r => r.SelectedOption))
+                        .Equals(key));
+        }
+        
+        return combinations;
+    }
+    
 
     private void HandOutAnsweredCriteriaToPanelMembers(ICollection<PanelMember> panelMembers,
         Dictionary<ICollection<CriteriaResponse>, double> crossDistribution)
@@ -294,7 +349,7 @@ public class PanelManager : IPanelManager
             var doingCount = (int)Math.Round(distribution.Value * totalCount);
 
             // Ensure we don't exceed total member count due to rounding
-            // I can image small edge cases where this goes wrong but eh its good enough
+            // I can imagine small edge cases where this goes wrong but eh its good enough
             if (doneCount + doingCount > totalCount)
             {
                 // if so assume this is the last criteria and just make the amount the remaining members

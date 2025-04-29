@@ -86,7 +86,17 @@
             </div>
         </div>
         <div class="card shadow-sm border-0 col-8 me-4">
-            @Html.Partial("_extraCriteriaStatsCrossPartial", Model.ExtraCriteriaDto.CriteriaMemberCount.Values.ToList())
+            @if (Model.ExtraCriteriaDto.CriteriaMemberCount.Values
+                     .Select(d => d.Keys.Count)
+                     .DefaultIfEmpty(1)
+                     .Aggregate(1, (product, num) => product * num) > 48)
+            {
+                @Html.Partial("_extraCriteriaStatsPartial", Model.ExtraCriteriaDto)
+            }
+            else
+            {
+                @Html.Partial("_extraCriteriaStatsCrossPartial", Model.ExtraCriteriaDto)
+            }
         </div>
     </div>
 
