@@ -67,9 +67,9 @@ function handleSelectedCriteriaFromHelper(selectedItem: string, innerDiv : HTMLD
             vraagInput.value = "Wat is uw geslacht?";
             antwoord1Input.value = "Man";
             antwoord2Input.value = "Vrouw";
-            //TODO:Calculate acual percentage based on API.
-            distributionInput1.value = String(49.5)
-            distributionInput2.value = String(51.5)
+            const average = usedData.reduce((sum, dataEntry) => sum + parseFloat(dataEntry.percentageMen), 0) / usedData.length;
+            distributionInput1.value = String(average)
+            distributionInput2.value = String(100 - average);
         }
         if(selectedItem === available_criteria_categories[1]){
             mogelijkheidToevoegenButton?.click();
@@ -85,10 +85,16 @@ function handleSelectedCriteriaFromHelper(selectedItem: string, innerDiv : HTMLD
             antwoord1Input.value = "Niet werkend";
             antwoord2Input.value = "Werkzoekend";
             antwoord3Input.value = "Werkend"
-
-            distributionInput1.value = String(50)
-            distributionInput2.value = String(30)
-            distributionInput3.value = String(20)
+            const totalPopulation = usedData.reduce((sum, dataEntry) => sum + parseFloat(dataEntry.totalPopulation), 0)
+            const totalPeopleWorking = usedData.reduce((sum, dataEntry) => sum + parseFloat(dataEntry.totalPeopleWorking), 0)
+            const totalPeopleLookingForWork = usedData.reduce((sum, dataEntry) => sum + parseFloat(dataEntry.totalPeopleLookingForWork), 0)
+            
+            var peopleWorkingPercentage = calculatePercentage(totalPeopleWorking, totalPopulation);
+            var peopleLookingForWorkPercentage = calculatePercentage(totalPeopleLookingForWork, totalPopulation);
+            
+            distributionInput1.value = String(peopleWorkingPercentage.toFixed(5))
+            distributionInput2.value = String(peopleLookingForWorkPercentage.toFixed(5))
+            distributionInput3.value = String((100 - peopleLookingForWorkPercentage - peopleWorkingPercentage).toFixed(5));
         }
         if(selectedItem === available_criteria_categories[2]){
             mogelijkheidToevoegenButton?.click();
@@ -100,14 +106,29 @@ function handleSelectedCriteriaFromHelper(selectedItem: string, innerDiv : HTMLD
             distributionInput2 = answerOptionInputs[1];
             const antwoord3Input = answerOption[2];
             const distributionInput3 = answerOptionInputs[2];
-            vraagInput.value = "Wat is uw hoogst behaalde diploma?";
+            vraagInput.value = "Studeerd u momenteel?";
             antwoord1Input.value = "Secundair onderwijs";
             antwoord2Input.value = "Hoger onderwijs of universiteit";
             antwoord3Input.value = "Anders"
 
-            distributionInput1.value = String(20)
-            distributionInput2.value = String(30)
-            distributionInput3.value = String(50)
+            const totalPopulation = usedData.reduce((sum, dataEntry) => sum + parseFloat(dataEntry.totalPopulation), 0)
+            const secondarySchoolTotal = usedData.reduce((sum, dataEntry) => sum + parseFloat(dataEntry.secondarySchoolStudents), 0)
+            const higherSchooledTotal = usedData.reduce((sum, dataEntry) => sum + parseFloat(dataEntry.higherEducation), 0)
+
+            var peopleSecondarySchool = calculatePercentage(secondarySchoolTotal, totalPopulation);
+            var peopleInHigherSchool = calculatePercentage(higherSchooledTotal, totalPopulation);
+            
+            distributionInput1.value = String(peopleSecondarySchool.toFixed(5))
+            distributionInput2.value = String(peopleInHigherSchool.toFixed(5))
+            distributionInput3.value = String((100 - peopleSecondarySchool - peopleInHigherSchool).toFixed(5))
         }
     }
+}
+
+
+function calculatePercentage(part: number, total: number): number {
+    if (total === 0) {
+        throw new Error("Total amount of citizens cannot be zero.");
+    }
+    return (part / total) * 100;
 }

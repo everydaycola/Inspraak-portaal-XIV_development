@@ -79,10 +79,10 @@ export function getAllSubRegions(basicApiData : any[]): any[] {
 
     subregionElements.forEach(subregion => {
         const nameInput = subregion.querySelector("input") as HTMLInputElement;
-        if (nameInput && nameInput.value.trim()) {
-            usedData += basicApiData.find(commune => commune.communeName === nameInput.value.trim());
+        const found = basicApiData.find(commune => commune.communeName === nameInput.value.trim());
+        if (found) {
+            usedData.push(found);
         }
     });
-    
     return usedData;
 }

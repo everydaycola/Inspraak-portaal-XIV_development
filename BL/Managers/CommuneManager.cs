@@ -37,7 +37,7 @@ public class CommuneManager : ICommuneManager
                 CommuneName = gemeenteNamen[p.Key],
                 TotalPopulation = p.Value,
                 PercentageMen = percentageMenData.GetValueOrDefault(p.Key),
-                SecondarySchoolSctudents = middleSchoolStudents.GetValueOrDefault(p.Key),
+                SecondarySchoolStudents = middleSchoolStudents.GetValueOrDefault(p.Key),
                 HigherEducation = higherEducationData.GetValueOrDefault(p.Key),
                 TotalPeopleWorking = workingData.GetValueOrDefault(p.Key),
                 TotalPeopleLookingForWork = lookingForWorkData.GetValueOrDefault(p.Key),
