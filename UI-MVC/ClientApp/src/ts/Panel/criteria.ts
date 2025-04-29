@@ -114,12 +114,12 @@ export function addCriteria() {
     isDefaultDiv.append(isDefaultInput, isDefaultLabel);
 
     questionDiv.append(questionLabel, questionInput, questionValidationSpan);
+    
+    criteriaContainer.appendChild(wrapper);
 
     // add 2 Answer Options
     addAnswerOption(currentCount, answerUl);
     addAnswerOption(currentCount, answerUl);
-
-    criteriaContainer.appendChild(wrapper);
 
     //Validation
     //Name
