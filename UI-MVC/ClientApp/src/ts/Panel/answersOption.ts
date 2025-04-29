@@ -17,7 +17,7 @@ export function addAnswerOption(criteriaId: number, answersContainer: HTMLUListE
     // Create answerOption input
     const answerOptionInput = document.createElement("input");
     answerOptionInput.name = `Distributions[${criteriaId}].AnswerOptions[${answerCount}].Option`;
-    answerOptionInput.className = "border border-1 rounded-2 me-2";
+    answerOptionInput.className = "border border-1 rounded-2 me-2 answer-option";
     answerOptionInput.type = "text";
     answerOptionInput.placeholder = `Antwoord ${(answerCount + 1)}`
     
@@ -38,7 +38,7 @@ export function addAnswerOption(criteriaId: number, answersContainer: HTMLUListE
     // Create answerOptionPercentage input
     const answerOptionPercentageInput = document.createElement("input");
     answerOptionPercentageInput.name = `Distributions[${criteriaId}].AnswerOptions[${answerCount}].DistributionPercentage`;
-    answerOptionPercentageInput.className = "border border-1 rounded-2 me-2";
+    answerOptionPercentageInput.className = "border border-1 rounded-2 me-2 answer-option-distribution";
     answerOptionPercentageInput.type = "number";
     answerOptionPercentageInput.placeholder = `${round(100 / (answerCount + 1))}`
     

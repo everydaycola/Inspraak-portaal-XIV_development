@@ -108,6 +108,7 @@ export function addCriteria() {
     addAnswerOptionBtn.type = "button";
     addAnswerOptionBtn.className = "btn btn-primary col-2 ms-3 my-2";
     addAnswerOptionBtn.innerText = "Mogelijkheid Toevoegen";
+    addAnswerOptionBtn.classList.add("add-option-button");
     addAnswerOptionBtn.addEventListener("click", () => addAnswerOption(currentCount, answerUl));
     
     const nameValidationSpan = document.createElement("span");
