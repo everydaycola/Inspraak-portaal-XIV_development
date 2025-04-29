@@ -1,4 +1,5 @@
 ﻿import {addAnswerOption, reIndexAnswerOptions, resetAnswerCounters} from "./answersOption";
+import {criteriaInputUpdateHandler} from "./apiAutofill/apiDataFiller";
 
 let criteriaCount = 0;
 
@@ -137,8 +138,7 @@ export function addCriteria() {
     addAnswerOption(currentCount, answerUl);
 
     criteriaContainer.appendChild(wrapper);
-
-    $.validator.unobtrusive.parse("#new-panel-form");
+    criteriaInputUpdateHandler();
 }
 
 
@@ -153,6 +153,7 @@ function removeCriteria(criteriaId: number) {
     // Rebuild the subregions to fix the indices
     reIndexCriteria();
     resetAnswerCounters(criteriaId)
+    criteriaInputUpdateHandler();
 }
 
 function reIndexCriteria() {
