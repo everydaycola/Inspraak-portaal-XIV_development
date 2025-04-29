@@ -1,5 +1,13 @@
-import {addSubRegion} from "./subRegion";
+import {addSubRegion, addSubregionValidation} from "./subRegion";
 import {addCriteria, validateCriteriaPercentages} from "./criteria";
+
+document.addEventListener("DOMContentLoaded",() => {
+    addSubregionValidation(
+        document.getElementById("subregion-0-name") as HTMLInputElement,
+        document.getElementById("subregion-0-name-msg") as HTMLSpanElement,
+        document.getElementById("subregion-0-size") as HTMLInputElement,
+        document.getElementById("subregion-0-size-msg") as HTMLSpanElement)
+})
 
 const subRegionBtn = document.getElementById("sub-region-btn") as HTMLAnchorElement;
 subRegionBtn.addEventListener("click", addSubRegion);
