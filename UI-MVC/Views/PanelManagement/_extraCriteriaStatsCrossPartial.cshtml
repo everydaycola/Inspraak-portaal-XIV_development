@@ -65,9 +65,9 @@
                      aria-valuenow="@count"
                      aria-valuemin="0"
                      aria-valuemax="@needed">
-                    <div class="progress-bar"
-                         style="width: @((int)((double)count / needed * 100))%">
-                        @((double) count / needed * 100)%
+                    <div class="progress-bar @(count >= needed ? "bg-success" : "bg-warning") "
+                         style="width: @(count * 100 / needed)%">
+                        @(count * 100 / needed)%
                     </div>
                 </div>
             </th>

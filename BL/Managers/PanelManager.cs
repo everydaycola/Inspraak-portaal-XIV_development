@@ -287,8 +287,20 @@ public class PanelManager : IPanelManager
         // List of all keys
         var groups = new List<string>{""};
 
+        // get criteria
+        var criterialist = _criteriaRepo.ReadAllCriteriaForPanelWithAnswerOptions(panelId).OrderBy(c => c.Name).ToList();
+        
+        // get all panelmembers
+        var panelMembers = _repo.ReadPanelMembersWithCriteria(panelId).Where(pm => pm.HasRegistered).ToList();
+        
+        if (criterialist.Count == 0)
+        {
+            _logger.Log(LogLevel.Warning, "No criteria found for panel with ID: " + panelId);
+            return new Dictionary<string, int> { { "", panelMembers.Count } };
+        }
+        
         // for each criteria
-        foreach (var criteria in _criteriaRepo.ReadAllCriteriaForPanelWithAnswerOptions(panelId).OrderBy(c => c.Name))
+        foreach (var criteria in criterialist)
         {
             // Create a copy of the groups to iterate through, because changes get made to "groups" while iterating. 
             var keys = new List<string>(groups);
@@ -314,15 +326,12 @@ public class PanelManager : IPanelManager
         
         // now we have a dictionary with all correct combo's and need to fill it. 
         var combinations = new Dictionary<string, int>();
-        
-        // get all panelmembers
-        var panelMembers = _repo.ReadPanelMembersWithCriteria(panelId).ToList();
 
         // for each combo
         foreach (var key in groups)
         {
             // set the value of that combo
-            combinations[key] = panelMembers.Where(pm => pm.HasRegistered)
+            combinations[key] = panelMembers
                 // count how many panelmembers have the same reponses as the key
                 .Count(pm => string.Join('|', pm.Responses
                         .OrderBy(r => r.Criteria.Name)
