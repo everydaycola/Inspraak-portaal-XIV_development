@@ -1,7 +1,8 @@
 ﻿import {addAnswerOption, reIndexAnswerOptions, resetAnswerCounters} from "./answersOption";
+import {setValidationMessages} from "./FormValidator" 
+
 
 let criteriaCount = 0;
-
 
 export function addCriteria() {
     const criteriaContainer = document.getElementById("criteria-container") as HTMLDivElement;
@@ -30,18 +31,11 @@ export function addCriteria() {
 
     // Create name input
     const nameInput = document.createElement("input")
-    nameInput.id = "criteria-name";
+    nameInput.id = `criteria-name-${currentCount}`;
     nameInput.className = "border border-1 rounded-2";
     nameInput.type = "text";
     nameInput.placeholder = `Criteria ${currentCount + 1}`;
     nameInput.name = `Distributions[${currentCount}].Name`
-
-    nameInput.setAttribute("data-val", "true");
-    nameInput.setAttribute("data-val-required", "Criteria moet een naam hebben.");
-    nameInput.setAttribute("data-val-minlength", "Criteria naam moet minimaal 2 karakters lang zijn.");
-    nameInput.setAttribute("data-val-minlength-min", "2");
-    nameInput.setAttribute("data-val-maxlength", "Criteria naam mag maximaal 20 karakters lang zijn.");
-    nameInput.setAttribute("data-val-maxlength-max", "20");
 
     // Create isDefault div
     const isDefaultDiv = document.createElement("div");
@@ -80,17 +74,11 @@ export function addCriteria() {
 
     // Create Question input
     const questionInput = document.createElement("input");
-    questionInput.id = "criteria-question";
+    questionInput.id = `criteria-question-${currentCount}`;
     questionInput.className = "border border-1 rounded-2 col-8";
     questionInput.type = "text";
     questionInput.placeholder = `Criteria ${currentCount + 1} vraag`;
     questionInput.name = `Distributions[${currentCount}].Question`;
-
-    questionInput.setAttribute("data-val", "true");
-    questionInput.setAttribute("data-val-minlength", "Criteria vraag moet minimaal 6 karakters lang zijn.");
-    questionInput.setAttribute("data-val-minlength-min", "6");
-    questionInput.setAttribute("data-val-maxlength", "Criteria vraag mag maximaal 100 karakters lang zijn.");
-    questionInput.setAttribute("data-val-maxlength-max", "100");
 
     // Create Answer Heading
     const answerHeading = document.createElement("h6");
@@ -110,24 +98,19 @@ export function addCriteria() {
     addAnswerOptionBtn.addEventListener("click", () => addAnswerOption(currentCount, answerUl));
     
     const nameValidationSpan = document.createElement("span");
-    nameValidationSpan.setAttribute("data-valmsg-for", `Distributions[${currentCount}].Name`);
-    nameValidationSpan.setAttribute("data-valmsg-replace", "true");
-    nameValidationSpan.className = "text-danger";
+    nameValidationSpan.id=`${nameInput.id}-msg`
+    nameValidationSpan.className = "text-danger ps-1";
 
     const questionValidationSpan = document.createElement("span");
-    nameValidationSpan.setAttribute("data-valmsg-for", `Distributions[${currentCount}].Question`);
-    nameValidationSpan.setAttribute("data-valmsg-replace", "true");
-    nameValidationSpan.className = "text-danger";
-
+    questionValidationSpan.id = `${questionInput.id}-msg`
+    questionValidationSpan.className = "text-danger ps-1";
     
-    
-
     // Appending
     wrapper.append(headDiv, questionDiv, answerHeading, answerUl, addAnswerOptionBtn)
 
-    headDiv.append(nameDiv, isDefaultDiv, removeBtn)
+    headDiv.append(nameDiv, isDefaultDiv, removeBtn, nameValidationSpan)
 
-    nameDiv.append(nameLabel, nameInput, nameValidationSpan);
+    nameDiv.append(nameLabel, nameInput);
     isDefaultDiv.append(isDefaultInput, isDefaultLabel);
 
     questionDiv.append(questionLabel, questionInput, questionValidationSpan);
@@ -138,8 +121,28 @@ export function addCriteria() {
 
     criteriaContainer.appendChild(wrapper);
 
-    $.validator.unobtrusive.parse("#new-panel-form");
+    //Validation
+    //Name
+    nameInput.required = true;
+    nameInput.minLength = 2;
+    nameInput.minLength = 20;
+
+    setValidationMessages(nameInput.id,nameValidationSpan.id,{
+        valueMissing: "Criteria moet een naam hebben.",
+        tooShort: "Criteria naam moet minimaal 2 karakters lang zijn.",
+        tooLong: "Criteria naam mag maximaal 20 karakters lang zijn."
+    })
+
+    //Question
+    questionInput.minLength = 6;
+    questionInput.maxLength = 100;
+
+    setValidationMessages(questionInput.id,questionValidationSpan.id,{
+        tooShort: "Criteria vraag moet minimaal 6 karakters lang zijn.",
+        tooLong: "Criteria vraag mag maximaal 100 karakters lang zijn."
+    })
 }
+
 
 
 function removeCriteria(criteriaId: number) {
@@ -193,5 +196,40 @@ function reIndexCriteria() {
 
         criteriaCount++;
     });
+}
+
+//Validation
+export function validateCriteriaPercentages(): boolean {
+    let isValid = true;
+
+    const criteriaBlocks = document.querySelectorAll(".criteria");
+
+    criteriaBlocks.forEach((criteriaDiv, index) => {
+        const inputs = criteriaDiv.querySelectorAll<HTMLInputElement>(
+            `input[name^="Distributions[${index}].AnswerOptions"][name$="DistributionPercentage"]`
+        );
+
+        const sum = Array.from(inputs)
+            .map(input => parseFloat(input.value) || 0)
+            .reduce((acc, val) => acc + val, 0);
+
+        // Remove existing message if any
+        let message = criteriaDiv.querySelector(".distribution-error");
+        if (message) message.remove();
+
+        if (Math.abs(sum) != 100) {
+            isValid = false;
+
+            const error = document.createElement("div");
+            error.className = "text-danger distribution-error";
+            error.innerText = `De verdeling van de antwoord opties moet 100% zijn. Nu: ${sum}%`;
+
+            // Place below answer list
+            const ul = criteriaDiv.querySelector("ul.list-group");
+            ul?.after(error);
+        }
+    });
+
+    return isValid;
 }
 
