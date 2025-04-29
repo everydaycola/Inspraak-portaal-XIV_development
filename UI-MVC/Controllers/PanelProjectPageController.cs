@@ -16,14 +16,16 @@ public class PanelProjectPageController: Controller
     private readonly IStorageManager _storageManager;
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly ICustomUserManager _customUserManager;
+    private readonly ISendMailManager _sendMailManager;
 
-    public PanelProjectPageController(ILogger<PanelProjectPageController> logger, IPanelManager panelManager, IStorageManager storageManager, ICustomUserManager customUserManager, UserManager<ApplicationUser> userManager)
+    public PanelProjectPageController(ILogger<PanelProjectPageController> logger, IPanelManager panelManager, IStorageManager storageManager, ICustomUserManager customUserManager, UserManager<ApplicationUser> userManager, ISendMailManager sendMailManager)
     {
         _logger = logger;
         _panelManager = panelManager;
         _storageManager = storageManager;
         _customUserManager = customUserManager;
         _userManager = userManager;
+        _sendMailManager = sendMailManager;
     }
     
     [Authorize(Roles = "Organisatie,PanelMember")]
@@ -43,7 +45,7 @@ public class PanelProjectPageController: Controller
     }
 
     [HttpPost]
-    public IActionResult AddTextPost(Guid panelId, string title,string content, bool visibleForPanelMember)
+    public async Task<IActionResult> AddTextPost(Guid panelId, string title,string content, bool visibleForPanelMember, bool informPanelMembersViaMail)
     {
         if (string.IsNullOrWhiteSpace(content))
         {
@@ -62,11 +64,29 @@ public class PanelProjectPageController: Controller
         {
             Panel = updatedPanel
         };
+        if (informPanelMembersViaMail && visibleForPanelMember)
+        {
+            var panelMembers = _panelManager.GetAllPanelMembersForPanel(updatedPanel.Id);
+            _logger.Log(LogLevel.Information, "Panelmembers op de hoogte brengen.");
+            foreach (var panelMember in panelMembers)
+            {
+                if (panelMember.HasRegistered && panelMember.Selected)
+                {
+                    var baseUrl = $"{Request.Scheme}://{Request.Host}{Request.PathBase}";
+                    await _sendMailManager.SendSingleMailAsync(panelMember.Email,
+                        "Er is een nieuwe post geplaatst op een panel waaraan jij deelneemt!",
+                        "Nieuwe post op " + updatedPanel.Name + " geplaatst",
+                        "<h1>Nieuwe post op panel " + updatedPanel.Name + "</h1>" +
+                        $"<p>Gebruik onderstaande link om deze te bekijken</p><a href={baseUrl}/PanelProjectPage?panelId={updatedPanel.Id}>Project pagina bezoeken.</a>");
+                    _logger.Log(LogLevel.Information, "Mail succesvol verstuurd!");
+                }
+            }
+        }
         return View("Index", updatedProjectPageDto); 
     }
     
     [HttpPost]
-    public async Task<IActionResult> AddDocumentPost(string title, IFormFile file, Guid panelId, bool visibleForPanelMember)
+    public async Task<IActionResult> AddDocumentPost(string title, IFormFile file, Guid panelId, bool visibleForPanelMember, bool informPanelMembersViaMail)
     {
         if (file == null || file.Length == 0)
         {
@@ -89,6 +109,24 @@ public class PanelProjectPageController: Controller
         {
             Panel = updatedPanel
         };
+        if (informPanelMembersViaMail && visibleForPanelMember)
+        {
+            var panelMembers = _panelManager.GetAllPanelMembersForPanel(updatedPanel.Id);
+            _logger.Log(LogLevel.Information, "Panelmembers op de hoogte brengen.");
+            foreach (var panelMember in panelMembers)
+            {
+                if (panelMember.HasRegistered && panelMember.Selected)
+                {
+                    var baseUrl = $"{Request.Scheme}://{Request.Host}{Request.PathBase}";
+                    await _sendMailManager.SendSingleMailAsync(panelMember.Email,
+                        "Er is een nieuwe post geplaatst op een panel waaraan jij deelneemt!",
+                        "Nieuwe post op " + updatedPanel.Name + " geplaatst",
+                        "<h1>Nieuwe post op panel " + updatedPanel.Name + "</h1>" +
+                        $"<p>Gebruik onderstaande link om deze te bekijken</p><a href={baseUrl}/PanelProjectPage?panelId={updatedPanel.Id}>Project pagina bezoeken.</a>");
+                    _logger.Log(LogLevel.Information, "Mail succesvol verstuurd!");
+                }
+            }
+        }
         return View("Index", updatedProjectPageDto); 
     }
 }
