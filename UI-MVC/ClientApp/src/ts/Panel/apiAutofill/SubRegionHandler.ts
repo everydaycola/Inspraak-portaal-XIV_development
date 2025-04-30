@@ -29,8 +29,7 @@ function checkForNameKnownByApi(searchedValue: string, sizeInput: HTMLInputEleme
     const match = basicApiData.find(commune => {
         return (commune.communeName as string).toLowerCase() === searchedValue.toLowerCase();
     });
-
-    console.log(basicApiData);
+    
     if (match) {
         sizeInput.value = String(match.totalPopulation);
     } else {

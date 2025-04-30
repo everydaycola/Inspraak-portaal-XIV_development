@@ -9,9 +9,12 @@ export function attachEventHandlersToCriteriaInput(subregionInnerDiv: NodeListOf
     subregionInnerDiv.forEach(innerDiv => {
         const inputs = innerDiv.querySelectorAll("input") as NodeListOf<HTMLInputElement>;
         const nameInput = inputs[0];
-        // Create and insert suggestion box
         const suggestionBox = createSuggestionBox();
-        innerDiv.append(suggestionBox);
+        const row = document.createElement("div");
+        row.className="row";
+        row.appendChild(suggestionBox);
+        const firstRowOfInnerDiv = innerDiv.children[0]
+        innerDiv.insertBefore(row, firstRowOfInnerDiv);
         nameInput.addEventListener("input", () => {
             const inputValue = nameInput.value.toLowerCase();
             // Filter suggestions based on input value
