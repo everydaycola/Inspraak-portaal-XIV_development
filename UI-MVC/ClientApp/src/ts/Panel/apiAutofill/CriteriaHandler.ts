@@ -1,4 +1,4 @@
-import {createSuggestionBox} from "../../Helpers/HtmlHelper";
+import {createSuggestionBox, wrapElementWithBootstrapRow} from "../../Helpers/HtmlHelper";
 import {getAllSubRegions} from "./SubRegionHandler";
 
 const available_criteria_categories : string[] = ["Geslacht","Werkend", "Opleidingsgraad"]
@@ -10,11 +10,9 @@ export function attachEventHandlersToCriteriaInput(subregionInnerDiv: NodeListOf
         const inputs = innerDiv.querySelectorAll("input") as NodeListOf<HTMLInputElement>;
         const nameInput = inputs[0];
         const suggestionBox = createSuggestionBox();
-        const row = document.createElement("div");
-        row.className="row";
-        row.appendChild(suggestionBox);
+        const suggestionBoxWithRow= wrapElementWithBootstrapRow(suggestionBox);
         const firstRowOfInnerDiv = innerDiv.children[0]
-        innerDiv.insertBefore(row, firstRowOfInnerDiv);
+        innerDiv.insertBefore(suggestionBoxWithRow, firstRowOfInnerDiv);
         nameInput.addEventListener("input", () => {
             const inputValue = nameInput.value.toLowerCase();
             // Filter suggestions based on input value

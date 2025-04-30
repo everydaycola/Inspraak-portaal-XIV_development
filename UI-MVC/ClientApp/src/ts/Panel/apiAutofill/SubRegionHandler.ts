@@ -1,17 +1,19 @@
-import {createSuggestionBox} from "../../Helpers/HtmlHelper";
+import {createSuggestionBox, wrapElementWithBootstrapRow} from "../../Helpers/HtmlHelper";
 
 const outerDiv = document.querySelector("#subregions-container") as HTMLDivElement;
 let subregionInnerDiv = outerDiv.querySelectorAll(".subRegion") as NodeListOf<HTMLDivElement>;
 
 
-export function attachEventHandlersToSubregionInput(subregionInnerDiv: NodeListOf<HTMLDivElement>, basicApiData : any[]) {
+export function attachEventHandlersToSubregionInput(outerDiv: HTMLDivElement, subregionInnerDiv: NodeListOf<HTMLDivElement>, basicApiData : any[]) {
     subregionInnerDiv.forEach(innerDiv => {
+        
         const inputs = innerDiv.querySelectorAll("input") as NodeListOf<HTMLInputElement>;
         const nameInput = inputs[0];
         const sizeInput = inputs[1];
         // Create and insert suggestion box
         const suggestionBox = createSuggestionBox();
-        innerDiv.insertBefore(suggestionBox, nameInput);
+        const suggestionBoxWithRow = wrapElementWithBootstrapRow(suggestionBox);
+        outerDiv.insertBefore(suggestionBoxWithRow, innerDiv);
         nameInput.addEventListener("input", () => {
             const inputValue = nameInput.value;
             checkForNameKnownByApi(inputValue, sizeInput,basicApiData);

@@ -9,3 +9,10 @@ export function createSuggestionBox(): HTMLDivElement {
     box.style.display = "none";
     return box;
 }
+
+export function wrapElementWithBootstrapRow(element: HTMLElement): HTMLDivElement{
+    const row = document.createElement("div");
+    row.className="row";
+    row.appendChild(element);
+    return row;
+}

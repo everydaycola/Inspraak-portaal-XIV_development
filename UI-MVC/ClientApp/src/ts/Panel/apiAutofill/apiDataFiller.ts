@@ -20,7 +20,7 @@ const outerDiv = document.querySelector("#subregions-container") as HTMLDivEleme
 let subregionInnerDiv = outerDiv.querySelectorAll(".subRegion") as NodeListOf<HTMLDivElement>;
 export function newSubregionInputAddedHandler() {
     subregionInnerDiv = outerDiv.querySelectorAll(".subRegion");
-    attachEventHandlersToSubregionInput(subregionInnerDiv, basicApiData);
+    attachEventHandlersToSubregionInput(outerDiv,subregionInnerDiv, basicApiData);
 }
 
 //CRITERIA AUTO FILLING USING API
