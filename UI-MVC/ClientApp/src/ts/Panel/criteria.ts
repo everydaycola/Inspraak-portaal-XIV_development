@@ -127,7 +127,7 @@ export function addCriteria() {
     //Name
     nameInput.required = true;
     nameInput.minLength = 2;
-    nameInput.minLength = 20;
+    nameInput.maxLength = 20;
 
     setValidationMessages(nameInput.id,nameValidationSpan.id,{
         valueMissing: "Criteria moet een naam hebben.",
