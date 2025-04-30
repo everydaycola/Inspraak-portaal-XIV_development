@@ -5,6 +5,7 @@ using Domain.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
 using UI_MVC.Models.Dto.ProjectPage;
 
 namespace UI_MVC.Controllers;
@@ -18,6 +19,7 @@ public class PanelProjectPageController : Controller
     private readonly ICustomUserManager _customUserManager;
     private readonly ISendMailManager _sendMailManager;
 
+    private readonly string[] allowedExtensions = new[] { ".jpg", ".jpeg", ".png", ".gif", ".bmp", ".webp", ".svg", ".pdf", ".txt", ".dockx" };
     public PanelProjectPageController(ILogger<PanelProjectPageController> logger, IPanelManager panelManager,
         IStorageManager storageManager, ICustomUserManager customUserManager, UserManager<ApplicationUser> userManager,
         ISendMailManager sendMailManager)
@@ -51,17 +53,16 @@ public class PanelProjectPageController : Controller
     public async Task<IActionResult> AddTextPost(Guid panelId, string title, string content, bool visibleForPanelMember,
         bool informPeopleViaMail)
     {
-        if (string.IsNullOrWhiteSpace(content))
+        
+        if (string.IsNullOrWhiteSpace(title) || string.IsNullOrWhiteSpace(content))
         {
-            ModelState.AddModelError("", "Content cannot be null");
+            ModelState.AddModelError("", "Vul alle verplichte velden correct in.");
             var panel = _panelManager.GetPanelWithPosts(panelId);
-            var projectPageDto = new ProjectPageDto
-            {
-                Panel = panel
-            };
+            var projectPageDto = new ProjectPageDto { Panel = panel };
+            ViewBag.OpenModal = "addTextModal";
             return View("Index", projectPageDto);
         }
-
+        
         _panelManager.AddTextPost(panelId, title, content, visibleForPanelMember);
         var updatedPanel = _panelManager.GetPanelWithPosts(panelId);
         var updatedProjectPageDto = new ProjectPageDto
@@ -77,12 +78,24 @@ public class PanelProjectPageController : Controller
     public async Task<IActionResult> AddDocumentPost(string title, IFormFile file, Guid panelId,
         bool visibleForPanelMember, bool informPeopleViaMail)
     {
-        if (file == null || file.Length == 0)
+        if (string.IsNullOrWhiteSpace(title)|| file.Length == 0 || file == null)
         {
-            ModelState.AddModelError("file", "Geen bestand geselecteerd.");
-            return RedirectToAction("ProjectPage", new { id = panelId });
+            ModelState.AddModelError("", "Vul alle verplichte velden correct in.");
+            var panel = _panelManager.GetPanelWithPosts(panelId);
+            var projectPageDto = new ProjectPageDto { Panel = panel };
+            ViewBag.OpenModal = "addBestandModal";
+            return View("Index", projectPageDto);
         }
-
+        var extension = Path.GetExtension(file.FileName).ToLowerInvariant();
+        if (!allowedExtensions.Contains(extension))
+        {
+            ModelState.AddModelError("file", "Ongeldig bestandstype. Toegestane types: afbeeldingen, pdf, txt, dockx.");
+            ViewBag.OpenModal = "addBestandModal";
+            var panel = _panelManager.GetPanelWithPosts(panelId);
+            var projectPageDto = new ProjectPageDto { Panel = panel };
+            return View("Index", projectPageDto);
+        }
+        
         // TEMP Create a folder path for uploads
         var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads");
         if (!Directory.Exists(uploadsFolder))
@@ -157,6 +170,7 @@ public class PanelProjectPageController : Controller
             ModelState.AddModelError("", "Vul alle verplichte velden correct in.");
             var panel = _panelManager.GetPanelWithPosts(panelId);
             var projectPageDto = new ProjectPageDto { Panel = panel };
+            ViewBag.OpenModal = "addWerksessieModal";
             return View("Index", projectPageDto);
         }
 
@@ -166,6 +180,7 @@ public class PanelProjectPageController : Controller
             ModelState.AddModelError("", "De datum mag niet in het verleden liggen.");
             var panel = _panelManager.GetPanelWithPosts(panelId);
             var projectPageDto = new ProjectPageDto { Panel = panel };
+            ViewBag.OpenModal = "addWerksessieModal";
             return View("Index", projectPageDto);
         }
 
@@ -175,6 +190,7 @@ public class PanelProjectPageController : Controller
             ModelState.AddModelError("", "Ongeldig tijdstip.");
             var panel = _panelManager.GetPanelWithPosts(panelId);
             var projectPageDto = new ProjectPageDto { Panel = panel };
+            ViewBag.OpenModal = "addWerksessieModal";
             return View("Index", projectPageDto);
         }
 
@@ -231,6 +247,15 @@ public class PanelProjectPageController : Controller
         {
             ModelState.AddModelError("VerslagFile", "Geen bestand geselecteerd.");
             return RedirectToAction("Index");
+        }
+        var extension = Path.GetExtension(VerslagFile.FileName).ToLowerInvariant();
+        if (!allowedExtensions.Contains(extension))
+        {
+            ModelState.AddModelError("file", "Ongeldig bestandstype. Toegestane types: afbeeldingen, pdf, txt, dockx.");
+            ViewBag.OpenModal = "addBestandModal";
+            var panel = _panelManager.GetPanelWithPosts(panelId);
+            var projectPageDto = new ProjectPageDto { Panel = panel };
+            return View("Index", projectPageDto);
         }
 
         var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads");

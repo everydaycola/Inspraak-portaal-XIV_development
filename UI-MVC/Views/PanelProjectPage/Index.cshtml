@@ -5,9 +5,15 @@
 @{
     Layout = "_Layout";
 }
+
+@section Scripts{
+    <script src="~/dist/autoOpenModals.entry.js" type="module"></script>
+}
+
 <h2>Projectpagina</h2>
 <h2>@Model.Panel.Name</h2>
 
+<div id="modal-root" class="hidden" data-open-modal="@ViewBag.OpenModal"></div>
 @if (User.IsInRole(CustomIdentityConstants.OrganisatieRole))
 {
     <div class="mb-3">
@@ -33,18 +39,18 @@
                 </div>
                 <div class="modal-body">
                     <form id="addTextForm" asp-action="AddTextPost" method="post">
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
                         <input type="hidden" name="panelId" value="@Model.Panel.Id"/>
-    
                         <div class="mb-3">
-                            <label for="textTitleInput" class="form-label">Titel</label>
-                            <input type="text" class="form-control" id="textTitleInput" name="title" placeholder="Voer de titel in" required />
+                            <label for="textTitleInput" class="form-label">Titel (*)</label>
+                            <input type="text" class="form-control" id="textTitleInput" name="title" placeholder="Voer de titel in" required/>
                         </div>
 
                         <div class="mb-3">
-                            <label for="projectTextInput" class="form-label">Voer je tekst in</label>
+                            <label for="projectTextInput" class="form-label">Voer je tekst in (*)</label>
                             <textarea class="form-control" id="projectTextInput" name="content" rows="6" placeholder="Voeg hier je projecttekst toe..." required></textarea>
                         </div>
-                        
+
                         <div class="form-check mb-3">
                             <input class="form-check-input" type="checkbox" id="PLvisibleCheckbox" value="true" name="visibleForPanelMember" checked/>
                             <label class="form-check-label" for="PLvisibleCheckbox"
@@ -52,7 +58,7 @@
                                 Zichtbaar voor panelleden?
                             </label>
                         </div>
-                        
+
                         <h3>Panelleden op de hoogte brengen?</h3>
                         <div class="form-check mb-3">
                             <input class="form-check-input" type="checkbox" id="informPeopleViaMail" value="true" name="informPeopleViaMail" checked/>
@@ -61,7 +67,7 @@
                                 Iedereen op de hoogte brengen via mail?
                             </label>
                         </div>
-                        
+
                         <div class="text-end">
                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuleren</button>
                             <button type="submit" class="btn btn-success">Opslaan</button>
@@ -83,15 +89,16 @@
                 <div class="modal-body">
                     <form id="addImageForm" asp-action="AddDocumentPost" method="post" enctype="multipart/form-data">
                         <input type="hidden" name="panelId" value="@Model.Panel.Id"/>
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
 
                         <div class="mb-3">
-                            <label for="docTitleInput" class="form-label">Titel</label>
+                            <label for="docTitleInput" class="form-label">Titel (*)</label>
                             <input type="text" class="form-control" id="docTitleInput" name="title" placeholder="Voer de titel in" required />
                         </div>
 
                         <div class="mb-3">
-                            <label for="imageUpload" class="form-label">Afbeelding of PDF uploaden</label>
-                            <input type="file" class="form-control" id="imageUpload" name="file" accept="image/*, .pdf, .txt" required/>
+                            <label for="imageUpload" class="form-label">Afbeelding of PDF uploaden (*)</label>
+                            <input type="file" class="form-control" id="imageUpload" name="file" accept="image/*, .pdf, .txt, .dockx" required/>
                         </div>
                         
                         <div class="form-check mb-3">
@@ -126,25 +133,25 @@
     <div class="modal-dialog modal-lg">
         <div class="modal-content shadow">
             <div class="modal-header">
-                <h5 class="modal-title" id="addWerksessieModalLabel">Werksessie aanmaken</h5>
+                <h5 class="modal-title" id="addWerksessieModalLabel">Werksessie aanmaken </h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Sluiten"></button>
             </div>
             <div class="modal-body">
                 <form id="addWerksessieForm" asp-action="AddWerksessiePost" method="post">
                     <input type="hidden" name="panelId" value="@Model.Panel.Id"/>
-
+                    <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
                     <div class="mb-3">
-                        <label for="sessionTitleInput" class="form-label">Titel van de werksessie</label>
+                        <label for="sessionTitleInput" class="form-label">Titel van de werksessie (*)</label>
                         <input type="text" class="form-control" id="sessionTitleInput" name="title" placeholder="Voer de titel in" required />
                     </div>
 
                     <div class="row mb-3">
                         <div class="col-md-6">
-                            <label for="sessionDateInput" class="form-label">Datum van de werksessie</label>
+                            <label for="sessionDateInput" class="form-label">Datum van de werksessie (*)</label>
                             <input type="date" class="form-control" id="sessionDateInput" name="sessionDate" required />
                         </div>
                         <div class="col-md-6">
-                            <label for="sessionTimeInput" class="form-label">Tijdstip</label>
+                            <label for="sessionTimeInput" class="form-label">Tijdstip (*)</label>
                             <input type="time" class="form-control" id="sessionTimeInput" name="sessionTime" required />
                         </div>
                     </div>
@@ -234,7 +241,7 @@
                              <input type="hidden" name="MeetingId" value="@meetingPost.Id" />
                              <input type="hidden" name="panelId" value="@Model.Panel.Id"/>
                              <div class="mb-2">
-                                 <input type="file" class="form-control" name="VerslagFile" required />
+                                 <input type="file" class="form-control" name="VerslagFile"  accept="image/*, .pdf, .txt, .dockx" required />
                              </div>
                              <button type="submit" class="btn btn-primary">Uploaden</button>
                          </form>
