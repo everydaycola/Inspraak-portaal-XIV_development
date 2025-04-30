@@ -238,10 +238,11 @@
                      </button>
                      <div class="collapse mt-2" id="uploadCollapse-@meetingPost.Id">
                          <form method="post" enctype="multipart/form-data" asp-action="AddSummaryToMeetingPost">
-                             <input type="hidden" name="MeetingId" value="@meetingPost.Id" />
+                             <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+                             <input type="hidden" name="MeetingId" value="@meetingPost.Id"/>
                              <input type="hidden" name="panelId" value="@Model.Panel.Id"/>
                              <div class="mb-2">
-                                 <input type="file" class="form-control" name="VerslagFile"  accept="image/*, .pdf, .txt, .dockx" required />
+                                 <input type="file" class="form-control" name="VerslagFile" accept="image/*, .pdf, .txt, .dockx" required/>
                              </div>
                              <button type="submit" class="btn btn-primary">Uploaden</button>
                          </form>

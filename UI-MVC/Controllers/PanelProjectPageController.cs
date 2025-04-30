@@ -252,7 +252,6 @@ public class PanelProjectPageController : Controller
         if (!allowedExtensions.Contains(extension))
         {
             ModelState.AddModelError("file", "Ongeldig bestandstype. Toegestane types: afbeeldingen, pdf, txt, dockx.");
-            ViewBag.OpenModal = "addBestandModal";
             var panel = _panelManager.GetPanelWithPosts(panelId);
             var projectPageDto = new ProjectPageDto { Panel = panel };
             return View("Index", projectPageDto);
