@@ -1,5 +1,7 @@
 ﻿import {newSubregionInputAddedHandler} from "./apiAutofill/apiDataFiller";
 
+import {setValidationMessages} from "./FormValidator"
+
 let subRegionCount = 1;
 
 export function addSubRegion() {
@@ -15,21 +17,20 @@ export function addSubRegion() {
 
     // Create the Name input
     const nameInput = document.createElement("input");
+    nameInput.id = `subregion-${subRegionCount}-name` 
     nameInput.name = `SubRegions[${subRegionCount}].Name`;  // Bind to SubRegions[index].Name
     nameInput.placeholder = "Naam";
     nameInput.type = "text";
     nameInput.className = "form-control d-inline w-50 me-2";
-    nameInput.setAttribute("data-val", "true");
-    nameInput.setAttribute("data-val-required", "Naam is verplicht");
+    
 
     // Create the Size input
     const sizeInput = document.createElement("input");
+    sizeInput.id = `subregion-${subRegionCount}-size`
     sizeInput.name = `SubRegions[${subRegionCount}].Size`;  // Bind to SubRegions[index].Size
     sizeInput.placeholder = "Grootte";
     sizeInput.type = "number";
     sizeInput.className = "form-control d-inline w-25 me-2";
-    nameInput.setAttribute("data-val", "true");
-    nameInput.setAttribute("data-val-required", "Grootte is verplicht");
 
     // Create the Remove button
     const removeButton = document.createElement("button");
@@ -39,16 +40,13 @@ export function addSubRegion() {
     removeButton.addEventListener("click", () => removeSubRegion(subRegionId));
 
     const nameError = document.createElement("span");
+    nameError.id = `${nameInput.id}-msg`
     nameError.className = "text-danger field-validation-valid";
-    nameError.setAttribute("data-valmsg-for", `SubRegions[${subRegionCount}].Name`);
-    nameError.setAttribute("data-valmsg-replace", "true");
     
     const sizeError = document.createElement("span");
-    nameError.className = "text-danger field-validation-valid";
-    nameError.setAttribute("data-valmsg-for", `SubRegions[${subRegionCount}].Size`);
-    nameError.setAttribute("data-valmsg-replace", "true");
+    sizeError.id = `${sizeInput.id}-msg`
+    sizeError.className = "text-danger field-validation-valid";
     
-
     // Append the inputs and button to the wrapper
     wrapper.append(nameInput, sizeInput, removeButton, nameError, sizeError);
 
@@ -57,9 +55,27 @@ export function addSubRegion() {
     //Call apiDataFillerScript to repopulate.
     newSubregionInputAddedHandler()
 
-    //TODO:Gewoon in commentaar voor Stijn$.validator.unobtrusive.parse("#new-panel-form");
+    addSubregionValidation(nameInput, nameError, sizeInput, sizeError);
+
     // Increment the count for the next subregion
     subRegionCount++;
+}
+
+export function addSubregionValidation(nameInput: HTMLInputElement, nameError: HTMLSpanElement, sizeInput: HTMLInputElement, sizeError: HTMLSpanElement) {
+    //Name
+    if (!nameInput.required){
+        nameInput.required = true;
+    }
+    setValidationMessages(nameInput.id, nameError.id, {
+        valueMissing: "De naam van een (deel)gemeente of wijk is verplicht."
+    })
+    //Size
+    if (!sizeInput.required) {
+        sizeInput.required = true;
+    }
+    setValidationMessages(sizeInput.id, sizeError.id, {
+        valueMissing: "De grootte van een (deel)gemeente of wijk is verplicht."
+    })
 }
 
 function removeSubRegion(id: string) {
