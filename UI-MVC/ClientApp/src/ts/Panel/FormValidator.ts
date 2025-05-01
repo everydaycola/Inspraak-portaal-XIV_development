@@ -7,6 +7,7 @@ export function setValidationMessages(ctrlID: string, msgEleID: string,
     messages: ValidationMessages) {
 
     let element = document.getElementById(ctrlID) as HTMLInputElement
+    console.log(element)
     
     element.addEventListener("focusout", () => {
 

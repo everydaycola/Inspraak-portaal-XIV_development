@@ -1,4 +1,4 @@
-import {addAnswerOption, reIndexAnswerOptions, resetAnswerCounters} from "./answersOption";
+import {addAnswerOption, reIndexAnswerOptions, resetAnswerCounters, createPercentageInput} from "./answersOption";
 import {setValidationMessages} from "./FormValidator" 
 
 
@@ -90,22 +90,6 @@ export function addCriteria() {
     const answerUl = document.createElement("ul");
     answerUl.className = "list-group list-group-flush";
 
-
-    // Create addAnswerOption Button
-    const addAnswerOptionBtn = document.createElement("button")
-    addAnswerOptionBtn.type = "button";
-    addAnswerOptionBtn.className = "btn btn-primary col-2 ms-3 my-2";
-    addAnswerOptionBtn.innerText = "Mogelijkheid Toevoegen";
-    addAnswerOptionBtn.addEventListener("click", () => addAnswerOption(currentCount, answerUl, isDistributionKnownInput.checked));
-
-    const nameValidationSpan = document.createElement("span");
-    nameValidationSpan.id=`${nameInput.id}-msg`
-    nameValidationSpan.className = "text-danger ps-1";
-
-    const questionValidationSpan = document.createElement("span");
-    questionValidationSpan.id = `${questionInput.id}-msg`
-    questionValidationSpan.className = "text-danger ps-1";
-
     // Create isDistributionKnown div
     const isDistributionKnownDiv = document.createElement("div");
     isDistributionKnownDiv.className = "d-flex flex-row col-3 form-check form-switch"
@@ -127,6 +111,22 @@ export function addCriteria() {
     isDistributionKnownLabel.className = "card-text pe-5";
     isDistributionKnownLabel.htmlFor = isDistributionKnownInput.name;
     isDistributionKnownLabel.innerText = "Verdeling gekend";
+    
+    // Create addAnswerOption Button
+    const addAnswerOptionBtn = document.createElement("button")
+    addAnswerOptionBtn.type = "button";
+    addAnswerOptionBtn.className = "btn btn-primary col-2 ms-3 my-2";
+    addAnswerOptionBtn.innerText = "Mogelijkheid Toevoegen";
+    addAnswerOptionBtn.addEventListener("click", () => addAnswerOption(currentCount, answerUl, isDistributionKnownInput.checked));
+
+    // Error spans
+    const nameValidationSpan = document.createElement("span");
+    nameValidationSpan.id=`${nameInput.id}-msg`
+    nameValidationSpan.className = "text-danger ps-1";
+
+    const questionValidationSpan = document.createElement("span");
+    questionValidationSpan.id = `${questionInput.id}-msg`
+    questionValidationSpan.className = "text-danger ps-1";
     
     // Appending
     isDistributionKnownDiv.append(isDistributionKnownLabel, isDistributionKnownInput)
@@ -151,8 +151,7 @@ export function addCriteria() {
     //Name
     nameInput.required = true;
     nameInput.minLength = 2;
-    nameInput.minLength = 20;
-
+    nameInput.maxLength = 20;
     setValidationMessages(nameInput.id,nameValidationSpan.id,{
         valueMissing: "Criteria moet een naam hebben.",
         tooShort: "Criteria naam moet minimaal 2 karakters lang zijn.",
@@ -162,7 +161,6 @@ export function addCriteria() {
     //Question
     questionInput.minLength = 6;
     questionInput.maxLength = 100;
-
     setValidationMessages(questionInput.id,questionValidationSpan.id,{
         tooShort: "Criteria vraag moet minimaal 6 karakters lang zijn.",
         tooLong: "Criteria vraag mag maximaal 100 karakters lang zijn."
@@ -244,31 +242,40 @@ export function validateCriteriaPercentages(): boolean {
     const criteriaBlocks = document.querySelectorAll(".criteria");
 
     criteriaBlocks.forEach((criteriaDiv, index) => {
-        const inputs = criteriaDiv.querySelectorAll<HTMLInputElement>(
-            `input[name^="Distributions[${index}].AnswerOptions"][name$="DistributionPercentage"]`
-        );
+        const distKnownCheck = criteriaDiv.querySelector(`input[name$="IsDistributionKnown"]`) as HTMLInputElement
+        const defaultCheck = criteriaDiv.querySelector(`input[name$="IsDefault"]`) as HTMLInputElement
+        const error = document.createElement("div");
+        if (defaultCheck.checked && !distKnownCheck.checked) {
+            isValid = false
 
-        const sum = Array.from(inputs)
-            .map(input => parseFloat(input.value) || 0)
-            .reduce((acc, val) => acc + val, 0);
-
-        // Remove existing message if any
-        let message = criteriaDiv.querySelector(".distribution-error");
-        if (message) message.remove();
-
-        if (Math.abs(sum) != 100) {
-            isValid = false;
-
-            const error = document.createElement("div");
             error.className = "text-danger distribution-error";
-            error.innerText = `De verdeling van de antwoord opties moet 100% zijn. Nu: ${sum}%`;
+            error.innerText = `Een standaard criteria moet een verdeling hebben.`;
+        } else if (distKnownCheck.checked) {
+            const inputs = criteriaDiv.querySelectorAll<HTMLInputElement>(
+                `input[name^="Distributions[${index}].AnswerOptions"][name$="DistributionPercentage"]`
+            );
 
-            // Place below answer list
-            const ul = criteriaDiv.querySelector("ul.list-group");
-            ul?.after(error);
+            const sum = Array.from(inputs)
+                .map(input => parseFloat(input.value) || 0)
+                .reduce((acc, val) => acc + val, 0);
+
+            // Remove existing message if any
+            let message = criteriaDiv.querySelector(".distribution-error");
+            if (message) message.remove();
+
+            if (Math.abs(sum) != 100) {
+                isValid = false;
+
+                error.className = "text-danger distribution-error";
+                error.innerText = `De verdeling van de antwoord opties moet 100% zijn. Nu: ${sum}%`;
+            }
         }
+        // Place below answer list
+        const ul = criteriaDiv.querySelector("ul.list-group");
+        ul?.after(error);
     });
 
     return isValid;
 }
+
 

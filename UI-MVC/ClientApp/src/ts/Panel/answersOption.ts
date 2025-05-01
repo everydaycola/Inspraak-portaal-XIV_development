@@ -3,6 +3,21 @@ import {setValidationMessages} from "./FormValidator";
 
 export let answerOptionCounters: Map<number, number> = new Map()
 
+export function createPercentageInput(criteriaId: number, answerCount: number) {
+    const answerOptionPercentageInput = document.createElement("input");
+    answerOptionPercentageInput.id = `answer-option-${criteriaId}-${answerCount}-percentage`
+    answerOptionPercentageInput.name = `Distributions[${criteriaId}].AnswerOptions[${answerCount}].DistributionPercentage`;
+    answerOptionPercentageInput.className = "border border-1 rounded-2 me-2";
+    answerOptionPercentageInput.type = "number";
+    answerOptionPercentageInput.placeholder = `${round(100 / (answerCount + 1))}`
+
+    // Validation
+    answerOptionPercentageInput.required = true;
+    answerOptionPercentageInput.min = "0";
+    answerOptionPercentageInput.max = "100";
+
+    return answerOptionPercentageInput;
+}
 
 export function addAnswerOption(criteriaId: number, answersContainer: HTMLUListElement, isDistributionKnown: boolean) {
     const answerCount = answerOptionCounters.get(criteriaId) ?? 0;
@@ -25,6 +40,7 @@ export function addAnswerOption(criteriaId: number, answersContainer: HTMLUListE
 
     // Validation span for option
     const answerOptionSpan = document.createElement("span");
+    answerOptionSpan.id = `${answerOptionInput.id}-msg`
     answerOptionSpan.className = "text-danger field-validation-valid";
     answerOptionSpan.setAttribute("data-valmsg-for", answerOptionInput.name);
     answerOptionSpan.setAttribute("data-valmsg-replace", "true");
@@ -46,11 +62,8 @@ export function addAnswerOption(criteriaId: number, answersContainer: HTMLUListE
         answerOptionPercentageSpan.className = "text-danger field-validation-valid ps-1";
 
         answerOptionLi.append(answerOptionInput, answerOptionPercentageInput, removeBtn, answerOptionSpan, answerOptionPercentageSpan);
-        // Validation
-        // Percentage
-        answerOptionPercentageInput.required = true;
-        answerOptionPercentageInput.min = "0";
-        answerOptionPercentageInput.max = "100";
+        answersContainer.append(answerOptionLi);
+        // Validation messages
         setValidationMessages(answerOptionPercentageInput.id,answerOptionPercentageSpan.id,{
             valueMissing: "Antwoord optie moet een verdeling waarde hebben.",
             rangeUnderflow: "Percentage moet tussen 0 en 100% zijn.",
@@ -58,9 +71,8 @@ export function addAnswerOption(criteriaId: number, answersContainer: HTMLUListE
         })
     } else {
         answerOptionLi.append(answerOptionInput, removeBtn, answerOptionSpan);
+        answersContainer.append(answerOptionLi);
     }
-    
-    answersContainer.append(answerOptionLi);
     
     //Validation
     // Answer Option text
@@ -73,8 +85,6 @@ export function addAnswerOption(criteriaId: number, answersContainer: HTMLUListE
         tooLong: "Antwoord optie mag maximum maar 20 characters lang zijn."
     })
     
-    
-
     // Counter ++
     answerOptionCounters.set(criteriaId, answerCount + 1);
 }
@@ -115,21 +125,4 @@ export function resetAnswerCounters(criteriaCount: number) {
             resetAnswerCounter(key)
         }
     })
-}
-
-export function createPercentageInput(criteriaId: number, answerCount: number) {
-    const answerOptionPercentageInput = document.createElement("input");
-    answerOptionPercentageInput.name = `Distributions[${criteriaId}].AnswerOptions[${answerCount}].DistributionPercentage`;
-    answerOptionPercentageInput.className = "border border-1 rounded-2 me-2";
-    answerOptionPercentageInput.type = "number";
-    answerOptionPercentageInput.placeholder = `${round(100 / (answerCount + 1))}`
-
-    // Add validation attributes
-    answerOptionPercentageInput.setAttribute("data-val", "true");
-    answerOptionPercentageInput.setAttribute("data-val-required", "Antwoord optie moet een verdeling waarde hebben.");
-    answerOptionPercentageInput.setAttribute("data-val-range", "Percentage moet tussen 0 en 100% zijn.");
-    answerOptionPercentageInput.setAttribute("data-val-range-min", "0");
-    answerOptionPercentageInput.setAttribute("data-val-range-max", "1");
-    
-    return answerOptionPercentageInput;
 }
