@@ -1,4 +1,5 @@
 ﻿import {round} from "@popperjs/core/lib/utils/math";
+import {setValidationMessages} from "./FormValidator";
 
 export let answerOptionCounters: Map<number, number> = new Map()
 
@@ -16,18 +17,11 @@ export function addAnswerOption(criteriaId: number, answersContainer: HTMLUListE
 
     // Create answerOption input
     const answerOptionInput = document.createElement("input");
+    answerOptionInput.id = `answer-option-${criteriaId}-${answerCount}`
     answerOptionInput.name = `Distributions[${criteriaId}].AnswerOptions[${answerCount}].Option`;
     answerOptionInput.className = "border border-1 rounded-2 me-2";
     answerOptionInput.type = "text";
     answerOptionInput.placeholder = `Antwoord ${(answerCount + 1)}`
-
-    // Add validation attributes
-    answerOptionInput.setAttribute("data-val", "true");
-    answerOptionInput.setAttribute("data-val-required", "Antwoord optie moet een naam hebben.");
-    answerOptionInput.setAttribute("data-val-minlength", "2");
-    answerOptionInput.setAttribute("data-val-minlength-min", "2");
-    answerOptionInput.setAttribute("data-val-maxlength", "20");
-    answerOptionInput.setAttribute("data-val-maxlength-max", "20");
 
     // Validation span for option
     const answerOptionSpan = document.createElement("span");
@@ -48,16 +42,38 @@ export function addAnswerOption(criteriaId: number, answersContainer: HTMLUListE
 
         // Validation span for percentage
         const answerOptionPercentageSpan = document.createElement("span");
-        answerOptionPercentageSpan.className = "text-danger field-validation-valid";
-        answerOptionPercentageSpan.setAttribute("data-valmsg-for", answerOptionPercentageInput.name);
-        answerOptionPercentageSpan.setAttribute("data-valmsg-replace", "true");
+        answerOptionPercentageSpan.id = `${answerOptionPercentageInput.id}-msg`
+        answerOptionPercentageSpan.className = "text-danger field-validation-valid ps-1";
 
         answerOptionLi.append(answerOptionInput, answerOptionPercentageInput, removeBtn, answerOptionSpan, answerOptionPercentageSpan);
+        // Validation
+        // Percentage
+        answerOptionPercentageInput.required = true;
+        answerOptionPercentageInput.min = "0";
+        answerOptionPercentageInput.max = "100";
+        setValidationMessages(answerOptionPercentageInput.id,answerOptionPercentageSpan.id,{
+            valueMissing: "Antwoord optie moet een verdeling waarde hebben.",
+            rangeUnderflow: "Percentage moet tussen 0 en 100% zijn.",
+            rangeOverflow : "Percentage moet tussen 0 en 100% zijn."
+        })
     } else {
         answerOptionLi.append(answerOptionInput, removeBtn, answerOptionSpan);
     }
     
     answersContainer.append(answerOptionLi);
+    
+    //Validation
+    // Answer Option text
+    answerOptionInput.required = true;
+    answerOptionInput.minLength = 2;
+    answerOptionInput.maxLength = 20;
+    setValidationMessages(answerOptionInput.id,answerOptionSpan.id,{
+        valueMissing: "Antwoord optie moet een naam hebben.",
+        tooShort: "Antwoord optie moet minstens 2 characters lang zijn.",
+        tooLong: "Antwoord optie mag maximum maar 20 characters lang zijn."
+    })
+    
+    
 
     // Counter ++
     answerOptionCounters.set(criteriaId, answerCount + 1);

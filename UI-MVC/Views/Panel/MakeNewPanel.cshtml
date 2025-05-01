@@ -38,18 +38,12 @@
                             <span id="error-subregions" class="text-danger"></span>
 
                             <div class="mb-2 subregion-0">
-                                <input name="SubRegions[0].Name" placeholder="Naam" type="text"
-                                       class="form-control d-inline w-50 me-2"
-                                       data-val="true"
-                                       data-val-required="Naam is verplicht"/>
-                                <input name="SubRegions[0].Size" placeholder="Grootte" type="number"
-                                       class="form-control d-inline w-25"
-                                       data-val="true"
-                                       data-val-required="Grootte is verplicht"/>
-                                <span class="text-danger field-validation-valid" data-valmsg-for="SubRegion[0].Name"
-                                      data-valmsg-replace="true"></span>
-                                <span class="text-danger field-validation-valid" data-valmsg-for="SubRegion[0].Size"
-                                      data-valmsg-replace="true"></span>
+                                <input id="subregion-0-name" name="SubRegions[0].Name" placeholder="Naam" type="text"
+                                       class="form-control d-inline w-50 me-2" required/>
+                                <input id="subregion-0-size" name="SubRegions[0].Size" placeholder="Grootte" type="number"
+                                       class="form-control d-inline w-25" required/>
+                                <span id="subregion-0-name-msg" class="text-danger field-validation-valid"></span>
+                                <span id="subregion-0-size-msg" class="text-danger field-validation-valid"></span>
                             </div>
                         </div>
 
