@@ -10,5 +10,5 @@ public class CriteriaAnswerOptionDto
     public string Option { get; set; }
     [Required(ErrorMessage = "Antwoord optie moet een verdeling waarde hebben.")]
     [Range(0, 1, ErrorMessage = "Percentage moet tussen 0 en 100% zijn.")]
-    public double DistributionPercentage { get; set; }
+    public string DistributionPercentage { get; set; }
 }

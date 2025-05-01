@@ -28,6 +28,7 @@ export function addAnswerOption(criteriaId: number, answersContainer: HTMLUListE
     answerOptionPercentageInput.name = `Distributions[${criteriaId}].AnswerOptions[${answerCount}].DistributionPercentage`;
     answerOptionPercentageInput.className = "border border-1 rounded-2 me-2 answer-option-distribution";
     answerOptionPercentageInput.type = "number";
+    answerOptionPercentageInput.step = "0.01";
     answerOptionPercentageInput.placeholder = `${round(100 / (answerCount + 1))}`
     
     // Create Delete Button
