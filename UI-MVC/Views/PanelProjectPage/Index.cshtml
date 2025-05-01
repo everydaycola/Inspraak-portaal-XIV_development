@@ -39,7 +39,9 @@
                 </div>
                 <div class="modal-body">
                     <form id="addTextForm" asp-action="AddTextPost" method="post">
-                        <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+                        @if(ViewBag.OpenModal == "addTextModal"){
+                            <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+                        }
                         <input type="hidden" name="panelId" value="@Model.Panel.Id"/>
                         <div class="mb-3">
                             <label for="textTitleInput" class="form-label">Titel (*)</label>
@@ -89,7 +91,9 @@
                 <div class="modal-body">
                     <form id="addImageForm" asp-action="AddDocumentPost" method="post" enctype="multipart/form-data">
                         <input type="hidden" name="panelId" value="@Model.Panel.Id"/>
-                        <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+                        @if(ViewBag.OpenModal == "addBestandModal"){
+                            <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+                        }
 
                         <div class="mb-3">
                             <label for="docTitleInput" class="form-label">Titel (*)</label>
@@ -139,7 +143,9 @@
             <div class="modal-body">
                 <form id="addWerksessieForm" asp-action="AddWerksessiePost" method="post">
                     <input type="hidden" name="panelId" value="@Model.Panel.Id"/>
-                    <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+                    @if(ViewBag.OpenModal == "addWerksessieModal"){
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+                    }
                     <div class="mb-3">
                         <label for="sessionTitleInput" class="form-label">Titel van de werksessie (*)</label>
                         <input type="text" class="form-control" id="sessionTitleInput" name="title" placeholder="Voer de titel in" required />
@@ -238,7 +244,9 @@
                      </button>
                      <div class="collapse mt-2" id="uploadCollapse-@meetingPost.Id">
                          <form method="post" enctype="multipart/form-data" asp-action="AddSummaryToMeetingPost">
-                             <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+                             @if(ViewBag.SummaryCreationFailed != null && ViewBag.SummaryCreationFailed == true){
+                                 <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+                             }
                              <input type="hidden" name="MeetingId" value="@meetingPost.Id"/>
                              <input type="hidden" name="panelId" value="@Model.Panel.Id"/>
                              <div class="mb-2">
