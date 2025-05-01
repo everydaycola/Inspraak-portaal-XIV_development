@@ -4,26 +4,38 @@ const outerDiv = document.querySelector("#subregions-container") as HTMLDivEleme
 let subregionInnerDiv = outerDiv.querySelectorAll(".subRegion") as NodeListOf<HTMLDivElement>;
 
 
-export function attachEventHandlersToSubregionInput(outerDiv: HTMLDivElement, subregionInnerDiv: NodeListOf<HTMLDivElement>, basicApiData : any[]) {
+export function attachEventHandlersToSubregionInput(
+    outerDiv: HTMLDivElement,
+    subregionInnerDiv: NodeListOf<HTMLDivElement>,
+    basicApiData: any[]
+) {
     subregionInnerDiv.forEach(innerDiv => {
-        
         const inputs = innerDiv.querySelectorAll("input") as NodeListOf<HTMLInputElement>;
         const nameInput = inputs[0];
         const sizeInput = inputs[1];
-        // Create and insert suggestion box
-        const suggestionBox = createSuggestionBox();
-        const suggestionBoxWithRow = wrapElementWithBootstrapRow(suggestionBox);
-        outerDiv.insertBefore(suggestionBoxWithRow, innerDiv);
-        nameInput.addEventListener("input", () => {
-            const inputValue = nameInput.value;
-            checkForNameKnownByApi(inputValue, sizeInput,basicApiData);
-            updateSuggestions(inputValue, suggestionBox, nameInput,basicApiData);
-        });
-        document.addEventListener("click", (e) => {
-            if (!(e.target as HTMLElement).closest(".suggestion-box")) {
-                suggestionBox.style.display = "none";
-            }
-        });
+
+       
+        const prevSibling = innerDiv.previousElementSibling;
+        const alreadyHasSuggestionBox = prevSibling?.classList.contains("suggestion-box-wrapper");
+
+        if (!alreadyHasSuggestionBox) {
+            const suggestionBox = createSuggestionBox();
+            const suggestionBoxWithRow = wrapElementWithBootstrapRow(suggestionBox);
+            suggestionBoxWithRow.classList.add("suggestion-box-wrapper");
+            outerDiv.insertBefore(suggestionBoxWithRow, innerDiv);
+
+            nameInput.addEventListener("input", () => {
+                const inputValue = nameInput.value;
+                checkForNameKnownByApi(inputValue, sizeInput, basicApiData);
+                updateSuggestions(inputValue, suggestionBox, nameInput, basicApiData);
+            });
+
+            document.addEventListener("click", (e) => {
+                if (!(e.target as HTMLElement).closest(".suggestion-box")) {
+                    suggestionBox.style.display = "none";
+                }
+            });
+        }
     });
 }
 function checkForNameKnownByApi(searchedValue: string, sizeInput: HTMLInputElement,basicApiData: any[]) {
