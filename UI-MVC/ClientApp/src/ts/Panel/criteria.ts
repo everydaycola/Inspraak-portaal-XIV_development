@@ -1,6 +1,7 @@
 ﻿import {addAnswerOption, reIndexAnswerOptions, resetAnswerCounters} from "./answersOption";
 import {criteriaInputUpdateHandler} from "./apiAutofill/apiDataFiller";
-import {setValidationMessages} from "./FormValidator" 
+import {setValidationMessages} from "./FormValidator"
+import {attachEventHandlersToCriteriaInput} from "./apiAutofill/CriteriaHandler"; 
 
 
 let criteriaCount = 0;
@@ -76,7 +77,7 @@ export function addCriteria() {
     // Create Question input
     const questionInput = document.createElement("input");
     questionInput.id = `criteria-question-${currentCount}`;
-    questionInput.className = "border border-1 rounded-2 col-8";
+    questionInput.className = "border border-1 rounded-2 col-8 criteria-question";
     questionInput.type = "text";
     questionInput.placeholder = `Criteria ${currentCount + 1} vraag`;
     questionInput.name = `Distributions[${currentCount}].Question`;
@@ -143,6 +144,7 @@ export function addCriteria() {
         tooShort: "Criteria vraag moet minimaal 6 karakters lang zijn.",
         tooLong: "Criteria vraag mag maximaal 100 karakters lang zijn."
     })
+    criteriaInputUpdateHandler()
 }
 
 

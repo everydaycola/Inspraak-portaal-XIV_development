@@ -55,7 +55,7 @@ export function attachEventHandlersToCriteriaInput(subregionInnerDiv: NodeListOf
 
 function handleSelectedCriteriaFromHelper(selectedItem: string, innerDiv : HTMLDivElement, usedData : any[]) {
     const mogelijkheidToevoegenButton : HTMLButtonElement | null = innerDiv.querySelector(".add-option-button");
-    const vraagInput : HTMLInputElement | null = innerDiv.querySelector<HTMLInputElement>("#criteria-question");
+    const vraagInput : HTMLInputElement | null = innerDiv.querySelector<HTMLInputElement>(".criteria-question");
     let answerOption = innerDiv.querySelectorAll<HTMLInputElement>(".answer-option");
     let antwoord1Input = answerOption[0];
     let antwoord2Input = answerOption[1];
@@ -65,6 +65,10 @@ function handleSelectedCriteriaFromHelper(selectedItem: string, innerDiv : HTMLD
     
     if(vraagInput){
         if(selectedItem === available_criteria_categories[0]){
+            console.log("Hadling geslacht");
+            console.log(
+                vraagInput + " " + antwoord1Input  + " " + antwoord2Input + " "
+            );
             vraagInput.value = "Wat is uw geslacht?";
             antwoord1Input.value = "Man";
             antwoord2Input.value = "Vrouw";
@@ -93,9 +97,9 @@ function handleSelectedCriteriaFromHelper(selectedItem: string, innerDiv : HTMLD
             var peopleWorkingPercentage = calculatePercentage(totalPeopleWorking, totalPopulation);
             var peopleLookingForWorkPercentage = calculatePercentage(totalPeopleLookingForWork, totalPopulation);
             
-            distributionInput1.value = String(peopleWorkingPercentage.toFixed(5))
-            distributionInput2.value = String(peopleLookingForWorkPercentage.toFixed(5))
-            distributionInput3.value = String((100 - peopleLookingForWorkPercentage - peopleWorkingPercentage).toFixed(5));
+            distributionInput1.value = String(peopleWorkingPercentage.toFixed(2))
+            distributionInput2.value = String(peopleLookingForWorkPercentage.toFixed(2))
+            distributionInput3.value = String((100 - parseFloat(distributionInput1.value) - parseFloat(distributionInput2.value)).toFixed(2))
         }
         if(selectedItem === available_criteria_categories[2]){
             mogelijkheidToevoegenButton?.click();
@@ -109,7 +113,7 @@ function handleSelectedCriteriaFromHelper(selectedItem: string, innerDiv : HTMLD
             const distributionInput3 = answerOptionInputs[2];
             vraagInput.value = "Studeerd u momenteel?";
             antwoord1Input.value = "Secundair onderwijs";
-            antwoord2Input.value = "Hoger onderwijs of universiteit";
+            antwoord2Input.value = "Hoger onderwijs";
             antwoord3Input.value = "Anders"
 
             const totalPopulation = usedData.reduce((sum, dataEntry) => sum + parseFloat(dataEntry.totalPopulation), 0)
@@ -119,9 +123,9 @@ function handleSelectedCriteriaFromHelper(selectedItem: string, innerDiv : HTMLD
             var peopleSecondarySchool = calculatePercentage(secondarySchoolTotal, totalPopulation);
             var peopleInHigherSchool = calculatePercentage(higherSchooledTotal, totalPopulation);
             
-            distributionInput1.value = String(peopleSecondarySchool.toFixed(5))
-            distributionInput2.value = String(peopleInHigherSchool.toFixed(5))
-            distributionInput3.value = String((100 - peopleSecondarySchool - peopleInHigherSchool).toFixed(5))
+            distributionInput1.value = String(peopleSecondarySchool.toFixed(2))
+            distributionInput2.value = String(peopleInHigherSchool.toFixed(2))
+            distributionInput3.value = String((100 - parseFloat(distributionInput1.value) - parseFloat(distributionInput2.value)).toFixed(2))
         }
     }
 }
