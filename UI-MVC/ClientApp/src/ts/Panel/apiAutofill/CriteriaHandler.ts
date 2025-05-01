@@ -57,11 +57,25 @@ function handleSelectedCriteriaFromHelper(selectedItem: string, innerDiv : HTMLD
     const mogelijkheidToevoegenButton : HTMLButtonElement | null = innerDiv.querySelector(".add-option-button");
     const vraagInput : HTMLInputElement | null = innerDiv.querySelector<HTMLInputElement>(".criteria-question");
     let answerOption = innerDiv.querySelectorAll<HTMLInputElement>(".answer-option");
-    let antwoord1Input = answerOption[0];
-    let antwoord2Input = answerOption[1];
+    let antwoord1Input : HTMLInputElement = answerOption[0];
+    let antwoord2Input : HTMLInputElement = answerOption[1];
     let answerOptionInputs = innerDiv.querySelectorAll<HTMLInputElement>(".answer-option-distribution");
-    let distributionInput1 = answerOptionInputs[0];
-    let distributionInput2 = answerOptionInputs[1];
+    let distributionInput1 : HTMLInputElement = answerOptionInputs[0];
+    let distributionInput2 :HTMLInputElement = answerOptionInputs[1];
+    if(antwoord1Input == null){
+        mogelijkheidToevoegenButton?.click();
+        answerOption = innerDiv.querySelectorAll<HTMLInputElement>(".answer-option");
+        answerOptionInputs = innerDiv.querySelectorAll<HTMLInputElement>(".answer-option-distribution");
+        antwoord1Input = answerOption[0];
+        distributionInput1 = answerOptionInputs[0];
+    }
+    if(antwoord2Input == null){
+        mogelijkheidToevoegenButton?.click();
+        answerOption = innerDiv.querySelectorAll<HTMLInputElement>(".answer-option");
+        answerOptionInputs = innerDiv.querySelectorAll<HTMLInputElement>(".answer-option-distribution");
+        antwoord2Input = answerOption[1];
+        distributionInput2 = answerOptionInputs[1];
+    }
     
     if(vraagInput){
         if(selectedItem === available_criteria_categories[0]){
