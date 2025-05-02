@@ -18,7 +18,8 @@ export default defineConfig({
                 validation: resolve(__dirname, 'src/ts/validation.ts'),
                 register: resolve(__dirname, 'src/ts/register/register.ts'),
                 panelCreation: resolve(__dirname, 'src/ts/Panel/panelCreation.ts'),
-                adminOrgMan: resolve(__dirname, 'src/ts/organisationmanagement/adminOrgMan.ts'),
+                apiDataFiller: resolve(__dirname, 'src/ts/Panel/apiAutofill/apiDataFiller.ts'),
+                adminOrgMan: resolve(__dirname, 'src/ts/organisationmanagement/adminOrgMan.ts')
                 autoOpenModals: resolve(__dirname, 'src/ts/auto-open-modals.ts'),
             },
             output: {

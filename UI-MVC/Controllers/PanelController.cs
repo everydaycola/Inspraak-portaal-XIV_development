@@ -94,7 +94,7 @@ public class PanelController : Controller
             foreach (var answerOption in crit.AnswerOptions)
             {
                 answerOptionsList.Add(_criteriaManager.AddCriteriaAnswerOption(answerOption.Option,
-                    answerOption.DistributionPercentage));
+                    double.Parse(answerOption.DistributionPercentage.Replace(".",","))));
             }
 
             distributionList.Add(_criteriaManager.AddCriteria(crit.Name, crit.Question, crit.IsDefault,

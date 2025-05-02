@@ -17,7 +17,7 @@ addCriteriaBtn.addEventListener("click",addCriteria);
 
 const panelForm = document.getElementById("new-panel-form") as HTMLFormElement;
 panelForm.addEventListener("submit", (e) => {
-    if (!validateCriteriaPercentages() || panelForm.checkValidity()) {
+    if (!validateCriteriaPercentages() || !panelForm.checkValidity()) {
         e.preventDefault(); // Stop submission
     }
 });

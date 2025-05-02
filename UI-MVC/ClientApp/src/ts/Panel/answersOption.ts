@@ -18,7 +18,7 @@ export function addAnswerOption(criteriaId: number, answersContainer: HTMLUListE
     const answerOptionInput = document.createElement("input");
     answerOptionInput.id = `answer-option-${criteriaId}-${answerCount}`
     answerOptionInput.name = `Distributions[${criteriaId}].AnswerOptions[${answerCount}].Option`;
-    answerOptionInput.className = "border border-1 rounded-2 me-2";
+    answerOptionInput.className = "border border-1 rounded-2 me-2 answer-option";
     answerOptionInput.type = "text";
     answerOptionInput.placeholder = `Antwoord ${(answerCount + 1)}`
     
@@ -26,8 +26,9 @@ export function addAnswerOption(criteriaId: number, answersContainer: HTMLUListE
     const answerOptionPercentageInput = document.createElement("input");
     answerOptionPercentageInput.id = `answer-option-${criteriaId}-${answerCount}-percentage`
     answerOptionPercentageInput.name = `Distributions[${criteriaId}].AnswerOptions[${answerCount}].DistributionPercentage`;
-    answerOptionPercentageInput.className = "border border-1 rounded-2 me-2";
+    answerOptionPercentageInput.className = "border border-1 rounded-2 me-2 answer-option-distribution";
     answerOptionPercentageInput.type = "number";
+    answerOptionPercentageInput.step = "0.01";
     answerOptionPercentageInput.placeholder = `${round(100 / (answerCount + 1))}`
     
     // Create Delete Button
