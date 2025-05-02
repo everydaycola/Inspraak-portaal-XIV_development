@@ -2,6 +2,7 @@
 using DAL.Interfaces;
 using Domain.CitizenPanel;
 using Domain.Interfaces;
+using Domain.Interfaces.Posts;
 using Microsoft.EntityFrameworkCore;
 
 namespace DAL.Repositories;
@@ -24,7 +25,7 @@ public class PanelRepository : IPanelRepository
     {
         return _context.Panels.ToList();
     }
-    
+
 
     public PanelMember ReadPanelMemberWithCriteriaResponses(Guid id)
     {
@@ -42,6 +43,7 @@ public class PanelRepository : IPanelRepository
             .Single(p => p.PanelMemberId == id);
     }
 
+
     public void CreatePlanningsGroupMember(PlanningGroupMember member)
     {
         _context.PlanningGroupMembers.Add(member);
@@ -58,13 +60,24 @@ public class PanelRepository : IPanelRepository
         if (!unselectedMembers.Any()) return;
         _context.PanelMembers.RemoveRange(unselectedMembers);
         _context.SaveChanges();
-
     }
 
     public void RemovePlanningGroupMember(Guid planningsGroupMemberId)
     {
         var member = _context.PlanningGroupMembers.Find(planningsGroupMemberId);
         _context.PlanningGroupMembers.Remove(member);
+        _context.SaveChanges();
+    }
+
+    public void AddSummaryToMeetingPost(Guid meetingId, string uniqueFileName)
+    {
+        MeetingPost meetingPost = _context.Posts.Find(meetingId) as MeetingPost;
+        if (meetingPost == null)
+        {
+            throw new Exception("Meeting post not found");
+        }
+        meetingPost.DocumentNames.Add(uniqueFileName);
+        _context.Posts.Update(meetingPost);
         _context.SaveChanges();
     }
 
@@ -93,17 +106,17 @@ public class PanelRepository : IPanelRepository
             .Where(pm => pm.Panel.Id == id)
             .ToList();
     }
-    
+
     public IEnumerable<PanelMember> ReadPanelMembersWithResponses(Guid id)
     {
         return _context.PanelMembers
             .Include(pm => pm.Panel)
             .Include(pm => pm.Responses)
-            .Where(pm => pm.Panel.Id == id) 
+            .Where(pm => pm.Panel.Id == id)
             .ToList();
     }
-    
-    
+
+
     public void UpdatePanelMember(PanelMember member)
     {
         _context.PanelMembers.Update(member);
@@ -117,6 +130,7 @@ public class PanelRepository : IPanelRepository
             member.Selected = true;
             _context.PanelMembers.Update(member);
         }
+
         _context.SaveChanges();
     }
 
@@ -139,7 +153,7 @@ public class PanelRepository : IPanelRepository
             .Where(pgm => pgm.Panel.Id == panelId)
             .ToList();
     }
-    
+
     public void CreateTextPost(Guid panelId, TextPost textPost)
     {
         _context.Posts.Add(textPost);
@@ -152,7 +166,7 @@ public class PanelRepository : IPanelRepository
         }
     }
 
-    public void CreateDocumentPost(Guid panelId,DocumentPost docPost)
+    public void CreateDocumentPost(Guid panelId, DocumentPost docPost)
     {
         _context.Posts.Add(docPost);
         var panel = ReadPanelWithPosts(panelId);
@@ -160,6 +174,18 @@ public class PanelRepository : IPanelRepository
         {
             _context.Posts.Add(docPost);
             panel.Posts.Add(docPost);
+            _context.SaveChanges();
+        }
+    }
+
+    public void CreateMeetingPost(Guid panelId, MeetingPost meetingPost)
+    {
+        _context.Posts.Add(meetingPost);
+        var panel = ReadPanelWithPosts(panelId);
+        if (panel != null)
+        {
+            _context.Posts.Add(meetingPost);
+            panel.Posts.Add(meetingPost);
             _context.SaveChanges();
         }
     }
@@ -172,7 +198,7 @@ public class PanelRepository : IPanelRepository
             .Where(pm => pm.Panel.Id == id)
             .ToList();
     }
-    
+
     public Panel ReadPanelWithCriteriaAndAnswerOptions(Guid panelId)
     {
         return _context.Panels
