@@ -7,7 +7,6 @@ public interface ICriteriaManager
     //GETS
     public Dictionary<string, Dictionary<string, int>> GetAllCriteriaCountsGroupedByValue(Guid panelId);
     public IEnumerable<Criteria> GetAllDesiredCriteriaPercentages(Guid panelId, bool onlyDefault = false);
-    public IEnumerable<Criteria> GetAllCriteriaForPanelWithAnswerOptions(Guid panelId, bool onlyDefault = false);
 
     public Dictionary<string, Dictionary<int, List<PanelMember>>> GetPanelMembersGroupedByResponsesForDefaultCriteriaGroupedByPhase(
         Guid panelId);

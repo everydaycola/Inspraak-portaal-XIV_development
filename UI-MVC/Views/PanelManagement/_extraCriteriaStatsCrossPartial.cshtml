@@ -1,5 +1,12 @@
 ﻿@model ExtraCriteriaDto
 @{
+    var desiredCriteriaCountDictionary = Model.Criteria.Where(c => c.IsDistributionKnown).ToDictionary(
+        criteria => criteria.Name,
+        criteria => criteria.AnswerOptions.ToDictionary(
+            option => option.Option,
+            option => option.DistributionPercentage
+        )
+    );
     var critCount = Model.CriteriaMemberCount.Values.Count;
     var criteriaList = Model.CriteriaMemberCount.Keys.Order().ToList();
     var options = criteriaList.Select(key => Model.CriteriaMemberCount[key].Keys.ToList()).ToList();
@@ -40,7 +47,7 @@
             @for (var j = 0; j < critCount; j++)
             {
                 var option = options[j][indexes[j] % lengths[j]];
-                distribution *= Model.DesiredCriteriaCount[criteriaList[j]][option];
+                distribution *= desiredCriteriaCountDictionary[criteriaList[j]][option];
                 key.Add(option);
                 if (i % rowCounts[j] > 0) continue;
                 <th class="align-middle text-center border-top border-black" rowspan="@rowCounts[j]">@option</th>

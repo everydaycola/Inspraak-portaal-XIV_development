@@ -1,5 +1,15 @@
 @model ExtraCriteriaDto
 
+@{
+    var desiredCriteriaCountDictionary = Model.Criteria.ToDictionary(
+        criteria => criteria.Name,
+        criteria => criteria.AnswerOptions.ToDictionary(
+            option => option.Option,
+            option => option.DistributionPercentage
+        )
+    );
+}
+
 <h3 class="mb-0 mt-3">Verdeling extra criteria</h3>
 <div class="card-body">
     <p>(Deze weergave gaat over enkelvoudige criteria bv. een man met rijbewijs komt zowel in "rijbewijs", "Ja" voor als
@@ -22,8 +32,8 @@
                     </div>
                 </div>
                 <p><strong>@innerKpv.Value</strong> out of
-                    <strong>@((int)(Model.DesiredCriteriaCount[kpv.Key][innerKpv.Key] * Model.DesiredRegistrationCount))</strong>
-                    (<strong>@(Model.DesiredCriteriaCount[kpv.Key][innerKpv.Key] * 100)%</strong> of
+                    <strong>@((int)(desiredCriteriaCountDictionary[kpv.Key][innerKpv.Key] * Model.DesiredRegistrationCount))</strong>
+                    (<strong>@(desiredCriteriaCountDictionary[kpv.Key][innerKpv.Key] * 100)%</strong> of
                     <strong>@(Model.DesiredRegistrationCount))</strong></p>
 
             </div>
