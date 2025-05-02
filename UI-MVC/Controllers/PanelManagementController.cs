@@ -53,7 +53,13 @@ public class PanelManagementController : Controller
             {
                 CriteriaGroupAbsoluteMemberCount = _manager.CalculateCrossDistributionAbsolute(panel.Id),
                 CriteriaMemberCount = _criteriaManager.GetAllCriteriaCountsGroupedByValue(panel.Id),
-                DesiredCriteriaCount = _criteriaManager.GetAllDesiredCriteriaPercentages(panel.Id),
+                DesiredCriteriaCount = _criteriaManager.GetAllDesiredCriteriaPercentages(panel.Id).ToDictionary(
+                    criteria => criteria.Name,
+                    criteria => criteria.AnswerOptions.ToDictionary(
+                        option => option.Option,
+                        option => option.DistributionPercentage
+                    )
+                ),
                 Criteria = _criteriaManager.GetAllCriteriaForPanelWithAnswerOptions(panel.Id).ToList(),
                 SuccessfulRegistrationCount = panel.SuccessfulRegistrationCount,
                 DesiredRegistrationCount = panelSize,

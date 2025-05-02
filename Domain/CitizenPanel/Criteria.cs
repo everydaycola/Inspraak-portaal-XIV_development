@@ -17,6 +17,7 @@ public class Criteria : IValidatableObject
 
     
     public bool IsDefault { get; set; }
+    public bool IsDistributionKnown { get; set; }
 
     [Required(ErrorMessage = "Criteria moet antwoord opties hebben.")]
     [MinLength(2, ErrorMessage = "Criteria vraag moet minimaal 2 opties hebben.")]

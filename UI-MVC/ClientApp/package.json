@@ -6,10 +6,12 @@
   "version": "5.0.0",
   "dependencies": {
     "@popperjs/core": "^2.11.8",
+    "@types/jquery-validation-unobtrusive": "^3.2.35",
+    "@types/jquery.validation": "^1.17.0",
     "bootstrap": "^5.3.3",
     "bootstrap-icons": "^1.11.3",
     "jquery": "^3.7.1",
-    "jquery-validation": "^1.20.0",
+    "jquery-validation": "^1.21.0",
     "jquery-validation-unobtrusive": "^4.0.0"
   },
   "devDependencies": {

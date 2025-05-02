@@ -152,17 +152,10 @@ public class CriteriaManager : ICriteriaManager
         return _repo.ReadCriteriaByNameWithAnswerOptions(panelId, critName);
     }
 
-    public Dictionary<string, Dictionary<string, double>> GetAllDesiredCriteriaPercentages(Guid panelId,
+    public IEnumerable<Criteria> GetAllDesiredCriteriaPercentages(Guid panelId,
         bool onlyDefault = false)
     {
-        return _repo.ReadAllCriteriaForPanelWithAnswerOptions(panelId, onlyDefault)
-            .ToDictionary(
-                criteria => criteria.Name,
-                criteria => criteria.AnswerOptions.ToDictionary(
-                    option => option.Option,
-                    option => option.DistributionPercentage
-                )
-            );
+        return _repo.ReadAllCriteriaForPanelWithAnswerOptions(panelId, onlyDefault);
     }
 
     public void SavePanelMemberCriteriaResponses(Guid panelId, Dictionary<string, string> CriteriaAnswers,
@@ -205,7 +198,7 @@ public class CriteriaManager : ICriteriaManager
 
     //ADD
     public Criteria AddCriteria(string name, string question, bool isDefault,
-        ICollection<CriteriaAnswerOption> answerOptions)
+        ICollection<CriteriaAnswerOption> answerOptions, bool isDistributionKnown)
     {
         _logger.Log(LogLevel.Information, "Creating criteria with name " + name + "...");
         var criteria = new Criteria
@@ -213,7 +206,8 @@ public class CriteriaManager : ICriteriaManager
             Name = name,
             IsDefault = isDefault,
             Question = question,
-            AnswerOptions = answerOptions
+            AnswerOptions = answerOptions,
+            IsDistributionKnown = isDistributionKnown
         };
         _logger.Log(LogLevel.Information, "Criteria with name " + criteria.Name + " was created.");
         return criteria;

@@ -12,6 +12,8 @@ public class CriteriaDto
     [MaxLength(100, ErrorMessage = "Criteria vraag mag maximaal 20 karakters lang zijn.")]
     public string Question { get; set; }
     public bool IsDefault { get; set; }
+    public bool IsDistributionKnown { get; set; }
+
     [Required(ErrorMessage = "Criteria moet antwoord opties hebben.")]
     [MinLength(2, ErrorMessage = "Criteria vraag moet minimaal 2 opties hebben.")]
     [MaxLength(12, ErrorMessage = "Criteria vraag mag maximaal 12 opties hebben.")]

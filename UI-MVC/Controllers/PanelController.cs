@@ -64,7 +64,7 @@ public class PanelController : Controller
                     {
                         _criteriaManager.AddCriteriaAnswerOption("Man", 40),
                         _criteriaManager.AddCriteriaAnswerOption("Vrouw", 60)
-                    }),
+                    }, true),
                 _criteriaManager.AddCriteria(
                     "leeftijd",
                     "Tot welke leeftijdscategorie behoort u?",
@@ -74,7 +74,7 @@ public class PanelController : Controller
                         _criteriaManager.AddCriteriaAnswerOption("20-29", 20),
                         _criteriaManager.AddCriteriaAnswerOption("30-39", 60),
                         _criteriaManager.AddCriteriaAnswerOption("40-49", 20),
-                    })
+                    }, true)
             },
             7463,
             0.2,
@@ -98,7 +98,7 @@ public class PanelController : Controller
             }
 
             distributionList.Add(_criteriaManager.AddCriteria(crit.Name, crit.Question, crit.IsDefault,
-                answerOptionsList));
+                answerOptionsList, crit.IsDistributionKnown));
         }
 
         return distributionList;
