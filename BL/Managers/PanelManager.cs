@@ -192,7 +192,7 @@ public class PanelManager : IPanelManager
         
         // if validation succeeded
         // adding panel members to repo also has dependencies to everything else so everything gets added
-        panelMembers.ForEach(member => _repo.CreatePanelMember(member));
+        _repo.CreatePanelMembers(panelMembers);
         
         _logger.Log(LogLevel.Information, "Panel with name " + panel.Name + " was created.");
 
