@@ -18,7 +18,7 @@
                     <p class="card-text">
                         <i class="bi bi-person-check-fill text-success"></i>
                         <strong>Aantal succesvol aangemelde mensen:</strong>
-                        @Model.ExtraCriteriaViewModel.SuccessfulRegistrationCount /
+                        @Model.ExtraCriteriaDto.SuccessfulRegistrationCount /
                         @(Model.PanelSize + Model.AmountOfReserveInvites) (waarvan @Model.AmountOfReserveInvites reserve)
                     </p>
                 </div>
@@ -86,7 +86,57 @@
             </div>
         </div>
         <div class="card shadow-sm border-0 col-8 me-4">
-            @Html.Partial("_extraCriteriaStatsPartial", Model.ExtraCriteriaViewModel)
+            @if (Model.AnyCrossCriteria && Model.AnyUnknownCriteria)
+            {
+                <div class="accordion" id="criteriaAccordion">
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="crossCriteriaHeading">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                    data-bs-target="#crossCriteriaCollapse" aria-expanded="false"
+                                    aria-controls="crossCriteriaCollapse">
+                                Gekruiste criteria
+                            </button>
+                        </h2>
+                        <div id="crossCriteriaCollapse" class="accordion-collapse collapse"
+                             aria-labelledby="crossCriteriaHeading" data-bs-parent="#criteriaAccordion">
+                            <div class="accordion-body">
+                                @Html.Partial("_extraCriteriaStatsCrossPartial", Model.ExtraCriteriaDto)
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="singleCriteriaHeading">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                    data-bs-target="#singleCriteriaCollapse" aria-expanded="false"
+                                    aria-controls="singleCriteriaCollapse">
+                                Niet gekruiste / onbekende criteria
+                            </button>
+                        </h2>
+                        <div id="singleCriteriaCollapse" class="accordion-collapse collapse"
+                             aria-labelledby="singleCriteriaHeading" data-bs-parent="#criteriaAccordion">
+                            <div class="accordion-body">
+                                @Html.Partial("_extraCriteriaStatsPartial", Model.ExtraCriteriaDto)
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+            else if (Model.AnyCrossCriteria)
+            {
+                @Html.Partial("_extraCriteriaStatsCrossPartial", Model.ExtraCriteriaDto)
+            }
+            else if (Model.AnyUnknownCriteria)
+            {
+                @Html.Partial("_extraCriteriaStatsPartial", Model.ExtraCriteriaDto)
+            }
+            else
+            {
+                <div class="alert alert-info" role="alert">
+                    <h4 class="alert-heading">Geen criteria</h4>
+                    <p class="mb-0">Er zijn geen criteria ingesteld voor dit panel.</p>
+                </div>
+            }
         </div>
     </div>
 

@@ -119,6 +119,15 @@ public class RegisterController : Controller
                     break;
                 }
                 
+                
+                // when all distributions are 0 meaning dist is unknown
+                if (accumulatedWeight == 0)
+                {
+                    var answerOptionsList = criterion.AnswerOptions.ToList();
+                    responses.Add(criterion.Name, answerOptionsList[random.Next(answerOptionsList.Count)].Option);
+                    selectedOption = true;
+                }
+                
                 // In case, due to rounding errors, nothing is selected, select the last one
                 if (!selectedOption) responses.Add(criterion.Name, criterion.AnswerOptions.Last().Option);
             }

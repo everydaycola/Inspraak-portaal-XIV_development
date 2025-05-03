@@ -193,7 +193,7 @@ public class PanelManager : IPanelManager
         
         // if validation succeeded
         // adding panel members to repo also has dependencies to everything else so everything gets added
-        panelMembers.ForEach(member => _repo.CreatePanelMember(member));
+        _repo.CreatePanelMembers(panelMembers);
         
         _logger.Log(LogLevel.Information, "Panel with name " + panel.Name + " was created.");
 
@@ -284,6 +284,71 @@ public class PanelManager : IPanelManager
         // Return the dictionary of all generated combinations and their probabilities
         return combinations;
     }
+    
+        /// <summary>
+    /// Similar method to the one above, but it calculates absolute counts of panel members per group
+    /// </summary>
+    public Dictionary<string, int> CalculateCrossDistributionAbsolute(Guid panelId)
+    {
+        // List of all keys
+        var groups = new List<string>{""};
+
+        // get criteria
+        var criterialist = _criteriaRepo.ReadAllCriteriaForPanelWithAnswerOptions(panelId, includeUnknown: false).OrderBy(c => c.Name).ToList();
+        
+        // get all panelmembers
+        var panelMembers = _repo.ReadPanelMembersWithCriteria(panelId).Where(pm => pm.HasRegistered).ToList();
+        
+        if (criterialist.Count == 0)
+        {
+            _logger.Log(LogLevel.Warning, "No criteria found for panel with ID: " + panelId);
+            return new Dictionary<string, int> { { "", panelMembers.Count } };
+        }
+        
+        // for each criteria
+        foreach (var criteria in criterialist)
+        {
+            // Create a copy of the groups to iterate through, because changes get made to "groups" while iterating. 
+            var keys = new List<string>(groups);
+            
+            // for each existing combination
+            foreach (var key in keys)
+            {
+                // for each option in the criteria,
+                // remove the option
+                groups.Remove(key);
+                // split the criteriagroup into multiple new groups, each with a different option appended
+                foreach (var option in criteria.AnswerOptions)
+                {
+                    var newKey = key;
+                    newKey = newKey + "|" + option.Option;
+                    groups.Add(newKey);
+                }
+            }
+        }
+        
+        // Remove first character (pipe symbol) from each group
+        groups = groups.Select(g => g[1..]).ToList();
+        
+        // now we have a dictionary with all correct combo's and need to fill it. 
+        var combinations = new Dictionary<string, int>();
+
+        // for each combo
+        foreach (var key in groups)
+        {
+            // set the value of that combo
+            combinations[key] = panelMembers
+                // count how many panelmembers have the same reponses as the key
+                .Count(pm => string.Join('|', pm.Responses
+                        .OrderBy(r => r.Criteria.Name)
+                        .Where(r => r.Criteria.IsDistributionKnown)
+                        .Select(r => r.SelectedOption))
+                        .Equals(key));
+        }
+        
+        return combinations;
+    }
+    
 
     private void HandOutAnsweredCriteriaToPanelMembers(ICollection<PanelMember> panelMembers,
         Dictionary<ICollection<CriteriaResponse>, double> crossDistribution)
@@ -300,7 +365,7 @@ public class PanelManager : IPanelManager
             var doingCount = (int)Math.Round(distribution.Value * totalCount);
 
             // Ensure we don't exceed total member count due to rounding
-            // I can image small edge cases where this goes wrong but eh its good enough
+            // I can imagine small edge cases where this goes wrong but eh its good enough
             if (doneCount + doingCount > totalCount)
             {
                 // if so assume this is the last criteria and just make the amount the remaining members
