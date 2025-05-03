@@ -1,7 +1,9 @@
 @model ExtraCriteriaDto
 
 @{
-    var desiredCriteriaCountDictionary = Model.Criteria.ToDictionary(
+    var desiredCriteriaCountDictionary = Model.Criteria
+        .Where(c => !c.IsDistributionKnown)
+        .ToDictionary(
         criteria => criteria.Name,
         criteria => criteria.AnswerOptions.ToDictionary(
             option => option.Option,

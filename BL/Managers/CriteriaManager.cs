@@ -24,12 +24,12 @@ public class CriteriaManager : ICriteriaManager
     //     return _repo.ReadAllCriteriaWithValuesForPanel(panelId);
     // }
 
-    public Dictionary<string, Dictionary<string, int>> GetAllCriteriaCountsGroupedByValue(Guid panelId)
+    public Dictionary<string, Dictionary<string, int>> GetAllCriteriaCountsGroupedByValue(Guid panelId, bool onlyUnknown = false)
     {
         // this gives the exact counts but a criteria isn't present when it is 0
-        var counts = _repo.ReadAllCriteriaMemberCountsWithValuesForPanel(panelId);
+        var counts = _repo.ReadAllCriteriaMemberCountsWithValuesForPanel(panelId, onlyUnknown: onlyUnknown);
         // this gives all criteria values, including the ones that are 0
-        var all = _repo.ReadAllCriteriaForPanelWithAnswerOptions(panelId)
+        var all = _repo.ReadAllCriteriaForPanelWithAnswerOptions(panelId, includeKnown: !onlyUnknown)
             .GroupBy(c => c.Name)
             .ToDictionary(
                 group => group.Key,

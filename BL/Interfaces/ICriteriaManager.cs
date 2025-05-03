@@ -5,7 +5,7 @@ namespace BL.Interfaces;
 public interface ICriteriaManager
 {
     //GETS
-    public Dictionary<string, Dictionary<string, int>> GetAllCriteriaCountsGroupedByValue(Guid panelId);
+    public Dictionary<string, Dictionary<string, int>> GetAllCriteriaCountsGroupedByValue(Guid panelId, bool onlyUnknown = false);
     public IEnumerable<Criteria> GetAllDesiredCriteriaPercentages(Guid panelId, bool onlyDefault = false);
 
     public Dictionary<string, Dictionary<int, List<PanelMember>>> GetPanelMembersGroupedByResponsesForDefaultCriteriaGroupedByPhase(

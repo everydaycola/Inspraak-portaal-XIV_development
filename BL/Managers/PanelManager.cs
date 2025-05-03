@@ -293,7 +293,7 @@ public class PanelManager : IPanelManager
         var groups = new List<string>{""};
 
         // get criteria
-        var criterialist = _criteriaRepo.ReadAllCriteriaForPanelWithAnswerOptions(panelId).OrderBy(c => c.Name).ToList();
+        var criterialist = _criteriaRepo.ReadAllCriteriaForPanelWithAnswerOptions(panelId, includeUnknown: false).OrderBy(c => c.Name).ToList();
         
         // get all panelmembers
         var panelMembers = _repo.ReadPanelMembersWithCriteria(panelId).Where(pm => pm.HasRegistered).ToList();
@@ -340,6 +340,7 @@ public class PanelManager : IPanelManager
                 // count how many panelmembers have the same reponses as the key
                 .Count(pm => string.Join('|', pm.Responses
                         .OrderBy(r => r.Criteria.Name)
+                        .Where(r => r.Criteria.IsDistributionKnown)
                         .Select(r => r.SelectedOption))
                         .Equals(key));
         }

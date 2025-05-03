@@ -39,6 +39,7 @@ public class PanelManagementController : Controller
         var panelSize = _calcManager.CalculatePanelSize(panel.RepresentationGroup.CitizenCount, panel.SampleRate);
         var amountOfReserveInvites =
             _calcManager.CalculateAmountOfReserve(panelSize, panel.RepresentationGroup.ReservePercentage);
+        var criteriaList = _criteriaManager.GetAllDesiredCriteriaPercentages(panel.Id).ToList();
         return View(new PanelManagementDto
         {
             PanelId = id,
@@ -49,11 +50,13 @@ public class PanelManagementController : Controller
             TotalInvitesNeeded = _calcManager.CalculateTotalInvitesNeeded(panelSize + amountOfReserveInvites, panel.RepresentationGroup.ResponseRate),
             IsRegistrationOpen = panel.IsRegistrationOpen,
             PlanningGroupMembers = _manager.GetAllPlanningGroupMembersWithIdentityUserForPanel(panel.Id),
+            AnyCrossCriteria = criteriaList.Any(c => c.IsDistributionKnown),
+            AnyUnknownCriteria = criteriaList.Any(c => !c.IsDistributionKnown),
             ExtraCriteriaDto = new ExtraCriteriaDto
             {
                 CriteriaGroupAbsoluteMemberCount = _manager.CalculateCrossDistributionAbsolute(panel.Id),
-                CriteriaMemberCount = _criteriaManager.GetAllCriteriaCountsGroupedByValue(panel.Id),
-                Criteria = _criteriaManager.GetAllDesiredCriteriaPercentages(panel.Id).ToList(),
+                CriteriaMemberCount = _criteriaManager.GetAllCriteriaCountsGroupedByValue(panel.Id, onlyUnknown: true),
+                Criteria = criteriaList,
                 SuccessfulRegistrationCount = panel.SuccessfulRegistrationCount,
                 DesiredRegistrationCount = panelSize,
             },

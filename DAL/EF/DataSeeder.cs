@@ -71,6 +71,7 @@ public static class DataSeeder
                     Name = "Rijbewijs",
                     Question = "Beschikt u over een rijbewijs?",
                     IsDefault = false,
+                    IsDistributionKnown = true,
                     AnswerOptions = new List<CriteriaAnswerOption>
                     {
                         new()
@@ -90,6 +91,7 @@ public static class DataSeeder
                     Name = "Vervoermethode",
                     Question = "Wat is uw voorkeurs vervoersmethode?",
                     IsDefault = false,
+                    IsDistributionKnown = true,
                     AnswerOptions = new List<CriteriaAnswerOption>
                     {
                         new()
@@ -114,6 +116,7 @@ public static class DataSeeder
                     Name = "Geslacht",
                     Question = "Wat is uw geslacht?",
                     IsDefault = true,
+                    IsDistributionKnown = true,
                     AnswerOptions = new List<CriteriaAnswerOption>
                     {
                         new()

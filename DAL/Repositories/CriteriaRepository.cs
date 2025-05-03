@@ -42,7 +42,7 @@ public class CriteriaRepository : ICriteriaRepository
     // counts how many members have answers what how many times. 
     // outer key is criteria name, inner key is answer name, int is count
     // !!WARNING!! does not give any values for criteria that have 0 responses.
-    public Dictionary<string, Dictionary<string, int>> ReadAllCriteriaMemberCountsWithValuesForPanel(Guid panelId)
+    public Dictionary<string, Dictionary<string, int>> ReadAllCriteriaMemberCountsWithValuesForPanel(Guid panelId, bool onlyUnknown = false)
     {
         return _context.PanelMembers
             .Where(panelMember => panelMember.Panel.Id == panelId)
@@ -52,6 +52,7 @@ public class CriteriaRepository : ICriteriaRepository
             .ToDictionary(
                 criteriaGroup => criteriaGroup.Key,
                 criteriaGroup => criteriaGroup
+                    .Where(cr => !onlyUnknown || !cr.Criteria.IsDistributionKnown)
                     .GroupBy(r => r.SelectedOption)
                     .ToDictionary(
                         optionGroup => optionGroup.Key,
@@ -79,13 +80,16 @@ public class CriteriaRepository : ICriteriaRepository
     //         );
     // }
 
-    public IEnumerable<Criteria> ReadAllCriteriaForPanelWithAnswerOptions(Guid panelId, bool onlyDefault = false)
+    public IEnumerable<Criteria> ReadAllCriteriaForPanelWithAnswerOptions(Guid panelId, bool onlyDefault = false, bool includeKnown = true, bool includeUnknown = true)
     {
+        
         return _context.Panels
             .Where(p => p.Id == panelId)
             .SelectMany(p => p.Criteria)
             .Include(c => c.AnswerOptions)
             .Where(c => !onlyDefault || c.IsDefault)
+            .Where(c => includeUnknown || c.IsDistributionKnown)
+            .Where(c => includeKnown || !c.IsDistributionKnown)
             .ToList();
     }
 

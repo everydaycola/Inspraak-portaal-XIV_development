@@ -19,15 +19,53 @@
             Toon criteria statistieken
         </button>
 
-        <!-- Collapsible content (hidden by default) -->
-        <div class="collapse" id="newphase">
-            <div class="card m-3">
-                <h5 class="card-header text-center">Extra Criteria Statistieken</h5>
-                <div class="m-2 justify-content-center">
-                    @Html.Partial("_extraCriteriaStatsPartial", Model.ExtraCriteriaDto)
-                </div>
+        @if (Model.AnyCrossCriteria || Model.AnyUnknownCriteria)
+        {
+            <div class="accordion" id="criteriaAccordion">
+                @if (Model.AnyCrossCriteria)
+                {
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="crossCriteriaHeading">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                    data-bs-target="#crossCriteriaCollapse" aria-expanded="false"
+                                    aria-controls="crossCriteriaCollapse">
+                                Gekruiste criteria
+                            </button>
+                        </h2>
+                        <div id="crossCriteriaCollapse" class="accordion-collapse collapse"
+                             aria-labelledby="crossCriteriaHeading" data-bs-parent="#criteriaAccordion">
+                            <div class="accordion-body">
+                                @Html.Partial("_extraCriteriaStatsCrossPartial", Model.ExtraCriteriaDto)
+                            </div>
+                        </div>
+                    </div>
+                }
+
+                @if (Model.AnyUnknownCriteria)
+                {
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="singleCriteriaHeading">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                    data-bs-target="#singleCriteriaCollapse" aria-expanded="false"
+                                    aria-controls="singleCriteriaCollapse">
+                                Niet gekruiste / onbekende criteria
+                            </button>
+                        </h2>
+                        <div id="singleCriteriaCollapse" class="accordion-collapse collapse"
+                             aria-labelledby="singleCriteriaHeading" data-bs-parent="#criteriaAccordion">
+                            <div class="accordion-body">
+                                @Html.Partial("_extraCriteriaStatsPartial", Model.ExtraCriteriaDto)
+                            </div>
+                        </div>
+                    </div>
+                }
             </div>
-        </div>
+        }
+        else
+        {
+            <p>There are no criteria for this panel</p>
+        }
+
 
         <!-- End Registration Form -->
         <div class="d-flex justify-content-center m-4">
