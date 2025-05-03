@@ -52,7 +52,13 @@ public class PanelManagementController : Controller
             ExtraCriteriaViewModel = new ExtraCriteriaViewModel
             {
                 CriteriaMemberCount = _criteriaManager.GetAllCriteriaCountsGroupedByValue(panel.Id),
-                DesiredCriteriaCount = _criteriaManager.GetAllDesiredCriteriaPercentages(panel.Id),
+                DesiredCriteriaCount = _criteriaManager.GetAllDesiredCriteriaPercentages(panel.Id).ToDictionary(
+                    criteria => criteria.Name,
+                    criteria => criteria.AnswerOptions.ToDictionary(
+                        option => option.Option,
+                        option => option.DistributionPercentage
+                    )
+                ),
                 SuccessfulRegistrationCount = panel.SuccessfulRegistrationCount,
                 DesiredRegistrationCount = panelSize,
             },

@@ -1,6 +1,6 @@
-﻿import {addAnswerOption, reIndexAnswerOptions, resetAnswerCounters} from "./answersOption";
+import {addAnswerOption, reIndexAnswerOptions, resetAnswerCounters, createPercentageInput} from "./answersOption";
+import {setValidationMessages} from "./FormValidator" 
 import {criteriaInputUpdateHandler} from "./apiAutofill/apiDataFiller";
-import {setValidationMessages} from "./FormValidator"
 import {attachEventHandlersToCriteriaInput} from "./apiAutofill/CriteriaHandler"; 
 
 
@@ -51,11 +51,12 @@ export function addCriteria() {
 
     // Create isDefault input
     const isDefaultInput = document.createElement("input")
-    isDefaultInput.id = "is-default-criteria";
+    isDefaultInput.id = `is-default-${criteriaId}`;
     isDefaultInput.className = "border border-1 rounded-2 form-check-input";
     isDefaultInput.type = "checkbox";
     isDefaultInput.name = `Distributions[${currentCount}].IsDefault`;
-    isDefaultInput.value= "true";
+    isDefaultInput.value = "true";
+    isDefaultInput.checked = true;
 
     // Create Delete Button
     const removeBtn = document.createElement("button");
@@ -91,14 +92,37 @@ export function addCriteria() {
     const answerUl = document.createElement("ul");
     answerUl.className = "list-group list-group-flush";
 
+    // Create isDistributionKnown div
+    const isDistributionKnownDiv = document.createElement("div");
+    isDistributionKnownDiv.className = "d-flex flex-row col-3 form-check form-switch"
 
+    // Create Distribution known Checkbox
+    const isDistributionKnownInput = document.createElement("input")
+    isDistributionKnownInput.id = `is-distribution-known-${currentCount}-criteria`;
+    isDistributionKnownInput.className = "border border-1 rounded-2 form-check-input";
+    isDistributionKnownInput.type = "checkbox";
+    isDistributionKnownInput.name = `Distributions[${currentCount}].IsDistributionKnown`;
+    isDistributionKnownInput.value = "true";
+    isDistributionKnownInput.checked = true;
+    isDistributionKnownInput.addEventListener("click", () => {
+        toggleAnswerOptionPercentageInput(isDistributionKnownInput.checked, currentCount)
+    })
+
+    // Create isDistributionKnown label
+    const isDistributionKnownLabel = document.createElement("label")
+    isDistributionKnownLabel.className = "card-text pe-5";
+    isDistributionKnownLabel.htmlFor = isDistributionKnownInput.name;
+    isDistributionKnownLabel.innerText = "Verdeling gekend";
+    
     // Create addAnswerOption Button
     const addAnswerOptionBtn = document.createElement("button")
     addAnswerOptionBtn.type = "button";
     addAnswerOptionBtn.className = "btn btn-primary col-2 ms-3 my-2";
     addAnswerOptionBtn.innerText = "Mogelijkheid Toevoegen";
+    addAnswerOptionBtn.addEventListener("click", () => addAnswerOption(currentCount, answerUl, isDistributionKnownInput.checked));
     addAnswerOptionBtn.classList.add("add-option-button");
-    addAnswerOptionBtn.addEventListener("click", () => addAnswerOption(currentCount, answerUl));
+
+    // Error spans
     
     const nameValidationSpan = document.createElement("span");
     nameValidationSpan.id=`${nameInput.id}-msg`
@@ -109,6 +133,9 @@ export function addCriteria() {
     questionValidationSpan.className = "text-danger ps-1";
     
     // Appending
+    isDistributionKnownDiv.append(isDistributionKnownLabel, isDistributionKnownInput)
+    answerUl.append(isDistributionKnownDiv)
+
     wrapper.append(headDiv, questionDiv, answerHeading, answerUl, addAnswerOptionBtn)
 
     headDiv.append(nameDiv, isDefaultDiv, removeBtn, nameValidationSpan)
@@ -121,15 +148,14 @@ export function addCriteria() {
     criteriaContainer.appendChild(wrapper);
 
     // add 2 Answer Options
-    addAnswerOption(currentCount, answerUl);
-    addAnswerOption(currentCount, answerUl);
+    addAnswerOption(currentCount, answerUl, true);
+    addAnswerOption(currentCount, answerUl, true);
 
     //Validation
     //Name
     nameInput.required = true;
     nameInput.minLength = 2;
     nameInput.maxLength = 20;
-
     setValidationMessages(nameInput.id,nameValidationSpan.id,{
         valueMissing: "Criteria moet een naam hebben.",
         tooShort: "Criteria naam moet minimaal 2 karakters lang zijn.",
@@ -150,17 +176,38 @@ export function addCriteria() {
 
 
 function removeCriteria(criteriaId: number) {
-    let e = event as Event
-    const btn = e.currentTarget as HTMLButtonElement;
-    const headDiv = btn.parentElement as HTMLDivElement;
-    const wrapper = headDiv.parentElement as HTMLDivElement;
-    
+    let e = event as Event;
+    const wrapper = ((e.currentTarget as HTMLButtonElement)
+        .parentElement as HTMLDivElement)
+        .parentElement as HTMLDivElement
+
     // Remove the element from the DOM
     wrapper.remove();
     // Rebuild the subregions to fix the indices
     reIndexCriteria();
     resetAnswerCounters(criteriaId)
     criteriaInputUpdateHandler();
+}
+
+function toggleAnswerOptionPercentageInput(isChecked: boolean, criteriaId: number) {
+    let e = event as Event;
+    const ulChildren = (((e.currentTarget as HTMLInputElement)
+        .parentElement as HTMLDivElement)
+        .parentElement as HTMLUListElement)
+        .childNodes;
+    //removing the div form the NodeList
+    const lis: HTMLLIElement[] = [].slice.call(ulChildren, 1);
+
+    lis.forEach((li, index) => {
+        const inputs = li.childNodes;
+        const percentageNode = inputs.item(1)
+        if (!isChecked) {
+            percentageNode.remove()
+        } else {
+            const percentageInput = createPercentageInput(criteriaId, index);
+            li.insertBefore(percentageInput, li.childNodes[1]);
+        }
+    })
 }
 
 function reIndexCriteria() {
@@ -174,30 +221,23 @@ function reIndexCriteria() {
 
         // Update Name input
         const nameInput = div.querySelector("input[name^='Distributions'][name$='Name']") as HTMLInputElement;
-        if (nameInput) {
-            nameInput.name = `Distributions[${newIndex}].Name`;
-        }
+        nameInput.name = `Distributions[${newIndex}].Name`;
 
         // Update Question input
         const questionInput = div.querySelector("input[name^='Distributions'][name$='Question']") as HTMLInputElement;
-        if (questionInput) {
-            questionInput.name = `Distributions[${newIndex}].Question`;
-        }
+        questionInput.name = `Distributions[${newIndex}].Question`;
 
         // Update isDefault checkbox
-        const isDefaultInput = div.querySelector("input[name^='Distributions'][name$='isDefault']") as HTMLInputElement;
-        if (isDefaultInput) {
-            isDefaultInput.name = `Distributions[${newIndex}].isDefault`;
-        }
+        const isDefaultInput = div.querySelector("input[name^='Distributions'][name$='IsDefault']") as HTMLInputElement;
+        isDefaultInput.name = `Distributions[${newIndex}].IsDefault`;
 
         // Update all answer option inputs
         const answerUl = div.querySelector<HTMLUListElement>("ul.list-group") as HTMLUListElement;
         reIndexAnswerOptions(newIndex, answerUl);
-        
-        const removeBtn = div.querySelector<HTMLButtonElement>("button.btn-danger.btn-sm") as HTMLButtonElement;
 
-        // Add the event listener for the remove button
-        removeBtn.addEventListener('click', () => removeCriteria(newIndex));
+        // Update isDistribution known checkbox
+        const isDistributionInput = div.querySelector("input[name^='Distributions'][name$='IsDistributionKnown']") as HTMLInputElement;
+        isDistributionInput.name = `Distributions[${newIndex}].IsDefault`
 
         criteriaCount++;
     });
@@ -210,29 +250,37 @@ export function validateCriteriaPercentages(): boolean {
     const criteriaBlocks = document.querySelectorAll(".criteria");
 
     criteriaBlocks.forEach((criteriaDiv, index) => {
-        const inputs = criteriaDiv.querySelectorAll<HTMLInputElement>(
-            `input[name^="Distributions[${index}].AnswerOptions"][name$="DistributionPercentage"]`
-        );
+        const distKnownCheck = criteriaDiv.querySelector(`input[name$="IsDistributionKnown"]`) as HTMLInputElement
+        const defaultCheck = criteriaDiv.querySelector(`input[name$="IsDefault"]`) as HTMLInputElement
+        const error = document.createElement("div");
+        if (defaultCheck.checked && !distKnownCheck.checked) {
+            isValid = false
 
-        const sum = Array.from(inputs)
-            .map(input => parseFloat(input.value) || 0)
-            .reduce((acc, val) => acc + val, 0);
-
-        // Remove existing message if any
-        let message = criteriaDiv.querySelector(".distribution-error");
-        if (message) message.remove();
-
-        if (Math.abs(sum) != 100) {
-            isValid = false;
-
-            const error = document.createElement("div");
             error.className = "text-danger distribution-error";
-            error.innerText = `De verdeling van de antwoord opties moet 100% zijn. Nu: ${sum}%`;
+            error.innerText = `Een standaard criteria moet een verdeling hebben.`;
+        } else if (distKnownCheck.checked) {
+            const inputs = criteriaDiv.querySelectorAll<HTMLInputElement>(
+                `input[name^="Distributions[${index}].AnswerOptions"][name$="DistributionPercentage"]`
+            );
 
-            // Place below answer list
-            const ul = criteriaDiv.querySelector("ul.list-group");
-            ul?.after(error);
+            const sum = Array.from(inputs)
+                .map(input => parseFloat(input.value) || 0)
+                .reduce((acc, val) => acc + val, 0);
+
+            // Remove existing message if any
+            let message = criteriaDiv.querySelector(".distribution-error");
+            if (message) message.remove();
+
+            if (Math.abs(sum) != 100) {
+                isValid = false;
+
+                error.className = "text-danger distribution-error";
+                error.innerText = `De verdeling van de antwoord opties moet 100% zijn. Nu: ${sum}%`;
+            }
         }
+        // Place below answer list
+        const ul = criteriaDiv.querySelector("ul.list-group");
+        ul?.after(error);
     });
 
     return isValid;

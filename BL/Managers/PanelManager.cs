@@ -163,7 +163,9 @@ public class PanelManager : IPanelManager
             objectsToValidate.AddRange(panel.Criteria.SelectMany(c => c.AnswerOptions));
             
             // preforms an action very similar to a cartesian product, but with the options of each criteria
-            var crossDistribution = HelperCalculateCrossDistribution(panel.Criteria.ToList());
+            var crossDistribution = HelperCalculateCrossDistribution(panel.Criteria
+                .Where(c=> c.IsDefault)
+                .ToList());
             
             // validate created criteria
             objectsToValidate.AddRange(crossDistribution.Keys
@@ -171,7 +173,10 @@ public class PanelManager : IPanelManager
                 .GroupBy(r => r)); // to remove duplicates
 
             // finally, give panel members their distributions
-            HandOutAnsweredCriteriaToPanelMembers(panelMembers, crossDistribution);
+            if (crossDistribution.Count > 0)
+            {
+                HandOutAnsweredCriteriaToPanelMembers(panelMembers, crossDistribution);
+            }
         }
         
         // // validation
@@ -480,26 +485,24 @@ public class PanelManager : IPanelManager
         _repo.UpdatePanel(panel);
         _repo.CreatePanelMembers(newPanelMembers);
     }
-
+    
     public void EndRegistration(Guid panelId,
-        Dictionary<string, Dictionary<string, double>> allDesiredCriteriaPercentages, bool sendInvitationMails, string currentBaseUrl)
+        IEnumerable<Criteria> allDesiredCriteriaPercentages, bool sendInvitationMails, string currentBaseUrl)
     {
         var panel = GetPanelWithRepresentationGroup(panelId);
         var panelSize =
             _calculationManager.CalculatePanelSize(panel.RepresentationGroup.CitizenCount, panel.SampleRate);
         var amountSelectedNeeded =
             _calculationManager.CalculateAmountOfReserve(panelSize, panel.RepresentationGroup.ReservePercentage) + panelSize;
-        var criteriaList = allDesiredCriteriaPercentages.Select(kpv => new Criteria
+        
+        var knownCriteria = allDesiredCriteriaPercentages.Where(c => c.IsDistributionKnown).ToList();
+        if (!knownCriteria.Any())
         {
-            Name = kpv.Key,
-            AnswerOptions = kpv.Value.Select(kpv2 => new CriteriaAnswerOption
-            {
-                Option = kpv2.Key,
-                DistributionPercentage = kpv2.Value
-            }).ToList()
-        }).ToList();
-
-        var crossDistribution = HelperCalculateCrossDistribution(criteriaList);
+            _logger.LogInformation("No known distributions for panel " + panel.Id + ". Skipping selection and preserving all registered members.");
+            return;
+        }
+        
+        var crossDistribution = HelperCalculateCrossDistribution(knownCriteria);
 
         // Create a dictionary with string keys
         var optionList = new Dictionary<string, int>();
@@ -516,11 +519,12 @@ public class PanelManager : IPanelManager
         var selectedMembers = new List<PanelMember>();
 
         // Group by responses and process each group
-        foreach (var group in registeredMembers.GroupBy(pm => string.Join("|", pm.Responses.OrderBy(r => r.SelectedOption).Select(r => r.SelectedOption))))
+        foreach (var group in registeredMembers.GroupBy(pm => string.Join("|", pm.Responses.OrderBy(r => r.SelectedOption).Where(r=>r.Criteria.IsDistributionKnown).Select(r => r.SelectedOption))))
         {
             // Check if key exists in the dictionary
             if (optionList.TryGetValue(group.Key, out var count))
             {
+                Console.WriteLine(count);
                 // Add shuffled selection to selected members
                 selectedMembers.AddRange(
                     group.OrderBy(_ => Guid.NewGuid())
