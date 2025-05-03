@@ -25,6 +25,7 @@ public interface IPanelManager
     public void AddPlanningsGroupMember(Guid panelId, string Email, string Naam, string Functie);
 
     public void AddDocumentPost(Guid panelId, string title, string documentUrl, bool isVisibleForPanelMembers);
+    public void AddMeetingPost(Guid panelId, string title, DateTime meetingDateTime, bool visibleForPanelMember);
     //UPDATE
     public void UpdatePanel(Guid id, bool isRegistrationOpen);
     public void UpdatePanelRegistrationCount(Guid id, bool increase);
@@ -34,4 +35,6 @@ public interface IPanelManager
     //HELPERS
     public void NewPanelPhase(Guid guid, double newResponseRate);
     public void EndRegistration(Guid id, IEnumerable<Criteria> allDesiredCriteriaPercentages, bool sendInvitationMails, string currentBaseUrl);
+    public void AddSummaryToMeetingPost(Guid meetingId, string uniqueFileName);
+    
 }

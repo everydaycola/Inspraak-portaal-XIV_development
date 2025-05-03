@@ -1,5 +1,7 @@
 import {addAnswerOption, reIndexAnswerOptions, resetAnswerCounters, createPercentageInput} from "./answersOption";
 import {setValidationMessages} from "./FormValidator" 
+import {criteriaInputUpdateHandler} from "./apiAutofill/apiDataFiller";
+import {attachEventHandlersToCriteriaInput} from "./apiAutofill/CriteriaHandler"; 
 
 
 let criteriaCount = 0;
@@ -76,7 +78,7 @@ export function addCriteria() {
     // Create Question input
     const questionInput = document.createElement("input");
     questionInput.id = `criteria-question-${currentCount}`;
-    questionInput.className = "border border-1 rounded-2 col-8";
+    questionInput.className = "border border-1 rounded-2 col-8 criteria-question";
     questionInput.type = "text";
     questionInput.placeholder = `Criteria ${currentCount + 1} vraag`;
     questionInput.name = `Distributions[${currentCount}].Question`;
@@ -118,8 +120,10 @@ export function addCriteria() {
     addAnswerOptionBtn.className = "btn btn-primary col-2 ms-3 my-2";
     addAnswerOptionBtn.innerText = "Mogelijkheid Toevoegen";
     addAnswerOptionBtn.addEventListener("click", () => addAnswerOption(currentCount, answerUl, isDistributionKnownInput.checked));
+    addAnswerOptionBtn.classList.add("add-option-button");
 
     // Error spans
+    
     const nameValidationSpan = document.createElement("span");
     nameValidationSpan.id=`${nameInput.id}-msg`
     nameValidationSpan.className = "text-danger ps-1";
@@ -161,11 +165,14 @@ export function addCriteria() {
     //Question
     questionInput.minLength = 6;
     questionInput.maxLength = 100;
+
     setValidationMessages(questionInput.id,questionValidationSpan.id,{
         tooShort: "Criteria vraag moet minimaal 6 karakters lang zijn.",
         tooLong: "Criteria vraag mag maximaal 100 karakters lang zijn."
     })
+    criteriaInputUpdateHandler()
 }
+
 
 
 function removeCriteria(criteriaId: number) {
@@ -179,6 +186,7 @@ function removeCriteria(criteriaId: number) {
     // Rebuild the subregions to fix the indices
     reIndexCriteria();
     resetAnswerCounters(criteriaId)
+    criteriaInputUpdateHandler();
 }
 
 function toggleAnswerOptionPercentageInput(isChecked: boolean, criteriaId: number) {
@@ -277,5 +285,4 @@ export function validateCriteriaPercentages(): boolean {
 
     return isValid;
 }
-
 

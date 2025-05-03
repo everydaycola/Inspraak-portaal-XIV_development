@@ -14,7 +14,6 @@ public class Criteria : IValidatableObject
     [MinLength(6, ErrorMessage = "Criteria vraag moet minimaal 3 karakters lang zijn.")]
     [MaxLength(100, ErrorMessage = "Criteria vraag mag maximaal 20 karakters lang zijn.")]
     public string Question { get; set; }
-
     
     public bool IsDefault { get; set; }
     public bool IsDistributionKnown { get; set; }

@@ -4,6 +4,7 @@ using DAL.Interfaces;
 using Domain;
 using Domain.CitizenPanel;
 using Domain.Interfaces;
+using Domain.Interfaces.Posts;
 using Microsoft.Extensions.Logging;
 using UI_MVC;
 
@@ -352,6 +353,8 @@ public class PanelManager : IPanelManager
         }
     }
     //UPDATE
+    
+
     public void UpdatePanel(Guid id, bool isRegistrationOpen)
     {
         var panel = _repo.ReadPanel(id);
@@ -550,6 +553,11 @@ public class PanelManager : IPanelManager
         _repo.UpdatePanel(panel);
     }
 
+    public void AddSummaryToMeetingPost(Guid meetingId, string uniqueFileName)
+    {
+        _repo.AddSummaryToMeetingPost(meetingId, uniqueFileName);
+    }
+
     public IEnumerable<PlanningGroupMember> GetAllPlanningGroupMembersWithIdentityUserForPanel(Guid panelId)
     {
         return _repo.ReadAllPlanningGroupMembersWithIdentityUserForPanel(panelId);
@@ -565,5 +573,16 @@ public class PanelManager : IPanelManager
             isVisibleForPanelMembers = isVisibleForPanelMembers
         };
         _repo.CreateDocumentPost(panelId, docPost);
+    }
+    public void AddMeetingPost(Guid panelId, string title, DateTime meetingDateTime, bool visibleForPanelMember)
+    {
+        var meetingPost = new MeetingPost()
+        {
+            Title = title,
+            DocumentNames = new List<string>(),
+            CreatedAt = meetingDateTime,
+            isVisibleForPanelMembers = visibleForPanelMember
+        };
+        _repo.CreateMeetingPost(panelId, meetingPost);
     }
 }
