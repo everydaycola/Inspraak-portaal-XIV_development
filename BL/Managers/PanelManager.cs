@@ -4,6 +4,7 @@ using DAL.Interfaces;
 using Domain;
 using Domain.CitizenPanel;
 using Domain.Interfaces;
+using Domain.Interfaces.Posts;
 using Microsoft.Extensions.Logging;
 using UI_MVC;
 
@@ -417,6 +418,8 @@ public class PanelManager : IPanelManager
         }
     }
     //UPDATE
+    
+
     public void UpdatePanel(Guid id, bool isRegistrationOpen)
     {
         var panel = _repo.ReadPanel(id);
@@ -557,7 +560,14 @@ public class PanelManager : IPanelManager
         var amountSelectedNeeded =
             _calculationManager.CalculateAmountOfReserve(panelSize, panel.RepresentationGroup.ReservePercentage) + panelSize;
         
-        var crossDistribution = HelperCalculateCrossDistribution(allDesiredCriteriaPercentages.Where(c => c.IsDistributionKnown).ToList());
+        var knownCriteria = allDesiredCriteriaPercentages.Where(c => c.IsDistributionKnown).ToList();
+        if (!knownCriteria.Any())
+        {
+            _logger.LogInformation("No known distributions for panel " + panel.Id + ". Skipping selection and preserving all registered members.");
+            return;
+        }
+        
+        var crossDistribution = HelperCalculateCrossDistribution(knownCriteria);
 
         // Create a dictionary with string keys
         var optionList = new Dictionary<string, int>();
@@ -615,6 +625,11 @@ public class PanelManager : IPanelManager
         _repo.UpdatePanel(panel);
     }
 
+    public void AddSummaryToMeetingPost(Guid meetingId, string uniqueFileName)
+    {
+        _repo.AddSummaryToMeetingPost(meetingId, uniqueFileName);
+    }
+
     public IEnumerable<PlanningGroupMember> GetAllPlanningGroupMembersWithIdentityUserForPanel(Guid panelId)
     {
         return _repo.ReadAllPlanningGroupMembersWithIdentityUserForPanel(panelId);
@@ -630,5 +645,16 @@ public class PanelManager : IPanelManager
             isVisibleForPanelMembers = isVisibleForPanelMembers
         };
         _repo.CreateDocumentPost(panelId, docPost);
+    }
+    public void AddMeetingPost(Guid panelId, string title, DateTime meetingDateTime, bool visibleForPanelMember)
+    {
+        var meetingPost = new MeetingPost()
+        {
+            Title = title,
+            DocumentNames = new List<string>(),
+            CreatedAt = meetingDateTime,
+            isVisibleForPanelMembers = visibleForPanelMember
+        };
+        _repo.CreateMeetingPost(panelId, meetingPost);
     }
 }

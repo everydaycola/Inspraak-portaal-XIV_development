@@ -10,6 +10,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.3/jquery.validate.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validation-unobtrusive/3.2.12/jquery.validate.unobtrusive.min.js"></script>
     <script src="~/dist/panelCreation.entry.js" type="module"></script>
+    <script src="~/dist/apiDataFiller.entry.js" type="module"></script>
 }
 
 <div class="container mt-5">
@@ -37,7 +38,7 @@
                                 Toevoegen</a>
                             <span id="error-subregions" class="text-danger"></span>
 
-                            <div class="mb-2 subregion-0">
+                            <div class="mb-2 subRegion subregion-0">
                                 <input id="subregion-0-name" name="SubRegions[0].Name" placeholder="Naam" type="text"
                                        class="form-control d-inline w-50 me-2" required/>
                                 <input id="subregion-0-size" name="SubRegions[0].Size" placeholder="Grootte" type="number"

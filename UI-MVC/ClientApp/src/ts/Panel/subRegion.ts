@@ -1,4 +1,6 @@
-﻿import {setValidationMessages} from "./FormValidator"
+﻿import {newSubregionInputAddedHandler} from "./apiAutofill/apiDataFiller";
+
+import {setValidationMessages} from "./FormValidator"
 
 let subRegionCount = 1;
 
@@ -50,6 +52,8 @@ export function addSubRegion() {
 
     // Add the wrapper to the subregion container
     subRegionContainer.appendChild(wrapper);
+    //Call apiDataFillerScript to repopulate.
+    newSubregionInputAddedHandler()
 
     addSubregionValidation(nameInput, nameError, sizeInput, sizeError);
 
@@ -81,6 +85,8 @@ function removeSubRegion(id: string) {
         element.remove();
         // Rebuild the subregions to fix the indices
         reIndexSubRegions();
+        //Call apiDataFillerScript
+        newSubregionInputAddedHandler();
     }
 }
 
