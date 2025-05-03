@@ -495,7 +495,14 @@ public class PanelManager : IPanelManager
         var amountSelectedNeeded =
             _calculationManager.CalculateAmountOfReserve(panelSize, panel.RepresentationGroup.ReservePercentage) + panelSize;
         
-        var crossDistribution = HelperCalculateCrossDistribution(allDesiredCriteriaPercentages.Where(c => c.IsDistributionKnown).ToList());
+        var knownCriteria = allDesiredCriteriaPercentages.Where(c => c.IsDistributionKnown).ToList();
+        if (!knownCriteria.Any())
+        {
+            _logger.LogInformation("No known distributions for panel " + panel.Id + ". Skipping selection and preserving all registered members.");
+            return;
+        }
+        
+        var crossDistribution = HelperCalculateCrossDistribution(knownCriteria);
 
         // Create a dictionary with string keys
         var optionList = new Dictionary<string, int>();

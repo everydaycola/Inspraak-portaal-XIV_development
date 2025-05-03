@@ -93,8 +93,16 @@ public class PanelController : Controller
             var answerOptionsList = new List<CriteriaAnswerOption>();
             foreach (var answerOption in crit.AnswerOptions)
             {
-                answerOptionsList.Add(_criteriaManager.AddCriteriaAnswerOption(answerOption.Option,
-                    double.Parse(answerOption.DistributionPercentage.Replace(".",","))));
+                if (crit.IsDistributionKnown)
+                {
+                    answerOptionsList.Add(_criteriaManager.AddCriteriaAnswerOption(answerOption.Option,
+                        double.Parse(answerOption.DistributionPercentage.Replace(".",","))));
+                }
+                else
+                {
+                    answerOptionsList.Add(_criteriaManager.AddCriteriaAnswerOption(answerOption.Option,0));
+                }
+                
             }
 
             distributionList.Add(_criteriaManager.AddCriteria(crit.Name, crit.Question, crit.IsDefault,
