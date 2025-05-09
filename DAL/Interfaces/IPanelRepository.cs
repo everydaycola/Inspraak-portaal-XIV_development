@@ -27,9 +27,7 @@ public interface IPanelRepository
     //CREATE
     public void CreatePanelMember(PanelMember panelMember);
     public void CreatePanelMembers(List<PanelMember> panelMembers);
-    public void CreateTextPost(Guid panelId, TextPost textPost);
-    public void CreateDocumentPost(Guid panelId, DocumentPost docPost);
-    void CreateMeetingPost(Guid panelId, MeetingPost meetingPost);
+    public void CreatePost<T>(Guid panelId, T post) where T : Post;
     public void CreatePlanningsGroupMember(PlanningGroupMember member);
     
     //REMOVE
