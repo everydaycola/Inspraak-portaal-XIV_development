@@ -49,7 +49,7 @@ public static class DataSeeder
             Posts = new List<Post>
             {
                 //PROJECT PAGE POSTS
-                new TextPost()
+                /*new TextPost()
                 {
                     Content = "Test post!",
                     CreatedAt = DateTime.UtcNow,
@@ -63,7 +63,7 @@ public static class DataSeeder
                 {
                     VideoUrl = "/myvideo",
                     CreatedAt = DateTime.UtcNow,
-                },
+                },*/
                 new MeetingPost()
                 {
                     CreatedAt = DateTime.UtcNow,
