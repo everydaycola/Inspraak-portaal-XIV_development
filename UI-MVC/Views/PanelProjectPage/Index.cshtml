@@ -303,7 +303,7 @@
 @foreach (var post in Model.Panel.Posts.OrderByDescending(p => p.CreatedAt))
 {
     @if (
-        post.isVisibleForPanelMembers || (!post.isVisibleForPanelMembers && !User.IsInRole(CustomIdentityConstants.PanelMemberRole))
+        post.IsVisibleForPanelMembers || (!post.IsVisibleForPanelMembers && !User.IsInRole(CustomIdentityConstants.PanelMemberRole))
     )
     {
         @if (post is TextPost textPost)

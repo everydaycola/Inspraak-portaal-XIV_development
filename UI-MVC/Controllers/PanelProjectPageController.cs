@@ -1,11 +1,10 @@
-﻿using BL.Interfaces;
+﻿using System.Text.RegularExpressions;
+using BL.Interfaces;
 using Domain;
 using Domain.CitizenPanel;
-using Domain.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.IdentityModel.Tokens;
 using UI_MVC.Models.Dto.ProjectPage;
 
 namespace UI_MVC.Controllers;
@@ -34,6 +33,16 @@ public class PanelProjectPageController : Controller
         _sendMailManager = sendMailManager;
     }
 
+    private IActionResult HandleValidationError(string message, Guid panelId, string modalName)
+    {
+        _logger.Log(LogLevel.Warning, modalName + ": Validation Error: " + message);
+        ModelState.AddModelError("", message);
+        var panel = _panelManager.GetPanelWithPosts(panelId);
+        var projectPageDto = new ProjectPageDto { Panel = panel };
+        ViewBag.OpenModal = modalName;
+        return View("Index", projectPageDto);
+    }
+
     [Authorize(Roles = "Organisatie,PanelMember")]
     public async Task<IActionResult> Index(Guid? PanelId)
     {
@@ -57,11 +66,7 @@ public class PanelProjectPageController : Controller
     {
         if (string.IsNullOrWhiteSpace(title) || string.IsNullOrWhiteSpace(content))
         {
-            ModelState.AddModelError("", "Vul alle verplichte velden correct in.");
-            var panel = _panelManager.GetPanelWithPosts(panelId);
-            var projectPageDto = new ProjectPageDto { Panel = panel };
-            ViewBag.OpenModal = "addTextModal";
-            return View("Index", projectPageDto);
+            return HandleValidationError("Vul alle verplichte velden correct in.", panelId, "addTextModal");
         }
 
         _panelManager.AddTextPost(panelId, title, content, visibleForPanelMember);
@@ -79,23 +84,21 @@ public class PanelProjectPageController : Controller
     public async Task<IActionResult> AddDocumentPost(string title, IFormFile file, Guid panelId,
         bool visibleForPanelMember, bool informPeopleViaMail)
     {
-        if (string.IsNullOrWhiteSpace(title) || file.Length == 0 || file == null)
+        if (string.IsNullOrWhiteSpace(title))
         {
-            ModelState.AddModelError("", "Vul alle verplichte velden correct in.");
-            var panel = _panelManager.GetPanelWithPosts(panelId);
-            var projectPageDto = new ProjectPageDto { Panel = panel };
-            ViewBag.OpenModal = "addBestandModal";
-            return View("Index", projectPageDto);
+            return HandleValidationError("Vul alle verplichte velden correct in.", panelId, "addBestandModal");
+        }
+
+        if (file == null || file.Length == 0)
+        {
+            return HandleValidationError("Geen bestand geselecteerd of leeg bestand.", panelId, "addBestandModal");
         }
 
         var extension = Path.GetExtension(file.FileName).ToLowerInvariant();
         if (!allowedExtensions.Contains(extension))
         {
-            ModelState.AddModelError("file", "Ongeldig bestandstype. Toegestane types: afbeeldingen, pdf, txt, dockx.");
-            ViewBag.OpenModal = "addBestandModal";
-            var panel = _panelManager.GetPanelWithPosts(panelId);
-            var projectPageDto = new ProjectPageDto { Panel = panel };
-            return View("Index", projectPageDto);
+            return HandleValidationError("Ongeldig bestandstype. Toegestane types: afbeeldingen, pdf, txt, dockx.",
+                panelId, "addBestandModal");
         }
 
         // TEMP Create a folder path for uploads
@@ -157,152 +160,120 @@ public class PanelProjectPageController : Controller
             }
         }
     }
-
+    
+    
     [HttpPost]
-    public async Task<IActionResult> AddVideoPost(
-        Guid panelId,
+    public async Task<IActionResult> AddVideoPost(Guid panelId,
         string title,
         string youtubeUrl,
         string videoUrl,
         bool visibleForPanelMember,
         bool informPeopleViaMail)
     {
+        if (string.IsNullOrWhiteSpace(youtubeUrl))
+        {
+            if (string.IsNullOrWhiteSpace(videoUrl))
+            {
+                return HandleValidationError("Geef een url in.", panelId, "addVideoModal");
+            }
+            return await AddEmbedVideoPost(panelId, title, videoUrl, visibleForPanelMember, informPeopleViaMail);
+        }
+        if (string.IsNullOrWhiteSpace(videoUrl))
+        {
+            return await AddYoutubeVideoPost(panelId, title, youtubeUrl, visibleForPanelMember, informPeopleViaMail);
+        }
+        return HandleValidationError("De datum mag niet in het verleden liggen.", panelId, "addWerksessieModal");
+    }
+
+    private async Task<IActionResult> AddEmbedVideoPost(
+        Guid panelId,
+        string title,
+        string videoUrl,
+        bool visibleForPanelMember,
+        bool informPeopleViaMail)
+    {
+        if (string.IsNullOrWhiteSpace(title))
+        {
+            return HandleValidationError("Vul de titel in.", panelId, "addVideoModal");
+        }
+        
+        // Validate URL
+        if (!Uri.TryCreate(videoUrl, UriKind.Absolute, out var uriResult) ||
+            (uriResult.Scheme != Uri.UriSchemeHttp && uriResult.Scheme != Uri.UriSchemeHttps))
+        {
+            return HandleValidationError("Voer een geldige video URL in.", panelId, "addVideoModal");
+        }
+
+
+        _panelManager.AddEmbedVideoPost(
+            panelId,
+            title,
+            videoUrl,
+            visibleForPanelMember
+        );
+
+        var updatedPanel = _panelManager.GetPanelWithPosts(panelId);
+        var updatedProjectPageDto = new ProjectPageDto
+        {
+            Panel = updatedPanel
+        };
+
+        // Send email notifications
+        await HandleMailSending(informPeopleViaMail, visibleForPanelMember, updatedPanel);
+
+        return View("Index", updatedProjectPageDto);
+    }
+
+    private async Task<IActionResult> AddYoutubeVideoPost(
+        Guid panelId,
+        string title,
+        string youtubeUrl,
+        bool visibleForPanelMember,
+        bool informPeopleViaMail)
+    {
         // Validate inputs
         if (string.IsNullOrWhiteSpace(title))
         {
-            ModelState.AddModelError("", "Vul de titel in.");
-            var panel = _panelManager.GetPanelWithPosts(panelId);
-            var projectPageDto = new ProjectPageDto { Panel = panel };
-            ViewBag.OpenModal = "addVideoModal";
-            return View("Index", projectPageDto);
-        }
-
-        // Check if at least one video source is provided
-        if (string.IsNullOrWhiteSpace(youtubeUrl) && string.IsNullOrWhiteSpace(videoUrl))
-        {
-            ModelState.AddModelError("", "Voer een YouTube URL of video URL in.");
-            var panel = _panelManager.GetPanelWithPosts(panelId);
-            var projectPageDto = new ProjectPageDto { Panel = panel };
-            ViewBag.OpenModal = "addVideoModal";
-            return View("Index", projectPageDto);
+            return HandleValidationError("Vul de titel in.", panelId, "addVideoModal");
         }
 
         // Prepare video data
-        string videoSource;
-        string videoIdentifier;
+        string youtubeId = null;
+        
+        // Extract YouTube video ID using regex
+        if (!string.IsNullOrWhiteSpace(youtubeUrl)) {
+            var match = new Regex(
+                @"(?:youtube(?:-nocookie)?\.com/(?:[^/]+/.+/|(?:v|e(?:mbed)?)/|.*[?&]v=)|youtu\.be/)([^""&?/\s]{11})", 
+                RegexOptions.IgnoreCase).Match(youtubeUrl);
 
-        // Process based on which type of URL is provided
-        if (!string.IsNullOrWhiteSpace(youtubeUrl))
-        {
-            // Handle YouTube URL
-            try
-            {
-                // Extract YouTube video ID from URL
-                videoIdentifier = ExtractYouTubeVideoId(youtubeUrl);
-                if (string.IsNullOrWhiteSpace(videoIdentifier))
-                {
-                    ModelState.AddModelError("", "Ongeldige YouTube URL. Voer een geldige YouTube video URL in.");
-                    var panel = _panelManager.GetPanelWithPosts(panelId);
-                    var projectPageDto = new ProjectPageDto { Panel = panel };
-                    ViewBag.OpenModal = "addVideoModal";
-                    return View("Index", projectPageDto);
-                }
-
-                videoSource = "youtube";
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error processing YouTube URL");
-                ModelState.AddModelError("", "Er is een fout opgetreden bij het verwerken van de YouTube URL.");
-                var panel = _panelManager.GetPanelWithPosts(panelId);
-                var projectPageDto = new ProjectPageDto { Panel = panel };
-                ViewBag.OpenModal = "addVideoModal";
-                return View("Index", projectPageDto);
+            if (match.Success && match.Groups.Count > 1) {
+                youtubeId = match.Groups[1].Value;
             }
         }
-        else
-        {
-            // Handle direct video URL
-            try
-            {
-                // Validate URL
-                if (!Uri.TryCreate(videoUrl, UriKind.Absolute, out Uri uriResult) ||
-                    (uriResult.Scheme != Uri.UriSchemeHttp && uriResult.Scheme != Uri.UriSchemeHttps))
-                {
-                    ModelState.AddModelError("", "Voer een geldige video URL in.");
-                    var panel = _panelManager.GetPanelWithPosts(panelId);
-                    var projectPageDto = new ProjectPageDto { Panel = panel };
-                    ViewBag.OpenModal = "addVideoModal";
-                    return View("Index", projectPageDto);
-                }
-
-                videoIdentifier = videoUrl;
-                videoSource = "url";
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error processing video URL");
-                ModelState.AddModelError("", "Er is een fout opgetreden bij het verwerken van de video URL.");
-                var panel = _panelManager.GetPanelWithPosts(panelId);
-                var projectPageDto = new ProjectPageDto { Panel = panel };
-                ViewBag.OpenModal = "addVideoModal";
-                return View("Index", projectPageDto);
-            }
+        
+        if (youtubeId == null) {
+            return HandleValidationError("Ongeldige YouTube URL. Voer een geldige YouTube video URL in.", panelId, 
+                "addVideoModal");
         }
 
-        // Add implementation here to save the video post
-        // Assuming you need to add a method to _panelManager to handle video posts
-        // You would need to create a VideoPost class that extends from Post 
-        // and implement this method in your PanelManager class
-        try
+        _panelManager.AddYoutubeVideoPost(
+            panelId,
+            title,
+            youtubeId,
+            visibleForPanelMember
+        );
+
+        var updatedPanel = _panelManager.GetPanelWithPosts(panelId);
+        var updatedProjectPageDto = new ProjectPageDto
         {
-            // Example (you'll need to implement this method in your PanelManager):
-            _panelManager.AddVideoPost(
-                panelId,
-                title,
-                videoSource,
-                videoIdentifier,
-                description ?? string.Empty,
-                visibleForPanelMember
-            );
+            Panel = updatedPanel
+        };
 
-            var updatedPanel = _panelManager.GetPanelWithPosts(panelId);
-            var updatedProjectPageDto = new ProjectPageDto
-            {
-                Panel = updatedPanel
-            };
+        // Send email notifications
+        await HandleMailSending(informPeopleViaMail, visibleForPanelMember, updatedPanel);
 
-            // Send email notifications
-            await HandleMailSending(informPeopleViaMail, visibleForPanelMember, updatedPanel);
-
-            return View("Index", updatedProjectPageDto);
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Error saving video post");
-            ModelState.AddModelError("", "Er is een fout opgetreden bij het opslaan van de video.");
-            var panel = _panelManager.GetPanelWithPosts(panelId);
-            var projectPageDto = new ProjectPageDto { Panel = panel };
-            ViewBag.OpenModal = "addVideoModal";
-            return View("Index", projectPageDto);
-        }
+        return View("Index", updatedProjectPageDto);
     }
-
-    // Helper method to extract YouTube video ID from various YouTube URL formats
-    private string ExtractYouTubeVideoId(string youtubeUrl)
-    {
-        // Create a Uri object from the URL
-        var uri = new Uri(youtubeUrl);
-
-
-        return uri.AbsolutePath.TrimStart(uri.AbsolutePath.Contains('=') ?
-            // Example: https://www.youtube.com/watch?v=VIDEO_ID
-            '=' :
-            // Example: https://www.youtube.com/embed/VIDEO_ID
-            // or:      https://youtu.be/VIDEO_ID
-            '/');
-    }
-
 
     [HttpPost]
     public async Task<IActionResult> AddWerksessiePost(
@@ -315,31 +286,19 @@ public class PanelProjectPageController : Controller
         // Check if all required fields are filled
         if (string.IsNullOrWhiteSpace(title) || sessionDate == default || string.IsNullOrWhiteSpace(sessionTime))
         {
-            ModelState.AddModelError("", "Vul alle verplichte velden correct in.");
-            var panel = _panelManager.GetPanelWithPosts(panelId);
-            var projectPageDto = new ProjectPageDto { Panel = panel };
-            ViewBag.OpenModal = "addWerksessieModal";
-            return View("Index", projectPageDto);
+            return HandleValidationError("Vul alle verplichte velden correct in.", panelId, "addWerksessieModal");
         }
 
         // Check if sessionDate is not in the past
         if (sessionDate < DateTime.Now.Date)
         {
-            ModelState.AddModelError("", "De datum mag niet in het verleden liggen.");
-            var panel = _panelManager.GetPanelWithPosts(panelId);
-            var projectPageDto = new ProjectPageDto { Panel = panel };
-            ViewBag.OpenModal = "addWerksessieModal";
-            return View("Index", projectPageDto);
+            return HandleValidationError("De datum mag niet in het verleden liggen.", panelId, "addWerksessieModal");
         }
 
         // Check if the sessionTime is valid
         if (!TimeSpan.TryParse(sessionTime, out var parsedTime))
         {
-            ModelState.AddModelError("", "Ongeldig tijdstip.");
-            var panel = _panelManager.GetPanelWithPosts(panelId);
-            var projectPageDto = new ProjectPageDto { Panel = panel };
-            ViewBag.OpenModal = "addWerksessieModal";
-            return View("Index", projectPageDto);
+            return HandleValidationError("Ongeldig tijdstip.", panelId, "addWerksessieModal");
         }
 
         var meetingDateTime = sessionDate.Date + parsedTime;
