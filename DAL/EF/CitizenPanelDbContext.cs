@@ -86,6 +86,7 @@ public class CitizenPanelDbContext : IdentityDbContext<ApplicationUser>
         modelBuilder.Entity<TextPost>();
         modelBuilder.Entity<DocumentPost>();
         modelBuilder.Entity<EmbeddedVideoPost>();
+        modelBuilder.Entity<YoutubeVideoPost>();
         modelBuilder.Entity<MeetingPost>();
         //ENSURE EF KNOWS HOW TO HANDLE DOCUMENTNAMES.
         modelBuilder.Entity<MeetingPost>(b =>
