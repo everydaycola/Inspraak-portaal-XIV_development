@@ -1,4 +1,11 @@
 ﻿@use 'constants';
+
+/*THIS FILE CONTAINS STYLING FOR THE CUSTOM NAVBAR (DESKTOP DASHBOARD)*/
+.navbar-icon{
+  width:#{constants.$navbar-icon-size};
+  height:#{constants.$navbar-icon-size};
+}
+
 @media (min-width: 992px) {
   .navbar,
   .navbar-collapse {
@@ -9,30 +16,36 @@
     flex-direction: column;
     z-index: 10;
     align-items: flex-start;
+    display: flex;
+    justify-content: center;
   }
   .navbar .container-fluid {
     flex-direction: column !important;
-    align-items: flex-start;
+    align-items: center;
     height: 100vh;
     padding: 0;
-  }
-  .navbar-brand {
-    margin-top: 0 !important;
-    padding-top: 0 !important;
-    align-self: flex-start;
+    display: flex;
+    justify-content: center;
   }
   .navbar-nav {
     flex-direction: column !important;
     width: 100%;
+    align-items: center;
+    padding-top:1rem;
   }
-  #mainContainer{
+  #mainContainer {
     margin-left: #{constants.$vertical-navbar-width};
     width: calc(100% - #{constants.$vertical-navbar-width});
-    min-height:80vh;
-    overflow-x:hidden;
+    min-height: 80vh;
+    overflow-x: hidden;
+    padding-top:16px;
+  }
+  footer{
+    margin-left:#{constants.$vertical-navbar-width};
+    width: calc(100% - #{constants.$vertical-navbar-width});
+    overflow-x: hidden;
   }
   main {
-    width:100%;
+    width: 100%;
   }
-  
 }
