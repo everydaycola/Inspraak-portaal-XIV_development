@@ -121,7 +121,7 @@ public class PanelManagementController : Controller
         var allDesiredCriteriaPercentages = _criteriaManager.GetAllDesiredCriteriaPercentages(panelId);
 
         var baseUrl = $"{Request.Scheme}://{Request.Host}{Request.PathBase}";
-        _manager.EndRegistration(panelId, allDesiredCriteriaPercentages, false,baseUrl);
+        _manager.EndRegistration(panelId, allDesiredCriteriaPercentages, true,baseUrl);
 
         return RedirectToAction("Index", new { id = panelId });
     }
