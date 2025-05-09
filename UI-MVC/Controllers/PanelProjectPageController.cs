@@ -19,7 +19,9 @@ public class PanelProjectPageController : Controller
     private readonly ICustomUserManager _customUserManager;
     private readonly ISendMailManager _sendMailManager;
 
-    private readonly string[] allowedExtensions = new[] { ".jpg", ".jpeg", ".png", ".gif", ".bmp", ".webp", ".svg", ".pdf", ".txt", ".dockx" };
+    private readonly string[] allowedExtensions = new[]
+        { ".jpg", ".jpeg", ".png", ".gif", ".bmp", ".webp", ".svg", ".pdf", ".txt", ".dockx" };
+
     public PanelProjectPageController(ILogger<PanelProjectPageController> logger, IPanelManager panelManager,
         IStorageManager storageManager, ICustomUserManager customUserManager, UserManager<ApplicationUser> userManager,
         ISendMailManager sendMailManager)
@@ -53,7 +55,6 @@ public class PanelProjectPageController : Controller
     public async Task<IActionResult> AddTextPost(Guid panelId, string title, string content, bool visibleForPanelMember,
         bool informPeopleViaMail)
     {
-        
         if (string.IsNullOrWhiteSpace(title) || string.IsNullOrWhiteSpace(content))
         {
             ModelState.AddModelError("", "Vul alle verplichte velden correct in.");
@@ -62,7 +63,7 @@ public class PanelProjectPageController : Controller
             ViewBag.OpenModal = "addTextModal";
             return View("Index", projectPageDto);
         }
-        
+
         _panelManager.AddTextPost(panelId, title, content, visibleForPanelMember);
         var updatedPanel = _panelManager.GetPanelWithPosts(panelId);
         var updatedProjectPageDto = new ProjectPageDto
@@ -78,7 +79,7 @@ public class PanelProjectPageController : Controller
     public async Task<IActionResult> AddDocumentPost(string title, IFormFile file, Guid panelId,
         bool visibleForPanelMember, bool informPeopleViaMail)
     {
-        if (string.IsNullOrWhiteSpace(title)|| file.Length == 0 || file == null)
+        if (string.IsNullOrWhiteSpace(title) || file.Length == 0 || file == null)
         {
             ModelState.AddModelError("", "Vul alle verplichte velden correct in.");
             var panel = _panelManager.GetPanelWithPosts(panelId);
@@ -86,6 +87,7 @@ public class PanelProjectPageController : Controller
             ViewBag.OpenModal = "addBestandModal";
             return View("Index", projectPageDto);
         }
+
         var extension = Path.GetExtension(file.FileName).ToLowerInvariant();
         if (!allowedExtensions.Contains(extension))
         {
@@ -95,7 +97,7 @@ public class PanelProjectPageController : Controller
             var projectPageDto = new ProjectPageDto { Panel = panel };
             return View("Index", projectPageDto);
         }
-        
+
         // TEMP Create a folder path for uploads
         var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads");
         if (!Directory.Exists(uploadsFolder))
@@ -157,6 +159,152 @@ public class PanelProjectPageController : Controller
     }
 
     [HttpPost]
+    public async Task<IActionResult> AddVideoPost(
+        Guid panelId,
+        string title,
+        string youtubeUrl,
+        string videoUrl,
+        bool visibleForPanelMember,
+        bool informPeopleViaMail)
+    {
+        // Validate inputs
+        if (string.IsNullOrWhiteSpace(title))
+        {
+            ModelState.AddModelError("", "Vul de titel in.");
+            var panel = _panelManager.GetPanelWithPosts(panelId);
+            var projectPageDto = new ProjectPageDto { Panel = panel };
+            ViewBag.OpenModal = "addVideoModal";
+            return View("Index", projectPageDto);
+        }
+
+        // Check if at least one video source is provided
+        if (string.IsNullOrWhiteSpace(youtubeUrl) && string.IsNullOrWhiteSpace(videoUrl))
+        {
+            ModelState.AddModelError("", "Voer een YouTube URL of video URL in.");
+            var panel = _panelManager.GetPanelWithPosts(panelId);
+            var projectPageDto = new ProjectPageDto { Panel = panel };
+            ViewBag.OpenModal = "addVideoModal";
+            return View("Index", projectPageDto);
+        }
+
+        // Prepare video data
+        string videoSource;
+        string videoIdentifier;
+
+        // Process based on which type of URL is provided
+        if (!string.IsNullOrWhiteSpace(youtubeUrl))
+        {
+            // Handle YouTube URL
+            try
+            {
+                // Extract YouTube video ID from URL
+                videoIdentifier = ExtractYouTubeVideoId(youtubeUrl);
+                if (string.IsNullOrWhiteSpace(videoIdentifier))
+                {
+                    ModelState.AddModelError("", "Ongeldige YouTube URL. Voer een geldige YouTube video URL in.");
+                    var panel = _panelManager.GetPanelWithPosts(panelId);
+                    var projectPageDto = new ProjectPageDto { Panel = panel };
+                    ViewBag.OpenModal = "addVideoModal";
+                    return View("Index", projectPageDto);
+                }
+
+                videoSource = "youtube";
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error processing YouTube URL");
+                ModelState.AddModelError("", "Er is een fout opgetreden bij het verwerken van de YouTube URL.");
+                var panel = _panelManager.GetPanelWithPosts(panelId);
+                var projectPageDto = new ProjectPageDto { Panel = panel };
+                ViewBag.OpenModal = "addVideoModal";
+                return View("Index", projectPageDto);
+            }
+        }
+        else
+        {
+            // Handle direct video URL
+            try
+            {
+                // Validate URL
+                if (!Uri.TryCreate(videoUrl, UriKind.Absolute, out Uri uriResult) ||
+                    (uriResult.Scheme != Uri.UriSchemeHttp && uriResult.Scheme != Uri.UriSchemeHttps))
+                {
+                    ModelState.AddModelError("", "Voer een geldige video URL in.");
+                    var panel = _panelManager.GetPanelWithPosts(panelId);
+                    var projectPageDto = new ProjectPageDto { Panel = panel };
+                    ViewBag.OpenModal = "addVideoModal";
+                    return View("Index", projectPageDto);
+                }
+
+                videoIdentifier = videoUrl;
+                videoSource = "url";
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error processing video URL");
+                ModelState.AddModelError("", "Er is een fout opgetreden bij het verwerken van de video URL.");
+                var panel = _panelManager.GetPanelWithPosts(panelId);
+                var projectPageDto = new ProjectPageDto { Panel = panel };
+                ViewBag.OpenModal = "addVideoModal";
+                return View("Index", projectPageDto);
+            }
+        }
+
+        // Add implementation here to save the video post
+        // Assuming you need to add a method to _panelManager to handle video posts
+        // You would need to create a VideoPost class that extends from Post 
+        // and implement this method in your PanelManager class
+        try
+        {
+            // Example (you'll need to implement this method in your PanelManager):
+            _panelManager.AddVideoPost(
+                panelId,
+                title,
+                videoSource,
+                videoIdentifier,
+                description ?? string.Empty,
+                visibleForPanelMember
+            );
+
+            var updatedPanel = _panelManager.GetPanelWithPosts(panelId);
+            var updatedProjectPageDto = new ProjectPageDto
+            {
+                Panel = updatedPanel
+            };
+
+            // Send email notifications
+            await HandleMailSending(informPeopleViaMail, visibleForPanelMember, updatedPanel);
+
+            return View("Index", updatedProjectPageDto);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error saving video post");
+            ModelState.AddModelError("", "Er is een fout opgetreden bij het opslaan van de video.");
+            var panel = _panelManager.GetPanelWithPosts(panelId);
+            var projectPageDto = new ProjectPageDto { Panel = panel };
+            ViewBag.OpenModal = "addVideoModal";
+            return View("Index", projectPageDto);
+        }
+    }
+
+    // Helper method to extract YouTube video ID from various YouTube URL formats
+    private string ExtractYouTubeVideoId(string youtubeUrl)
+    {
+        // Create a Uri object from the URL
+        var uri = new Uri(youtubeUrl);
+
+
+        return uri.AbsolutePath.TrimStart(uri.AbsolutePath.Contains('=') ?
+            // Example: https://www.youtube.com/watch?v=VIDEO_ID
+            '=' :
+            // Example: https://www.youtube.com/embed/VIDEO_ID
+            // or:      https://youtu.be/VIDEO_ID
+            '/');
+    }
+
+
+    [HttpPost]
     public async Task<IActionResult> AddWerksessiePost(
         Guid panelId,
         string title,
@@ -214,7 +362,7 @@ public class PanelProjectPageController : Controller
 
             foreach (var member in projectGroupmembers)
             {
-               await _sendMailManager.SendSingleMailAsync(member.User.Email,
+                await _sendMailManager.SendSingleMailAsync(member.User.Email,
                     mailSubject, textPart, htmlPart);
                 _logger.Log(LogLevel.Information, "Mail succesvol verstuurd!");
             }
@@ -248,6 +396,7 @@ public class PanelProjectPageController : Controller
             ModelState.AddModelError("VerslagFile", "Geen bestand geselecteerd.");
             return RedirectToAction("Index");
         }
+
         var extension = Path.GetExtension(VerslagFile.FileName).ToLowerInvariant();
         if (!allowedExtensions.Contains(extension))
         {
