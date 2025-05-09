@@ -4,11 +4,18 @@ namespace BL.Interfaces;
 
 public interface ICriteriaManager
 {
-    public IEnumerable<Criteria> GetAllCriteriaWithValuesForPanel(Guid panelId);
-    public IEnumerable<Criteria> GetAllNonDefaultCriteriaWithValuesForPanel(Guid panelId);
-    public IEnumerable<CriteriaGroup> GetAllCriteriaGroupForPanel(Guid panelId);
-    public CriteriaGroup GetCriteriaGroupByMemberId(Guid memberId);
-    public CriteriaGroup GetCriteriaGroupById(Guid criteriaGroupId);
-    public CriteriaGroup AssignMemberToCriteriaGroup(Guid panelId, Dictionary<string, string> CriteriaAnswers,
-        PanelMember member);
+    //GETS
+    public Dictionary<string, Dictionary<string, int>> GetAllCriteriaCountsGroupedByValue(Guid panelId, bool onlyUnknown = false);
+    public IEnumerable<Criteria> GetAllDesiredCriteriaPercentages(Guid panelId, bool onlyDefault = false);
+
+    public Dictionary<string, Dictionary<int, List<PanelMember>>> GetPanelMembersGroupedByResponsesForDefaultCriteriaGroupedByPhase(
+        Guid panelId);
+    
+    //SAVES
+    public void SavePanelMemberCriteriaResponses(Guid panelId,Dictionary<string, string> CriteriaAnswers, PanelMember member);
+    
+    //ADD
+    public Criteria AddCriteria(string name, string question, bool isDefault, ICollection<CriteriaAnswerOption> answerOptions, bool isDistributionKnown);
+
+    public CriteriaAnswerOption AddCriteriaAnswerOption(string option, double distributionPercentage);
 }

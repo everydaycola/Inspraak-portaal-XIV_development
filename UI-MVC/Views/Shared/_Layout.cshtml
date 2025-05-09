@@ -1,4 +1,10 @@
-﻿<!DOCTYPE html>
+﻿@using BL.Managers
+@using DAL
+@using Microsoft.AspNetCore.Identity
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@using UI_MVC.TempTenant
+@inject Organisation Organisation
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8"/>
@@ -10,10 +16,11 @@
 </head>
 <body>
 <header>
-    <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
+    <nav class="navbar navbar-expand-sm navbar-toggleable-sm border-bottom box-shadow mb-3" style="background-color:@Organisation.BackgroundColor">
         <div class="container-fluid">
             <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">UI_MVC</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse"
+                    aria-controls="navbarSupportedContent"
                     aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
@@ -22,16 +29,44 @@
                     <li class="nav-item">
                         <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link text-dark" asp-area="" asp-controller="Panel" asp-action="MakeNewPanel">Nieuw Panel Aanmaken</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link text-dark" asp-area="" asp-controller="PanelManagement" asp-action="PanelSelection">Panel beheer</a>
-                    </li>
+                    @if (User.Identity != null && User.Identity.IsAuthenticated && User.IsInRole(CustomIdentityConstants.OrganisatieRole))
+                    {
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Panel" asp-action="MakeNewPanel">Nieuw
+                                Panel Aanmaken</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" asp-controller="PanelManagement"
+                               asp-action="PanelSelection">Panel beheer</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" asp-controller="OrganisationManagement"
+                               asp-action="Index" asp-route-organisationId="@Organisation.Id">Organisatie instellingen</a>
+                        </li>
+                    }
+                    @if (User.Identity != null && User.Identity.IsAuthenticated && User.IsInRole(CustomIdentityConstants.AdminRole))
+                    {
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" asp-controller="OrganisationManagement" asp-action="AdminIndex">
+                                Organisatie beheer
+                                </a>
+                        </li>
+                       
+                    }@if (User.Identity != null && User.Identity.IsAuthenticated && User.IsInRole(CustomIdentityConstants.PanelMemberRole))
+                     {
+                         <li class="nav-item">
+                             <a class="nav-link text-dark" asp-area="" asp-controller="PanelProjectPage" asp-action="Index">
+                                 Project pagina
+                             </a>
+                         </li>
+                       
+                     }
+                    
                     <li class="nav-item">
                         <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
                     </li>
                 </ul>
+                <partial name="_LoginPartial"/>
             </div>
         </div>
     </nav>
@@ -44,7 +79,8 @@
 
 <footer class="border-top footer text-muted">
     <div class="container">
-        <i class="bi bi-c-circle"></i> 2024 - Net8NpmWebpack - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+        <i class="bi bi-c-circle"></i> 2024 - Net8NpmWebpack - <a asp-area="" asp-controller="Home"
+                                                                  asp-action="Privacy">Privacy</a>
     </div>
 </footer>
 </body>

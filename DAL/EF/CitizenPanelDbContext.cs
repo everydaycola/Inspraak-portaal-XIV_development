@@ -1,63 +1,101 @@
-﻿using Domain.CitizenPanel;
+﻿using System.Linq.Expressions;
+using System.Text.Json;
+using Domain;
+using Domain.CitizenPanel;
+using Domain.Interfaces;
+using Domain.Interfaces.Posts;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using Microsoft.EntityFrameworkCore.Query;
+using Microsoft.EntityFrameworkCore.ValueGeneration;
+using UI_MVC;
 
 namespace DAL.EF;
 
-public class CitizenPanelDbContext : DbContext
+public class CitizenPanelDbContext : IdentityDbContext<ApplicationUser>
 {
+    private readonly OrganisationContext _organisationContext;
+    public string OrganisationId => _organisationContext.Organisation.Id;
+    public DbSet<Organisation> Organisations { get; set; }
     public DbSet<Panel> Panels { get; set; }
     public DbSet<PanelMember> PanelMembers { get; set; }
     public DbSet<RepresentationGroup> RepresentationGroups { get; set; }
     public DbSet<Criteria> Criteria { get; set; }
-    public DbSet<CriteriaGroup> CriteriaGroups { get; set; }
-    public DbSet<CriteriaValue> CriteriaValues { get; set; }
-    public DbSet<CriteriaAnswer> CriteriaAnswers { get; set; }
-
-    public CitizenPanelDbContext(DbContextOptions options) : base(options)
+    public DbSet<CriteriaAnswerOption> CriteriaAnswerOptions { get; set; }
+    public DbSet<CriteriaResponse> CriteriaResponses { get; set; }
+    public DbSet<PlanningGroupMember> PlanningGroupMembers { get; set; }
+    public DbSet<Post> Posts { get; set; }
+    
+    public CitizenPanelDbContext(DbContextOptions options, OrganisationContext organisationContext) : base(options)
     {
+        _organisationContext = organisationContext;
     }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        var organisationalModels = modelBuilder.Model.GetEntityTypes()
+                .Where(entity => typeof(IOrganisational).IsAssignableFrom(entity.ClrType)
+                && !typeof(IdentityUser).IsAssignableFrom(entity.ClrType));
+        foreach (var organisationalModel in organisationalModels)
+        {
+            modelBuilder.Entity(organisationalModel.ClrType)
+                .HasQueryFilter<IOrganisational>(e => e.OrganisationId == OrganisationId )
+                .HasIndex(nameof(IOrganisational.OrganisationId));
+            
+            modelBuilder.Entity(organisationalModel.ClrType)
+                .Property(nameof(IOrganisational.OrganisationId))
+                .IsRequired()
+                .HasValueGenerator<TenantIdValueGenerator>();
+        }
+        modelBuilder.ApplyConfigurationsFromAssembly(typeof(CitizenPanelDbContext).Assembly);
         base.OnModelCreating(modelBuilder);
-        // panel 1-* panelmember
-        modelBuilder.Entity<PanelMember>()
-            .HasOne(p => p.Panel)
-            .WithMany(p => p.PanelMembers);
         // panel 1-1 representationgroup
         modelBuilder.Entity<RepresentationGroup>()
             .HasOne(p => p.Panel)
             .WithOne(p => p.RepresentationGroup)
             .HasForeignKey<RepresentationGroup>("PanelId");
+        
         //Criteria * - 1 panels
         modelBuilder.Entity<Panel>()
-            .HasMany(p => p.PanelCriteria)
-            .WithOne(p => p.Panel);
-        //panelmember 1-* CriteriaGroup 
-        modelBuilder.Entity<PanelMember>()
-            .HasOne(pm => pm.CriteriaGroup)
-            .WithMany(cg => cg.PanelMembers);
-        //criteriagroup 1-* criteriaAnswer
-        modelBuilder.Entity<CriteriaGroup>()
-            .HasMany(cg => cg.CriteriaAnswers)
-            .WithOne(c => c.CriteriaGroup);
+            .HasMany(p => p.Criteria);
         
-        //criteriaAnswer * - 1 criteria
-        modelBuilder.Entity<CriteriaAnswer>()
-            .HasOne(ca => ca.Criteria)
-            .WithMany(c => c.CriteriaAnswers);
-        modelBuilder.Entity<CriteriaAnswer>()
-            .HasOne(ca => ca.CriteriaValue)
-            .WithMany(c => c.CriteriaAnswers);
-    //public Criteria criteria { get; set; }
-    //public CriteriaValue criteriaValue { get; set; }
-        //criteria 1 - * criteriavalues
+        //Criteria 1 - * Answeroptions.
         modelBuilder.Entity<Criteria>()
-            .HasMany(c => c.Values)
-            .WithOne(c => c.Criteria);
+            .HasMany(c => c.AnswerOptions)
+            .WithOne();
 
+        // CriteriaResponse 1 - * Criteria
+        modelBuilder.Entity<CriteriaResponse>()
+            .HasOne(c => c.Criteria);
+        
+        // Panelmember 1 - * CriteriaResponse
+        modelBuilder.Entity<PanelMember>()
+            .HasMany(pm => pm.Responses);
+        
+        //Planningroepmember 1..*-* Panel
+        modelBuilder.Entity<PlanningGroupMember>()
+            .HasOne(pgm => pgm.Panel);
+        
+        //Panel 1 - * Posts
+        modelBuilder.Entity<Panel>()
+            .HasMany(p => p.Posts);
+        //Explain EF that we have implements of the abstract Post class.
+        modelBuilder.Entity<TextPost>();
+        modelBuilder.Entity<DocumentPost>();
+        modelBuilder.Entity<EmbeddedVideoPost>();
+        modelBuilder.Entity<MeetingPost>();
+        //ENSURE EF KNOWS HOW TO HANDLE DOCUMENTNAMES.
+        modelBuilder.Entity<MeetingPost>(b =>
+        {
+            b.Property(p => p.DocumentNames)
+                .HasConversion(
+                    v => JsonSerializer.Serialize(v, (JsonSerializerOptions?)null),
+                    v => JsonSerializer.Deserialize<List<string>>(v, (JsonSerializerOptions?)null)!);
+        });
     }
-
     public bool CreateDatabase(bool dropDatabase)
     {
         if (dropDatabase)
@@ -66,5 +104,32 @@ public class CitizenPanelDbContext : DbContext
         }
         return Database.EnsureCreated();
     }
-    
+}
+public static class QueryFilterExtensions
+{
+    public static EntityTypeBuilder HasQueryFilter<TInterface>(this EntityTypeBuilder entityTypeBuilder,
+        Expression<Func<TInterface, bool>> filterExpression)
+    {
+        var param = Expression.Parameter(entityTypeBuilder.Metadata.ClrType);
+        var body = ReplacingExpressionVisitor.Replace(filterExpression.Parameters.Single(), param,
+            filterExpression.Body);
+
+        var lambdaExpression = Expression.Lambda(body, param);
+
+        return entityTypeBuilder.HasQueryFilter(lambdaExpression);
+    }
+}
+public class TenantIdValueGenerator : ValueGenerator<string>
+{
+    public override string Next(EntityEntry entry)
+    {
+        if (entry is { Entity: IOrganisational, Context: CitizenPanelDbContext appDbContext })
+        {
+            return appDbContext.OrganisationId;
+        }
+
+        throw new InvalidOperationException("Could not generate a new TenantId");
+    }
+    public override bool GeneratesTemporaryValues { get; }
+        = false;
 }

@@ -1,30 +1,26 @@
-﻿namespace Domain.CitizenPanel;
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace Domain.CitizenPanel;
 
 public class PanelMember
 {
     public Guid PanelMemberId { get; set; }
-    public Panel Panel { get; set; }
-    public CriteriaGroup CriteriaGroup { get; set; }
-    public bool HasAnsweredAllQuestions { get; set; }
-    
-    //This field would later be moved into Identity.
+    public bool HasRegistered { get; set; }
+
+    [EmailAddress(ErrorMessage = "Panel member email is niet geldig.")]
+    [MaxLength(321, ErrorMessage = "Panel member email is te lang.")]
     public string Email { get; set; }
 
-    //EMPTY CONSTRUCTOR FOR EF
-    public PanelMember()
-    {
-    }
+    [Required(ErrorMessage = "Panel member moet deel zijn van een panel.")]
+    public Panel Panel { get; set; }
+    
+    public bool Selected { get; set; }
 
-    public PanelMember(Panel panel)
-    {
-        Panel = panel;
-        HasAnsweredAllQuestions = false;
-    }
-    public PanelMember(Panel panel, CriteriaGroup criteriaGroup)
-    {
-        Panel = panel;
-        CriteriaGroup = criteriaGroup;
-        HasAnsweredAllQuestions = false;
-    }
+    public ApplicationUser User { get; set; }
+   
+    [MaxLength(10, ErrorMessage = "Criteria antwoord mag maximaal 10 opties hebben.")]
+    public ICollection<CriteriaResponse> Responses { get; set; }
 
+    [Range(1, int.MaxValue, ErrorMessage = "Fase moet een positief getal zijn.")]
+    public int Phase { get; set; } = 1;
 }

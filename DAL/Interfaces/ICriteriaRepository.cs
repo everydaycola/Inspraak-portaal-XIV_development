@@ -4,14 +4,8 @@ namespace DAL.Interfaces;
 
 public interface ICriteriaRepository
 {
-    IEnumerable<Criteria> ReadAllCriteriaWithValuesForPanel(Guid panelId);
-    IEnumerable<CriteriaGroup> ReadAllCriteriaGroupForPanel(Guid panelId);
-    CriteriaGroup ReadCriteriaGroupByMemberId(Guid memberId);
-    CriteriaGroup ReadCriteriaGroupForPanel(Guid panelId, string groupName);
-    CriteriaGroup ReadCriteriaGroupByid(Guid criteriaGroupId);
-    IEnumerable<Criteria> ReadAllNonDefaultCriteriaWithValuesForPanel(Guid panelId);
-    void UpdateCriteriaGroup(CriteriaGroup criteriaGroup);
-    void CreateCriteriaGroup(CriteriaGroup newCriteriaGroup);
-    CriteriaValue ReadCriteriaValueBasedOnCriteriaAndValue(Guid criteriaId, string criteriaValue);
-    Criteria ReadCriteriaByName(Guid panelId,string critName);
+    //READ
+    public Dictionary<string, Dictionary<string, int>> ReadAllCriteriaMemberCountsWithValuesForPanel(Guid panelId, bool onlyUnknown = false);
+    public IEnumerable<Criteria> ReadAllCriteriaForPanelWithAnswerOptions(Guid panelId, bool onlyDefault = false, bool includeKnown = true, bool includeUnknown = true);
+    public Criteria ReadCriteriaByNameWithAnswerOptions(Guid panelId, string critName);
 }

@@ -4,6 +4,7 @@
 }
 
 <div class="container">
+    @if(Model.Any()){
     <h2 class="mb-3">Selecteer het panel dat je wilt beheren.</h2>
     <form asp-action="SelectPanel" asp-controller="PanelManagement" method="post">
         <div class="form-group">
@@ -11,10 +12,22 @@
                 <option selected disabled>Kies een panel</option>
                 @foreach (var panel in Model)
                 {
-                <option value="@panel.Id">@panel.Name</option>
+                    <option value="@panel.Id">@panel.Name</option>
                 }
             </select>
         </div>
         <button type="submit" class="btn btn-primary mt-3">Panel selecteren!</button>
     </form>
+    }
+    else
+    {
+        <div class="card mt-4">
+            <div class="card-body">
+                <h2 class="card-title mb-3">Het lijkt erop dat u nog geen panel heeft.</h2>
+                <a class="btn btn-primary" asp-controller="Panel" asp-action="MakeNewPanel">
+                    Nieuw Panel Aanmaken
+                </a>
+            </div>
+        </div>
+    }
 </div>

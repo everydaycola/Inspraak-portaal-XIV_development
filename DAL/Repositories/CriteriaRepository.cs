@@ -1,3 +1,4 @@
+using System.Linq.Expressions;
 using DAL.EF;
 using DAL.Interfaces;
 using Domain.CitizenPanel;
@@ -5,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DAL.Repositories;
 
-public class CriteriaRepository :ICriteriaRepository
+public class CriteriaRepository : ICriteriaRepository
 {
     private readonly CitizenPanelDbContext _context;
 
@@ -14,80 +15,110 @@ public class CriteriaRepository :ICriteriaRepository
         _context = context;
     }
 
-    public IEnumerable<Criteria> ReadAllCriteriaWithValuesForPanel(Guid panelId)
+    // public Panel ReadAllCriteriaWithValuesForPanel(Guid panelId)
+    // {
+    //     return _context.Panels.Include(p => p.Criteria)
+    //         .ThenInclude(c => c.AnswerOptions)
+    //         .Single(p => p.Id == panelId);
+    // }
+
+    // // gives a list of criteria for a panel with the options as a list
+    // public Dictionary<string, IEnumerable<string>> ReadAllCriteriaNamesAndOptions(Guid panelId)
+    // {
+    //     return _context.Panels
+    //         .Where(p => p.Id == panelId)
+    //         .Include(p => p.Criteria)
+    //         .ThenInclude(c => c.AnswerOptions)
+    //         .SelectMany(p => p.Criteria)
+    //         .GroupBy(c => c.Name)
+    //         .ToDictionary(
+    //             group => group.Key,
+    //             group => group
+    //                 .SelectMany(c => c.AnswerOptions
+    //                     .Select(ao => ao.Option))
+    //         );
+    // }
+
+    // counts how many members have answers what how many times. 
+    // outer key is criteria name, inner key is answer name, int is count
+    // !!WARNING!! does not give any values for criteria that have 0 responses.
+    public Dictionary<string, Dictionary<string, int>> ReadAllCriteriaMemberCountsWithValuesForPanel(Guid panelId, bool onlyUnknown = false)
     {
-        return _context.Criteria
-            .Include(c => c.Values)
-            .Where(c => c.Panel.Id == panelId)
-            .ToList();
-    }
-    public IEnumerable<CriteriaGroup> ReadAllCriteriaGroupForPanel(Guid panelId)
-    {
-        return _context.CriteriaGroups
-            .Include(cg => cg.PanelMembers)
-                .ThenInclude(pm => pm.Panel)
-            .Include(cg=>cg.CriteriaAnswers)
-                .ThenInclude(ca => ca.CriteriaValue)
-            .Include(c => c.CriteriaAnswers)
-                .ThenInclude(ca=>ca.Criteria)
-            .Where(cg => cg.PanelMembers.Any(pm => pm.Panel.Id == panelId))
-            .ToList();
+        return _context.PanelMembers
+            .Where(panelMember => panelMember.Panel.Id == panelId)
+            .Where(panelMember => panelMember.HasRegistered)
+            .SelectMany(panelMember => panelMember.Responses)
+            .GroupBy(response => response.Criteria.Name)
+            .ToDictionary(
+                criteriaGroup => criteriaGroup.Key,
+                criteriaGroup => criteriaGroup
+                    .Where(cr => !onlyUnknown || !cr.Criteria.IsDistributionKnown)
+                    .GroupBy(r => r.SelectedOption)
+                    .ToDictionary(
+                        optionGroup => optionGroup.Key,
+                        optionGroup => optionGroup.Count()
+                    )
+            );
     }
     
-    public CriteriaGroup ReadCriteriaGroupByMemberId(Guid memberId)
-    {
-        return _context.CriteriaGroups
-            .Include(cg => cg.CriteriaAnswers)
-            .ThenInclude(ca => ca.CriteriaValue)
-            .ThenInclude(ca => ca.Criteria)    
-            .FirstOrDefault(cg => cg.PanelMembers.Any(pm => pm.PanelMemberId == memberId));
-    }
+    // public Dictionary<string, Dictionary<string, double>> ReadAllDesiredCriteriaPercentages(Guid panelId, bool onlyDefault)
+    // {
+    //     return _context.Panels
+    //         .Where(p => p.Id == panelId)
+    //         .Include(p => p.Criteria)
+    //         .ThenInclude(c => c.AnswerOptions)
+    //         .SelectMany(p => p.Criteria)
+    //         .Where(c => !onlyDefault || c.IsDefault)
+    //         .GroupBy(c => c.Name)
+    //         .ToDictionary(
+    //             group => group.Key,
+    //             group => group
+    //                 .SelectMany(c => c.AnswerOptions)
+    //                 .ToDictionary(
+    //                     o => o.Option,
+    //                     o => o.DistributionPercentage)
+    //         );
+    // }
 
-    public CriteriaGroup ReadCriteriaGroupForPanel(Guid panelId, string groupName)
+    public IEnumerable<Criteria> ReadAllCriteriaForPanelWithAnswerOptions(Guid panelId, bool onlyDefault = false, bool includeKnown = true, bool includeUnknown = true)
     {
-        return this._context.CriteriaGroups
-            .Include(cg => cg.PanelMembers)
-            .ThenInclude(pm => pm.Panel)
-            .FirstOrDefault(cg => cg.PanelMembers.Any(p => p.Panel.Id == panelId) && cg.Name == groupName);
-    }
-
-    public CriteriaGroup ReadCriteriaGroupByid(Guid criteriaGroupId)
-    {
-        return _context.CriteriaGroups
-            .Include(cg => cg.PanelMembers)
-            .Single(cg => cg.Id == criteriaGroupId);
-    }
-
-    public IEnumerable<Criteria> ReadAllNonDefaultCriteriaWithValuesForPanel(Guid panelId)
-    {
-        return _context.Criteria
-            .Include(c => c.Values)
-            .Where(c => c.Panel.Id == panelId && c.IsDefault == false)
+        
+        return _context.Panels
+            .Where(p => p.Id == panelId)
+            .SelectMany(p => p.Criteria)
+            .Include(c => c.AnswerOptions)
+            .Where(c => !onlyDefault || c.IsDefault)
+            .Where(c => includeUnknown || c.IsDistributionKnown)
+            .Where(c => includeKnown || !c.IsDistributionKnown)
             .ToList();
     }
 
-    public void UpdateCriteriaGroup(CriteriaGroup criteriaGroup)
-    {
-        _context.CriteriaGroups.Update(criteriaGroup);
-        _context.SaveChanges();
-    }
 
-    public void CreateCriteriaGroup(CriteriaGroup newCriteriaGroup)
-    {
-        _context.CriteriaGroups.Add(newCriteriaGroup);
-        _context.SaveChanges();
-    }
+    // public IEnumerable<Criteria> ReadAllNonDefaultCriteriaWithValuesForPanel(Guid panelId)
+    // {
+    //     return _context.Panels
+    //         .Where(p => p.Id == panelId)
+    //         .SelectMany(p => p.Criteria)
+    //         .Include(c => c.AnswerOptions)
+    //         .ToList();
+    //     
+    // }
 
-    public CriteriaValue ReadCriteriaValueBasedOnCriteriaAndValue(Guid criteriaId, string criteriaValue)
-    {
-        return _context.CriteriaValues
-            .FirstOrDefault(cv => cv.Criteria.CriteriaId == criteriaId && cv.Value == criteriaValue);
-    }
+    // public Criteria ReadCriteriaByName(Guid panelId, string critName)
+    // {
+    //     return _context.Panels
+    //         .Where(p => p.Id == panelId)
+    //         .SelectMany(p => p.Criteria)
+    //         .FirstOrDefault(c => c.Name == critName);
+    // }
 
-    public Criteria ReadCriteriaByName(Guid panelId, string critName)
+    public Criteria ReadCriteriaByNameWithAnswerOptions(Guid panelId, string critName)
     {
-        return _context.Criteria
-            .FirstOrDefault(c => c.Panel.Id == panelId && c.Name == critName);
+        return _context.Panels
+            .Include(p => p.Criteria)
+            .ThenInclude(c => c.AnswerOptions)
+            .Where(p => p.Id == panelId)
+            .SelectMany(p => p.Criteria)
+            .FirstOrDefault(c => c.Name == critName);
     }
-    
 }

@@ -8,22 +8,12 @@ public class PanelManagementDto
     public string PanelName { get; set; }
     public int CitizenCount { get; set; }
     public int PanelSize { get; set; }
-    public int SuccesfulRegistrationCount { get; set; }
     public int AmountOfReserveInvites { get; set; }
     public int TotalInvitesNeeded { get; set; }
     public bool IsRegistrationOpen { get; set; }
-    public ExtraCriteriaViewModel ExtraCriteriaViewModel { get; set; }
-
-    public PanelManagementDto(Guid panelId, string panelName, int citizenCount, int amountOfAcceptedInvites, IEnumerable<CriteriaGroup> criteriaGroups)
-    {
-        PanelId = panelId;
-        PanelName = panelName;
-        SuccesfulRegistrationCount = amountOfAcceptedInvites;
-        CitizenCount = citizenCount;
-        ExtraCriteriaViewModel = new ExtraCriteriaViewModel();
-        ExtraCriteriaViewModel.CriteriaGroups = criteriaGroups;
-    }
-    
-    
-    
+    public bool AnyCrossCriteria { get; set; }
+    public bool AnyUnknownCriteria { get; set; }
+    public ExtraCriteriaDto ExtraCriteriaDto { get; set; } 
+    public uniqueCodesDto UniqueCodesDto { get; set; }
+    public IEnumerable<PlanningGroupMember> PlanningGroupMembers { get; set; }
 }

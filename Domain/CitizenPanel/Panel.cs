@@ -1,20 +1,49 @@
-﻿namespace Domain.CitizenPanel;
+﻿using System.ComponentModel.DataAnnotations;
+using Domain.Interfaces;
+using Microsoft.AspNetCore.Identity;
+using UI_MVC;
 
-public class Panel
+namespace Domain.CitizenPanel;
+
+public class Panel : IOrganisational,IValidatableObject
 {
     public Guid Id { get; set; }
+
+    [Required(ErrorMessage = "Panel moet een naam hebben.")]
+    [MinLength(4, ErrorMessage = "Panel naam moet minimaal 4 karakters lang zijn.")]
+    [MaxLength(100, ErrorMessage = "Panel naam mag maximaal 100 karakters lang zijn.")]
     public string Name { get; set; }
-    public ICollection<PanelMember> PanelMembers { get; set; }
-    public ICollection<Criteria> PanelCriteria { get; set; }
+
+    [MaxLength(10, ErrorMessage = "Panel mag maximaal 10 criteria hebben.")]
+    public ICollection<Criteria> Criteria { get; set; }
+
+    [Required(ErrorMessage = "Panel moet een representatie groep hebben.")]
     public RepresentationGroup RepresentationGroup { get; set; }
+
+    [Required(ErrorMessage = "Panel moet een  hebben sample rate hebben.")]
+    [Range(0, 1, ErrorMessage = "Sample rate moet een percentage tussen 0 en 100% zijn.")]
     public double SampleRate { get; set; }
+
     public bool IsRegistrationOpen { get; set; }
-    public int SuccesfulRegistrationCount { get; set; }
+    [Range(0, int.MaxValue, ErrorMessage = "Succesvol geregistreerde personen mag niet negatief zijn.")]
+    public int SuccessfulRegistrationCount { get; set; }
+    [Required(ErrorMessage = "Panel moet een eigenaar hebben.")]
+    public ApplicationUser Owner { get; set; }
+    public string OrganisationId { get; set; }
+    public ICollection<Post> Posts { get; set; }
+    [Range(1, int.MaxValue, ErrorMessage = "Fase moet een positief getal zijn.")]
+    public int LastPhase { get; set; } = 1;
     
-    public Panel(string name, double sampleRate)
+    IEnumerable<ValidationResult> IValidatableObject.Validate(ValidationContext validationContext)
     {
-        Name = name;
-        SampleRate = sampleRate;
-        SuccesfulRegistrationCount = 0;
+        return (Criteria ?? Enumerable.Empty<Criteria>())
+            .Where(c => c.IsDistributionKnown)
+            .Where(c => Math.Abs(c.AnswerOptions.Select(o => o.DistributionPercentage).Sum() - 1) > 0.001)
+            .Select(c => new ValidationResult(
+                "De verdeling van de antwoord opties moet 100% zijn. " +
+                "Nu: " + c.AnswerOptions.Select(o => o.DistributionPercentage).Sum() * 100,
+                new[] { nameof(c) }
+            ));
     }
+    
 }

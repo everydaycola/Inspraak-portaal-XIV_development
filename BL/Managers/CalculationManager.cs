@@ -1,46 +1,60 @@
-using System.Text.RegularExpressions;
 using BL.Interfaces;
-using Domain.CitizenPanel;
 
 namespace BL.Managers;
 
 public class CalculationManager : ICalculationManager
 {
-    private ICriteriaManager _critManager;
-    public CalculationManager(ICriteriaManager critManager)
-    {
-        _critManager = critManager;
-    }
+    // public int CalculateSuccessfulRegistrationCount(Guid panelId)
+    // {
+    //     return _panelManager.GetAllPanelMembersForPanel(panelId)
+    //         .Where(m => m.HasRegistered)
+    //         .Distinct()
+    //         .Count();
+    // }
 
-    public int CalculateSuccesfulRegistrationCount(Guid panelId)
+    // public int CalculateAmountOfMembersInPanel(Guid panelId)
+    // {
+    //     return _panelManager.GetAllPanelMembersForPanel(panelId).Count();
+    // }
+    
+    // public Dictionary<string, Dictionary<string, int>> CalculateAllCriteriaCountForPanel(Guid panelId)
+    // {
+    //     var allCriteria = _critManager.GetAllCriteriaWithValuesForPanel(panelId).Criteria;
+    //     var criteriaMemberCount = new Dictionary<string, Dictionary<string, int>>();
+    //     foreach (var crit in allCriteria)
+    //     {
+    //         var answerCounts = new Dictionary<string, int>();
+    //         foreach (var answer in crit.AnswerOptions)
+    //         {
+    //             answerCounts[answer.Option] = CalculateAmountOfMembersWithSpecificCriteria(panelId, answer.Option);
+    //         }
+    //         criteriaMemberCount[crit.Name] = answerCounts;
+    //     }
+    //     return criteriaMemberCount;
+    // }
+    
+    // private int CalculateAmountOfMembersWithSpecificCriteria(Guid panelId, string searchedCriteriaValue)
+    // {
+    //     return _critManager.GetPanelMembersWithCompletedCriteriaGroupedByResponse(panelId)
+    //         .Where(group => group.Key.Contains(searchedCriteriaValue))
+    //         .SelectMany(group => group.Value)
+    //         .Count();
+    // }
+    
+    public int CalculatePanelSize(int citizenCount, double samplePercentage)
     {
-        return _critManager.GetAllCriteriaGroupForPanel(panelId)
-            .SelectMany(group => group.PanelMembers)
-            .Where(member => member.HasAnsweredAllQuestions)
-            .Distinct()
-            .Count();
+        //CitizenCount = amount of citizens in gemeente.
+        return (int)(citizenCount * samplePercentage);
     }
-    public Dictionary<string, Dictionary<string, int>> CalculateAllCriteriaCountForPanel(Guid panelId)
+    public int CalculateAmountOfReserve(int panelSize, double reservePercentage)
     {
-        var allCriteria = _critManager.GetAllCriteriaWithValuesForPanel(panelId);
-        // dictionary with criteria name -> criteria value <-> amount of members with this criteria
-        return allCriteria.ToDictionary(
-            crit => crit.Name,
-            crit => crit.Values.ToDictionary(
-                val => val.Value,
-                val => CalculateAmountOfMembersWithSpecificCriteria(crit.Panel.Id, crit.Name, val.Value)
-            ));
+        //panelSize = calculatedByCalculatePanelSize
+        return (int)(panelSize * reservePercentage);
     }
-    private int CalculateAmountOfMembersWithSpecificCriteria(Guid panelId, string searchedCriteriaName, string searchedCriteriaValue)
+    public int CalculateTotalInvitesNeeded(int panelSizeIncludingReserve, double responseRate)
     {
-        var criteriaGroups = _critManager.GetAllCriteriaGroupForPanel(panelId);
-        var matchingGroups = criteriaGroups.Where(group =>
-            group.CriteriaAnswers.Any(a =>
-                a.Criteria.Name.Equals(searchedCriteriaName) == true &&
-                a.CriteriaValue.Value.Equals(searchedCriteriaValue) == true));
-        var allMatchingMembers = matchingGroups
-            .SelectMany(group => group.PanelMembers)
-            .Where(panelMember => panelMember.HasAnsweredAllQuestions);
-        return allMatchingMembers.Count();
+        //basePanelSize = calculated by CalculatePanelSize
+        //Response rate is a percentage which indicates the expected rate of response to invites.
+        return (int)(panelSizeIncludingReserve / responseRate);
     }
 }

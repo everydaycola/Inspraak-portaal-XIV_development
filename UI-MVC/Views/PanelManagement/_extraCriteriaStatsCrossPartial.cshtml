@@ -1,0 +1,130 @@
+﻿@model ExtraCriteriaDto
+@{
+    // Extract criteria distribution data
+    var criteriaDistribution = Model.Criteria
+        .Where(c => c.IsDistributionKnown)
+        .ToDictionary(
+            criteria => criteria.Name,
+            criteria => criteria.AnswerOptions.ToDictionary(
+                option => option.Option,
+                option => option.DistributionPercentage
+            )
+        );
+
+    // Get ordered criteria names for consistent column display
+    var orderedCriteriaNames = Model.Criteria
+        .Where(c => c.IsDistributionKnown)
+        .Select(c => c.Name).Order().ToList();
+
+    // Get options for each criteria in the same order as criteria names
+    var criteriaOptions = orderedCriteriaNames
+        .Select(name => Model.Criteria
+            .FirstOrDefault(c => c.Name.Equals(name))?
+            .AnswerOptions
+            .Select(ao => ao.Option)
+            .ToList())
+        .ToList();
+
+    // Get the number of options for each criteria
+    var optionCounts = criteriaOptions.Select(options => options.Count).ToList();
+
+    // Calculate row spans for each criteria column
+    // Each criteria column spans a number of rows equal to the product of all 
+    // option counts for criteria to the right of it
+    var rowSpans = optionCounts
+        .Select((_, index) => optionCounts
+            .Skip(index + 1)
+            .DefaultIfEmpty(1)
+            .Aggregate(1, (product, count) => product * count))
+        .ToList();
+
+    // Initialize indices for tracking position in the option lists
+    var optionIndexes = Enumerable.Repeat(0, criteriaOptions.Count).ToList();
+
+    // Calculate total number of rows needed in the table
+    var totalRowCount = optionCounts.Aggregate(1, (product, count) => product * count);
+}
+
+<table class="table">
+    <thead class="table-primary">
+    <tr>
+        @foreach (var criteriaName in orderedCriteriaNames)
+        {
+            <th scope="col" class="text-center">@criteriaName</th>
+        }
+        <th>registrations</th>
+    </tr>
+    </thead>
+    <tbody>
+    @for (var rowIndex = 0; rowIndex < totalRowCount; rowIndex++)
+    {
+        <tr>
+            @{
+                var combinedDistribution = 1.0;
+                var criteriaOptionKeys = new List<string>();
+            }
+
+            @for (var colIndex = 0; colIndex < orderedCriteriaNames.Count; colIndex++)
+            {
+                var option = criteriaOptions[colIndex][optionIndexes[colIndex] % optionCounts[colIndex]];
+
+                combinedDistribution *= criteriaDistribution[orderedCriteriaNames[colIndex]][option];
+                criteriaOptionKeys.Add(option);
+
+                if (rowIndex % rowSpans[colIndex] != 0) continue;
+
+                <th class="align-middle text-center border-top border-black" rowspan="@rowSpans[colIndex]">
+                    @option
+                </th>
+                optionIndexes[colIndex]++;
+            }
+
+            <th class="text-center">
+                @{
+                    var criteriaKeyString = string.Join("|", criteriaOptionKeys);
+                    var hasError = !Model.CriteriaGroupAbsoluteMemberCount.TryGetValue(criteriaKeyString, out var actualCount);
+                    var targetCount = (int)(combinedDistribution * Model.DesiredRegistrationCount);
+
+                    // Skip rendering if the target count is zero
+                    if (targetCount == 0)
+                    {
+                        <div class="alert alert-warning" role="alert">
+                            <small>Deze combinatie is afgerond naar 0 vanwege een te laag gecombineerd
+                                percentage.</small>
+                        </div>
+                        continue;
+                    }
+
+                    var percentComplete = actualCount * 100 / Math.Max(1, targetCount);
+                    var progressBarClass = actualCount >= targetCount ? "bg-success" : "bg-warning";
+                }
+
+                @if (!hasError)
+                {
+                    @actualCount
+                    <text> out of </text>
+                    @targetCount
+                    <text> (</text>
+                    @Math.Round(combinedDistribution * 100, 2)<text>% of total)</text>
+                    <div class="progress"
+                         role="progressbar"
+                         aria-valuenow="@actualCount"
+                         aria-valuemin="0"
+                         aria-valuemax="@targetCount">
+                        <div class="progress-bar @progressBarClass"
+                             style="width: @percentComplete%">
+                            @percentComplete%
+                        </div>
+                    </div>
+                }
+                else
+                {
+                    <div class="p-3 text-danger-emphasis bg-danger-subtle border border-danger-subtle">
+                        Something went wrong
+                    </div>
+                }
+            </th>
+        </tr>
+    }
+    </tbody>
+</table>

@@ -1,88 +1,229 @@
-﻿using Domain.CitizenPanel;
+﻿using Domain;
+using Domain.CitizenPanel;
+using Domain.Interfaces;
+using Domain.Interfaces.Posts;
+using Microsoft.AspNetCore.Identity;
 
 namespace DAL.EF;
 
 public static class DataSeeder
 {
-   private static CitizenPanelDbContext _context;
+    private static CitizenPanelDbContext _context;
+
     public static void Seed(CitizenPanelDbContext context)
     {
         Console.WriteLine("Seeding...");
         _context = context;
+
+        //ORGANISATIONS
+        var organisation1 = new Organisation
+        {
+            Id = "antwerpen",
+            Name = "Antwerpen",
+            BackgroundColor = "#cf252b",
+            BackgroundImage = ""
+        };
+        var organisation2 = new Organisation
+        {
+            Id = "lwc",
+            Name = "Lokale Waterpolo Club",
+            BackgroundColor = "#42daf5",
+            BackgroundImage = ""
+        };
+
         //REPRESENTATION GROUPS
-        var rg1 = new RepresentationGroup(20000, 0.2, 0.1);
         //PANELS
-        var panel1 = new Panel("Verkeersveiligheid in en rond Antwerpen.", 0.005);
-        
+        var newPanel = new Panel
+        {
+            Name = "Verkeersveiligheid in en rond Antwerpen.",
+            SampleRate = 0.005,
+            Owner = context.Users.Single(user => user.Email == "user@antwerpen.be"),
+            IsRegistrationOpen = true,
+            OrganisationId = "antwerpen",
+            RepresentationGroup = new RepresentationGroup
+            {
+                CitizenCount = 20000,
+                ReservePercentage = 0.2,
+                ResponseRate = 0.1
+            },
+            Posts = new List<Post>
+            {
+                //PROJECT PAGE POSTS
+                /*new TextPost()
+                {
+                    Content = "Test post!",
+                    CreatedAt = DateTime.UtcNow,
+                },
+                new DocumentPost()
+                {
+                    DocumentName = "/mydocument",
+                    CreatedAt = DateTime.UtcNow,
+                },
+                new EmbeddedVideoPost()
+                {
+                    VideoUrl = "/myvideo",
+                    CreatedAt = DateTime.UtcNow,
+                },*/
+                new MeetingPost()
+                {
+                    CreatedAt = DateTime.UtcNow,
+                    Title = "Bijeenkomst #1 - Gesprekken over duidelijkheid verkeersregels.",
+                    DocumentNames = new List<string> { "Testeken1", "testeken2" }
+                }
+            },
+            Criteria = new List<Criteria>
+            {
+                new()
+                {
+                    Name = "Rijbewijs",
+                    Question = "Beschikt u over een rijbewijs?",
+                    IsDefault = false,
+                    IsDistributionKnown = true,
+                    AnswerOptions = new List<CriteriaAnswerOption>
+                    {
+                        new()
+                        {
+                            DistributionPercentage = 0.5,
+                            Option = "Ja"
+                        },
+                        new()
+                        {
+                            DistributionPercentage = 0.5,
+                            Option = "Nee"
+                        }
+                    }
+                },
+                new()
+                {
+                    Name = "Vervoermethode",
+                    Question = "Wat is uw voorkeurs vervoersmethode?",
+                    IsDefault = false,
+                    IsDistributionKnown = true,
+                    AnswerOptions = new List<CriteriaAnswerOption>
+                    {
+                        new()
+                        {
+                            DistributionPercentage = 0.33,
+                            Option = "Te voet"
+                        },
+                        new()
+                        {
+                            DistributionPercentage = 0.33,
+                            Option = "Fiets"
+                        },
+                        new()
+                        {
+                            DistributionPercentage = 0.34,
+                            Option = "Auto"
+                        }
+                    }
+                },
+                new()
+                {
+                    Name = "Geslacht",
+                    Question = "Wat is uw geslacht?",
+                    IsDefault = true,
+                    IsDistributionKnown = true,
+                    AnswerOptions = new List<CriteriaAnswerOption>
+                    {
+                        new()
+                        {
+                            DistributionPercentage = 0.5,
+                            Option = "Man"
+                        },
+                        new()
+                        {
+                            DistributionPercentage = 0.5,
+                            Option = "Vrouw"
+                        }
+                    }
+                }
+            }
+        };
+
+        // link rpg both ways
+        newPanel.RepresentationGroup.Panel = newPanel;
+
+        //PlanningGroupMembers
+        var pgm1 = new PlanningGroupMember
+        {
+            Panel = newPanel,
+            User = new ApplicationUser
+            {
+                Email = "pgm@antwerpen.be",
+                NormalizedEmail = "PGM@ANTWERPEN.BE",
+                UserName = "PGM",
+                NormalizedUserName = "PGM"
+            },
+            Functie = "Boekhouder"
+        };
+        var pgm2 = new PlanningGroupMember
+        {
+            Panel = newPanel,
+            User = new ApplicationUser
+            {
+                Email = "owner@antwerpen.be",
+                NormalizedEmail = "OWNER@ANTWERPEN.BE",
+                UserName = "Owner",
+                NormalizedUserName = "Owner"
+            },
+            Functie = "CEO"
+        };
+        var pgm3 = new PlanningGroupMember
+        {
+            Panel = newPanel,
+            User = new ApplicationUser
+            {
+                Email = "JanDeRijke@antwerpen.be",
+                NormalizedEmail = "JanDeRijke@ANTWERPEN.BE",
+                UserName = "Jan De Rijke",
+                NormalizedUserName = "JANDERIJKE"
+            },
+            Functie = "Software Architect"
+        };
+
         //PanelMembers
-        var panelMember1 = new PanelMember(panel1);
-        var panelMember2 = new PanelMember(panel1);
-        var panelMember3 = new PanelMember(panel1);
-        var panelMember4 = new PanelMember(panel1);
-        var panelMember5 = new PanelMember(panel1);
-        
-        //CriteriaGroup (default groups SHOULD be based on default values only)!
-        var criteriaGroup1 = new CriteriaGroup("Man",new List<PanelMember>{panelMember1,panelMember3,panelMember5}, true);
-        var criteriaGroup2 = new CriteriaGroup("Vrouw",new List<PanelMember>{panelMember2, panelMember4}, true);
-        
-        
-        //CRITERIA
-        var criteria1 = new Criteria("Rijbewijs","Beschikt u over een rijbewijs?",false);
-        var criteria2 = new Criteria("Vervoermethode","Wat is uw voorkeurs vervoersmethode?", false);
-        var criteria3 = new Criteria("Geslacht", "Wat is uw geslacht?", true);
-        
-        //CRITERIA VALUES
-        var value1 = new CriteriaValue("Ja", 0.5);
-        var value2 = new CriteriaValue("Nee", 0.5);
-        var value3 = new CriteriaValue("Te voet", 0.33);
-        var value4 = new CriteriaValue("Fiets", 0.33);
-        var value5 = new CriteriaValue("Auto", 0.33);
-        var value6 = new CriteriaValue("Man", 0.5);
-        var value7 = new CriteriaValue("Vrouw", 0.5);
-        
-        //BIND CRITERIA WITH VALUES
-        criteria1.Values.Add(value1);
-        criteria1.Values.Add(value2);
-        criteria2.Values.Add(value3);
-        criteria2.Values.Add(value4);
-        criteria2.Values.Add(value5);
-        criteria3.Values.Add(value6);
-        criteria3.Values.Add(value7);
-        
-        //Add criteria to criteriagroups
-        criteriaGroup1.CriteriaAnswers.Add(new CriteriaAnswer()
+        var panelMembersMen = Enumerable.Range(1, 100).Select(_ => new PanelMember
         {
-            Criteria = criteria3,
-            CriteriaValue = value6
-        });
-        criteriaGroup2.CriteriaAnswers.Add(new CriteriaAnswer()
+            Panel = newPanel,
+            Responses = new List<CriteriaResponse>
+            {
+                new()
+                {
+                    Criteria = newPanel.Criteria.First(c => c.Name == "Geslacht"),
+                    SelectedOption = "Man"
+                }
+            }
+        }).ToList();
+
+        var panelMembersWomen = Enumerable.Range(1, 100).Select(_ => new PanelMember
         {
-            Criteria = criteria3,
-            CriteriaValue = value7
-        });
+            Panel = newPanel,
+            Responses = new List<CriteriaResponse>
+            {
+                new()
+                {
+                    Criteria = newPanel.Criteria.First(c => c.Name == "Geslacht"),
+                    SelectedOption = "Vrouw"
+                }
+            }
+        }).ToList();
         
-        //LINK REP. GROUP WITH PANEL
-        rg1.Panel = panel1;
-        panel1.RepresentationGroup = rg1;
+        // adding panel members also adds dependant objects
+        // so panel member => panel
+        //    panel => representation group
+        //    panel => criteria
+        //    criteria => criteria answer option
+        //    plannings group member => identityUser
         
-        //LINK CRITERIA WITH PANEL
-        panel1.PanelCriteria = new List<Criteria>() { criteria1, criteria2 , criteria3};
-        
-        //SET REGISTRATION TO OPEN
-        panel1.IsRegistrationOpen = true;
-        
-        //SAVE TO DATABASE
-        context.RepresentationGroups.Add(rg1);
-        context.Panels.Add(panel1);
-        
-        AddMultipleEntities([panelMember1, panelMember2, panelMember3, panelMember4]);
-        AddMultipleEntities([criteria1, criteria2, criteria3]);
-        AddMultipleEntities([criteriaGroup1, criteriaGroup2 ]);
-        AddMultipleEntities([value1, value2, value3, value4, value5, value6, value7 ]);
+        AddMultipleEntities(panelMembersMen);
+        AddMultipleEntities(panelMembersWomen);
+        AddMultipleEntities([pgm1, pgm2, pgm3]);
+        AddMultipleEntities([organisation1, organisation2]);
         context.SaveChanges();
         context.ChangeTracker.Clear();
     }
-    
+
     private static void AddMultipleEntities<T>(List<T> entities) where T : class
     {
         foreach (var entity in entities)
