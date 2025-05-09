@@ -4,8 +4,9 @@ import 'bootstrap-icons/font/bootstrap-icons.css';
 import 'bootstrap/dist/css/bootstrap.css';
 
 // Custom CSS imports
-import '../css/site.scss'
-import '../css/register.scss'
+import '../scss/site.scss'
+import '../scss/register.scss'
+import '../scss/customnavbar.scss'
 
 // Custom Ts
 
