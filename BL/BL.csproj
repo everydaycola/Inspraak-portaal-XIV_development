@@ -12,6 +12,7 @@
     </ItemGroup>
 
     <ItemGroup>
+      <PackageReference Include="Google.Cloud.Storage.V1" Version="4.11.0" />
       <PackageReference Include="Mailjet.Api" Version="3.0.0" />
       <PackageReference Include="QRCoder" Version="1.6.0" />
     </ItemGroup>

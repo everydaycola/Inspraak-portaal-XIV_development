@@ -1,8 +1,9 @@
-﻿@using DAL
+﻿@using BL.Managers
+@using DAL
 @using Microsoft.AspNetCore.Identity
 @using Microsoft.AspNetCore.Mvc.TagHelpers
 @using UI_MVC.TempTenant
-@inject Organisation Organisation;
+@inject Organisation Organisation
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -51,7 +52,16 @@
                                 </a>
                         </li>
                        
-                    }
+                    }@if (User.Identity != null && User.Identity.IsAuthenticated && User.IsInRole(CustomIdentityConstants.PanelMemberRole))
+                     {
+                         <li class="nav-item">
+                             <a class="nav-link text-dark" asp-area="" asp-controller="PanelProjectPage" asp-action="Index">
+                                 Project pagina
+                             </a>
+                         </li>
+                       
+                     }
+                    
                     <li class="nav-item">
                         <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
                     </li>

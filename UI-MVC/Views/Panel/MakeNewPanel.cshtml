@@ -1,11 +1,16 @@
-@* @model TModel *@
+@model UI_MVC.Models.Dto.NewPanelDto
 
 @{
     ViewBag.Title = "nieuw panel aanmaken";
     Layout = "_Layout";
 }
+
 @section Scripts{
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.3/jquery.validate.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validation-unobtrusive/3.2.12/jquery.validate.unobtrusive.min.js"></script>
     <script src="~/dist/panelCreation.entry.js" type="module"></script>
+    <script src="~/dist/apiDataFiller.entry.js" type="module"></script>
 }
 
 <div class="container mt-5">
@@ -15,31 +20,73 @@
         </div>
         <div class="card-body">
             <div class="mb-4">
-                <h5 class="card-title">Criteria van default panel</h5>
-                <p class="card-text"><strong>Naam:</strong> Panel rond alcoholgebruik</p>
-                <p class="card-text"><strong>Grootte:</strong> 150</p>
-                <p class="card-text"><strong>Sample rate:</strong> 0.5%</p>
+                <form id="new-panel-form" method="post" asp-controller="Panel" asp-action="AddNewPanel">
+                    <div asp-validation-summary="ModelOnly"></div>
 
-                <div class="mt-4">
-                    <h6><strong>Sex verdeling</strong></h6>
-                    <ul class="list-group list-group-flush">
-                        <li class="list-group-item"><strong>Man:</strong> 40%</li>
-                        <li class="list-group-item"><strong>Vrouw:</strong> 60%</li>
-                    </ul>
-                </div>
+                    <div class="d-flex flex-column">
+                        <h5 class="card-title">Informatie</h5>
+                        <div class="d-flex flex-row py-2">
+                            <label class="card-text pe-4" for="name"><strong>Naam:</strong></label>
+                            <input id="name" asp-for="Name" class="border border-1 rounded-2 col-3" type="text"
+                                   placeholder="Panel rond alcoholgebruik"/>
+                            <span class="text-danger" asp-validation-for="Name"></span>
+                        </div>
 
-                <div class="mt-4">
-                    <h6><strong>Leeftijd verdeling</strong></h6>
-                    <ul class="list-group list-group-flush">
-                        <li class="list-group-item"><strong>20-29:</strong> 20%</li>
-                        <li class="list-group-item"><strong>30-39:</strong> 60%</li>
-                        <li class="list-group-item"><strong>40-49:</strong> 20%</li>
-                    </ul>
-                </div>
+                        <div id="subregions-container" class="d-flex flex-column py-2">
+                            <strong class="card-text">Aantal Inwoners</strong>
+                            <a id="sub-region-btn" type="button" class="btn btn-primary col-3 my-2">Deelgemeente of Wijk
+                                Toevoegen</a>
+                            <span id="error-subregions" class="text-danger"></span>
 
+                            <div class="mb-2 subRegion subregion-0">
+                                <input id="subregion-0-name" name="SubRegions[0].Name" placeholder="Naam" type="text"
+                                       class="form-control d-inline w-50 me-2" required/>
+                                <input id="subregion-0-size" name="SubRegions[0].Size" placeholder="Grootte" type="number"
+                                       class="form-control d-inline w-25" required/>
+                                <span id="subregion-0-name-msg" class="text-danger field-validation-valid"></span>
+                                <span id="subregion-0-size-msg" class="text-danger field-validation-valid"></span>
+                            </div>
+                        </div>
+
+                        <div class="d-flex flex-row py-2">
+                            <label class="card-text pe-4" for="reserve"><strong>Reserve Percentage</strong></label>
+                            <input id="reserve" asp-for="ReservePercentage" min="0"
+                                   class="border border-1 rounded-2" type="number" placeholder="5"/>%
+                            <span class="text-danger" asp-validation-for="ReservePercentage"></span>
+                        </div>
+
+                        <div class="d-flex flex-row py-2">
+                            <label class="card-text pe-4" for="sample-rate"><strong>Sample rate:</strong></label>
+                            <input id="sample-rate" asp-for="SampleRate" min="0.001" step=".001"
+                                   class="border border-1 rounded-2" type="number" placeholder="0.5"/>%
+                            <span class="text-danger" asp-validation-for="SampleRate"></span>
+                        </div>
+
+                        <div class="d-flex flex-row py-2">
+                            <label class="card-text pe-4" for="response-rate"><strong>Response rate:</strong></label>
+                            <input id="response-rate" asp-for="ResponseRate" min="2" max="10"
+                                   class="border border-1 rounded-2" type="number" placeholder="2"/>%
+                            <span class="text-danger" asp-validation-for="ResponseRate"></span>
+                        </div>
+                    </div>
+
+                    <div class="d-flex flex-column">
+                        <h5 class="card-title">Criteria</h5>
+                        <div id="criteria-container">
+                            <span id="criteria-warning"></span>
+                        </div>
+                        <button id="criteria-btn" type="button" class="btn btn-primary col-2 my-2">Criteria Toevoegen
+                        </button>
+                    </div>
+
+                    <div class="mt-4">
+                        <button class="btn btn-primary" type="submit">Aanmaken</button>
+                    </div>
+                </form>
                 <div class="mt-4">
+                    <h5 class="text-warning">TEMPORARY</h5>
                     <form method="post" asp-controller="Panel" asp-action="AddDefaultPanel">
-                        <button class="btn btn-primary" type="submit">Create Panel</button>
+                        <button class="btn btn-primary" type="submit">Default Panel Aanmaken</button>
                     </form>
                 </div>
             </div>

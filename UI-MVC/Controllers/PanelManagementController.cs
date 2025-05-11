@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using UI_MVC.Models;
 using UI_MVC.Models.Dto;
+using UI_MVC.Models.ViewModels;
 
 namespace UI_MVC.Controllers;
 [RequiresOrganisation]
@@ -19,7 +20,7 @@ public class PanelManagementController : Controller
     private readonly UserManager<ApplicationUser> _userManager;
 
 
-    public PanelManagementController(ILogger<PanelManagementController> logger, IPanelManager manager, ICriteriaManager criteriaManager, ICalculationManager calcHelper, UserManager<ApplicationUser> userManager)
+    public PanelManagementController(ILogger<PanelManagementController> logger, IPanelManager manager, IFileManager fileManager, ICriteriaManager criteriaManager, ICalculationManager calcHelper, UserManager<ApplicationUser> userManager)
     {
         _logger = logger;
         _manager = manager;
@@ -30,10 +31,15 @@ public class PanelManagementController : Controller
 
     public IActionResult Index(Guid id)
     {
+        if (id == Guid.Empty)
+        {
+            return RedirectToAction("PanelSelection");
+        }
         var panel = _manager.GetPanelWithRepresentationGroup(id);
-        var panelSize = _calcManager.CalculatePanelSize(panel.RepresentationGroup.CitizenCount, 0.005);
+        var panelSize = _calcManager.CalculatePanelSize(panel.RepresentationGroup.CitizenCount, panel.SampleRate);
         var amountOfReserveInvites =
             _calcManager.CalculateAmountOfReserve(panelSize, panel.RepresentationGroup.ReservePercentage);
+        var criteriaList = _criteriaManager.GetAllDesiredCriteriaPercentages(panel.Id).ToList();
         return View(new PanelManagementDto
         {
             PanelId = id,
@@ -44,15 +50,21 @@ public class PanelManagementController : Controller
             TotalInvitesNeeded = _calcManager.CalculateTotalInvitesNeeded(panelSize + amountOfReserveInvites, panel.RepresentationGroup.ResponseRate),
             IsRegistrationOpen = panel.IsRegistrationOpen,
             PlanningGroupMembers = _manager.GetAllPlanningGroupMembersWithIdentityUserForPanel(panel.Id),
-            ExtraCriteriaViewModel = new ExtraCriteriaViewModel
+            AnyCrossCriteria = criteriaList.Any(c => c.IsDistributionKnown),
+            AnyUnknownCriteria = criteriaList.Any(c => !c.IsDistributionKnown),
+            ExtraCriteriaDto = new ExtraCriteriaDto
             {
-                CriteriaMemberCount = _criteriaManager.GetAllCriteriaCountsGroupedByValue(panel.Id),
-                SuccesfulRegistrationCount = panel.SuccessfulRegistrationCount,
+                CriteriaGroupAbsoluteMemberCount = _manager.CalculateCrossDistributionAbsolute(panel.Id),
+                CriteriaMemberCount = _criteriaManager.GetAllCriteriaCountsGroupedByValue(panel.Id, onlyUnknown: true),
+                Criteria = criteriaList,
+                SuccessfulRegistrationCount = panel.SuccessfulRegistrationCount,
+                DesiredRegistrationCount = panelSize,
             },
             UniqueCodesDto = new uniqueCodesDto
             {
                 panelId = panel.Id,
-                panelMembers = _criteriaManager.GetPanelMembersGroupedByResponsesForDefaultCriteria(panel.Id)
+                panelMembers = _criteriaManager.GetPanelMembersGroupedByResponsesForDefaultCriteriaGroupedByPhase(panel.Id),
+                Phases = panel.LastPhase
             }
         });
     }
@@ -61,10 +73,40 @@ public class PanelManagementController : Controller
     {
         return RedirectToAction("Index", new { id = panelId });
     }
+    
+    [HttpPost]
+    public IActionResult NewPhase(Guid guid, double newResponseRate)
+    {
+        _manager.NewPanelPhase(guid, newResponseRate / 100);
+        
+        return RedirectToAction("Index", new { id = guid });
+    }
+
+    [HttpPost]
+    public IActionResult AddPlanningGroupmember(PlanningGroupMemberViewModel model)
+    {
+        if (!ModelState.IsValid)
+        {
+            return RedirectToAction("Index", model.PanelId);
+        }
+        _manager.AddPlanningsGroupMember(model.PanelId,model.Email, model.Naam, model.Functie);
+        return RedirectToAction("Index", model.PanelId);
+    }
+
+    public IActionResult DeletePlanningsGroupmember(Guid panelId, Guid planningsGroupMemberId)
+    {
+        _manager.DeletePlanningsGroupmember(planningsGroupMemberId);
+        return RedirectToAction("Index", panelId);
+    }
+    
     [Authorize]
     public IActionResult PanelSelection()
     {
-        var panels = _manager.GetAllPanels();
+        var panels = _manager.GetAllPanels().ToList(); // Materialize the collection
+        if (panels.Count == 1)
+        {
+            return RedirectToAction("Index", new { id = panels[0].Id });
+        }
         return View(panels);
     }
     public IActionResult ToggleRegistration(Guid panelId)
@@ -73,5 +115,14 @@ public class PanelManagementController : Controller
         _manager.UpdatePanel(panelId, !panel.IsRegistrationOpen);
         return RedirectToAction("Index", new { id = panel.Id });
     }
-   
+
+    public IActionResult EndRegistration(Guid panelId)
+    {
+        var allDesiredCriteriaPercentages = _criteriaManager.GetAllDesiredCriteriaPercentages(panelId);
+
+        var baseUrl = $"{Request.Scheme}://{Request.Host}{Request.PathBase}";
+        _manager.EndRegistration(panelId, allDesiredCriteriaPercentages, true,baseUrl);
+
+        return RedirectToAction("Index", new { id = panelId });
+    }
 }

@@ -31,14 +31,19 @@ public class Panel : IOrganisational,IValidatableObject
     public ApplicationUser Owner { get; set; }
     public string OrganisationId { get; set; }
     public ICollection<Post> Posts { get; set; }
+    [Range(1, int.MaxValue, ErrorMessage = "Fase moet een positief getal zijn.")]
+    public int LastPhase { get; set; } = 1;
     
     IEnumerable<ValidationResult> IValidatableObject.Validate(ValidationContext validationContext)
     {
-        return (from c in Criteria
-            where Math.Abs(c.AnswerOptions.Select(o => o.DistributionPercentage).Sum() - 1) > 0.001
-            select new ValidationResult("De verdeling van de antwoord opties moet 100% zijn. " + 
-                                        "Nu: " + c.AnswerOptions.Select(c => c.DistributionPercentage).Sum() * 100,
-                [nameof(c)])).ToList();
+        return (Criteria ?? Enumerable.Empty<Criteria>())
+            .Where(c => c.IsDistributionKnown)
+            .Where(c => Math.Abs(c.AnswerOptions.Select(o => o.DistributionPercentage).Sum() - 1) > 0.001)
+            .Select(c => new ValidationResult(
+                "De verdeling van de antwoord opties moet 100% zijn. " +
+                "Nu: " + c.AnswerOptions.Select(o => o.DistributionPercentage).Sum() * 100,
+                new[] { nameof(c) }
+            ));
     }
     
 }

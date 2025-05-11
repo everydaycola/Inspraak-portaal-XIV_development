@@ -8,11 +8,12 @@ public class PanelManagementDto
     public string PanelName { get; set; }
     public int CitizenCount { get; set; }
     public int PanelSize { get; set; }
-    public int SuccessfulRegistrationCount { get; set; }
     public int AmountOfReserveInvites { get; set; }
     public int TotalInvitesNeeded { get; set; }
     public bool IsRegistrationOpen { get; set; }
-    public ExtraCriteriaViewModel ExtraCriteriaViewModel { get; set; } 
+    public bool AnyCrossCriteria { get; set; }
+    public bool AnyUnknownCriteria { get; set; }
+    public ExtraCriteriaDto ExtraCriteriaDto { get; set; } 
     public uniqueCodesDto UniqueCodesDto { get; set; }
     public IEnumerable<PlanningGroupMember> PlanningGroupMembers { get; set; }
 }

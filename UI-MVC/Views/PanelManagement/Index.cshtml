@@ -18,7 +18,7 @@
                     <p class="card-text">
                         <i class="bi bi-person-check-fill text-success"></i>
                         <strong>Aantal succesvol aangemelde mensen:</strong>
-                        @Model.ExtraCriteriaViewModel.SuccesfulRegistrationCount /
+                        @Model.ExtraCriteriaDto.SuccessfulRegistrationCount /
                         @(Model.PanelSize + Model.AmountOfReserveInvites) (waarvan @Model.AmountOfReserveInvites reserve)
                     </p>
                 </div>
@@ -47,19 +47,20 @@
                     }
                 </div>
                 <div class="d-flex gap-2 mt-4">
+                    @if (Model.IsRegistrationOpen)
+                    {
+                        
+                    }
                     <a class="btn @buttonClass w-50"
                        asp-action="ToggleRegistration"
                        asp-controller="PanelManagement"
                        asp-route-panelId="@Model.PanelId">
                         @(Model.IsRegistrationOpen ? "Inschrijving Sluiten" : "Inschrijving Openen")
                     </a>
-                    @if (!Model.IsRegistrationOpen){
-                        <button class="btn btn-primary w-50" data-bs-toggle="modal"
-                                data-bs-target="#FinnishModal" data-panel-id="@Model.PanelId"
-                                @(Model.IsRegistrationOpen ? "disabled" : "")>
-                            Inschrijving Afronden
-                        </button>
-                    }
+                    <button class="btn w-50 @(Model.IsRegistrationOpen ? "btn-primary" : "btn-danger")" data-bs-toggle="modal"
+                            data-bs-target="#@(Model.IsRegistrationOpen ? "NewCodesModal" : "FinnishModal")" data-panel-id="@Model.PanelId">
+                        @(Model.IsRegistrationOpen ? "Meer codes aanmaken" : "Inschrijving Afronden")
+                    </button>
                 </div>
             </div>
         </div>
@@ -84,7 +85,59 @@
                 </div>
             </div>
         </div>
-        @Html.Partial("_extraCriteriaStatsPartial", Model.ExtraCriteriaViewModel)
+        <div class="card shadow-sm border-0 col-8 me-4">
+            @if (Model.AnyCrossCriteria && Model.AnyUnknownCriteria)
+            {
+                <div class="accordion" id="criteriaAccordion">
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="crossCriteriaHeading">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                    data-bs-target="#crossCriteriaCollapse" aria-expanded="false"
+                                    aria-controls="crossCriteriaCollapse">
+                                Gekruiste criteria
+                            </button>
+                        </h2>
+                        <div id="crossCriteriaCollapse" class="accordion-collapse collapse"
+                             aria-labelledby="crossCriteriaHeading" data-bs-parent="#criteriaAccordion">
+                            <div class="accordion-body">
+                                @Html.Partial("_extraCriteriaStatsCrossPartial", Model.ExtraCriteriaDto)
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="singleCriteriaHeading">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                    data-bs-target="#singleCriteriaCollapse" aria-expanded="false"
+                                    aria-controls="singleCriteriaCollapse">
+                                Niet gekruiste / onbekende criteria
+                            </button>
+                        </h2>
+                        <div id="singleCriteriaCollapse" class="accordion-collapse collapse"
+                             aria-labelledby="singleCriteriaHeading" data-bs-parent="#criteriaAccordion">
+                            <div class="accordion-body">
+                                @Html.Partial("_extraCriteriaStatsPartial", Model.ExtraCriteriaDto)
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+            else if (Model.AnyCrossCriteria)
+            {
+                @Html.Partial("_extraCriteriaStatsCrossPartial", Model.ExtraCriteriaDto)
+            }
+            else if (Model.AnyUnknownCriteria)
+            {
+                @Html.Partial("_extraCriteriaStatsPartial", Model.ExtraCriteriaDto)
+            }
+            else
+            {
+                <div class="alert alert-info" role="alert">
+                    <h4 class="alert-heading">Geen criteria</h4>
+                    <p class="mb-0">Er zijn geen criteria ingesteld voor dit panel.</p>
+                </div>
+            }
+        </div>
     </div>
 
     <div class="modal fade" id="CodesModal" tabindex="-1" aria-labelledby="CodesModalLabel" aria-hidden="true">
@@ -102,8 +155,9 @@
             </div>
         </div>
     </div>
-    
-    <div class="modal fade" id="planningGroupModal" tabindex="-1" aria-labelledby="planningGroupModalLabel" aria-hidden="true">
+
+    <div class="modal fade" id="planningGroupModal" tabindex="-1" aria-labelledby="planningGroupModalLabel"
+         aria-hidden="true">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
@@ -112,7 +166,39 @@
                 </div>
                 <div class="modal-body">
                     <div id="planningGroupModalContent">
-                        @Html.Partial("_planningGroupPartial", Model.PlanningGroupMembers)
+                        @Html.Partial("_planningGroupPartial", Model)
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="FinnishModal" tabindex="-1" aria-labelledby="FinnishModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="FinnishModalLabel">Bent u zeker?</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="FinnishModalContent">
+                        @Html.Partial("_FinishRegistrationPartial.cshtml", Model)
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="NewCodesModal" tabindex="-1" aria-labelledby="NewCodesLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="NewCodesLabel">Meer codes aanmaken</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="NewCodesModalContent">
+                        @Html.Partial("_generateMoreCodesPartial.cshtml", Model)
                     </div>
                 </div>
             </div>
@@ -120,18 +206,3 @@
     </div>
 </div>
 
-<div class="modal fade" id="FinnishModal" tabindex="-1" aria-labelledby="FinnishModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="FinnishModalLabel">Bent u zeker?</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <div id="FinnishModalContent">
-                    @Html.Partial("_FinishRegistrationPartial.cshtml", Model)
-                </div>
-            </div>
-        </div>
-    </div>
-</div>

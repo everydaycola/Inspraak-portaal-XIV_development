@@ -1,7 +1,9 @@
 using DAL.EF;
 using DAL.Interfaces;
 using Domain;
+using Domain.CitizenPanel;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Identity.Client;
 
 namespace DAL.Repositories;
@@ -26,5 +28,20 @@ public class UserRepository : IUserRepository
             .Select(ur => ur.RoleId)
             .Single();
         return _context.Roles.Single(r => r.Id == roleId);
+    }
+
+    public Panel ReadPanelForUser(string userId)
+    {
+        var user = ReadUser(userId);
+        if (user != null)
+        {
+            return _context.PanelMembers
+                .Include(pm => pm.Panel)
+                .Where(pm => pm.User.Id == user.Id)
+                .Select(pm => pm.Panel)
+                .SingleOrDefault();
+        }
+
+        throw new ArgumentException("User not found for id " + userId);
     }
 }

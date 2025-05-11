@@ -1,6 +1,7 @@
 ﻿using Domain;
 using Domain.CitizenPanel;
 using Domain.Interfaces;
+using Domain.Interfaces.Posts;
 using Microsoft.AspNetCore.Identity;
 
 namespace DAL.EF;
@@ -48,20 +49,26 @@ public static class DataSeeder
             Posts = new List<Post>
             {
                 //PROJECT PAGE POSTS
-                new TextPost()
+                /*new TextPost()
                 {
                     Content = "Test post!",
                     CreatedAt = DateTime.UtcNow,
                 },
                 new DocumentPost()
                 {
-                    DocumentUrl = "/mydocument",
+                    DocumentName = "/mydocument",
                     CreatedAt = DateTime.UtcNow,
                 },
                 new EmbeddedVideoPost()
                 {
                     VideoUrl = "/myvideo",
                     CreatedAt = DateTime.UtcNow,
+                },*/
+                new MeetingPost()
+                {
+                    CreatedAt = DateTime.UtcNow,
+                    Title = "Bijeenkomst #1 - Gesprekken over duidelijkheid verkeersregels.",
+                    DocumentNames = new List<string> { "Testeken1", "testeken2" }
                 }
             },
             Criteria = new List<Criteria>
@@ -71,6 +78,7 @@ public static class DataSeeder
                     Name = "Rijbewijs",
                     Question = "Beschikt u over een rijbewijs?",
                     IsDefault = false,
+                    IsDistributionKnown = true,
                     AnswerOptions = new List<CriteriaAnswerOption>
                     {
                         new()
@@ -90,6 +98,7 @@ public static class DataSeeder
                     Name = "Vervoermethode",
                     Question = "Wat is uw voorkeurs vervoersmethode?",
                     IsDefault = false,
+                    IsDistributionKnown = true,
                     AnswerOptions = new List<CriteriaAnswerOption>
                     {
                         new()
@@ -104,7 +113,7 @@ public static class DataSeeder
                         },
                         new()
                         {
-                            DistributionPercentage = 0.33,
+                            DistributionPercentage = 0.34,
                             Option = "Auto"
                         }
                     }
@@ -114,6 +123,7 @@ public static class DataSeeder
                     Name = "Geslacht",
                     Question = "Wat is uw geslacht?",
                     IsDefault = true,
+                    IsDistributionKnown = true,
                     AnswerOptions = new List<CriteriaAnswerOption>
                     {
                         new()
@@ -144,7 +154,8 @@ public static class DataSeeder
                 NormalizedEmail = "PGM@ANTWERPEN.BE",
                 UserName = "PGM",
                 NormalizedUserName = "PGM"
-            }
+            },
+            Functie = "Boekhouder"
         };
         var pgm2 = new PlanningGroupMember
         {
@@ -155,7 +166,8 @@ public static class DataSeeder
                 NormalizedEmail = "OWNER@ANTWERPEN.BE",
                 UserName = "Owner",
                 NormalizedUserName = "Owner"
-            }
+            },
+            Functie = "CEO"
         };
         var pgm3 = new PlanningGroupMember
         {
@@ -166,11 +178,12 @@ public static class DataSeeder
                 NormalizedEmail = "JanDeRijke@ANTWERPEN.BE",
                 UserName = "Jan De Rijke",
                 NormalizedUserName = "JANDERIJKE"
-            }
+            },
+            Functie = "Software Architect"
         };
 
         //PanelMembers
-        var panelMembersMen = Enumerable.Range(1, 50).Select(_ => new PanelMember
+        var panelMembersMen = Enumerable.Range(1, 100).Select(_ => new PanelMember
         {
             Panel = newPanel,
             Responses = new List<CriteriaResponse>
@@ -183,7 +196,7 @@ public static class DataSeeder
             }
         }).ToList();
 
-        var panelMembersWomen = Enumerable.Range(1, 50).Select(_ => new PanelMember
+        var panelMembersWomen = Enumerable.Range(1, 100).Select(_ => new PanelMember
         {
             Panel = newPanel,
             Responses = new List<CriteriaResponse>
@@ -202,6 +215,7 @@ public static class DataSeeder
         //    panel => criteria
         //    criteria => criteria answer option
         //    plannings group member => identityUser
+        
         AddMultipleEntities(panelMembersMen);
         AddMultipleEntities(panelMembersWomen);
         AddMultipleEntities([pgm1, pgm2, pgm3]);

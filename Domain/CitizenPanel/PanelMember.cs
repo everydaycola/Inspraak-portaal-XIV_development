@@ -13,9 +13,14 @@ public class PanelMember
 
     [Required(ErrorMessage = "Panel member moet deel zijn van een panel.")]
     public Panel Panel { get; set; }
+    
+    public bool Selected { get; set; }
 
-    [Required(ErrorMessage = "Answer options are required.")]
-    [MinLength(2, ErrorMessage = "Criteria vraag moet minimaal 2 opties hebben.")]
-    [MaxLength(12, ErrorMessage = "Criteria vraag mag maximaal 12 opties hebben.")]
+    public ApplicationUser User { get; set; }
+   
+    [MaxLength(10, ErrorMessage = "Criteria antwoord mag maximaal 10 opties hebben.")]
     public ICollection<CriteriaResponse> Responses { get; set; }
+
+    [Range(1, int.MaxValue, ErrorMessage = "Fase moet een positief getal zijn.")]
+    public int Phase { get; set; } = 1;
 }

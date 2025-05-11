@@ -1,7 +1,9 @@
 ﻿using System.Linq.Expressions;
+using System.Text.Json;
 using Domain;
 using Domain.CitizenPanel;
 using Domain.Interfaces;
+using Domain.Interfaces.Posts;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
@@ -84,6 +86,15 @@ public class CitizenPanelDbContext : IdentityDbContext<ApplicationUser>
         modelBuilder.Entity<TextPost>();
         modelBuilder.Entity<DocumentPost>();
         modelBuilder.Entity<EmbeddedVideoPost>();
+        modelBuilder.Entity<MeetingPost>();
+        //ENSURE EF KNOWS HOW TO HANDLE DOCUMENTNAMES.
+        modelBuilder.Entity<MeetingPost>(b =>
+        {
+            b.Property(p => p.DocumentNames)
+                .HasConversion(
+                    v => JsonSerializer.Serialize(v, (JsonSerializerOptions?)null),
+                    v => JsonSerializer.Deserialize<List<string>>(v, (JsonSerializerOptions?)null)!);
+        });
     }
     public bool CreateDatabase(bool dropDatabase)
     {

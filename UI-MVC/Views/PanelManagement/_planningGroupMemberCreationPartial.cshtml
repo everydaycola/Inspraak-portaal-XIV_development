@@ -1,0 +1,31 @@
+﻿@model UI_MVC.Models.ViewModels.PlanningGroupMemberViewModel
+
+<div class="container mt-4">
+    <h2>Nieuw planningsgroepslid aanmaken</h2>
+
+    <form method="post" asp-action="AddPlanningGroupmember">
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+        <input type="hidden" asp-for="PanelId" />
+
+        <div class="mb-3">
+            <label asp-for="Email" class="form-label"></label>
+            <input asp-for="Email" type="email" class="form-control" required />
+            <span asp-validation-for="Email" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="Naam" class="form-label"></label>
+            <input asp-for="Naam" type="text" class="form-control" required />
+            <span asp-validation-for="Naam" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="Functie" class="form-label"></label>
+            <input asp-for="Functie" type="text" class="form-control" required/>
+            <span asp-validation-for="Functie" class="text-danger"></span>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Toevoegen</button>
+    </form>
+</div>

@@ -1,6 +1,7 @@
 using BL.Generator;
 using BL.Interfaces;
 using BL.Managers;
+using BL.Options;
 using DAL.EF;
 using DAL.Interfaces;
 using DAL.Repositories;
@@ -20,6 +21,7 @@ builder.Services.AddControllersWithViews();
 
 builder.Services.AddScoped<IOrganisationRepository, OrganisationRepository>();
 builder.Services.AddScoped<IOrganisationManager, OrganisationManager>();
+builder.Services.AddScoped<ICustomUserManager, CustomUserManager>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IPanelRepository, PanelRepository>();
 builder.Services.AddScoped<IPanelManager, PanelManager>();
@@ -29,6 +31,9 @@ builder.Services.AddScoped<ICriteriaManager, CriteriaManager>();
 builder.Services.AddScoped<ICriteriaRepository, CriteriaRepository>();
 builder.Services.AddScoped<ICalculationManager, CalculationManager>();
 builder.Services.AddScoped<ISendMailManager, SendMailManager>();
+builder.Services.AddScoped<IStorageManager, StorageManager>();
+builder.Services.AddScoped<IPinCRepository, PinCRepository>();
+builder.Services.AddScoped<ICommuneManager, CommuneManager>();
 
 //Tenant specific logic
 builder.Services
@@ -38,6 +43,10 @@ builder.Services.Configure<AvailableOrganisations>(
     builder.Configuration.GetSection(AvailableOrganisations.SectionName)
 );
 
+builder.Services.Configure<GoogleCloudOptions>(options =>
+{
+    options.BucketName = builder.Configuration.GetValue<string>("GoogleCloud_BucketName");
+});
 var redisConfiguration = builder.Configuration.GetValue<string>("Redis_Configuration");
 var redisInstanceName = builder.Configuration.GetValue<string>("Redis_InstanceName");
 var redis = ConnectionMultiplexer.Connect(redisConfiguration);

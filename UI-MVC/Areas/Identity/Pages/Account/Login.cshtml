@@ -84,10 +84,50 @@
         <section>
             <h3>All existing users: </h3>
             <hr/>
-            <ul>
-                <li>Username: "admin@test.com" password: "Admin123!" Role:Admin</li>
-                <li>Username: "user@antwerpen.be" password: "Antwerpen123!" Role:Organisatie</li>
-            </ul>
+            
+            <table class="table table-bordered table-striped">
+                <thead class="thead-dark">
+                <tr>
+                    <th></th>
+                    <th>Email</th>
+                    <th>Password</th>
+                    <th>Role</th>
+                    <th>login</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td>admin</td>
+                    <td><input type="text" class="form-control form-control-sm" value="admin@test.com" readonly
+                               onclick="this.select()"></td>
+                    <td><input type="text" class="form-control form-control-sm" value="Admin123!" readonly
+                               onclick="this.select()"></td>
+                    <td>Admin</td>
+                    <th>
+                        <form method="post">
+                            <input asp-for="Input.Email" value="admin@test.com" type="hidden"/>
+                            <input asp-for="Input.Password" value="Admin123!" type="hidden"/>
+                            <button type="submit" class="btn btn-primary">Log in</button>
+                        </form>
+                    </th>
+                </tr>
+                <tr>
+                    <td>antwerpen</td>
+                    <td><input type="text" class="form-control form-control-sm" value="user@antwerpen.be" readonly
+                               onclick="this.select()"></td>
+                    <td><input type="text" class="form-control form-control-sm" value="Antwerpen123!" readonly
+                               onclick="this.select()"></td>
+                    <td>Organisatie</td>
+                    <th>
+                        <form method="post">
+                            <input asp-for="Input.Email" value="user@antwerpen.be" type="hidden"/>
+                            <input asp-for="Input.Password" value="Antwerpen123!" type="hidden"/>
+                            <button type="submit" class="btn btn-primary">Log in</button>
+                        </form>
+                    </th>
+                </tr>
+                </tbody>
+            </table>
         </section>
     </div>
 </div>
