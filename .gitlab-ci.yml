@@ -164,6 +164,8 @@ deploy:
     MIG_NAME: 'web-instance-group'
     STARTUP_SCRIPT: 'startup-script.sh' # Assuming your updated startup script is in the repository root
   before_script:
+    - pwd 
+    - ls ..
     - git submodule update --init --recursive
     - export STARTUP_SCRIPT_CONTENT="$(cat deployment/scripts/startup-script.sh)"
     - echo "$GCP_SA_KEY_BASE64" | base64 -d > /tmp/gcloud-auth.json # Assuming you're using Base64 for the key
