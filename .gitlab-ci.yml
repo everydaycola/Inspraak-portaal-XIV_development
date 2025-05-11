@@ -111,6 +111,8 @@ build:
 tests:
   stage: test
   before_script:
+    - apt-get update -yq
+    - apt-get install -yq --no-install-recommends nodejs npm # Install Node.js
     - 'dotnet restore --packages $NUGET_PACKAGES_DIRECTORY'
   # ### Run the tests
   #
