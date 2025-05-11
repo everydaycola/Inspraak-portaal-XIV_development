@@ -26,7 +26,6 @@ public class QrCodeGeneratorTests: IClassFixture<WebApplicationFactory<Program>>
         //Assert
         Assert.NotNull(qrCodeBytes);
         Assert.NotEmpty(qrCodeBytes);
-        Console.WriteLine($"Actual QR code byte length in CI: {qrCodeBytes.Length}");
         // Assert.True(qrCodeBytes.Length == 552); // This is failing in the CI test environment, might be because of different NuGet package versions aparently
     }
     
