@@ -122,7 +122,7 @@ tests:
   variables:
     REDIS_CONFIGURATION: "redis-cache:6379"
     REDIS_INSTANCE_NAME: "test-instance" # Adjust if needed
-    CONNECTIONSTRINGS__DEFAULTCONNECTION: "Host=postgres-db;Port=5432;Database=$POSTGRES_DB;Username=$POSTGRES_USER;Password=$POSTGRES_PASSWORD;"
+    ConnectionStrings__DefaultConnection: "Host=postgres-db;Port=5432;Database=$POSTGRES_DB;Username=$POSTGRES_USER;Password=$POSTGRES_PASSWORD;"
   before_script:
     - apt-get update -yq
     - apt-get install -yq --no-install-recommends nodejs npm # Install Node.js
