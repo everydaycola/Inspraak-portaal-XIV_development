@@ -103,6 +103,9 @@ build:
     - apt-get update -yq
     - apt-get install -yq --no-install-recommends nodejs npm # Ensure Node.js and npm are installed
   script:
+    - pwd
+    - ls -la
+    - ls development
     - cd development/UI-MVC/ClientApp # Navigate to your UI project directory
     - npm install # Install Node.js dependencies
     - npm run build # Or any other build script your UI uses
