@@ -110,6 +110,11 @@ build:
     - 'dotnet build --no-restore' # Build the .NET project
 tests:
   stage: test
+  services:
+    - name: redis:latest
+      alias: redis-cache
+  variables:
+    REDIS_HOSTNAME: redis-cache
   before_script:
     - apt-get update -yq
     - apt-get install -yq --no-install-recommends nodejs npm # Install Node.js
