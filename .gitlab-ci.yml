@@ -160,4 +160,4 @@ deploy:
   image: google/cloud-sdk
   script:
     - gcloud auth activate-service-account --key-file="$GCP_SA_KEY_JSON" --project="cs2-eycken-tiba"
-    - gcloud compute instance-groups managed rolling-action replace web-instance-group --max-surge=2 --max-unavailable=1 --replacement-method=substitute --region=europe-west1
+    - gcloud compute instance-groups managed rolling-action replace web-instance-group --max-surge=2 --max-unavailable=1 --replacement-method=substitute --zone=europe-west1-d
