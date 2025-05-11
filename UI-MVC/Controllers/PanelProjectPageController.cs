@@ -182,7 +182,7 @@ public class PanelProjectPageController : Controller
         {
             return await AddYoutubeVideoPost(panelId, title, youtubeUrl, visibleForPanelMember, informPeopleViaMail);
         }
-        return HandleValidationError("De datum mag niet in het verleden liggen.", panelId, "addWerksessieModal");
+        return HandleValidationError("U heeft zowel een youtube als video url ingegeven", panelId, "addVideoModal");
     }
 
     private async Task<IActionResult> AddEmbedVideoPost(
@@ -192,11 +192,6 @@ public class PanelProjectPageController : Controller
         bool visibleForPanelMember,
         bool informPeopleViaMail)
     {
-        if (string.IsNullOrWhiteSpace(title))
-        {
-            return HandleValidationError("Vul de titel in.", panelId, "addVideoModal");
-        }
-        
         // Validate URL
         if (!Uri.TryCreate(videoUrl, UriKind.Absolute, out var uriResult) ||
             (uriResult.Scheme != Uri.UriSchemeHttp && uriResult.Scheme != Uri.UriSchemeHttps))
@@ -231,12 +226,6 @@ public class PanelProjectPageController : Controller
         bool visibleForPanelMember,
         bool informPeopleViaMail)
     {
-        // Validate inputs
-        if (string.IsNullOrWhiteSpace(title))
-        {
-            return HandleValidationError("Vul de titel in.", panelId, "addVideoModal");
-        }
-
         // Prepare video data
         string youtubeId = null;
         
