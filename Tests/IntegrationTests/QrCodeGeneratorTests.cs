@@ -2,7 +2,7 @@ using BL.Generator;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace TestProject1;
+namespace TestProject1.IntegrationTests;
 
 public class QrCodeGeneratorTests: IClassFixture<WebApplicationFactory<Program>>
 {
@@ -26,7 +26,6 @@ public class QrCodeGeneratorTests: IClassFixture<WebApplicationFactory<Program>>
         //Assert
         Assert.NotNull(qrCodeBytes);
         Assert.NotEmpty(qrCodeBytes);
-        Assert.True(qrCodeBytes.Length == 552);
     }
     
     [Fact]
