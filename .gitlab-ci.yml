@@ -114,7 +114,8 @@ tests:
     - name: redis:latest
       alias: redis-cache
   variables:
-    REDIS_HOSTNAME: redis-cache
+    REDIS_CONFIGURATION: "redis-cache:6379" 
+    REDIS_INSTANCE_NAME: "test-instance"
   before_script:
     - apt-get update -yq
     - apt-get install -yq --no-install-recommends nodejs npm # Install Node.js
