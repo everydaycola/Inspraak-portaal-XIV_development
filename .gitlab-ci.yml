@@ -96,18 +96,24 @@ cache:
 # Learn more about GitLab cache: https://docs.gitlab.com/ee/ci/caching/
 before_script:
   - 'dotnet restore --packages $NUGET_PACKAGES_DIRECTORY'
-build:
+build-ui:
   stage: build
-  image: "$NODE_IMAGE" # Override the default image for the build stage
+  image: "$NODE_IMAGE"
   before_script:
     - apt-get update -yq
-    - apt-get install -yq --no-install-recommends nodejs npm # Ensure Node.js and npm are installed
+    - apt-get install -yq --no-install-recommends nodejs npm
   script:
-    - cd ./UI-MVC/ClientApp # Navigate to your UI project directory
-    - npm install # Install Node.js dependencies
-    - npm run build # Or any other build script your UI uses
-    - cd ../../.. # Go back to the root
-    - 'dotnet build --no-restore' # Build your .NET project
+    - cd ./UI-MVC/ClientApp
+    - npm install
+    - npm run build
+  artifacts: # Optionally, you might want to artifact the built UI for the deploy stage
+    paths:
+      - ./UI-MVC/ClientApp/wwwroot/dist
+
+build-dotnet:
+  stage: build
+  script:
+    - 'dotnet build --no-restore'
 tests:
   stage: test
   # ### Run the tests
