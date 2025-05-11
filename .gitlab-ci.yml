@@ -111,11 +111,16 @@ build:
 tests:
   stage: test
   services:
-    - name: redis:latest
-      alias: redis-cache
+    - name: postgres:17-alpine
+      alias: postgres-db
+      variables:
+        POSTGRES_DB: 'CitizenPanel_DB'
+        POSTGRES_USER: 'user'
+        POSTGRES_PASSWORD: 'password'
   variables:
-    REDIS_CONFIGURATION: "redis-cache:6379" 
-    REDIS_INSTANCE_NAME: "test-instance"
+    REDIS_CONFIGURATION: "redis-cache:6379"
+    REDIS_INSTANCE_NAME: "test-instance" # Adjust if needed
+    CONNECTIONSTRINGS__DEFAULTCONNECTION: "Host=postgres-db;Port=5432;Database=$POSTGRES_DB;Username=$POSTGRES_USER;Password=$POSTGRES_PASSWORD;"
   before_script:
     - apt-get update -yq
     - apt-get install -yq --no-install-recommends nodejs npm # Install Node.js
