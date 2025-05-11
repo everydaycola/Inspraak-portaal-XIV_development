@@ -94,13 +94,13 @@ cache:
 # in the root of project repository, so its content can be cached.
 #
 # Learn more about GitLab cache: https://docs.gitlab.com/ee/ci/caching/
-before_script:
-  - 'dotnet restore --packages $NUGET_PACKAGES_DIRECTORY'
 build:
   stage: build
   before_script:
     - apt-get update -yq
     - apt-get install -yq --no-install-recommends nodejs npm # Install Node.js
+    - 'dotnet restore --packages $NUGET_PACKAGES_DIRECTORY'
+
   script:
     - cd ./UI-MVC/ClientApp
     - npm install # Install UI dependencies
