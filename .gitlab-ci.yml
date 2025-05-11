@@ -105,7 +105,8 @@ build:
     - cd ./UI-MVC/ClientApp
     - npm install # Install UI dependencies
     - npm run build # Build the UI
-    - cd ../.. # Go back to the root
+    - cd ../../.. # Go back to the root
+    - pwd
     - 'dotnet build --no-restore' # Build the .NET project
   artifacts:
     paths:
