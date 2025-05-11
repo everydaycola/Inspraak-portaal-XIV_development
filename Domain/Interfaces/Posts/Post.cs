@@ -9,7 +9,6 @@ public abstract class Post
     [MaxLength(300, ErrorMessage = "Name is too long")]
     public string Title { get; set; }
     [Required(ErrorMessage = "Post moet een datum hebben")]
-    [MaxLength(300, ErrorMessage = "Name is too long")]
     public DateTime CreatedAt { get; set; }
     [Required(ErrorMessage = "Post moet een zichbaarheids status hebben")]
     public bool IsVisibleForPanelMembers { get; set; } = false;
