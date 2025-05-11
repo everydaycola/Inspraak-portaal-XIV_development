@@ -110,7 +110,7 @@ build:
     - 'dotnet build --no-restore' # Build the .NET project
   artifacts:
     paths:
-      - ./UI-MVC/ClientApp/wwwroot/dist # Artifact the built UI
+      - ./UI-MVC/wwwroot/dist # Artifact the built UI
 tests:
   stage: test
   # ### Run the tests
