@@ -117,6 +117,8 @@ tests:
         POSTGRES_DB: 'CitizenPanel_DB'
         POSTGRES_USER: 'user'
         POSTGRES_PASSWORD: 'password'
+    - name: redis:latest
+      alias: redis-cache
   variables:
     REDIS_CONFIGURATION: "redis-cache:6379"
     REDIS_INSTANCE_NAME: "test-instance" # Adjust if needed
