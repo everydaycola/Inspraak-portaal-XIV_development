@@ -108,12 +108,10 @@ build:
     - cd ../.. # Go back to the root
     - pwd
     - 'dotnet build --no-restore' # Build the .NET project
-  artifacts:
-    paths:
-      - pwd
-      - ./UI-MVC/wwwroot/dist # Artifact the built UI
 tests:
   stage: test
+  before_script:
+    - 'dotnet restore --packages $NUGET_PACKAGES_DIRECTORY'
   # ### Run the tests
   #
   # You can either run tests for all test projects that are defined in your solution
