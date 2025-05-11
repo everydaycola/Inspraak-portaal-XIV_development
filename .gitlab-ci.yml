@@ -96,24 +96,20 @@ cache:
 # Learn more about GitLab cache: https://docs.gitlab.com/ee/ci/caching/
 before_script:
   - 'dotnet restore --packages $NUGET_PACKAGES_DIRECTORY'
-build-ui:
+build:
   stage: build
-  image: "$NODE_IMAGE"
   before_script:
     - apt-get update -yq
-    - apt-get install -yq --no-install-recommends nodejs npm
+    - apt-get install -yq --no-install-recommends nodejs npm # Install Node.js
   script:
     - cd ./UI-MVC/ClientApp
-    - npm install
-    - npm run build
-  artifacts: # Optionally, you might want to artifact the built UI for the deploy stage
+    - npm install # Install UI dependencies
+    - npm run build # Build the UI
+    - cd ../.. # Go back to the root
+    - 'dotnet build --no-restore' # Build the .NET project
+  artifacts:
     paths:
-      - ./UI-MVC/ClientApp/wwwroot/dist
-
-build-dotnet:
-  stage: build
-  script:
-    - 'dotnet build --no-restore'
+      - ./UI-MVC/ClientApp/wwwroot/dist # Artifact the built UI
 tests:
   stage: test
   # ### Run the tests
