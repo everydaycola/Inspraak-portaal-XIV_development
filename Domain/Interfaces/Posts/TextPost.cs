@@ -1,6 +1,10 @@
-﻿namespace Domain.Interfaces;
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace Domain.Interfaces;
 
 public class TextPost: Post
 {
-    public String Content { get; set; }
+    [Required]
+    [MaxLength(10000, ErrorMessage = "Post is te lang")]
+    public string Content { get; set; }
 }
