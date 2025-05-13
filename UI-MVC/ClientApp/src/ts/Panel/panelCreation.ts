@@ -1,5 +1,7 @@
 import {addSubRegion, addSubregionValidation} from "./subRegion";
 import {addCriteria, validateCriteriaPercentages} from "./criteria";
+import {setupPanelsizePreviewHandlers} from "./panelsizePreviewHandler";
+
 
 document.addEventListener("DOMContentLoaded",() => {
     addSubregionValidation(
@@ -21,3 +23,5 @@ panelForm.addEventListener("submit", (e) => {
         e.preventDefault(); // Stop submission
     }
 });
+
+setupPanelsizePreviewHandlers();

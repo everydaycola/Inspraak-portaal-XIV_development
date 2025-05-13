@@ -30,7 +30,7 @@ export function addSubRegion() {
     sizeInput.name = `SubRegions[${subRegionCount}].Size`;  // Bind to SubRegions[index].Size
     sizeInput.placeholder = "Grootte";
     sizeInput.type = "number";
-    sizeInput.className = "form-control d-inline w-25 me-2";
+    sizeInput.className = "form-control d-inline w-25 me-2 subregion-size-input";
 
     // Create the Remove button
     const removeButton = document.createElement("button");

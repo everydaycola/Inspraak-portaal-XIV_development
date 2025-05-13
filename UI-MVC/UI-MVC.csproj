@@ -40,7 +40,6 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Models\Dto\communeDtos\" />
       <Folder Include="wwwroot\uploads\" />
     </ItemGroup>
 
