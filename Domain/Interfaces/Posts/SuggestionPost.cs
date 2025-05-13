@@ -1,6 +1,8 @@
-﻿namespace Domain.Interfaces.Posts;
+﻿using Domain.Interfaces.Posts.PostItems;
+
+namespace Domain.Interfaces.Posts;
 
 public class SuggestionPost : Post
 {
-    public ICollection<string> Suggestion { get; set; }
+    public ICollection<Suggestion> Suggestions { get; set; } = [];
 }

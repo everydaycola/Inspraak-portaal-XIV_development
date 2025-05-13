@@ -5,6 +5,7 @@ using Domain.CitizenPanel;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using StackExchange.Redis;
 using UI_MVC.Models.Dto.ProjectPage;
 
 namespace UI_MVC.Controllers;
@@ -17,11 +18,12 @@ public class PanelProjectPageController : Controller
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly ICustomUserManager _customUserManager;
     private readonly ISendMailManager _sendMailManager;
+    private readonly IPanelProjectPageManager _projectPageManager;
     private static readonly string[] AllowedFileExtensions = [".jpg", ".jpeg", ".png", ".gif", ".bmp", ".webp", ".svg", ".pdf", ".txt", ".dockx"];
 
     public PanelProjectPageController(ILogger<PanelProjectPageController> logger, IPanelManager panelManager,
         IStorageManager storageManager, ICustomUserManager customUserManager, UserManager<ApplicationUser> userManager,
-        ISendMailManager sendMailManager)
+        ISendMailManager sendMailManager, IPanelProjectPageManager projectPageManager)
     {
         _logger = logger;
         _panelManager = panelManager;
@@ -29,6 +31,7 @@ public class PanelProjectPageController : Controller
         _customUserManager = customUserManager;
         _userManager = userManager;
         _sendMailManager = sendMailManager;
+        _projectPageManager = projectPageManager;
     }
     
     private IActionResult HandleValidationError(string message, string modalName, Guid panelId)
@@ -43,7 +46,7 @@ public class PanelProjectPageController : Controller
         ViewBag.OpenModal = modalName;
         return View("Index", new ProjectPageDto
         {
-            Panel = _panelManager.GetPanelWithPosts(panelId)
+            Panel = _projectPageManager.GetPanelWithPostsAndSuggestions(panelId)
         });
     }
 
@@ -56,52 +59,68 @@ public class PanelProjectPageController : Controller
             panelId = _customUserManager.getPanelForUser(user.Id).Id;
         }
 
-        var panel = _panelManager.GetPanelWithPosts(panelId.Value);
-        var projectPageDto = new ProjectPageDto
+        return View(new ProjectPageDto
         {
-            Panel = panel,
-        };
-        return View(projectPageDto);
-    }
-
-    [HttpPost]
-    public async Task<IActionResult> AddTextPost(TextPostDto textPost)
-    {
-        if (!ModelState.IsValid)
-        {
-            return SendBack("addTextModal", textPost.PanelId);
-        }
-
-        _panelManager.AddTextPost(textPost.PanelId, textPost.Title, textPost.Content, textPost.VisibleForPanelMember);
-        
-        _ = HandleMailSending(textPost.InformPeopleViaMail, textPost.VisibleForPanelMember, _panelManager.GetPanelWithPosts(textPost.PanelId));
-
-        return View("Index", new ProjectPageDto
-        {
-            Panel = _panelManager.GetPanelWithPosts(textPost.PanelId)
+            Panel = _projectPageManager.GetPanelWithPostsAndSuggestions(panelId.Value),
         });
     }
 
     [HttpPost]
-    public async Task<IActionResult> AddDocumentPost(DocumentPostDto documentPost)
+    [Authorize(Roles = CustomIdentityConstants.OrganisatieRole)]
+    public async Task<IActionResult> AddTextPost(NewTextPostDto newTextPost)
     {
         if (!ModelState.IsValid)
         {
-            return SendBack("addBestandModal", documentPost.PanelId);
+            return SendBack("addTextModal", newTextPost.PanelId);
         }
+
+        _projectPageManager.AddTextPost(newTextPost.PanelId, newTextPost.Title, newTextPost.Content, newTextPost.VisibleForPanelMember);
         
-        //Generate a unique filename
-        var uniqueFileName = Guid.NewGuid() + Path.GetExtension(documentPost.File.FileName);
-        // Save the file
-        await _storageManager.AddFileAsync(uniqueFileName, documentPost.File.ContentType, documentPost.File.OpenReadStream());
-        //SAVE META DATA IN DB
-        _panelManager.AddDocumentPost(documentPost.PanelId, documentPost.Title, uniqueFileName, documentPost.VisibleForPanelMember);
-        // handle mail sending
-        _ = HandleMailSending(documentPost.InformPeopleViaMail, documentPost.VisibleForPanelMember, _panelManager.GetPanelWithPosts(documentPost.PanelId));
+        _ = HandleMailSending(newTextPost.InformPeopleViaMail, newTextPost.VisibleForPanelMember, _projectPageManager.GetPanelWithPostsAndSuggestions(newTextPost.PanelId))
+            .ContinueWith(task => 
+            {
+                if (task.IsFaulted)
+                {
+                    _logger.Log(LogLevel.Error,task.Exception, "Failed to send email notifications");
+                }
+            });
+
 
         return View("Index", new ProjectPageDto
         {
-            Panel = _panelManager.GetPanelWithPosts(documentPost.PanelId)
+            Panel = _projectPageManager.GetPanelWithPostsAndSuggestions(newTextPost.PanelId)
+        });
+    }
+
+    [HttpPost]
+    [Authorize(Roles = CustomIdentityConstants.OrganisatieRole)]
+    public async Task<IActionResult> AddDocumentPost(NewDocumentPostDto newDocumentPost)
+    {
+        if (!ModelState.IsValid)
+        {
+            return SendBack("addBestandModal", newDocumentPost.PanelId);
+        }
+        
+        //Generate a unique filename
+        var uniqueFileName = Guid.NewGuid() + Path.GetExtension(newDocumentPost.File.FileName);
+        // Save the file
+        await _storageManager.AddFileAsync(uniqueFileName, newDocumentPost.File.ContentType, newDocumentPost.File.OpenReadStream());
+        //SAVE META DATA IN DB
+        _projectPageManager.AddDocumentPost(newDocumentPost.PanelId, newDocumentPost.Title, uniqueFileName, newDocumentPost.VisibleForPanelMember);
+        // handle mail sending
+        _ = HandleMailSending(newDocumentPost.InformPeopleViaMail, newDocumentPost.VisibleForPanelMember, _projectPageManager.GetPanelWithPostsAndSuggestions(newDocumentPost.PanelId))
+            .ContinueWith(task => 
+            {
+                if (task.IsFaulted)
+                {
+                    _logger.Log(LogLevel.Error,task.Exception, "Failed to send email notifications");
+                }
+            });
+
+
+        return View("Index", new ProjectPageDto
+        {
+            Panel = _projectPageManager.GetPanelWithPostsAndSuggestions(newDocumentPost.PanelId)
         });
     }
 
@@ -145,29 +164,30 @@ public class PanelProjectPageController : Controller
     
     
     [HttpPost]
-    public async Task<IActionResult> AddVideoPost(VideoPostDto videoPost)
+    [Authorize(Roles = CustomIdentityConstants.OrganisatieRole)]
+    public async Task<IActionResult> AddVideoPost(NewVideoPostDto newVideoPost)
     {
         if (!ModelState.IsValid)
         {
-            return SendBack("addVideoModal", videoPost.PanelId);
+            return SendBack("addVideoModal", newVideoPost.PanelId);
         }
         
-        if (!string.IsNullOrWhiteSpace(videoPost.YoutubeUrl))
+        if (!string.IsNullOrWhiteSpace(newVideoPost.YoutubeUrl))
         {
             return await AddYoutubeVideoPost(
-                videoPost.PanelId,
-                videoPost.Title,
-                videoPost.YoutubeUrl,
-                videoPost.VisibleForPanelMember,
-                videoPost.InformPeopleViaMail);
+                newVideoPost.PanelId,
+                newVideoPost.Title,
+                newVideoPost.YoutubeUrl,
+                newVideoPost.VisibleForPanelMember,
+                newVideoPost.InformPeopleViaMail);
         } 
         
         return await AddEmbedVideoPost(
-            videoPost.PanelId,
-            videoPost.Title,
-            videoPost.VideoUrl,
-            videoPost.VisibleForPanelMember,
-            videoPost.InformPeopleViaMail);
+            newVideoPost.PanelId,
+            newVideoPost.Title,
+            newVideoPost.VideoUrl,
+            newVideoPost.VisibleForPanelMember,
+            newVideoPost.InformPeopleViaMail);
             
     }
 
@@ -178,22 +198,32 @@ public class PanelProjectPageController : Controller
         bool visibleForPanelMember,
         bool informPeopleViaMail)
     {
-        _panelManager.AddEmbedVideoPost(
+        _projectPageManager.AddEmbedVideoPost(
             panelId,
             title,
             videoUrl,
             visibleForPanelMember
         );
 
+        var panelWithPosts = _projectPageManager.GetPanelWithPostsAndSuggestions(panelId);
+        
         // Send email notifications
-        _ = HandleMailSending(informPeopleViaMail, visibleForPanelMember, _panelManager.GetPanelWithPosts(panelId));
+        _ = HandleMailSending(informPeopleViaMail, visibleForPanelMember, panelWithPosts)
+            .ContinueWith(task => 
+            {
+                if (task.IsFaulted)
+                {
+                    _logger.Log(LogLevel.Error,task.Exception, "Failed to send email notifications");
+                }
+            });
+
 
         return View("Index", new ProjectPageDto
         {
-            Panel = _panelManager.GetPanelWithPosts(panelId)
+            Panel = panelWithPosts
         });
     }
-
+    
     private async Task<IActionResult> AddYoutubeVideoPost(
         Guid panelId,
         string title,
@@ -221,7 +251,7 @@ public class PanelProjectPageController : Controller
             return HandleValidationError("Ongeldige YouTube URL. Voer een geldige YouTube video URL in.", "addVideoModal", panelId);
         }
 
-        _panelManager.AddYoutubeVideoPost(
+        _projectPageManager.AddYoutubeVideoPost(
             panelId,
             title,
             youtubeId,
@@ -229,8 +259,16 @@ public class PanelProjectPageController : Controller
         );
 
         // Send email notifications
-        var panelWithPosts = _panelManager.GetPanelWithPosts(panelId);
-        _ = HandleMailSending(informPeopleViaMail, visibleForPanelMember, panelWithPosts);
+        var panelWithPosts = _projectPageManager.GetPanelWithPostsAndSuggestions(panelId);
+        _ = HandleMailSending(informPeopleViaMail, visibleForPanelMember, panelWithPosts)
+            .ContinueWith(task => 
+            {
+                if (task.IsFaulted)
+                {
+                    _logger.Log(LogLevel.Error,task.Exception, "Failed to send email notifications");
+                }
+            });
+
 
         return View("Index", new ProjectPageDto
         {
@@ -239,6 +277,7 @@ public class PanelProjectPageController : Controller
     }
 
     [HttpPost]
+    [Authorize(Roles = CustomIdentityConstants.OrganisatieRole)]
     public async Task<IActionResult> AddWerksessiePost(
         Guid panelId,
         string title,
@@ -251,7 +290,7 @@ public class PanelProjectPageController : Controller
             return SendBack("addWerksessieModal", panelId);
         }
         
-        // Check if the sessionTime is valid
+        // Parse the time, throw an error if it fails.
         if (!TimeSpan.TryParse(sessionTime, out var parsedTime))
         {
             return HandleValidationError("Ongeldig tijdstip.", "addWerksessieModal", panelId);
@@ -260,17 +299,26 @@ public class PanelProjectPageController : Controller
         var utcMeetingTime = TimeZoneInfo.ConvertTimeToUtc(sessionDate.Date + parsedTime);
 
         // Add the meeting post to the panel
-        _panelManager.AddMeetingPost(panelId, title, utcMeetingTime, true);
-        var updatedPanel = _panelManager.GetPanelWithPosts(panelId);
+        _projectPageManager.AddMeetingPost(panelId, title, utcMeetingTime, true);
+        var updatedPanel = _projectPageManager.GetPanelWithPostsAndSuggestions(panelId);
 
         // Notify panel members if requested
-        _ = HandleMailSending(informPeopleViaMail, true, updatedPanel);
+        _ = HandleMailSending(informPeopleViaMail, true, updatedPanel)
+            .ContinueWith(task => 
+            {
+                if (task.IsFaulted)
+                {
+                    _logger.Log(LogLevel.Error,task.Exception, "Failed to send email notifications");
+                }
+            });
+
 
         return View("Index", new ProjectPageDto { Panel = updatedPanel });
     }
 
 
     [HttpPost]
+    [Authorize]
     public async Task<IActionResult> AddSummaryToMeetingPost(Guid panelId, Guid meetingId, IFormFile verslagFile)
     {
         var extension = Path.GetExtension(verslagFile.FileName).ToLowerInvariant();
@@ -278,17 +326,59 @@ public class PanelProjectPageController : Controller
         {
             ModelState.AddModelError("file", "Ongeldig bestandstype. Toegestane types: afbeeldingen, pdf, txt, dockx. Uw bestand is type: " + extension);
             ViewBag.SummaryCreationFailed = true;
-            return View("Index", new ProjectPageDto { Panel = _panelManager.GetPanelWithPosts(panelId) });
+            return View("Index", new ProjectPageDto { Panel = _projectPageManager.GetPanelWithPostsAndSuggestions(panelId) });
         }
         
         var uniqueFileName = Guid.NewGuid() + Path.GetExtension(verslagFile.FileName);
         await _storageManager.AddFileAsync(uniqueFileName, verslagFile.ContentType, verslagFile.OpenReadStream());
-        _panelManager.AddSummaryToMeetingPost(meetingId, uniqueFileName);
-        return View("Index", new ProjectPageDto { Panel = _panelManager.GetPanelWithPosts(panelId) });
+        _projectPageManager.AddSummaryToMeetingPost(meetingId, uniqueFileName);
+        return View("Index", new ProjectPageDto { Panel = _projectPageManager.GetPanelWithPostsAndSuggestions(panelId) });
     }
 
-    // public IActionResult AddSuggestionPost(string title, Guid panelId, bool visibleForPanelMember, bool informPeopleViaMail)
-    // {
-    //     
-    // }
+    [HttpPost]
+    [Authorize]
+    public async Task<IActionResult> AddSuggestionPost(NewSuggestionPostDto suggestionPostDto)
+    {
+        if (!ModelState.IsValid)
+        {
+            return SendBack("addSuggestionModal", suggestionPostDto.PanelId);
+        }
+
+        _projectPageManager.AddSuggestionPost(suggestionPostDto.PanelId, suggestionPostDto.Title,
+            suggestionPostDto.VisibleForPanelMember);
+
+        var panelWithPosts = _projectPageManager.GetPanelWithPostsAndSuggestions(suggestionPostDto.PanelId);
+        _ = HandleMailSending(suggestionPostDto.InformPeopleViaMail, true, panelWithPosts)
+            .ContinueWith(task => 
+            {
+                if (task.IsFaulted)
+                {
+                    _logger.Log(LogLevel.Error,task.Exception, "Failed to send email notifications");
+                }
+            });
+
+
+        return View("Index", new ProjectPageDto { Panel = panelWithPosts });
+    }
+
+    [HttpPost]
+    [Authorize]
+    public async Task<IActionResult> AddSuggestion(Guid panelId, Guid postId, string suggestion)
+    {
+        if (string.IsNullOrWhiteSpace(suggestion) || suggestion.Length > 1000)
+        {
+            return View("Index", new ProjectPageDto { Panel = _projectPageManager.GetPanelWithPostsAndSuggestions(panelId) });
+        }
+        
+        var user = await _userManager.GetUserAsync(HttpContext.User);
+        var email = "onbekend";
+        if (user != null && !string.IsNullOrEmpty(user.Email))
+        {
+            email = user.Email;
+        }
+        
+        _projectPageManager.AddSuggestionToPost(panelId, suggestion, email);
+
+        return View("Index", new ProjectPageDto { Panel = _projectPageManager.GetPanelWithPostsAndSuggestions(panelId) });
+    }
 }

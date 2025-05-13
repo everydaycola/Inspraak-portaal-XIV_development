@@ -264,15 +264,14 @@
                             }
                             <input type="hidden" name="panelId" value="@Model.Panel.Id"/>
                             <div class="mb-3">
-                                <label for="suggestionTitleInput" class="form-label">Titel (*)</label>
+                                <label for="suggestionTitleInput" class="form-label">Onderwerp (*)</label>
                                 <input type="text" class="form-control" id="suggestionTitleInput" name="title"
-                                       placeholder="Voer de titel in" required/>
+                                       placeholder="Voer een onderwerp in." required/>
                             </div>
-        
+
                             @* suggestion post is always visible for panelmembers *@
-                            <input type="hidden" name="visibleForPanelMember" checked/>
-         
-        
+                            <input type="hidden" name="visibleForPanelMember" value="true"/>
+
                             <h3>Panelleden op de hoogte brengen?</h3>
                             <div class="form-check mb-3">
                                 <input class="form-check-input" type="checkbox" id="informPeopleViaMail" value="true"
@@ -282,7 +281,7 @@
                                     Iedereen op de hoogte brengen via mail?
                                 </label>
                             </div>
-        
+
                             <div class="text-end">
                                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuleren
                                 </button>
@@ -293,7 +292,7 @@
                 </div>
             </div>
         </div>
-        
+
         /*WERKSESSIE AANMAKEN.*/
         <div class="modal fade" id="addWerksessieModal" tabindex="-1" aria-labelledby="addWerksessieModalLabel"
              aria-hidden="true">
@@ -379,7 +378,8 @@
                         docPost.DocumentName.Split('.').Last().ToLower() == "txt"
                     )
                     {
-                    <a href="@Url.Action("GetFile", "Storage", new { fileName = docPost.DocumentName })" target="_blank"
+                        <a href="@Url.Action("GetFile", "Storage", new { fileName = docPost.DocumentName })"
+                           target="_blank"
                            class="btn btn-outline-primary mt-2">
                             Document bekijken
                         </a>
@@ -466,15 +466,33 @@
                     </div>
                 </div>
                 break;
-                
-                            case SuggestionPost suggestionPost:
+
+            case SuggestionPost suggestionPost:
                 <div class="timeline-item mb-4 p-3 border rounded shadow-sm bg-white">
                     <div class="d-flex justify-content-between align-items-center">
                         <h5 class="mb-1">@suggestionPost.Title</h5>
                         <small class="text-muted">@suggestionPost.CreatedAt.ToString("dd MMM yyyy HH:mm")</small>
                     </div>
                     <div class="mt-2 p-3 bg-light rounded">
-                        <p class="mb-0"><i class="bi bi-lightbulb me-2"></i>@suggestionPost.Suggestion</p>
+                        @foreach (var suggestion in suggestionPost.Suggestions)
+                        {
+                            <div class="suggestion-item mb-3">
+                                <p class="mb-1"><i class="bi bi-lightbulb me-2"></i>@suggestion.Title</p>
+                                <small class="text-muted d-block">
+                                    Door: @suggestion.Owner - @suggestion.CreatedAt.ToString("dd MMM yyyy HH:mm")
+                                </small>
+                            </div>
+                        }
+
+                        <form asp-action="AddSuggestion" method="post" class="mt-3">
+                            <input type="hidden" name="panelId" value="@suggestionPost.Id"/>
+                            <input type="hidden" name="postId" value="@Model.Panel.Id"/>
+                            <div class="input-group">
+                                <input type="text" name="suggestion" class="form-control"
+                                       placeholder="Voeg een suggestie toe..." required/>
+                                <button type="submit" class="btn btn-primary">Toevoegen</button>
+                            </div>
+                        </form>
                     </div>
                 </div>
                 break;
