@@ -27,9 +27,10 @@
             <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
                 <ul class="navbar-nav flex-grow-1">
                     <li class="nav-item">
-                        <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">
+                        <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Index">
                             <img src="~/images/home_icon.svg" class="navbar-icon" alt="Home"/>
                         </a>
+                        <p class="nav-link-description invisible">Home</p>
                     </li>
                     @if (User.Identity != null && User.Identity.IsAuthenticated && User.IsInRole(CustomIdentityConstants.OrganisatieRole))
                     {
@@ -58,6 +59,7 @@
                             <a class="nav-link text-dark" asp-area="" asp-controller="OrganisationManagement" asp-action="AdminIndex">
                                 <img src="~/images/organisation_management.png" class="navbar-icon" alt="User account"/>
                             </a>
+                            <p class="nav-link-description invisible">Organisatie beheer</p>
                         </li>
                     }
                     @if (User.Identity != null && User.Identity.IsAuthenticated && User.IsInRole(CustomIdentityConstants.PanelMemberRole))
