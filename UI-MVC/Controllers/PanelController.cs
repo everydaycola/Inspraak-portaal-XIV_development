@@ -34,10 +34,11 @@ public class PanelController : Controller
     public IActionResult AddNewPanel(NewPanelDto newPanelDto)
     {
         string userId = _userManager.GetUserId(User);
+        
         var createdPanel = _manager.AddPanel(
             newPanelDto.Name,
             newPanelDto.SampleRate / 100,
-            CriteriaDtoCriteriaConverter(newPanelDto.Distributions),
+            CreateDistributionList(newPanelDto.SubRegions, CriteriaDtoCriteriaConverter(newPanelDto.Distributions)),
             newPanelDto.SubRegions.Sum(subRegion => subRegion.Size),
             newPanelDto.ReservePercentage / 100,
             newPanelDto.ResponseRate / 100,
@@ -96,19 +97,53 @@ public class PanelController : Controller
                 if (crit.IsDistributionKnown)
                 {
                     answerOptionsList.Add(_criteriaManager.AddCriteriaAnswerOption(answerOption.Option,
-                        double.Parse(answerOption.DistributionPercentage.Replace(".",","))));
+                        double.Parse(answerOption.DistributionPercentage.Replace(".", ","))));
                 }
                 else
                 {
-                    answerOptionsList.Add(_criteriaManager.AddCriteriaAnswerOption(answerOption.Option,0));
+                    answerOptionsList.Add(_criteriaManager.AddCriteriaAnswerOption(answerOption.Option, 0));
                 }
-                
             }
 
             distributionList.Add(_criteriaManager.AddCriteria(crit.Name, crit.Question, crit.IsDefault,
                 answerOptionsList, crit.IsDistributionKnown));
         }
 
+        return distributionList;
+    }
+
+    private Criteria CreateRegionCriteria(ICollection<SubRegionDto> subRegionDtos)
+    {
+        ICollection<CriteriaAnswerOption> regionsDistribution = new List<CriteriaAnswerOption>();
+        double totalPopulation = subRegionDtos.Sum(subRegionDto => subRegionDto.Size);
+        foreach (var subRegionDto in subRegionDtos)
+        {
+            var distributionPercentage = double.Round(subRegionDto.Size / totalPopulation, 4);
+            regionsDistribution.Add(
+                _criteriaManager.AddCriteriaAnswerOption(subRegionDto.Name, distributionPercentage * 100));
+        }
+
+        var regionCriteria = _criteriaManager.AddCriteria(
+            "Area", //Area because the criteria are sorted alphabetically later on
+            "In welke (deel)gemeente of wijk woont u?",
+            true,
+            regionsDistribution,
+            true
+        );
+        return regionCriteria;
+    }
+
+    private ICollection<Criteria> CreateDistributionList(ICollection<SubRegionDto> subRegionDtos, ICollection<Criteria> criteria)
+    {
+        var distributionList = new List<Criteria>();
+        if (subRegionDtos.Count > 1)
+        {
+            distributionList.Add(CreateRegionCriteria(subRegionDtos));
+        }
+        foreach (var crit in criteria)
+        {
+            distributionList.Add(crit);
+        }
         return distributionList;
     }
 }

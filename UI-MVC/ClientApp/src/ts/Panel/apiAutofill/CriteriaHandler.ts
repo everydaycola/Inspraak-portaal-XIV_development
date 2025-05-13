@@ -79,7 +79,7 @@ function handleSelectedCriteriaFromHelper(selectedItem: string, innerDiv : HTMLD
     
     if(vraagInput){
         if(selectedItem === available_criteria_categories[0]){
-            console.log("Hadling geslacht");
+            console.log("Handling geslacht");
             console.log(
                 vraagInput + " " + antwoord1Input  + " " + antwoord2Input + " "
             );
