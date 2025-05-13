@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace UI_MVC.Models.Dto.ProjectPage;
 
-public class WerksessiePostDto : IValidatableObject
+public class NewWerksessiePostDto : IValidatableObject
 {
     [Required(ErrorMessage = "Panel ID is required")]
     public Guid PanelId { get; set; }

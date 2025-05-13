@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace UI_MVC.Models.Dto.ProjectPage;
 
-public class TextPostDto
+public class NewTextPostDto
 {
     [Required(ErrorMessage = "Panel ID is required")]
     public Guid PanelId { get; set; }

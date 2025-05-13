@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace UI_MVC.Models.Dto.ProjectPage;
 
-public class DocumentPostDto : IValidatableObject
+public class NewDocumentPostDto : IValidatableObject
 {
     private static readonly string[] AllowedExtensions = { ".jpg", ".jpeg", ".png", ".gif", ".bmp", ".webp", ".svg", ".pdf", ".txt", ".dockx" };
     

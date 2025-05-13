@@ -3,7 +3,7 @@ using System.Text.RegularExpressions;
 
 namespace UI_MVC.Models.Dto.ProjectPage;
 
-public class VideoPostDto: IValidatableObject
+public class NewVideoPostDto: IValidatableObject
 {
     private static readonly Regex Regex = new Regex(
         @"(?:youtube(?:-nocookie)?\.com/(?:[^/]+/.+/|(?:v|e(?:mbed)?)/|.*[?&]v=)|youtu\.be/)([^""&?/\s]{11})", 
