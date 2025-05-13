@@ -28,6 +28,8 @@ public interface IPanelManager
 
     public void AddDocumentPost(Guid panelId, string title, string documentUrl, bool isVisibleForPanelMembers);
     public void AddMeetingPost(Guid panelId, string title, DateTime meetingDateTime, bool visibleForPanelMember);
+    public void AddEmbedVideoPost(Guid panelId, string title, string videoUrl, bool visibleForPanelMember);
+    public void AddYoutubeVideoPost(Guid panelId, string title, string videoId, bool visibleForPanelMember);
     //UPDATE
     public void UpdatePanel(Guid id, bool isRegistrationOpen);
     public void UpdatePanelRegistrationCount(Guid id, bool increase);

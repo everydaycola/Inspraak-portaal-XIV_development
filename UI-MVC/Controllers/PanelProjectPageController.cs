@@ -1,11 +1,10 @@
-﻿using BL.Interfaces;
+﻿using System.Text.RegularExpressions;
+using BL.Interfaces;
 using Domain;
 using Domain.CitizenPanel;
-using Domain.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.IdentityModel.Tokens;
 using UI_MVC.Models.Dto.ProjectPage;
 
 namespace UI_MVC.Controllers;
@@ -19,7 +18,9 @@ public class PanelProjectPageController : Controller
     private readonly ICustomUserManager _customUserManager;
     private readonly ISendMailManager _sendMailManager;
 
-    private readonly string[] allowedExtensions = new[] { ".jpg", ".jpeg", ".png", ".gif", ".bmp", ".webp", ".svg", ".pdf", ".txt", ".dockx" };
+    private readonly string[] allowedExtensions = new[]
+        { ".jpg", ".jpeg", ".png", ".gif", ".bmp", ".webp", ".svg", ".pdf", ".txt", ".dockx" };
+
     public PanelProjectPageController(ILogger<PanelProjectPageController> logger, IPanelManager panelManager,
         IStorageManager storageManager, ICustomUserManager customUserManager, UserManager<ApplicationUser> userManager,
         ISendMailManager sendMailManager)
@@ -30,6 +31,16 @@ public class PanelProjectPageController : Controller
         _customUserManager = customUserManager;
         _userManager = userManager;
         _sendMailManager = sendMailManager;
+    }
+
+    private IActionResult HandleValidationError(string message, Guid panelId, string modalName)
+    {
+        _logger.Log(LogLevel.Warning, modalName + ": Validation Error: " + message);
+        ModelState.AddModelError("", message);
+        var panel = _panelManager.GetPanelWithPosts(panelId);
+        var projectPageDto = new ProjectPageDto { Panel = panel };
+        ViewBag.OpenModal = modalName;
+        return View("Index", projectPageDto);
     }
 
     [Authorize(Roles = "Organisatie,PanelMember")]
@@ -53,16 +64,11 @@ public class PanelProjectPageController : Controller
     public async Task<IActionResult> AddTextPost(Guid panelId, string title, string content, bool visibleForPanelMember,
         bool informPeopleViaMail)
     {
-        
         if (string.IsNullOrWhiteSpace(title) || string.IsNullOrWhiteSpace(content))
         {
-            ModelState.AddModelError("", "Vul alle verplichte velden correct in.");
-            var panel = _panelManager.GetPanelWithPosts(panelId);
-            var projectPageDto = new ProjectPageDto { Panel = panel };
-            ViewBag.OpenModal = "addTextModal";
-            return View("Index", projectPageDto);
+            return HandleValidationError("Vul alle verplichte velden correct in.", panelId, "addTextModal");
         }
-        
+
         _panelManager.AddTextPost(panelId, title, content, visibleForPanelMember);
         var updatedPanel = _panelManager.GetPanelWithPosts(panelId);
         var updatedProjectPageDto = new ProjectPageDto
@@ -78,24 +84,23 @@ public class PanelProjectPageController : Controller
     public async Task<IActionResult> AddDocumentPost(string title, IFormFile file, Guid panelId,
         bool visibleForPanelMember, bool informPeopleViaMail)
     {
-        if (string.IsNullOrWhiteSpace(title)|| file.Length == 0 || file == null)
+        if (string.IsNullOrWhiteSpace(title))
         {
-            ModelState.AddModelError("", "Vul alle verplichte velden correct in.");
-            var panel = _panelManager.GetPanelWithPosts(panelId);
-            var projectPageDto = new ProjectPageDto { Panel = panel };
-            ViewBag.OpenModal = "addBestandModal";
-            return View("Index", projectPageDto);
+            return HandleValidationError("Vul alle verplichte velden correct in.", panelId, "addBestandModal");
         }
+
+        if (file == null || file.Length == 0)
+        {
+            return HandleValidationError("Geen bestand geselecteerd of leeg bestand.", panelId, "addBestandModal");
+        }
+
         var extension = Path.GetExtension(file.FileName).ToLowerInvariant();
         if (!allowedExtensions.Contains(extension))
         {
-            ModelState.AddModelError("file", "Ongeldig bestandstype. Toegestane types: afbeeldingen, pdf, txt, dockx.");
-            ViewBag.OpenModal = "addBestandModal";
-            var panel = _panelManager.GetPanelWithPosts(panelId);
-            var projectPageDto = new ProjectPageDto { Panel = panel };
-            return View("Index", projectPageDto);
+            return HandleValidationError("Ongeldig bestandstype. Toegestane types: afbeeldingen, pdf, txt, dockx.",
+                panelId, "addBestandModal");
         }
-        
+
         // TEMP Create a folder path for uploads
         var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads");
         if (!Directory.Exists(uploadsFolder))
@@ -155,6 +160,109 @@ public class PanelProjectPageController : Controller
             }
         }
     }
+    
+    
+    [HttpPost]
+    public async Task<IActionResult> AddVideoPost(Guid panelId,
+        string title,
+        string youtubeUrl,
+        string videoUrl,
+        bool visibleForPanelMember,
+        bool informPeopleViaMail)
+    {
+        if (string.IsNullOrWhiteSpace(youtubeUrl))
+        {
+            if (string.IsNullOrWhiteSpace(videoUrl))
+            {
+                return HandleValidationError("Geef een url in.", panelId, "addVideoModal");
+            }
+            return await AddEmbedVideoPost(panelId, title, videoUrl, visibleForPanelMember, informPeopleViaMail);
+        }
+        if (string.IsNullOrWhiteSpace(videoUrl))
+        {
+            return await AddYoutubeVideoPost(panelId, title, youtubeUrl, visibleForPanelMember, informPeopleViaMail);
+        }
+        return HandleValidationError("U heeft zowel een youtube als video url ingegeven", panelId, "addVideoModal");
+    }
+
+    private async Task<IActionResult> AddEmbedVideoPost(
+        Guid panelId,
+        string title,
+        string videoUrl,
+        bool visibleForPanelMember,
+        bool informPeopleViaMail)
+    {
+        // Validate URL
+        if (!Uri.TryCreate(videoUrl, UriKind.Absolute, out var uriResult) ||
+            (uriResult.Scheme != Uri.UriSchemeHttp && uriResult.Scheme != Uri.UriSchemeHttps))
+        {
+            return HandleValidationError("Voer een geldige video URL in.", panelId, "addVideoModal");
+        }
+
+
+        _panelManager.AddEmbedVideoPost(
+            panelId,
+            title,
+            videoUrl,
+            visibleForPanelMember
+        );
+
+        var updatedPanel = _panelManager.GetPanelWithPosts(panelId);
+        var updatedProjectPageDto = new ProjectPageDto
+        {
+            Panel = updatedPanel
+        };
+
+        // Send email notifications
+        await HandleMailSending(informPeopleViaMail, visibleForPanelMember, updatedPanel);
+
+        return View("Index", updatedProjectPageDto);
+    }
+
+    private async Task<IActionResult> AddYoutubeVideoPost(
+        Guid panelId,
+        string title,
+        string youtubeUrl,
+        bool visibleForPanelMember,
+        bool informPeopleViaMail)
+    {
+        // Prepare video data
+        string youtubeId = null;
+        
+        // Extract YouTube video ID using regex
+        if (!string.IsNullOrWhiteSpace(youtubeUrl)) {
+            var match = new Regex(
+                @"(?:youtube(?:-nocookie)?\.com/(?:[^/]+/.+/|(?:v|e(?:mbed)?)/|.*[?&]v=)|youtu\.be/)([^""&?/\s]{11})", 
+                RegexOptions.IgnoreCase).Match(youtubeUrl);
+
+            if (match.Success && match.Groups.Count > 1) {
+                youtubeId = match.Groups[1].Value;
+            }
+        }
+        
+        if (youtubeId == null) {
+            return HandleValidationError("Ongeldige YouTube URL. Voer een geldige YouTube video URL in.", panelId, 
+                "addVideoModal");
+        }
+
+        _panelManager.AddYoutubeVideoPost(
+            panelId,
+            title,
+            youtubeId,
+            visibleForPanelMember
+        );
+
+        var updatedPanel = _panelManager.GetPanelWithPosts(panelId);
+        var updatedProjectPageDto = new ProjectPageDto
+        {
+            Panel = updatedPanel
+        };
+
+        // Send email notifications
+        await HandleMailSending(informPeopleViaMail, visibleForPanelMember, updatedPanel);
+
+        return View("Index", updatedProjectPageDto);
+    }
 
     [HttpPost]
     public async Task<IActionResult> AddWerksessiePost(
@@ -167,31 +275,19 @@ public class PanelProjectPageController : Controller
         // Check if all required fields are filled
         if (string.IsNullOrWhiteSpace(title) || sessionDate == default || string.IsNullOrWhiteSpace(sessionTime))
         {
-            ModelState.AddModelError("", "Vul alle verplichte velden correct in.");
-            var panel = _panelManager.GetPanelWithPosts(panelId);
-            var projectPageDto = new ProjectPageDto { Panel = panel };
-            ViewBag.OpenModal = "addWerksessieModal";
-            return View("Index", projectPageDto);
+            return HandleValidationError("Vul alle verplichte velden correct in.", panelId, "addWerksessieModal");
         }
 
         // Check if sessionDate is not in the past
         if (sessionDate < DateTime.Now.Date)
         {
-            ModelState.AddModelError("", "De datum mag niet in het verleden liggen.");
-            var panel = _panelManager.GetPanelWithPosts(panelId);
-            var projectPageDto = new ProjectPageDto { Panel = panel };
-            ViewBag.OpenModal = "addWerksessieModal";
-            return View("Index", projectPageDto);
+            return HandleValidationError("De datum mag niet in het verleden liggen.", panelId, "addWerksessieModal");
         }
 
         // Check if the sessionTime is valid
         if (!TimeSpan.TryParse(sessionTime, out var parsedTime))
         {
-            ModelState.AddModelError("", "Ongeldig tijdstip.");
-            var panel = _panelManager.GetPanelWithPosts(panelId);
-            var projectPageDto = new ProjectPageDto { Panel = panel };
-            ViewBag.OpenModal = "addWerksessieModal";
-            return View("Index", projectPageDto);
+            return HandleValidationError("Ongeldig tijdstip.", panelId, "addWerksessieModal");
         }
 
         var meetingDateTime = sessionDate.Date + parsedTime;
@@ -214,7 +310,7 @@ public class PanelProjectPageController : Controller
 
             foreach (var member in projectGroupmembers)
             {
-               await _sendMailManager.SendSingleMailAsync(member.User.Email,
+                await _sendMailManager.SendSingleMailAsync(member.User.Email,
                     mailSubject, textPart, htmlPart);
                 _logger.Log(LogLevel.Information, "Mail succesvol verstuurd!");
             }
@@ -248,6 +344,7 @@ public class PanelProjectPageController : Controller
             ModelState.AddModelError("VerslagFile", "Geen bestand geselecteerd.");
             return RedirectToAction("Index");
         }
+
         var extension = Path.GetExtension(VerslagFile.FileName).ToLowerInvariant();
         if (!allowedExtensions.Contains(extension))
         {

@@ -200,18 +200,6 @@ public class PanelManager : IPanelManager
         return panel;
     }
 
-    public void AddTextPost(Guid panelId, string title, string content, bool isVisibleForPanelMembers)
-    {
-        var textPost = new TextPost
-        {
-            Title =title,
-            Content = content,
-            CreatedAt = DateTime.UtcNow,
-            isVisibleForPanelMembers = isVisibleForPanelMembers
-        };
-        _repo.CreateTextPost(panelId, textPost);
-    }
-
     public void AddPlanningsGroupMember(Guid panelId, string Email, string Naam, string Functie)
     {
         Panel panel = GetPanel(panelId);
@@ -635,26 +623,71 @@ public class PanelManager : IPanelManager
         return _repo.ReadAllPlanningGroupMembersWithIdentityUserForPanel(panelId);
     }
 
-    public void AddDocumentPost(Guid panelId,string title, string documentUrl, bool isVisibleForPanelMembers)
+    // Generic helper method for post validation and creation
+    private void CreateAndAddPost<T>(Guid panelId, T post) where T : Post
     {
-        var docPost = new DocumentPost
+        var validationResults = new List<ValidationResult>();
+        if (!Validator.TryValidateObject(post, new ValidationContext(post), validationResults, true))
+        {
+            throw new ValidationException(string.Join("\n", validationResults.Select(x => x.ErrorMessage)));
+        }
+
+        _repo.CreatePost(panelId, post);
+    }
+
+// Simplified post methods
+    public void AddTextPost(Guid panelId, string title, string content, bool isVisibleForPanelMembers)
+    {
+        CreateAndAddPost(panelId, new TextPost
+        {
+            Title = title,
+            Content = content,
+            CreatedAt = DateTime.UtcNow,
+            IsVisibleForPanelMembers = isVisibleForPanelMembers
+        });
+    }
+
+    public void AddDocumentPost(Guid panelId, string title, string documentUrl, bool isVisibleForPanelMembers)
+    {
+        CreateAndAddPost(panelId, new DocumentPost
         {
             Title = title,
             DocumentName = documentUrl,
             CreatedAt = DateTime.UtcNow,
-            isVisibleForPanelMembers = isVisibleForPanelMembers
-        };
-        _repo.CreateDocumentPost(panelId, docPost);
+            IsVisibleForPanelMembers = isVisibleForPanelMembers
+        });
     }
-    public void AddMeetingPost(Guid panelId, string title, DateTime meetingDateTime, bool visibleForPanelMember)
+
+    public void AddMeetingPost(Guid panelId, string title, DateTime meetingDateTime, bool isVisibleForPanelMembers)
     {
-        var meetingPost = new MeetingPost()
+        CreateAndAddPost(panelId, new MeetingPost
         {
             Title = title,
             DocumentNames = new List<string>(),
             CreatedAt = meetingDateTime,
-            isVisibleForPanelMembers = visibleForPanelMember
-        };
-        _repo.CreateMeetingPost(panelId, meetingPost);
+            IsVisibleForPanelMembers = isVisibleForPanelMembers
+        });
+    }
+
+    public void AddEmbedVideoPost(Guid panelId, string title, string videoUrl, bool visibleForPanelMember)
+    {
+        CreateAndAddPost(panelId, new EmbeddedVideoPost
+        {
+            Title = title,
+            CreatedAt = DateTime.UtcNow,
+            IsVisibleForPanelMembers = visibleForPanelMember,
+            VideoUrl = videoUrl
+        });
+    }
+
+    public void AddYoutubeVideoPost(Guid panelId, string title, string videoId, bool visibleForPanelMember)
+    {
+        CreateAndAddPost(panelId, new YoutubeVideoPost
+        {
+            Title = title,
+            CreatedAt = DateTime.UtcNow,
+            IsVisibleForPanelMembers = visibleForPanelMember,
+            VideoId = videoId
+        });
     }
 }
