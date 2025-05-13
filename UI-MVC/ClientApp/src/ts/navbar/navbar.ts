@@ -19,7 +19,7 @@ function expandNavbar(nav: HTMLElement, largeContainer: HTMLElement, navLinks: N
     largeContainer.classList.add("opened-large-grid-container");
     if (navLinks != null) {
         navLinks.forEach(link => {
-            link.querySelector(".nav-link-description")?.classList.remove("invisible")
+            link.querySelector(".nav-link-description")?.classList.remove("l-invisible")
         })
     }
     expandNavbarButton.innerText = "<"
@@ -29,7 +29,7 @@ function collapseNavbar(nav: HTMLElement, largeContainer: HTMLElement, navLinks:
     largeContainer.classList.remove("opened-large-grid-container");
     if (navLinks != null) {
         navLinks.forEach(link => {
-            link.querySelector(".nav-link-description")?.classList.add("invisible")
+            link.querySelector(".nav-link-description")?.classList.add("l-invisible")
         })
     }
     expandNavbarButton.innerText = ">"

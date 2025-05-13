@@ -11,16 +11,17 @@
 
 @if (Organisation.Id == null)
 {
-    <div class="card p-0 mt-5 col-11" style="height: 600px; overflow: hidden;">
-        <div class="row g-0 h-100">
-            <!-- Image on the left (50%) -->
-            <div class="col-6 h-100">
+    <div class="card p-0 mt-5 col-11 m-sm-4 m-md-4" style=" overflow: hidden;">
+        <div class="row g-0 h-100 flex-column flex-lg-row">
+            <!-- Image on the left (or top on small screens) -->
+            <div class="col-12 col-lg-6 h-50 h-lg-100">
                 <img src="~/images/burgerpanel.jpg" 
-                     class="img-fluid h-100 w-100" 
+                     class="img-fluid w-100 h-100" 
                      style="object-fit: cover;" 
                      alt="Inspraak Portaal">
             </div>
-            <div class="col-6 d-flex align-items-start h-100">
+            <!-- Content on the right (or bottom on small screens) -->
+            <div class="col-12 col-lg-6 d-flex align-items-start h-50 h-lg-100">
                 <div class="card-body">
                     <img class="header-image" style="width:40%; margin: 0;" src="~/images/icons/inspraak_portaal_light_mode.svg" alt="inspraak-portaal-logo"/>
                     <h2>Welkom!</h2>

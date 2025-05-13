@@ -32,7 +32,7 @@
                     <li class="nav-item">
                         <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Index">
                             <img src="~/images/home_icon.svg" class="navbar-icon" alt="Home"/>
-                            <p class="nav-link-description invisible">Home</p>
+                            <p class="nav-link-description l-invisible">Home</p>
                         </a>
                     </li>
                     @if (User.Identity != null && User.Identity.IsAuthenticated && User.IsInRole(CustomIdentityConstants.OrganisatieRole))
@@ -61,7 +61,7 @@
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="OrganisationManagement" asp-action="AdminIndex">
                                 <img src="~/images/organisation_management.png" class="navbar-icon" alt="User account"/>
-                                <p class="nav-link-description invisible">Organisatie beheer</p>
+                                <p class="nav-link-description l-invisible">Organisatie beheer</p>
                             </a>
                             
                         </li>

@@ -12,14 +12,14 @@
     <li class="nav-item">
         <a id="manage" class="nav-link text-dark" asp-area="Identity" asp-page="/Account/Manage/Index" title="Manage">
             <img src="~/images/profile_settings.png" class="navbar-icon" alt="User account" />
-            <p class="nav-link-description invisible">Gebruiker instellingen</p>
+            <p class="nav-link-description l-invisible">Gebruiker instellingen</p>
         </a>
     </li>
     <li class="nav-item">
         <form id="logoutForm" class="form-inline" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">
             <button id="logout" type="submit" class="nav-link btn btn-link text-dark border-0">
                 <img src="~/images/logout.png" class="navbar-icon" alt="Logout"/>
-                <p class="nav-link-description invisible">Uitloggen</p>
+                <p class="nav-link-description l-invisible">Uitloggen</p>
             </button>
         </form>
     </li>
@@ -29,13 +29,13 @@ else
     <li class="nav-item">
         <a class="nav-link text-dark" id="register" asp-area="Identity" asp-page="/Account/Register">
             <img src="~/images/register.png" class="navbar-icon" alt="Register" />
-            <p class="nav-link-description invisible">Registreren</p>
+            <p class="nav-link-description l-invisible">Registreren</p>
         </a>
     </li>
     <li class="nav-item">
         <a class="nav-link text-dark" id="login" asp-area="Identity" asp-page="/Account/Login">
             <img src="~/images/login.png" class="navbar-icon" alt="Log in" />
-            <p class="nav-link-description invisible">Inloggen</p>
+            <p class="nav-link-description l-invisible">Inloggen</p>
         </a>
     </li>
 }
