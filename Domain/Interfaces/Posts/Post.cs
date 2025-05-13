@@ -6,7 +6,7 @@ public abstract class Post
 {
     public Guid Id { get; set; }
     [Required(ErrorMessage = "Post moet een titel hebben")]
-    [MaxLength(300, ErrorMessage = "Name is too long")]
+    [MaxLength(300, ErrorMessage = "naam is te lang")]
     public string Title { get; set; }
     [Required(ErrorMessage = "Post moet een datum hebben")]
     public DateTime CreatedAt { get; set; }
