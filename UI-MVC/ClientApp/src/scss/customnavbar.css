@@ -1,9 +1,7 @@
-﻿@use 'constants';
-
 /*THIS FILE CONTAINS STYLING FOR THE CUSTOM NAVBAR (DESKTOP DASHBOARD)*/
 .navbar-icon {
-  width: #{constants.$navbar-icon-size};
-  height: #{constants.$navbar-icon-size};
+  width: 24px;
+  height: 24px;
 }
 
 @media (min-width: 992px) {
@@ -13,16 +11,15 @@
     align-self: start;
     z-index: 10;
     background: white;
-   }
+  }
   .large-grid-container {
     display: grid;
     grid-template-columns: 5fr 95fr;
-    grid-template-rows: calc(100vh - #{constants.$gap-size} - #{constants.$vertical-navbar-width}) #{constants.$vertical-navbar-width};
+    grid-template-rows: calc(100vh - 40px - 3vw) 3vw;
     height: 100vh;
-    grid-gap: #{constants.$gap-size};
+    grid-gap: 40px;
     margin-bottom: 0 !important;
   }
-  
   .navbar {
     position: sticky;
     top: 0;
@@ -34,16 +31,14 @@
     justify-content: center;
     align-items: center;
     z-index: 10;
-    background: white; 
+    background: white;
   }
-
   .navbar > .container-fluid {
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
   }
-
   .navbar-collapse {
     display: flex;
     flex-direction: column;
@@ -51,27 +46,25 @@
     justify-content: center;
     height: 80vh;
   }
-
   .navbar-nav {
     display: flex;
     flex-direction: column !important;
     justify-content: flex-start;
     align-items: center;
   }
-
   .main-container {
     grid-column: 2/3;
     grid-row: 1/2;
-    overflow-y: auto; // allows scrolling on content
+    overflow-y: auto;
   }
-
   footer {
     grid-column: 2/3;
     grid-row: 2/3;
-    height: #{constants.$vertical-navbar-width};
+    height: 3vw;
   }
-
   body {
     background: white;
   }
 }
+
+/*# sourceMappingURL=customnavbar.css.map */
