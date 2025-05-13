@@ -153,43 +153,16 @@ public class PanelRepository : IPanelRepository
             .Where(pgm => pgm.Panel.Id == panelId)
             .ToList();
     }
-
-    public void CreateTextPost(Guid panelId, TextPost textPost)
+    
+    // Generic method to handle any type of post
+    public void CreatePost<T>(Guid panelId, T post) where T : Post
     {
-        _context.Posts.Add(textPost);
+        _context.Posts.Add(post);
         var panel = ReadPanelWithPosts(panelId);
-        if (panel != null)
-        {
-            _context.Posts.Add(textPost);
-            panel.Posts.Add(textPost);
-            _context.SaveChanges();
-        }
+        if (panel == null) return;
+        panel.Posts.Add(post);
+        _context.SaveChanges();
     }
-
-    public void CreateDocumentPost(Guid panelId, DocumentPost docPost)
-    {
-        _context.Posts.Add(docPost);
-        var panel = ReadPanelWithPosts(panelId);
-        if (panel != null)
-        {
-            _context.Posts.Add(docPost);
-            panel.Posts.Add(docPost);
-            _context.SaveChanges();
-        }
-    }
-
-    public void CreateMeetingPost(Guid panelId, MeetingPost meetingPost)
-    {
-        _context.Posts.Add(meetingPost);
-        var panel = ReadPanelWithPosts(panelId);
-        if (panel != null)
-        {
-            _context.Posts.Add(meetingPost);
-            panel.Posts.Add(meetingPost);
-            _context.SaveChanges();
-        }
-    }
-
 
     public ICollection<PanelMember> ReadPanelMembersAndRepresentationGroup(Guid id)
     {
