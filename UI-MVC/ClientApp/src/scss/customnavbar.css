@@ -67,11 +67,14 @@
     justify-content: flex-start;
     align-items: start;
   }
-  .nav-item {
+  .nav-link {
     display: flex;
     flex-direction: row;
     align-items: center;
     justify-content: center;
+  }
+  .nav-link-description {
+    margin-left: 20px;
   }
   .main-container {
     grid-column: 2/3;
@@ -83,8 +86,9 @@
     grid-row: 2/3;
     height: 3vw;
   }
-  body {
-    background: white;
+  .navbar-icon-head {
+    width: 50px;
+    height: 50px;
   }
 }
 

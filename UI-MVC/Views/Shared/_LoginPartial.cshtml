@@ -12,8 +12,8 @@
     <li class="nav-item">
         <a id="manage" class="nav-link text-dark" asp-area="Identity" asp-page="/Account/Manage/Index" title="Manage">
             <img src="~/images/profile_settings.png" class="navbar-icon" alt="User account" />
+            <p class="nav-link-description invisible">Gebruiker instellingen</p>
         </a>
-        <p class="nav-link-description invisible">Gebruiker instellingen</p>
     </li>
     <li class="nav-item">
         <form id="logoutForm" class="form-inline" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">
@@ -29,16 +29,14 @@ else
     <li class="nav-item">
         <a class="nav-link text-dark" id="register" asp-area="Identity" asp-page="/Account/Register">
             <img src="~/images/register.png" class="navbar-icon" alt="Register" />
-            
+            <p class="nav-link-description invisible">Registreren</p>
         </a>
-        <p class="nav-link-description invisible">Registreren</p>
     </li>
     <li class="nav-item">
         <a class="nav-link text-dark" id="login" asp-area="Identity" asp-page="/Account/Login">
             <img src="~/images/login.png" class="navbar-icon" alt="Log in" />
-            
+            <p class="nav-link-description invisible">Inloggen</p>
         </a>
-        <p class="nav-link-description invisible">Inloggen</p>
     </li>
 }
 </ul>

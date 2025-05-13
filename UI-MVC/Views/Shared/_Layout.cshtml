@@ -18,7 +18,10 @@
 <div class="large-grid-container">
     <nav class="navbar navbar-expand-sm navbar-toggleable-sm border-bottom box-shadow mb-3" style="background-color:@Organisation.BackgroundColor">
         <div class="container-fluid">
-            <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">UI_MVC</a>
+            <button class="btn btn-primary expand-navbar">&gt;</button>
+            <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">
+                <img src="~/images/icons/inspraak_portaal_light_mode.svg" class="navbar-icon-head" alt="Inspraak portaal logo"/>
+            </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse"
                     aria-controls="navbarSupportedContent"
                     aria-expanded="false" aria-label="Toggle navigation">
@@ -29,8 +32,8 @@
                     <li class="nav-item">
                         <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Index">
                             <img src="~/images/home_icon.svg" class="navbar-icon" alt="Home"/>
+                            <p class="nav-link-description invisible">Home</p>
                         </a>
-                        <p class="nav-link-description invisible">Home</p>
                     </li>
                     @if (User.Identity != null && User.Identity.IsAuthenticated && User.IsInRole(CustomIdentityConstants.OrganisatieRole))
                     {
@@ -58,8 +61,9 @@
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="OrganisationManagement" asp-action="AdminIndex">
                                 <img src="~/images/organisation_management.png" class="navbar-icon" alt="User account"/>
+                                <p class="nav-link-description invisible">Organisatie beheer</p>
                             </a>
-                            <p class="nav-link-description invisible">Organisatie beheer</p>
+                            
                         </li>
                     }
                     @if (User.Identity != null && User.Identity.IsAuthenticated && User.IsInRole(CustomIdentityConstants.PanelMemberRole))
@@ -84,11 +88,7 @@
     </div>
     <footer class="border-top text-muted">
         <div class="container">
-            <i class="bi bi-c-circle"></i> 2025 - Net8NpmWebpack -
-            <a asp-area="" asp-controller="Home"
-               asp-action="Privacy">
-                Privacy
-            </a>
+            <i class="bi bi-c-circle"></i> 2025 - Inspraak Portaal - Team 14_
         </div>
     </footer>
 </div>
