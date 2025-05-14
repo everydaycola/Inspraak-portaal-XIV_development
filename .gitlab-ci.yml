@@ -156,8 +156,19 @@ tests:
 deploy:
   stage: deploy
   rules:
-    - if: '$CI_COMMIT_BRANCH == "main"'
+    - if: '$CI_COMMIT_BRANCH == "fix-cd"'
   image: google/cloud-sdk
   script:
-    - gcloud auth activate-service-account --key-file="$GCP_SA_KEY_JSON" --project="cs2-eycken-tiba"
-    - gcloud compute instance-groups managed rolling-action replace web-instance-group --max-surge=2 --max-unavailable=1 --replacement-method=substitute --zone=europe-west1-d
+    - gcloud auth activate-service-account --key-file="$GCP_SA_KEY_JSON" --project="$PROJECT_ID"
+    - |
+      if gcloud compute instance-groups managed describe "$GCP_INSTANCE_GROUP" --zone="$GCP_ZONE" > /dev/null 2>&1; then
+        echo "Instance group exists. Proceeding with rolling replace..."
+        gcloud compute instance-groups managed rolling-action replace "$GCP_INSTANCE_GROUP" \
+          --max-surge=2 \
+          --max-unavailable=1 \
+          --replacement-method=substitute \
+          --zone="$GCP_ZONE"
+      else
+        echo "Instance group '$GCP_INSTANCE_GROUP' not found in zone '$GCP_ZONE'. Skipping deployment."
+        exit 0
+      fi
