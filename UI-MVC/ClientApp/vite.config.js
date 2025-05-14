@@ -20,6 +20,7 @@ export default defineConfig({
                 panelCreation: resolve(__dirname, 'src/ts/Panel/panelCreation.ts'),
                 apiDataFiller: resolve(__dirname, 'src/ts/Panel/apiAutofill/apiDataFiller.ts'),
                 adminOrgMan: resolve(__dirname, 'src/ts/organisationmanagement/adminOrgMan.ts'),
+                suggestionVoting: resolve(__dirname, 'src/ts/PanelProjectPage/suggestionVoting.ts'),
                 autoOpenModals: resolve(__dirname, 'src/ts/auto-open-modals.ts'),
             },
             output: {
