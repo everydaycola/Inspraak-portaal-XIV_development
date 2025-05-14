@@ -377,7 +377,7 @@ public class PanelProjectPageController : Controller
             email = user.Email;
         }
         
-        _projectPageManager.AddSuggestionToPost(panelId, suggestion, email);
+        _projectPageManager.AddSuggestionToPost(postId, suggestion, email);
 
         return View("Index", new ProjectPageDto { Panel = _projectPageManager.GetPanelWithPostsAndSuggestions(panelId) });
     }

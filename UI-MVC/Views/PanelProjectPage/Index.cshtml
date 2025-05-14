@@ -485,8 +485,8 @@
                         }
 
                         <form asp-action="AddSuggestion" method="post" class="mt-3">
-                            <input type="hidden" name="panelId" value="@suggestionPost.Id"/>
-                            <input type="hidden" name="postId" value="@Model.Panel.Id"/>
+                            <input type="hidden" name="panelId" value="@Model.Panel.Id"/>
+                            <input type="hidden" name="postId" value="@suggestionPost.Id"/>
                             <div class="input-group">
                                 <input type="text" name="suggestion" class="form-control"
                                        placeholder="Voeg een suggestie toe..." required/>
