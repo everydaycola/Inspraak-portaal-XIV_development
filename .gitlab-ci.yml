@@ -158,8 +158,13 @@ deploy:
   rules:
     - if: '$CI_COMMIT_BRANCH == "fix-cd"'
   image: google/cloud-sdk
+  variables:
+    GCP_SA_KEY_JSON: "$GCP_SA_KEY_JSON" # Ensure this variable exists in GitLab
+  before_script:
+    - echo "$GCP_SA_KEY_JSON" > gcp_sa_key.json # Create a file with the key content
+    - chmod 400 gcp_sa_key.json # Secure the key file (optional but recommended)
   script:
-    - gcloud auth activate-service-account --key-file="$GCP_SA_KEY_JSON" --project="$PROJECT_ID"
+    - gcloud auth activate-service-account --key-file="gcp_sa_key.json" --project="$PROJECT_ID"
     - |
       if gcloud compute instance-groups managed describe "$MIG_NAME" --zone="$ZONE" > /dev/null 2>&1; then
         echo "Instance group exists. Proceeding with rolling replace..."
@@ -172,3 +177,5 @@ deploy:
         echo "Instance group '$MIG_NAME' not found in zone '$ZONE'. Skipping deployment."
         exit 0
       fi
+  after_script:
+    - rm gcp_sa_key.json # Clean up the temporary key file
