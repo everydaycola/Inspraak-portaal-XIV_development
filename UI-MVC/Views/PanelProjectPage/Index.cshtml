@@ -474,7 +474,7 @@
                         <small class="text-muted">@suggestionPost.CreatedAt.ToString("dd MMM yyyy HH:mm")</small>
                     </div>
                     <div class="mt-2 p-3 bg-light rounded">
-                        @foreach (var suggestion in suggestionPost.Suggestions)
+                        @foreach (var suggestion in suggestionPost.Suggestions.OrderBy(s => s.CreatedAt))
                         {
                             <div class="suggestion-item mb-3">
                                 <p class="mb-1"><i class="bi bi-lightbulb me-2"></i>@suggestion.Title</p>
