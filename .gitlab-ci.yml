@@ -134,7 +134,7 @@ tests:
   # a relative path to the directory where it is located (e.g. 'dotnet test ./test/UnitTests').
   #
   # You may want to define separate testing jobs for different types of testing
-  # (e.g. integration tests, unit tests etc).
+  # (e.g. integration tests, unit tests etc). 
   script:
     - 'dotnet test --no-restore --logger junit --collect "XPlat Code Coverage"'
     - 'dotnet tool install dotnet-reportgenerator-globaltool 
