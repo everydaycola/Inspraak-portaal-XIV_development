@@ -161,14 +161,14 @@ deploy:
   script:
     - gcloud auth activate-service-account --key-file="$GCP_SA_KEY_JSON" --project="$PROJECT_ID"
     - |
-      if gcloud compute instance-groups managed describe "$GCP_INSTANCE_GROUP" --zone="$GCP_ZONE" > /dev/null 2>&1; then
+      if gcloud compute instance-groups managed describe "$MIG_NAME" --zone="$ZONE" > /dev/null 2>&1; then
         echo "Instance group exists. Proceeding with rolling replace..."
-        gcloud compute instance-groups managed rolling-action replace "$GCP_INSTANCE_GROUP" \
+        gcloud compute instance-groups managed rolling-action replace "$MIG_NAME" \
           --max-surge=2 \
           --max-unavailable=1 \
           --replacement-method=substitute \
-          --zone="$GCP_ZONE"
+          --zone="$ZONE"
       else
-        echo "Instance group '$GCP_INSTANCE_GROUP' not found in zone '$GCP_ZONE'. Skipping deployment."
+        echo "Instance group '$MIG_NAME' not found in zone '$ZONE'. Skipping deployment."
         exit 0
       fi
