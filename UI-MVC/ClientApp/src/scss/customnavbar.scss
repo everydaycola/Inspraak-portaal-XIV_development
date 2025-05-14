@@ -1,5 +1,7 @@
 ﻿@use 'constants';
 
+$open-animation-time: 2s;
+
 /*THIS FILE CONTAINS STYLING FOR THE CUSTOM NAVBAR (DESKTOP DASHBOARD)*/
 .navbar-icon {
   width: #{constants.$navbar-icon-size};
@@ -32,7 +34,11 @@
 }
 
 @media (min-width: 992px) {
-  //Itesms which should shown On smallest screens BUT NOT on the largest screen bij default.
+  //Don't hold default margin when in big screens.
+  body {
+    margin-bottom: 0;
+  }
+  //Items which should shown On smallest screens BUT NOT on the largest screen bij default.
   .l-invisible {
     display:none;
     visibility: hidden;
@@ -52,6 +58,7 @@
     height: 100vh;
     grid-gap: #{constants.$gap-size};
     margin-bottom: 0 !important;
+    transition: grid-template-columns 0.3s ease-in-out;
   }
   .opened-large-grid-container{
     grid-template-columns: 10fr 90fr;
@@ -115,4 +122,31 @@
     height: 100% !important;
   }
   
+  //ANIMATION CLASSES
+  .enlargeGridAnimation {
+    animation: expandGridCol1 $open-animation-time forwards;
+  }
+
+  .closeGridAnimation {
+    animation: closeGridCol1 $open-animation-time forwards;
+  }
 }
+
+@keyframes expandGridCol1 {
+  0% {
+    grid-template-columns:5fr 95fr
+  }
+  100% {
+    grid-template-columns:10fr 90fr
+  }
+}
+
+@keyframes closeGridCol1 {
+  0% {
+    grid-template-columns:10fr 95fr
+  }
+  100% {
+    grid-template-columns:5fr 90fr
+  }
+}
+

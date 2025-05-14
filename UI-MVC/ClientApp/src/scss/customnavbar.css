@@ -33,6 +33,9 @@
 }
 
 @media (min-width: 992px) {
+  body {
+    margin-bottom: 0;
+  }
   .l-invisible {
     display: none;
     visibility: hidden;
@@ -52,6 +55,7 @@
     height: 100vh;
     grid-gap: 40px;
     margin-bottom: 0 !important;
+    transition: grid-template-columns 0.3s ease-in-out;
   }
   .opened-large-grid-container {
     grid-template-columns: 10fr 90fr;
@@ -108,6 +112,28 @@
   }
   .h-lg-100 {
     height: 100% !important;
+  }
+  .enlargeGridAnimation {
+    animation: expandGridCol1 2s forwards;
+  }
+  .closeGridAnimation {
+    animation: closeGridCol1 2s forwards;
+  }
+}
+@keyframes expandGridCol1 {
+  0% {
+    grid-template-columns: 5fr 95fr;
+  }
+  100% {
+    grid-template-columns: 10fr 90fr;
+  }
+}
+@keyframes closeGridCol1 {
+  0% {
+    grid-template-columns: 10fr 95fr;
+  }
+  100% {
+    grid-template-columns: 5fr 90fr;
   }
 }
 
