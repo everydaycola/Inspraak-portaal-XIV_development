@@ -15,22 +15,16 @@ public class CalculationsController : ControllerBase
     }
     
     [HttpGet("panelsize")]
-    public ActionResult<int> GetPanelSize([FromBody] PanelSizeRequestDto request)
+    public ActionResult<int> GetPanelSize([FromQuery] int citizenCount, [FromQuery] double samplePercentage )
     {
-        if (request == null)
-            return BadRequest("Request body is missing.");
-
-        var panelSize = _calculationManager.CalculatePanelSize(request.CitizenCount, request.SamplePercentage);
+        var panelSize = _calculationManager.CalculatePanelSize(citizenCount, samplePercentage);
         return Ok(panelSize);
     }
     
     [HttpGet("reservesize")]
-    public ActionResult<int> GetAmountOfReserve([FromBody] ReserveSizeRequestDto request)
+    public ActionResult<int> GetAmountOfReserve([FromQuery] int citizenCount, [FromQuery] double reservePercentage )
     {
-        if (request == null)
-            return BadRequest("Request body is missing.");
-
-        var reserveCount = _calculationManager.CalculateAmountOfReserve(request.CitizenCount, request.ReservePercentage);
+        var reserveCount = _calculationManager.CalculateAmountOfReserve(citizenCount, reservePercentage);
         return Ok(reserveCount);
     }
     

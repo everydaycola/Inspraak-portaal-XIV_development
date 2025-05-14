@@ -1,6 +1,7 @@
 ﻿import {newSubregionInputAddedHandler} from "./apiAutofill/apiDataFiller";
 
 import {setValidationMessages} from "./FormValidator"
+import {onSubregionChange} from "./panelsizePreviewHandler";
 
 let subRegionCount = 1;
 
@@ -32,6 +33,10 @@ export function addSubRegion() {
     sizeInput.type = "number";
     sizeInput.className = "form-control d-inline w-25 me-2 subregion-size-input";
 
+    sizeInput.addEventListener("input",() => {
+        onSubregionChange()
+    })
+    
     // Create the Remove button
     const removeButton = document.createElement("button");
     removeButton.type = "button";
@@ -54,6 +59,7 @@ export function addSubRegion() {
     subRegionContainer.appendChild(wrapper);
     //Call apiDataFillerScript to repopulate.
     newSubregionInputAddedHandler()
+    onSubregionChange()
 
     addSubregionValidation(nameInput, nameError, sizeInput, sizeError);
 

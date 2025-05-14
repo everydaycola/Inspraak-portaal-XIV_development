@@ -24,4 +24,6 @@ panelForm.addEventListener("submit", (e) => {
     }
 });
 
+
+
 setupPanelsizePreviewHandlers();
