@@ -6,10 +6,10 @@ export function setupPanelsizePreviewHandlers() {
     const sampleRateInput: HTMLInputElement | null = document.querySelector("#sample-rate");
     if (reservePercentInput && sampleRateInput) {
         reservePercentInput.addEventListener("input", () => {
-            handleInputChange(reservePercentInput, sampleRateInput)
+            handleInputChange(reservePercentInput, sampleRateInput);
         })
         sampleRateInput.addEventListener("input", () => {
-            handleInputChange(reservePercentInput, sampleRateInput)
+            handleInputChange(reservePercentInput, sampleRateInput);
         })
     }
 }
@@ -19,12 +19,7 @@ export function onSubregionChange() {
     const reservePercentInput: HTMLInputElement | null = document.querySelector("#reserve");
     const sampleRateInput: HTMLInputElement | null = document.querySelector("#sample-rate");
     if (reservePercentInput && sampleRateInput) {
-        const subregSizeInputs: NodeListOf<HTMLInputElement> = document.querySelectorAll(".subregion-size-input");
-        subregSizeInputs.forEach(subreg => {
-            subreg.addEventListener("change", (e) => {
-                handleInputChange(reservePercentInput, sampleRateInput)
-            })
-        })
+        handleInputChange(reservePercentInput, sampleRateInput);
     }
 }
 
@@ -47,13 +42,17 @@ async function handleInputChange(
     );
 
     const outputField = document.querySelector(".panel-size-output");
+    console.log("Outputfield " + outputField)
     if (outputField) {
-        outputField.innerHTML = "panel grootte: " + estimatedPanelSize;
+        if (estimatedPanelSize >= 0) {
+            outputField.innerHTML = "panel grootte: " + estimatedPanelSize;
+        } else {
+            outputField.innerHTML = "Kon geen panel grootte bepalen, controlleer of alle velden ingevuld zijn!"
+        }
     }
 }
 
 function getSelectedCommunesTotalCount() {
     const subregSizeInputs: NodeListOf<HTMLInputElement> = document.querySelectorAll(".subregion-size-input");
-    let totalCount = Array.from(subregSizeInputs).reduce((sum, input) => sum + (parseFloat(input.value) || 0), 0);
-    return totalCount;
+    return Array.from(subregSizeInputs).reduce((sum, input) => sum + (parseFloat(input.value) || 0), 0);
 }
