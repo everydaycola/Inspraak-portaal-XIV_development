@@ -3,6 +3,7 @@ using DAL.Interfaces;
 using Domain.CitizenPanel;
 using Domain.Interfaces;
 using Domain.Interfaces.Posts;
+using Domain.Interfaces.Posts.PostItems;
 using Microsoft.EntityFrameworkCore;
 
 namespace DAL.Repositories;
@@ -41,6 +42,11 @@ public class PanelRepository : IPanelRepository
             .Include(pm => pm.Responses)
             .ThenInclude(pm => pm.Criteria)
             .Single(p => p.PanelMemberId == id);
+    }
+
+    public Post ReadPost(Guid id)
+    {
+        return _context.Posts.Find(id);
     }
 
 
@@ -116,6 +122,11 @@ public class PanelRepository : IPanelRepository
             .ToList();
     }
 
+    public void UpdateSuggestionPost(SuggestionPost suggestionPost)
+    {
+        _context.Posts.Update(suggestionPost);
+        _context.SaveChanges();
+    }
 
     public void UpdatePanelMember(PanelMember member)
     {
@@ -158,7 +169,7 @@ public class PanelRepository : IPanelRepository
     public void CreatePost<T>(Guid panelId, T post) where T : Post
     {
         _context.Posts.Add(post);
-        var panel = ReadPanelWithPosts(panelId);
+        var panel = ReadPanelWithPostsAndSuggestions(panelId);
         if (panel == null) return;
         panel.Posts.Add(post);
         _context.SaveChanges();
@@ -180,10 +191,11 @@ public class PanelRepository : IPanelRepository
             .Single(p => p.Id == panelId);
     }
 
-    public Panel ReadPanelWithPosts(Guid panelId)
+    public Panel ReadPanelWithPostsAndSuggestions(Guid panelId)
     {
         return _context.Panels
             .Include(p => p.Posts)
+            .ThenInclude(p => (p as SuggestionPost).Suggestions)
             .Single(p => p.Id == panelId);
     }
 
