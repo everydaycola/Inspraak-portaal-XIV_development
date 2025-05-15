@@ -9,7 +9,34 @@
     <script src="~/dist/index.entry.js" type="module"></script>
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome to @Organisation.Name</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
-</div>
+@if (Organisation.Id == null)
+{
+    <div class="card p-0 mt-5 col-11 m-sm-4 m-md-4" style=" overflow: hidden;">
+        <div class="row g-0 h-100 flex-column flex-lg-row">
+            <!-- Image on the left (or top on small screens) -->
+            <div class="col-12 col-lg-6 h-50 h-lg-100">
+                <img src="~/images/burgerpanel.jpg" 
+                     class="img-fluid w-100 h-100" 
+                     style="object-fit: cover;" 
+                     alt="Inspraak Portaal">
+            </div>
+            <!-- Content on the right (or bottom on small screens) -->
+            <div class="col-12 col-lg-6 d-flex align-items-start h-50 h-lg-100">
+                <div class="card-body">
+                    <img class="header-image" style="width:40%; margin: 0;" src="~/images/icons/inspraak_portaal_light_mode.svg" alt="inspraak-portaal-logo"/>
+                    <h2>Welkom!</h2>
+                    <p>Het Inspraak Portaal is een platform die het organiseren van burgerpanels vereenvoudigd.</p>
+                    <p>Zelf interesse in een burgerpanel? Meld je dan aan voor jou organisatie!</p>
+                    <button class="btn btn-primary">Mijn organisatie aanmelden</button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+else
+{
+    <div class="text-center">
+        <h1 class="display-4">Welcome to @Organisation.Name</h1>
+        <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+    </div>
+}
