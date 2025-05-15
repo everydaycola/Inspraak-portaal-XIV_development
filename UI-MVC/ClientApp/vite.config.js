@@ -21,6 +21,7 @@ export default defineConfig({
                 apiDataFiller: resolve(__dirname, 'src/ts/Panel/apiAutofill/apiDataFiller.ts'),
                 adminOrgMan: resolve(__dirname, 'src/ts/organisationmanagement/adminOrgMan.ts'),
                 autoOpenModals: resolve(__dirname, 'src/ts/auto-open-modals.ts'),
+                accountSettings: resolve(__dirname, 'src/ts/accountSettings/accountSettings.ts')
             },
             output: {
                 entryFileNames: '[name].entry.js',
