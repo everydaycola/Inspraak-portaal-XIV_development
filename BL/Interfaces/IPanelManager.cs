@@ -12,8 +12,6 @@ public interface IPanelManager
     public PanelMember GetPanelMemberWithPanel(Guid id);
     public IEnumerable<PanelMember> GetAllPanelMembersForPanel(Guid panelId);
     public Panel GetPanelWithCriteriaAndCriteriaAnswerOptions(Guid panelId);
-
-    public Panel GetPanelWithPosts(Guid panelId);
     public IEnumerable<PlanningGroupMember> GetAllPlanningGroupMembersWithIdentityUserForPanel(Guid panelId);
 
     public Dictionary<string, int> CalculateCrossDistributionAbsolute(Guid panelId);
@@ -23,13 +21,7 @@ public interface IPanelManager
         ICollection<Criteria> distribution, int citizenCount, double reservePercentage,
         double responseRate, string userId);
 
-    public void AddTextPost(Guid panelId,string title, string content, bool isVisibleForPanelMembers);
     public void AddPlanningsGroupMember(Guid panelId, string Email, string Naam, string Functie);
-
-    public void AddDocumentPost(Guid panelId, string title, string documentUrl, bool isVisibleForPanelMembers);
-    public void AddMeetingPost(Guid panelId, string title, DateTime meetingDateTime, bool visibleForPanelMember);
-    public void AddEmbedVideoPost(Guid panelId, string title, string videoUrl, bool visibleForPanelMember);
-    public void AddYoutubeVideoPost(Guid panelId, string title, string videoId, bool visibleForPanelMember);
     //UPDATE
     public void UpdatePanel(Guid id, bool isRegistrationOpen);
     public void UpdatePanelRegistrationCount(Guid id, bool increase);
@@ -39,6 +31,5 @@ public interface IPanelManager
     //HELPERS
     public void NewPanelPhase(Guid guid, double newResponseRate);
     public void EndRegistration(Guid id, IEnumerable<Criteria> allDesiredCriteriaPercentages, bool sendInvitationMails, string currentBaseUrl);
-    public void AddSummaryToMeetingPost(Guid meetingId, string uniqueFileName);
     
 }
