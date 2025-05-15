@@ -159,10 +159,10 @@ deploy:
     - if: '$CI_COMMIT_BRANCH == "fix-cd"'
   image: google/cloud-sdk
   variables:
-    GCP_SA_KEY_JSON: "$GCP_SA_KEY_JSON" # Ensure this variable exists in GitLab
+    GCP_SA_KEY_JSON: "$GCP_SA_KEY_JSON"
   before_script:
-    - echo "$GCP_SA_KEY_JSON" > gcp_sa_key.json # Create a file with the key content
-    - chmod 400 gcp_sa_key.json # Secure the key file (optional but recommended)
+    - echo "$GCP_SA_KEY_JSON" > gcp_sa_key.json
+    - chmod 400 gcp_sa_key.json
   script:
     - gcloud auth activate-service-account --key-file="gcp_sa_key.json" --project="$PROJECT_ID"
     - |
@@ -178,4 +178,4 @@ deploy:
         exit 0
       fi
   after_script:
-    - rm gcp_sa_key.json # Clean up the temporary key file
+    - rm gcp_sa_key.json
