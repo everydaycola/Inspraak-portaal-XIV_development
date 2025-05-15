@@ -156,7 +156,7 @@ tests:
 deploy:
   stage: deploy
   rules:
-    - if: '$CI_COMMIT_BRANCH == "fix-cd"'
+    - if: '$CI_COMMIT_BRANCH == "main"'
   image: google/cloud-sdk
   variables:
     GCP_SA_KEY_JSON: "$GCP_SA_KEY_JSON"
