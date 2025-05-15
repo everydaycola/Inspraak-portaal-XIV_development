@@ -1,5 +1,6 @@
 ﻿@using Domain.Interfaces
 @using Domain.Interfaces.Posts
+@using UI_MVC.Models.ViewModels
 @model UI_MVC.Models.Dto.ProjectPage.ProjectPageDto
 
 @{
@@ -314,6 +315,15 @@
                     <small class="text-muted">@textPost.CreatedAt.ToString("dd MMM yyyy HH:mm")</small>
                 </div>
                 <p class="mt-2 mb-0">@textPost.Content</p>
+                <div class="mt-2">
+                    @await Html.PartialAsync("_ShareButtonPartial", new ShareButtonViewModel
+                    {
+                        PostId = textPost.Id,
+                        Title = textPost.Title,
+                        Text = textPost.Content,
+                        Image = null 
+                    })
+                </div>
             </div>
         }
 
@@ -340,6 +350,17 @@
                     <img src="@Url.Action("GetFile", "Storage", new { fileName = docPost.DocumentName })"
                          class="img-fluid mt-2"/>
                 }
+                <div class="mt-2">
+                    @await Html.PartialAsync("_ShareButtonPartial", new ShareButtonViewModel
+                    {
+                        PostId = docPost.Id,
+                        Title = docPost.Title,
+                        Text = $"Bekijk het document: {docPost.DocumentName}",
+                        Image = docPost.DocumentName.Split('.').Last().ToLower() != "pdf" && docPost.DocumentName.Split('.').Last().ToLower() != "txt"
+                            ? Url.Action("GetFile", "Storage", new { fileName = docPost.DocumentName })
+                            : null
+                    })
+                </div>
             </div>
         }
 
