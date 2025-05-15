@@ -4,6 +4,7 @@ using Domain;
 using Domain.CitizenPanel;
 using Domain.Interfaces;
 using Domain.Interfaces.Posts;
+using Domain.Interfaces.Posts.PostItems;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
@@ -27,6 +28,7 @@ public class CitizenPanelDbContext : IdentityDbContext<ApplicationUser>
     public DbSet<CriteriaAnswerOption> CriteriaAnswerOptions { get; set; }
     public DbSet<CriteriaResponse> CriteriaResponses { get; set; }
     public DbSet<PlanningGroupMember> PlanningGroupMembers { get; set; }
+    public DbSet<Suggestion> Suggestions { get; set; }
     public DbSet<Post> Posts { get; set; }
     
     public CitizenPanelDbContext(DbContextOptions options, OrganisationContext organisationContext) : base(options)
@@ -88,6 +90,10 @@ public class CitizenPanelDbContext : IdentityDbContext<ApplicationUser>
         modelBuilder.Entity<EmbeddedVideoPost>();
         modelBuilder.Entity<YoutubeVideoPost>();
         modelBuilder.Entity<MeetingPost>();
+        // suggestionposts also contain suggestions
+        modelBuilder.Entity<SuggestionPost>()
+            .HasMany(s => s.Suggestions);
+        modelBuilder.Entity<Suggestion>();
         //ENSURE EF KNOWS HOW TO HANDLE DOCUMENTNAMES.
         modelBuilder.Entity<MeetingPost>(b =>
         {
