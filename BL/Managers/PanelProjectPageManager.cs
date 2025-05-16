@@ -2,6 +2,7 @@
 using BL.Interfaces;
 using DAL.Interfaces;
 using Domain.CitizenPanel;
+using Domain.Enums;
 using Domain.Interfaces;
 using Domain.Interfaces.Posts;
 using Domain.Interfaces.Posts.PostItems;
@@ -14,18 +15,47 @@ public class PanelProjectPageManager : IPanelProjectPageManager
     
     private readonly ILogger<PanelManager> _logger;
     private readonly IPanelRepository _repo;
+    private readonly IUserRepository _userRepo;
 
-    public PanelProjectPageManager(ILogger<PanelManager> logger, IPanelRepository repo)
+    public PanelProjectPageManager(ILogger<PanelManager> logger, IPanelRepository repo, IUserRepository userRepo)
     {
         _logger = logger;
         _repo = repo;
+        _userRepo = userRepo;
     }
     
     public Panel GetPanelWithPostsAndSuggestions(Guid panelId)
     {
         return _repo.ReadPanelWithPostsAndSuggestions(panelId);
     }
-    
+
+    public Vote GetVoteByUserAndSuggestionOrDefault(Guid user, Guid Suggestion)
+    {
+        return _repo.ReadVoteByPanelMemberAndSuggestionOrDefault(user, Suggestion);
+    }
+
+    public Vote ChangeVote(Guid userId, Guid suggestionId, VoteType voteType)
+    {
+        var vote = _repo.ReadVoteByPanelMemberAndSuggestionOrDefault(userId, suggestionId);
+        if (vote is null)
+        {
+            vote = new Vote
+            {
+                Owner = _repo.ReadPanelMemberByApplicationUser(_userRepo.ReadUser(userId.ToString())),
+                Suggestion = _repo.ReadSuggestion(suggestionId),
+                VoteType = voteType
+            };
+            _repo.CreateVote(vote);
+        }
+        else
+        {
+            vote.VoteType = voteType;
+            _repo.UpdateVote(vote);
+        }
+        return vote;
+
+    }
+
     public void AddSummaryToMeetingPost(Guid meetingId, string uniqueFileName)
     {
         _repo.CreateSummaryToMeetingPost(meetingId, uniqueFileName);
@@ -130,5 +160,4 @@ public class PanelProjectPageManager : IPanelProjectPageManager
 
         return suggestion;
     }
-    
 }

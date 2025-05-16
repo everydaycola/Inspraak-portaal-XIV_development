@@ -1,5 +1,6 @@
-using System.Collections;
+using Domain;
 using Domain.CitizenPanel;
+using Domain.Enums;
 using Domain.Interfaces;
 using Domain.Interfaces.Posts;
 using Domain.Interfaces.Posts.PostItems;
@@ -11,6 +12,7 @@ public interface IPanelRepository
     //READ
     public Panel ReadPanel(Guid id);
     public IEnumerable<Panel> ReadAllPanels();
+    public PanelMember ReadPanelMemberByApplicationUser(ApplicationUser user);
     public PanelMember ReadPanelMemberWithCriteriaResponses(Guid id);
     public PanelMember ReadPanelMemberWithPanel(Guid id);
     public Panel ReadPanelWithRepresentationGroup(Guid id);
@@ -20,6 +22,8 @@ public interface IPanelRepository
     public Panel ReadPanelWithPostsAndSuggestions(Guid panelId);
     public PlanningGroupMember ReadPlanningGroupMember(Guid planningsGroupMemberId);
     public Post ReadPost(Guid id);
+    public Vote ReadVoteByPanelMemberAndSuggestionOrDefault(Guid panelMemberId, Guid suggestionId);
+    public Suggestion ReadSuggestion(Guid suggestionId);
 
     //UPDATE
     public void UpdatePanel(Panel panel);
@@ -27,14 +31,17 @@ public interface IPanelRepository
 
     public void UpdatePanelMembersToSelected(ICollection<PanelMember> selectedMembers);
     public void UpdateSuggestionPost(SuggestionPost suggestionPost);
+    public void UpdateVote(Vote vote);
     //CREATE
     public void CreatePanelMember(PanelMember panelMember);
     public void CreatePanelMembers(List<PanelMember> panelMembers);
     public void CreatePost<T>(Guid panelId, T post) where T : Post;
     public void CreatePlanningsGroupMember(PlanningGroupMember member);
+    public void CreateSummaryToMeetingPost(Guid meetingId, string uniqueFileName);
+    public void CreateVote(Vote vote);
     
     //REMOVE
     public void RemoveAllUnselectedPanelmembers(Guid panelId);
     public void RemovePlanningGroupMember(Guid planningsGroupMemberId);
-    public void AddSummaryToMeetingPost(Guid meetingId, string uniqueFileName);
+    public void RemoveVote(Vote vote);
 }

@@ -8,5 +8,5 @@ public interface IUserRepository
 {
     public ApplicationUser ReadUser(string userId);
     public IdentityRole ReadUserRole(string userId);
-    Panel ReadPanelForUser(string userId);
+    public Panel ReadPanelForUser(string userId);
 }

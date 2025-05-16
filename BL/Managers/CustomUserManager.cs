@@ -1,5 +1,7 @@
-﻿using BL.Interfaces;
+﻿using System.Security.Claims;
+using BL.Interfaces;
 using DAL.Interfaces;
+using Domain;
 using Domain.CitizenPanel;
 
 namespace BL.Managers;
@@ -15,5 +17,10 @@ public class CustomUserManager : ICustomUserManager
     public Panel getPanelForUser(string userId)
     {
        return _userRepository.ReadPanelForUser(userId);
+    }
+
+    public ApplicationUser ReadUser(string userId)
+    {
+        return _userRepository.ReadUser(userId);
     }
 }

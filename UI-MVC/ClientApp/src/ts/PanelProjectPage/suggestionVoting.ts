@@ -26,6 +26,8 @@ document.addEventListener('DOMContentLoaded', () => {
         if (button.classList.contains('active')) {
             voteStates[suggestionId].currentlyPressedBtn = button;
         }
+        
+        console.log(suggestionId)
 
         button.addEventListener('click', () => handleVote(button, suggestionId));
     });
@@ -74,4 +76,16 @@ async function handleVote(button: HTMLButtonElement, suggestionId: string) {
     }
     
     // TODO: Implement API request to add vote
+
+    // Send vote to API
+    await fetch('/api/votes', {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            "suggestionId": suggestionId,
+            "voteType": button.dataset.voteType
+        })
+    });
 }

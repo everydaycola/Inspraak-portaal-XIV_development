@@ -1,4 +1,5 @@
 ﻿using Domain.CitizenPanel;
+using Domain.Enums;
 using Domain.Interfaces.Posts.PostItems;
 
 namespace BL.Interfaces;
@@ -9,6 +10,7 @@ public interface IPanelProjectPageManager
     public Panel GetPanelWithPostsAndSuggestions(Guid panelId);
     
     // CHANGE
+    public Vote ChangeVote(Guid userId, Guid suggestionId, VoteType voteType);
     
     // ADD
     public void AddTextPost(Guid panelId,string title, string content, bool isVisibleForPanelMembers);

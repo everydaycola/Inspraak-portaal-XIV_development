@@ -1,5 +1,6 @@
 ﻿using DAL.EF;
 using DAL.Interfaces;
+using Domain;
 using Domain.CitizenPanel;
 using Domain.Interfaces;
 using Domain.Interfaces.Posts;
@@ -27,6 +28,11 @@ public class PanelRepository : IPanelRepository
         return _context.Panels.ToList();
     }
 
+    public PanelMember ReadPanelMemberByApplicationUser(ApplicationUser user)
+    {
+        return _context.PanelMembers.Single(pm => pm.User == user);
+    }
+
 
     public PanelMember ReadPanelMemberWithCriteriaResponses(Guid id)
     {
@@ -49,10 +55,32 @@ public class PanelRepository : IPanelRepository
         return _context.Posts.Find(id);
     }
 
+    public Vote ReadVoteByPanelMemberAndSuggestionOrDefault(Guid panelMemberId, Guid suggestionId)
+    {
+        return _context.Votes
+            .Include(v => v.Owner)
+            .Include(v => v.Suggestion)
+            .SingleOrDefault(v => 
+                v.Owner.PanelMemberId == panelMemberId && 
+                v.Suggestion.Id == suggestionId);
+
+    }
+
+    public Suggestion ReadSuggestion(Guid suggestionId)
+    {
+        return _context.Suggestions.Find(suggestionId);
+    }
+
 
     public void CreatePlanningsGroupMember(PlanningGroupMember member)
     {
         _context.PlanningGroupMembers.Add(member);
+        _context.SaveChanges();
+    }
+
+    public void CreateVote(Vote vote)
+    {
+        _context.Votes.Add(vote);
         _context.SaveChanges();
     }
 
@@ -75,7 +103,13 @@ public class PanelRepository : IPanelRepository
         _context.SaveChanges();
     }
 
-    public void AddSummaryToMeetingPost(Guid meetingId, string uniqueFileName)
+    public void RemoveVote(Vote vote)
+    {
+        _context.Votes.Remove(vote);
+        _context.SaveChanges();
+    }
+    
+    public void CreateSummaryToMeetingPost(Guid meetingId, string uniqueFileName)
     {
         MeetingPost meetingPost = _context.Posts.Find(meetingId) as MeetingPost;
         if (meetingPost == null)
@@ -125,6 +159,12 @@ public class PanelRepository : IPanelRepository
     public void UpdateSuggestionPost(SuggestionPost suggestionPost)
     {
         _context.Posts.Update(suggestionPost);
+        _context.SaveChanges();
+    }
+
+    public void UpdateVote(Vote vote)
+    {
+        _context.Votes.Update(vote);
         _context.SaveChanges();
     }
 

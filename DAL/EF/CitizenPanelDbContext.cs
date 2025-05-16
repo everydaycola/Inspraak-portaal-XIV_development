@@ -29,6 +29,7 @@ public class CitizenPanelDbContext : IdentityDbContext<ApplicationUser>
     public DbSet<CriteriaResponse> CriteriaResponses { get; set; }
     public DbSet<PlanningGroupMember> PlanningGroupMembers { get; set; }
     public DbSet<Suggestion> Suggestions { get; set; }
+    public DbSet<Vote> Votes { get; set; }
     public DbSet<Post> Posts { get; set; }
     
     public CitizenPanelDbContext(DbContextOptions options, OrganisationContext organisationContext) : base(options)
@@ -94,6 +95,10 @@ public class CitizenPanelDbContext : IdentityDbContext<ApplicationUser>
         modelBuilder.Entity<SuggestionPost>()
             .HasMany(s => s.Suggestions);
         modelBuilder.Entity<Suggestion>();
+        modelBuilder.Entity<Vote>()
+            .HasOne(v => v.Owner);
+        modelBuilder.Entity<Vote>()
+            .HasOne(v => v.Suggestion);
         //ENSURE EF KNOWS HOW TO HANDLE DOCUMENTNAMES.
         modelBuilder.Entity<MeetingPost>(b =>
         {
@@ -102,6 +107,13 @@ public class CitizenPanelDbContext : IdentityDbContext<ApplicationUser>
                     v => JsonSerializer.Serialize(v, (JsonSerializerOptions?)null),
                     v => JsonSerializer.Deserialize<List<string>>(v, (JsonSerializerOptions?)null)!);
         });
+        
+        modelBuilder.Entity<Vote>()
+            .Property("SuggestionId");
+        modelBuilder.Entity<Vote>()
+            .Property("OwnerPanelMemberId");
+        modelBuilder.Entity<Vote>()
+            .HasKey("SuggestionId", "OwnerPanelMemberId");
     }
     public bool CreateDatabase(bool dropDatabase)
     {
