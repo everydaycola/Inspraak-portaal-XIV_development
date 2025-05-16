@@ -1,11 +1,11 @@
-import {createSuggestionBox, wrapElementWithBootstrapRow} from "../../Helpers/HtmlHelper";
+
 import {getAllSubRegions} from "./SubRegionHandler";
+import {createSuggestionBox, wrapElementWithBootstrapRow} from "../../customhelpers/htmlHelper";
 
 const available_criteria_categories : string[] = ["Geslacht","Werkend", "Opleidingsgraad"]
 
 export function attachEventHandlersToCriteriaInput(subregionInnerDiv: NodeListOf<HTMLDivElement>, basicApiData : any[]) {
     var currentlyUsedSubregions = getAllSubRegions(basicApiData);
-    console.log(currentlyUsedSubregions);
     subregionInnerDiv.forEach(innerDiv => {
         const inputs = innerDiv.querySelectorAll("input") as NodeListOf<HTMLInputElement>;
         const nameInput = inputs[0];
@@ -15,7 +15,6 @@ export function attachEventHandlersToCriteriaInput(subregionInnerDiv: NodeListOf
         innerDiv.insertBefore(suggestionBoxWithRow, firstRowOfInnerDiv);
         nameInput.addEventListener("input", () => {
             const inputValue = nameInput.value.toLowerCase();
-            // Filter suggestions based on input value
             const matches = available_criteria_categories.filter(category =>
                 category.toLowerCase().includes(inputValue)
             ).slice(0, 5);
@@ -79,10 +78,6 @@ function handleSelectedCriteriaFromHelper(selectedItem: string, innerDiv : HTMLD
     
     if(vraagInput){
         if(selectedItem === available_criteria_categories[0]){
-            console.log("Handling geslacht");
-            console.log(
-                vraagInput + " " + antwoord1Input  + " " + antwoord2Input + " "
-            );
             vraagInput.value = "Wat is uw geslacht?";
             antwoord1Input.value = "Man";
             antwoord2Input.value = "Vrouw";

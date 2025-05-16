@@ -16,3 +16,9 @@ export function wrapElementWithBootstrapRow(element: HTMLElement): HTMLDivElemen
     row.appendChild(element);
     return row;
 }
+
+export function createElementWithClassNames<K extends keyof HTMLElementTagNameMap>(tagName:K, ...classNames: string[]):HTMLElementTagNameMap[K]{
+    const element = document.createElement(tagName)
+    element.classList.add(...classNames);
+    return element;
+}

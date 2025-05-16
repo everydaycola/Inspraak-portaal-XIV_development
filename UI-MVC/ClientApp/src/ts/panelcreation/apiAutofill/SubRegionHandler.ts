@@ -1,8 +1,7 @@
-import {createSuggestionBox, wrapElementWithBootstrapRow} from "../../Helpers/HtmlHelper";
+import {createSuggestionBox, wrapElementWithBootstrapRow} from "../../customhelpers/htmlHelper";
+
 
 const outerDiv = document.querySelector("#subregions-container") as HTMLDivElement;
-let subregionInnerDiv = outerDiv.querySelectorAll(".subRegion") as NodeListOf<HTMLDivElement>;
-
 
 export function attachEventHandlersToSubregionInput(
     outerDiv: HTMLDivElement,
