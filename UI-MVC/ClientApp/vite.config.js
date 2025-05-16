@@ -13,17 +13,13 @@ export default defineConfig({
         emptyOutDir: true,
         rollupOptions: {
             input: {
-                index: resolve(__dirname, 'src/ts/index.ts'),
-                site: resolve(__dirname, 'src/ts/site.ts'),
-                validation: resolve(__dirname, 'src/ts/validation.ts'),
-                register: resolve(__dirname, 'src/ts/register/register.ts'),
-                panelCreation: resolve(__dirname, 'src/ts/Panel/panelCreation.ts'),
-                apiDataFiller: resolve(__dirname, 'src/ts/Panel/apiAutofill/apiDataFiller.ts'),
-                adminOrgMan: resolve(__dirname, 'src/ts/organisationmanagement/adminOrgMan.ts'),
-                suggestionVoting: resolve(__dirname, 'src/ts/PanelProjectPage/suggestionVoting.ts'),
-                autoOpenModals: resolve(__dirname, 'src/ts/auto-open-modals.ts'),
+                site: resolve(__dirname, 'src/ts/siteEntrypoint.ts'),
+                register: resolve(__dirname, 'src/ts/register/registerEntrypoint.ts'),
+                panelCreation: resolve(__dirname, 'src/ts/panelcreation/panelCreationEntrypoint.ts'),
+                adminOrgMan: resolve(__dirname, 'src/ts/organisationmanagement/adminOrgManEntrypoint.ts'),
+                accountSettings: resolve(__dirname, 'src/ts/accountSettings/accountSettingsEntrypoint.ts'),
                 shareButtonPartial: resolve(__dirname, 'src/ts/panelProjectPage/share.ts'),
-                accountSettings: resolve(__dirname, 'src/ts/accountSettings/accountSettings.ts')
+                suggestionVoting: resolve(__dirname, 'src/ts/PanelProjectPage/suggestionVoting.ts'),
             },
             output: {
                 entryFileNames: '[name].entry.js',

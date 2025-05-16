@@ -25,6 +25,7 @@ builder.Services.AddScoped<ICustomUserManager, CustomUserManager>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IPanelRepository, PanelRepository>();
 builder.Services.AddScoped<IPanelManager, PanelManager>();
+builder.Services.AddScoped<IPanelProjectPageManager, PanelProjectPageManager>();
 builder.Services.AddScoped<QrCodeGenerator, QrCodeGenerator>();
 builder.Services.AddScoped<IFileManager, FileManager>();
 builder.Services.AddScoped<ICriteriaManager, CriteriaManager>();
