@@ -5,6 +5,7 @@
     Layout = "_Layout";
 }
 
+<!--TODO: Update this to vite specifics instead of CDNS.-->
 @section Scripts{
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.3/jquery.validate.min.js"></script>
@@ -42,7 +43,7 @@
                                 <input id="subregion-0-name" name="SubRegions[0].Name" placeholder="Naam" type="text"
                                        class="form-control d-inline w-50 me-2" required/>
                                 <input id="subregion-0-size" name="SubRegions[0].Size" placeholder="Grootte" type="number"
-                                       class="form-control d-inline w-25" required/>
+                                       class="form-control d-inline w-25 subregion-size-input" required/>
                                 <span id="subregion-0-name-msg" class="text-danger field-validation-valid"></span>
                                 <span id="subregion-0-size-msg" class="text-danger field-validation-valid"></span>
                             </div>
@@ -67,6 +68,10 @@
                             <input id="response-rate" asp-for="ResponseRate" min="2" max="10"
                                    class="border border-1 rounded-2" type="number" placeholder="2"/>%
                             <span class="text-danger" asp-validation-for="ResponseRate"></span>
+                        </div>
+                        <div class="d-flex flex-row py-2">
+                            <!-- TODO: Actualy calculate the expected panel size. -->
+                            <p class="card-text pe-4 panel-size-output">Panelgrootte:</p>
                         </div>
                     </div>
 
