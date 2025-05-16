@@ -18,9 +18,4 @@ public class CustomUserManager : ICustomUserManager
     {
        return _userRepository.ReadPanelForUser(userId);
     }
-
-    public ApplicationUser ReadUser(string userId)
-    {
-        return _userRepository.ReadUser(userId);
-    }
 }
