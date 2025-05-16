@@ -54,8 +54,9 @@ $open-animation-time: 2s;
   .large-grid-container {
     display: grid;
     grid-template-columns: 5fr 95fr;
-    grid-template-rows: calc(100vh - #{constants.$gap-size} - #{constants.$vertical-navbar-width}) #{constants.$vertical-navbar-width};
-    height: 100vh;
+    grid-template-rows: 0.95fr 0.05fr;
+    min-height: 100vh;
+    height:fit-content;
     grid-gap: #{constants.$gap-size};
     margin-bottom: 0 !important;
     transition: grid-template-columns 0.3s ease-in-out;
