@@ -94,11 +94,11 @@ public class CitizenPanelDbContext : IdentityDbContext<ApplicationUser>
         // suggestionposts also contain suggestions
         modelBuilder.Entity<SuggestionPost>()
             .HasMany(s => s.Suggestions);
-        modelBuilder.Entity<Suggestion>();
+        modelBuilder.Entity<Suggestion>()
+            .HasMany(s => s.Votes)
+            .WithOne(s => s.Suggestion);
         modelBuilder.Entity<Vote>()
             .HasOne(v => v.Owner);
-        modelBuilder.Entity<Vote>()
-            .HasOne(v => v.Suggestion);
         //ENSURE EF KNOWS HOW TO HANDLE DOCUMENTNAMES.
         modelBuilder.Entity<MeetingPost>(b =>
         {
@@ -111,9 +111,9 @@ public class CitizenPanelDbContext : IdentityDbContext<ApplicationUser>
         modelBuilder.Entity<Vote>()
             .Property("SuggestionId");
         modelBuilder.Entity<Vote>()
-            .Property("OwnerPanelMemberId");
+            .Property("OwnerId");
         modelBuilder.Entity<Vote>()
-            .HasKey("SuggestionId", "OwnerPanelMemberId");
+            .HasKey("SuggestionId", "OwnerId");
     }
     public bool CreateDatabase(bool dropDatabase)
     {

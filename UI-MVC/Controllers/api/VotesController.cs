@@ -1,5 +1,6 @@
 ﻿using BL.Interfaces;
 using Domain;
+using Domain.Enums;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -12,29 +13,39 @@ namespace UI_MVC.Controllers.api;
 public class VotesController : ControllerBase
 {
     private readonly IPanelProjectPageManager _manager;
-    private readonly ICustomUserManager _customUserManager;
-    private readonly UserManager<ApplicationUser> _userManager; 
+    private readonly UserManager<ApplicationUser> _userManager;
+    private readonly ILogger<VotesController> _logger;
 
-    public VotesController(IPanelProjectPageManager manager, ICustomUserManager customUserManager, UserManager<ApplicationUser> userManager)
+    public VotesController(IPanelProjectPageManager manager, UserManager<ApplicationUser> userManager, ILogger<VotesController> logger)
     {
         _manager = manager;
-        _customUserManager = customUserManager;
         _userManager = userManager;
+        _logger = logger;
     }
     
     [HttpPut]
-    public IActionResult AddNewVote([FromBody] NewVoteDto newVote)
+    public async Task<IActionResult> AddNewVote([FromBody] NewVoteDto newVote)
     {
-
-        if (!Guid.TryParse(_userManager.GetUserId(User), out var userId))
-        {
-            return Forbid();
-        }
+        var user = await _userManager.GetUserAsync(User);
         
-        var vote = _manager.ChangeVote(newVote.SuggestionId, userId, newVote.Type)
+        if (user == null)
+        {
+            return Unauthorized(); // User not found or not authenticated
+        }
 
+        
+        if (
+            !Guid.TryParse(newVote.SuggestionId, out var suggestionGuid) ||
+            !Enum.TryParse<VoteType>(newVote.Type, out var voteType))
+        {
+            return NotFound();
+        }
 
-
+        _manager.ChangeVote(
+            user,
+            suggestionGuid,
+            voteType);
+        
         return NoContent();
     }
 }

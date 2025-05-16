@@ -39,53 +39,59 @@ async function handleVote(button: HTMLButtonElement, suggestionId: string) {
 
     const oldButton = currentState.currentlyPressedBtn;
 
-    // Toggle behavior, if clicking the same button, remove vote
-    if (oldButton === button) {
-        currentState.currentlyPressedBtn = null;
-        button.classList.remove('active');
+    try {
+        // Send vote to API
+        const response = await fetch('/api/votes', {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                "SuggestionId": suggestionId,
+                "Type": button.dataset.voteType
+            })
+        });
 
-        const countElement = button.querySelector('.vote-count');
-        if (countElement) {
-            countElement.textContent = Math.max(0, parseInt(countElement.textContent || '0') - 1).toString();
+        if (response.status === 404 || response.status == 401) {
+            return;
         }
 
-
-        // TODO: Implement API request to remove vote
-        return;
-    }
-
-    // Remove old vote if exists
-    if (oldButton) {
-        oldButton.classList.remove('active');
-
-        const oldCountElement = oldButton.querySelector('.vote-count');
-        if (oldCountElement) {
-            oldCountElement.textContent = Math.max(0, parseInt(oldCountElement.textContent || '0') - 1).toString();
+        if (response.status !== 204) {
+            console.error('Unexpected response status:', response.status);
         }
-        
-        // TODO: Implement API request to remove old vote
+
+        // Toggle behavior, if clicking the same button, remove vote
+        if (oldButton === button) {
+            currentState.currentlyPressedBtn = null;
+            button.classList.remove('active');
+
+            const countElement = button.querySelector('.vote-count');
+            if (countElement) {
+                countElement.textContent = Math.max(0, parseInt(countElement.textContent || '0') - 1).toString();
+            }
+
+            return;
+        }
+
+        // Remove old vote if exists
+        if (oldButton) {
+            oldButton.classList.remove('active');
+
+            const oldCountElement = oldButton.querySelector('.vote-count');
+            if (oldCountElement) {
+                oldCountElement.textContent = Math.max(0, parseInt(oldCountElement.textContent || '0') - 1).toString();
+            }
+        }
+
+        // Add new vote
+        currentState.currentlyPressedBtn = button;
+        button.classList.add('active');
+
+        const newCountElement = button.querySelector('.vote-count');
+        if (newCountElement) {
+            newCountElement.textContent = (parseInt(newCountElement.textContent || '0') + 1).toString();
+        }
+    } catch (error) {
+        console.error('Failed to send vote:', error);
     }
-
-    // Add new vote
-    currentState.currentlyPressedBtn = button;
-    button.classList.add('active');
-
-    const newCountElement = button.querySelector('.vote-count');
-    if (newCountElement) {
-        newCountElement.textContent = (parseInt(newCountElement.textContent || '0') + 1).toString();
-    }
-    
-    // TODO: Implement API request to add vote
-
-    // Send vote to API
-    await fetch('/api/votes', {
-        method: 'PUT',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-            "suggestionId": suggestionId,
-            "voteType": button.dataset.voteType
-        })
-    });
 }

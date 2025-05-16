@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using Domain;
 using Domain.CitizenPanel;
 using Domain.Enums;
@@ -12,17 +13,16 @@ public interface IPanelRepository
     //READ
     public Panel ReadPanel(Guid id);
     public IEnumerable<Panel> ReadAllPanels();
-    public PanelMember ReadPanelMemberByApplicationUser(ApplicationUser user);
     public PanelMember ReadPanelMemberWithCriteriaResponses(Guid id);
     public PanelMember ReadPanelMemberWithPanel(Guid id);
     public Panel ReadPanelWithRepresentationGroup(Guid id);
     public IEnumerable<PanelMember> ReadPanelMembersWithCriteria(Guid id);
     public Panel ReadPanelWithCriteriaAndAnswerOptions(Guid panelId);
     public IEnumerable<PlanningGroupMember> ReadAllPlanningGroupMembersWithIdentityUserForPanel(Guid panelId);
-    public Panel ReadPanelWithPostsAndSuggestions(Guid panelId);
+    public Panel ReadPanelWithPostsAndSuggestionsAndVotes(Guid panelId);
     public PlanningGroupMember ReadPlanningGroupMember(Guid planningsGroupMemberId);
     public Post ReadPost(Guid id);
-    public Vote ReadVoteByPanelMemberAndSuggestionOrDefault(Guid panelMemberId, Guid suggestionId);
+    public Vote ReadVoteByPanelMemberAndSuggestionOrDefault(ApplicationUser user, Guid suggestionId);
     public Suggestion ReadSuggestion(Guid suggestionId);
 
     //UPDATE

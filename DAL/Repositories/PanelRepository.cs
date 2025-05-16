@@ -1,4 +1,5 @@
-﻿using DAL.EF;
+﻿using System.Security.Claims;
+using DAL.EF;
 using DAL.Interfaces;
 using Domain;
 using Domain.CitizenPanel;
@@ -28,11 +29,6 @@ public class PanelRepository : IPanelRepository
         return _context.Panels.ToList();
     }
 
-    public PanelMember ReadPanelMemberByApplicationUser(ApplicationUser user)
-    {
-        return _context.PanelMembers.Single(pm => pm.User == user);
-    }
-
 
     public PanelMember ReadPanelMemberWithCriteriaResponses(Guid id)
     {
@@ -55,13 +51,13 @@ public class PanelRepository : IPanelRepository
         return _context.Posts.Find(id);
     }
 
-    public Vote ReadVoteByPanelMemberAndSuggestionOrDefault(Guid panelMemberId, Guid suggestionId)
+    public Vote ReadVoteByPanelMemberAndSuggestionOrDefault(ApplicationUser user, Guid suggestionId)
     {
         return _context.Votes
             .Include(v => v.Owner)
             .Include(v => v.Suggestion)
             .SingleOrDefault(v => 
-                v.Owner.PanelMemberId == panelMemberId && 
+                v.Owner == user && 
                 v.Suggestion.Id == suggestionId);
 
     }
@@ -209,7 +205,7 @@ public class PanelRepository : IPanelRepository
     public void CreatePost<T>(Guid panelId, T post) where T : Post
     {
         _context.Posts.Add(post);
-        var panel = ReadPanelWithPostsAndSuggestions(panelId);
+        var panel = ReadPanelWithPostsAndSuggestionsAndVotes(panelId);
         if (panel == null) return;
         panel.Posts.Add(post);
         _context.SaveChanges();
@@ -231,11 +227,12 @@ public class PanelRepository : IPanelRepository
             .Single(p => p.Id == panelId);
     }
 
-    public Panel ReadPanelWithPostsAndSuggestions(Guid panelId)
+    public Panel ReadPanelWithPostsAndSuggestionsAndVotes(Guid panelId)
     {
         return _context.Panels
             .Include(p => p.Posts)
             .ThenInclude(p => (p as SuggestionPost).Suggestions)
+            .ThenInclude(s => s.Votes)
             .Single(p => p.Id == panelId);
     }
 

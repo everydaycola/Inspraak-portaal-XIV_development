@@ -1,11 +1,9 @@
 ﻿using System.Text.RegularExpressions;
 using BL.Interfaces;
 using Domain;
-using Domain.CitizenPanel;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using StackExchange.Redis;
 using UI_MVC.Models.Dto.ProjectPage;
 
 namespace UI_MVC.Controllers;
@@ -34,34 +32,38 @@ public class PanelProjectPageController : Controller
         _projectPageManager = projectPageManager;
     }
     
-    private IActionResult HandleValidationError(string message, string modalName, Guid panelId)
+    private async Task<IActionResult> HandleValidationError(string message, string modalName, Guid panelId)
     {
         _logger.Log(LogLevel.Warning, modalName + ": Validation Error: " + message);
         ModelState.AddModelError("", message);
-        return SendBack(modalName, panelId);
+        return await SendBack(modalName, panelId);
     }
     
-    private IActionResult SendBack(string modalName, Guid panelId)
+    private async Task<IActionResult> SendBack(string modalName, Guid panelId)
     {
         ViewBag.OpenModal = modalName;
+        var user = await _userManager.GetUserAsync(User);
         return View("Index", new ProjectPageDto
         {
-            Panel = _projectPageManager.GetPanelWithPostsAndSuggestions(panelId)
+            Panel = _projectPageManager.GetPanelWithPostsAndSuggestionsAndVotes(panelId),
+            CurrentUser = user
         });
     }
 
     [Authorize(Roles = "Organisatie,PanelMember")]
     public async Task<IActionResult> Index(Guid? panelId)
     {
+        var user = await _userManager.GetUserAsync(User);
+        
         if (!panelId.HasValue)
         {
-            var user = await _userManager.GetUserAsync(HttpContext.User);
             panelId = _customUserManager.getPanelForUser(user.Id).Id;
         }
 
         return View(new ProjectPageDto
         {
-            Panel = _projectPageManager.GetPanelWithPostsAndSuggestions(panelId.Value),
+            Panel = _projectPageManager.GetPanelWithPostsAndSuggestionsAndVotes(panelId.Value),
+            CurrentUser = user
         });
     }
 
@@ -71,7 +73,7 @@ public class PanelProjectPageController : Controller
     {
         if (!ModelState.IsValid)
         {
-            return SendBack("addTextModal", newTextPost.PanelId);
+            return await SendBack("addTextModal", newTextPost.PanelId);
         }
 
         _projectPageManager.AddTextPost(newTextPost.PanelId, newTextPost.Title, newTextPost.Content, newTextPost.VisibleForPanelMember);
@@ -95,7 +97,7 @@ public class PanelProjectPageController : Controller
     {
         if (!ModelState.IsValid)
         {
-            return SendBack("addBestandModal", newDocumentPost.PanelId);
+            return await SendBack("addBestandModal", newDocumentPost.PanelId);
         }
         
         //Generate a unique filename
@@ -163,7 +165,7 @@ public class PanelProjectPageController : Controller
     {
         if (!ModelState.IsValid)
         {
-            return SendBack("addVideoModal", newVideoPost.PanelId);
+            return await SendBack("addVideoModal", newVideoPost.PanelId);
         }
         
         if (!string.IsNullOrWhiteSpace(newVideoPost.YoutubeUrl))
@@ -185,7 +187,7 @@ public class PanelProjectPageController : Controller
             
     }
 
-    private async Task<IActionResult> AddEmbedVideoPost(
+    private Task<IActionResult> AddEmbedVideoPost(
         Guid panelId,
         string title,
         string videoUrl,
@@ -210,7 +212,7 @@ public class PanelProjectPageController : Controller
             });
 
 
-        return RedirectToAction("Index", new { panelId });
+        return Task.FromResult<IActionResult>(RedirectToAction("Index", new { panelId }));
     }
     
     private async Task<IActionResult> AddYoutubeVideoPost(
@@ -237,7 +239,7 @@ public class PanelProjectPageController : Controller
         
         if (youtubeId == null)
         {
-            return HandleValidationError("Ongeldige YouTube URL. Voer een geldige YouTube video URL in.", "addVideoModal", panelId);
+            return await HandleValidationError("Ongeldige YouTube URL. Voer een geldige YouTube video URL in.", "addVideoModal", panelId);
         }
 
         _projectPageManager.AddYoutubeVideoPost(
@@ -272,13 +274,13 @@ public class PanelProjectPageController : Controller
     {
         if (!ModelState.IsValid)
         {
-            return SendBack("addWerksessieModal", panelId);
+            return await SendBack("addWerksessieModal", panelId);
         }
         
         // Parse the time, throw an error if it fails.
         if (!TimeSpan.TryParse(sessionTime, out var parsedTime))
         {
-            return HandleValidationError("Ongeldig tijdstip.", "addWerksessieModal", panelId);
+            return await HandleValidationError("Ongeldig tijdstip.", "addWerksessieModal", panelId);
         }
 
         // Add the meeting post to the panel
@@ -327,7 +329,7 @@ public class PanelProjectPageController : Controller
     {
         if (!ModelState.IsValid)
         {
-            return SendBack("addSuggestionModal", suggestionPostDto.PanelId);
+            return await SendBack("addSuggestionModal", suggestionPostDto.PanelId);
         }
 
         _projectPageManager.AddSuggestionPost(suggestionPostDto.PanelId, suggestionPostDto.Title,

@@ -1,6 +1,6 @@
-﻿@using Domain.Interfaces
+﻿@using Domain.Enums
+@using Domain.Interfaces
 @using Domain.Interfaces.Posts
-@using UI_MVC.Models.ViewModels
 @model UI_MVC.Models.Dto.ProjectPage.ProjectPageDto
 
 @{
@@ -501,23 +501,29 @@
                                         </small>
                                     </div>
                                     <div id="votes" class="btn-group" role="group">
-                                        <button type="button" class="btn btn-outline-success vote-btn"
-                                                data-vote-type="up" data-suggestion-id="@suggestion.Id"
+                                        <button type="button" class="btn btn-outline-success vote-btn @(suggestion.Votes.Any(v => v.VoteType == VoteType.Up && v.Owner == Model.CurrentUser) ? "active" : "")"
+                                                data-vote-type="Up" data-suggestion-id="@suggestion.Id"
                                                 style="outline: none !important; box-shadow: none !important;">
                                             <i class="bi bi-hand-thumbs-up"></i>
-                                            <span class="vote-count">0</span>
+                                            <span class="vote-count">
+                                                @suggestion.Votes.Count(v => v.VoteType == VoteType.Up)
+                                            </span>
                                         </button>
-                                        <button type="button" class="btn btn-outline-secondary vote-btn"
-                                                data-vote-type="neutral" data-suggestion-id="@suggestion.Id"
+                                        <button type="button" class="btn btn-outline-secondary vote-btn @(suggestion.Votes.Any(v => v.VoteType == VoteType.Neutral && v.Owner == Model.CurrentUser) ? "active" : "")"
+                                                data-vote-type="Neutral" data-suggestion-id="@suggestion.Id"
                                                 style="outline: none !important; box-shadow: none !important;">
                                             <i class="bi bi-dash-circle"></i>
-                                            <span class="vote-count">0</span>
+                                            <span class="vote-count">
+                                                @suggestion.Votes.Count(v => v.VoteType == VoteType.Neutral)
+                                            </span>
                                         </button>
-                                        <button type="button" class="btn btn-outline-danger vote-btn"
-                                                data-vote-type="down" data-suggestion-id="@suggestion.Id"
+                                        <button type="button" class="btn btn-outline-danger vote-btn @(suggestion.Votes.Any(v => v.VoteType == VoteType.Down && v.Owner == Model.CurrentUser) ? "active" : "")"
+                                                data-vote-type="Down" data-suggestion-id="@suggestion.Id"
                                                 style="outline: none !important; box-shadow: none !important;">
-                                        <i class="bi bi-hand-thumbs-down"></i>
-                                            <span class="vote-count">0</span>
+                                            <i class="bi bi-hand-thumbs-down"></i>
+                                            <span class="vote-count">
+                                                @suggestion.Votes.Count(v => v.VoteType == VoteType.Down)
+                                            </span>
                                         </button>
                                     </div>
                                 </div>
