@@ -28,7 +28,7 @@ public class PanelProjectPageManager : IPanelProjectPageManager
     
     public void AddSummaryToMeetingPost(Guid meetingId, string uniqueFileName)
     {
-        _repo.AddSummaryToMeetingPost(meetingId, uniqueFileName);
+        _repo.CreateSummaryToMeetingPost(meetingId, uniqueFileName);
     }
     
     // Generic helper method for post validation and creation
@@ -122,7 +122,7 @@ public class PanelProjectPageManager : IPanelProjectPageManager
         {
             Title = suggestionTitle,
             CreatedAt = DateTime.UtcNow,
-            Owner = owner
+            OwnerEmail = owner
         };
         suggestionPost.Suggestions.Add(suggestion);
         // update the post with the new suggestion

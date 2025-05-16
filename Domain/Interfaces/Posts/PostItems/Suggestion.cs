@@ -11,6 +11,5 @@ public class Suggestion
     [Required(ErrorMessage = "Post moet een datum hebben")]
     public DateTime CreatedAt { get; set; }
     [MaxLength(300, ErrorMessage = "Email van suggestie eigenaar is te lang")]
-    public string Owner { get; set; }
-    
+    public string OwnerEmail { get; set; }
 }

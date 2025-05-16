@@ -7,16 +7,16 @@ namespace UI_MVC.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class CommuneController : ControllerBase
+    public class CommunesController : ControllerBase
     {
         private readonly ICommuneManager _communeManager;
 
-        public CommuneController(ICommuneManager communeManager)
+        public CommunesController(ICommuneManager communeManager)
         {
             _communeManager = communeManager;
         }
 
-        // GET: api/Commune
+        // GET: api/Communes
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Commune>>> GetCommunes()
         {
@@ -24,7 +24,7 @@ namespace UI_MVC.Controllers
             return Ok(communes);
         }
         
-        // GET: api/Commune/basic
+        // GET: api/Communes/basic
         [HttpGet("basic")]
         public async Task<ActionResult<IEnumerable<CommuneBasicDto>>> GetCommunesBasic()
         {
