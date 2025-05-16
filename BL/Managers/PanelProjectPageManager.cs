@@ -44,25 +44,27 @@ public class PanelProjectPageManager : IPanelProjectPageManager
     }
 
 // Simplified post methods
-    public void AddTextPost(Guid panelId, string title, string content, bool isVisibleForPanelMembers)
+    public void AddTextPost(Guid panelId, string title, string content, bool isVisibleForPanelMembers, bool isGloballyVisible)
     {
         AddPost(panelId, new TextPost
         {
             Title = title,
             Content = content,
             CreatedAt = DateTime.UtcNow,
-            IsVisibleForPanelMembers = isVisibleForPanelMembers
+            IsVisibleForPanelMembers = isVisibleForPanelMembers,
+            IsGloballyVisible = isGloballyVisible
         });
     }
 
-    public void AddDocumentPost(Guid panelId, string title, string documentUrl, bool isVisibleForPanelMembers)
+    public void AddDocumentPost(Guid panelId, string title, string documentUrl, bool isVisibleForPanelMembers, bool isGloballyVisible)
     {
         AddPost(panelId, new DocumentPost
         {
             Title = title,
             DocumentName = documentUrl,
             CreatedAt = DateTime.UtcNow,
-            IsVisibleForPanelMembers = isVisibleForPanelMembers
+            IsVisibleForPanelMembers = isVisibleForPanelMembers,
+            IsGloballyVisible = isGloballyVisible
         });
     }
 
@@ -77,25 +79,27 @@ public class PanelProjectPageManager : IPanelProjectPageManager
         });
     }
 
-    public void AddEmbedVideoPost(Guid panelId, string title, string videoUrl, bool visibleForPanelMember)
+    public void AddEmbedVideoPost(Guid panelId, string title, string videoUrl, bool visibleForPanelMember, bool isGloballyVisible)
     {
         AddPost(panelId, new EmbeddedVideoPost
         {
             Title = title,
             CreatedAt = DateTime.UtcNow,
             IsVisibleForPanelMembers = visibleForPanelMember,
-            VideoUrl = videoUrl
+            VideoUrl = videoUrl,
+            IsGloballyVisible = isGloballyVisible
         });
     }
 
-    public void AddYoutubeVideoPost(Guid panelId, string title, string videoId, bool visibleForPanelMember)
+    public void AddYoutubeVideoPost(Guid panelId, string title, string videoId, bool visibleForPanelMember, bool isGloballyVisible)
     {
         AddPost(panelId, new YoutubeVideoPost
         {
             Title = title,
             CreatedAt = DateTime.UtcNow,
             IsVisibleForPanelMembers = visibleForPanelMember,
-            VideoId = videoId
+            VideoId = videoId,
+            IsGloballyVisible = isGloballyVisible
         });
     }
 

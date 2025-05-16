@@ -21,6 +21,7 @@ public class NewVideoPostDto: IValidatableObject
     public string VideoUrl { get; set; }
     
     public bool VisibleForPanelMember { get; set; }
+    public bool IsGloballyVisible { get; set; }
     
     public bool InformPeopleViaMail { get; set; }
 
