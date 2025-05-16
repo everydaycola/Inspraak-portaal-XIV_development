@@ -367,13 +367,10 @@
                     </div>
                     <p class="mt-2 mb-0">@textPost.Content</p>
                     <div class="mt-2">
-                        @await Html.PartialAsync("_ShareButtonPartial", new ShareButtonViewModel
-                        {
-                            PostId = textPost.Id,
-                            Title = textPost.Title,
-                            Text = textPost.Content,
-                            Image = null 
-                        })
+                        <button class="btn btn-outline-info btn-sm mt-2 copy-link-btn"
+                                data-clipboard-text="@($"{Context.Request.Scheme}://{Context.Request.Host}{Url.Action("Index", "PanelProjectPage", new { id = textPost.Id })}")">
+                            <i class="bi bi-link-45deg"></i> Link kopiëren
+                        </button>
                     </div>
                 </div>
                 break;
@@ -402,15 +399,10 @@
                              class="img-fluid mt-2"/>
                     }
                     <div class="mt-2">
-                        @await Html.PartialAsync("_ShareButtonPartial", new ShareButtonViewModel
-                        {
-                            PostId = docPost.Id,
-                            Title = docPost.Title,
-                            Text = $"Bekijk het document: {docPost.DocumentName}",
-                            Image = docPost.DocumentName.Split('.').Last().ToLower() != "pdf" && docPost.DocumentName.Split('.').Last().ToLower() != "txt"
-                                ? Url.Action("GetFile", "Storage", new { fileName = docPost.DocumentName })
-                                : null
-                        })
+                        <button class="btn btn-outline-info btn-sm mt-2 copy-link-btn"
+                                data-clipboard-text="@($"{Context.Request.Scheme}://{Context.Request.Host}{Url.Action("Index", "PanelProjectPage", new { id = docPost.Id })}")">
+                            <i class="bi bi-link-45deg"></i> Link kopiëren
+                        </button>
                     </div>
                 </div>
                 break;
