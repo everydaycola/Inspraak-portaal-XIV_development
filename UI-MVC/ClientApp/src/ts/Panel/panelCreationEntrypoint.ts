@@ -1,7 +1,8 @@
-import {addSubRegion} from "./subRegion";
-import {addCriteria} from "./criteria";
-import {onSubregionChange, setupPanelsizePreviewHandlers} from "./panelsizePreviewHandler";
-import {addSubregionValidation, validateCriteriaPercentages} from "./panelFormValidator";
+import {addSubRegion, addSubregionValidation} from "./subcomponents/subRegion";
+import {addCriteria} from "./subcomponents/criteria";
+import {validateCriteriaPercentages} from "./subcomponents/panelFormValidator";
+import {onSubregionChange, setupPanelsizePreviewHandlers} from "./subcomponents/panelsizePreviewHandler";
+import {setupApiAutoFill} from "./apiAutofill/apiDataFiller";
 
 
 document.addEventListener("DOMContentLoaded",() => {
@@ -30,3 +31,5 @@ const initialSizeInput = document.querySelector("#subregion-0-size") as HTMLInpu
 initialSizeInput.addEventListener("input", (e) => {
     onSubregionChange()
 })
+
+setupApiAutoFill();

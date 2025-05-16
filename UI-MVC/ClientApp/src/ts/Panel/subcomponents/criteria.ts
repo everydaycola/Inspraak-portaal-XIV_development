@@ -1,10 +1,8 @@
 import {addAnswerOption, reIndexAnswerOptions, resetAnswerCounters, createPercentageInput} from "./answersOption";
-import {setValidationMessages} from "./panelFormValidator" 
-import {criteriaInputUpdateHandler} from "./apiAutofill/apiDataFiller";
-import {attachEventHandlersToCriteriaInput} from "./apiAutofill/CriteriaHandler";
-import {createElementWithClassNames} from "../helpers/htmlHelper";
-import {create} from "qrcode"; 
-
+import {setValidationMessages} from "./panelFormValidator"
+import {criteriaInputUpdateHandler} from "../apiAutofill/apiDataFiller";
+import {createElementWithClassNames} from "../../helpers/htmlHelper";
+import {createRemoveBtn} from "../../components";
 
 let criteriaCount = 0;
 
@@ -81,10 +79,7 @@ function createCriteriaElement(currentCount: number): HTMLDivElement {
     isDefaultDiv.append(isDefaultInput, isDefaultLabel);
 
     // Remove Button
-    const removeBtn = createElementWithClassNames("button","btn","btn-danger","btn-sm");
-    removeBtn.type = "button";
-    removeBtn.innerHTML = `<i class="bi-trash"></i>`;
-    removeBtn.addEventListener("click", () => removeCriteria(currentCount));
+    const removeBtn = createRemoveBtn(() => removeCriteria(currentCount))
 
     // Error span for name
     const nameValidationSpan = createElementWithClassNames("span","text-danger","ps-1");

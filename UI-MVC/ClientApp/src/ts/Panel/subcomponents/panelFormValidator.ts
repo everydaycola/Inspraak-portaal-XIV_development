@@ -5,9 +5,7 @@
 
 export function setValidationMessages(ctrlID: string, msgEleID: string,
     messages: ValidationMessages) {
-
     let element = document.getElementById(ctrlID) as HTMLInputElement
-    
     element.addEventListener("focusout", () => {
 
         let flag: boolean = false;
@@ -18,7 +16,6 @@ export function setValidationMessages(ctrlID: string, msgEleID: string,
                 flag = true;
             }
         }
-
         if (element.validity.tooShort) {
             if (typeof messages.tooShort !== "undefined") {
                 element.setCustomValidity(messages.tooShort);

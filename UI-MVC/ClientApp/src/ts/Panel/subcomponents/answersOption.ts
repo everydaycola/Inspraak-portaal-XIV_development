@@ -1,17 +1,17 @@
 ﻿import {round} from "@popperjs/core/lib/utils/math";
 import {setValidationMessages} from "./panelFormValidator";
+import {createElementWithClassNames} from "../../helpers/htmlHelper";
+import {createRemoveBtn} from "../../components";
 
 export let answerOptionCounters: Map<number, number> = new Map()
 
 export function createPercentageInput(criteriaId: number, answerCount: number) {
-    const answerOptionPercentageInput = document.createElement("input");
+    const answerOptionPercentageInput = createElementWithClassNames("input","border","border-1","rounded-2","me-2","answer-option-distribution");
     answerOptionPercentageInput.id = `answer-option-${criteriaId}-${answerCount}-percentage`
     answerOptionPercentageInput.name = `Distributions[${criteriaId}].AnswerOptions[${answerCount}].DistributionPercentage`;
-    answerOptionPercentageInput.className = "border border-1 rounded-2 me-2 answer-option-distribution";
     answerOptionPercentageInput.type = "number";
     answerOptionPercentageInput.step = "0.01";
     answerOptionPercentageInput.placeholder = `${round(100 / (answerCount + 1))}`
-
     // Validation
     answerOptionPercentageInput.required = true;
     answerOptionPercentageInput.min = "0";
@@ -27,38 +27,29 @@ export function addAnswerOption(criteriaId: number, answersContainer: HTMLUListE
     const answerOptionId = `option-${criteriaId}-${answerCount}`
 
     // Create answerOption li
-    const answerOptionLi = document.createElement("li");
+    const answerOptionLi = createElementWithClassNames("li","list-group-item","d-flex","flex-row","py-2");
     answerOptionLi.id = answerOptionId
-    answerOptionLi.className = "list-group-item d-flex flex-row py-2";
 
     // Create answerOption input
-    const answerOptionInput = document.createElement("input");
+    const answerOptionInput = createElementWithClassNames("input","border","border-1","rounded-2","me-2","answer-option");
     answerOptionInput.id = `answer-option-${criteriaId}-${answerCount}`
     answerOptionInput.name = `Distributions[${criteriaId}].AnswerOptions[${answerCount}].Option`;
-    answerOptionInput.className = "border border-1 rounded-2 me-2 answer-option";
     answerOptionInput.type = "text";
     answerOptionInput.placeholder = `Antwoord ${(answerCount + 1)}`
 
     // Validation span for option
-    const answerOptionSpan = document.createElement("span");
+    const answerOptionSpan = createElementWithClassNames("span", "text-danger","field-validation-valid","ps-1");
     answerOptionSpan.id = `${answerOptionInput.id}-msg`
-    answerOptionSpan.className = "text-danger field-validation-valid ps-1";
     
     // Create Delete Button
-    const removeBtn = document.createElement("button");
-    removeBtn.type = "button";
-    removeBtn.className = "btn btn-danger btn-sm";
-    removeBtn.innerHTML = `<i class="bi-trash"></i>`;
-    removeBtn.addEventListener("click", () => removeAnswerOption(answerOptionId, criteriaId, answersContainer));
-
+    const removeBtn = createRemoveBtn(() => removeAnswerOption(answerOptionId, criteriaId, answersContainer));
     if (isDistributionKnown) {
         // Create answerOptionPercentage input
         const answerOptionPercentageInput = createPercentageInput(criteriaId, answerCount);
 
         // Validation span for percentage
-        const answerOptionPercentageSpan = document.createElement("span");
+        const answerOptionPercentageSpan = createElementWithClassNames("span","text-danger","field-validation-valid","ps-1");
         answerOptionPercentageSpan.id = `${answerOptionPercentageInput.id}-msg`
-        answerOptionPercentageSpan.className = "text-danger field-validation-valid ps-1";
 
         answerOptionLi.append(answerOptionInput, answerOptionPercentageInput, removeBtn, answerOptionSpan, answerOptionPercentageSpan);
         answersContainer.append(answerOptionLi);

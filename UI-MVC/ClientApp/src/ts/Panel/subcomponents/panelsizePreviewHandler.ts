@@ -1,5 +1,5 @@
-import {getCurrentBaseUrl} from "../helpers/locationHelper";
-import {fetchFromAPI} from "../helpers/apihelper";
+import {fetchFromAPI} from "../../helpers/apihelper";
+import {getCurrentBaseUrl} from "../../helpers/locationHelper";
 
 export function setupPanelsizePreviewHandlers() {
     const reservePercentInput: HTMLInputElement | null = document.querySelector("#reserve");

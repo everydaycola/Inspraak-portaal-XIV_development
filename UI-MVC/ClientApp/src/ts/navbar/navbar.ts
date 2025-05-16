@@ -1,5 +1,5 @@
 ﻿
-export function setupNavBarHover() {
+export function setupNavBarInteraction() {
     const expandNavbarButton: HTMLAnchorElement = document.querySelector(".expand-navbar")!!;
     const nav: HTMLElement = document.querySelector("nav")!!
     const largeContainer: HTMLElement = document.querySelector(".large-grid-container")!!

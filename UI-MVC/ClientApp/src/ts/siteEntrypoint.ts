@@ -9,7 +9,9 @@ import '../scss/register.scss'
 import '../scss/customnavbar.scss'
 
 // Custom Ts
-import {setupNavBarHover} from "./navbar/navbar";
+import {setupNavBarInteraction} from "./navbar/navbar";
+import {configureAutoOpeningModals} from "./helpers/bootstrapAutoModalOpeningHelper";
 
 console.log('The \'site\' bundle has been loaded!');
-setupNavBarHover()
+setupNavBarInteraction()
+configureAutoOpeningModals()
