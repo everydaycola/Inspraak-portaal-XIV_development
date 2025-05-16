@@ -4,7 +4,7 @@ export function configureDelete() {
             const row = (event.currentTarget as HTMLElement).closest("tr");
             if (!row) return;
 
-            const organisationId = row.dataset.id; // Directly get string ID
+            const organisationId = row.dataset.id;
             try {
                 const response = await fetch(`/OrganisationManagement/AdminOrganisationDelete/${organisationId}`, {
                     method: "DELETE",

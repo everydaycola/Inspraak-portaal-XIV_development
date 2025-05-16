@@ -1,70 +1,67 @@
-﻿import {newSubregionInputAddedHandler} from "./apiAutofill/apiDataFiller";
-
-import {setValidationMessages} from "./FormValidator"
+﻿import {newSubregionInputAddedHandler} from "../apiAutofill/apiDataFiller";
 import {onSubregionChange} from "./panelsizePreviewHandler";
+import {createElementWithClassNames} from "../../customhelpers/htmlHelper";
+import {setValidationMessages} from "./panelFormValidator";
+
 
 let subRegionCount = 1;
 
 export function addSubRegion() {
     const subRegionContainer = document.getElementById("subregions-container") as HTMLDivElement;
-
-    // Create a unique ID for this subregion block
-    const subRegionId = `subregion-${subRegionCount}`;
+    const subRegionElement = createSubRegionElement(subRegionCount, removeSubRegion);
+    const nameInput = subRegionElement.querySelectorAll("input")[0];
+    const nameError = subRegionElement.querySelectorAll("span")[0];
+    const sizeInput = subRegionElement.querySelectorAll("input")[1];
+    const sizeError = subRegionElement.querySelectorAll("span")[0];
+    subRegionContainer.appendChild(subRegionElement);
+    addSubregionValidation(nameInput, nameError, sizeInput, sizeError);
+    newSubregionInputAddedHandler();
+    onSubregionChange();
+    subRegionCount++;
+}
+function createSubRegionElement(index: number, removeCallback: (id: string) => void): HTMLDivElement {
+    const subRegionId = `subregion-${index}`;
 
     // Create the wrapper div
-    const wrapper = document.createElement("div");
+    const wrapper = createElementWithClassNames("div", "mb-2","d-flex","align-items-center","subRegion")
     wrapper.id = subRegionId;
-    wrapper.className = "mb-2 d-flex align-items-center subRegion";
 
     // Create the Name input
-    const nameInput = document.createElement("input");
-    nameInput.id = `subregion-${subRegionCount}-name` 
-    nameInput.name = `SubRegions[${subRegionCount}].Name`;  // Bind to SubRegions[index].Name
+    const nameInput = createElementWithClassNames("input","form-control", "d-inline", "w-50","me-2");
+    nameInput.id = `subregion-${index}-name`;
+    nameInput.name = `SubRegions[${index}].Name`;
     nameInput.placeholder = "Naam";
     nameInput.type = "text";
-    nameInput.className = "form-control d-inline w-50 me-2";
-    
 
     // Create the Size input
-    const sizeInput = document.createElement("input");
-    sizeInput.id = `subregion-${subRegionCount}-size`
-    sizeInput.name = `SubRegions[${subRegionCount}].Size`;  // Bind to SubRegions[index].Size
+    const sizeInput = createElementWithClassNames("input","form-control","d-inline","w-25","me-2","subregion-size-input");
+    sizeInput.id = `subregion-${index}-size`;
+    sizeInput.name = `SubRegions[${index}].Size`;
     sizeInput.placeholder = "Grootte";
     sizeInput.type = "number";
-    sizeInput.className = "form-control d-inline w-25 me-2 subregion-size-input";
 
-    sizeInput.addEventListener("input",() => {
-        onSubregionChange()
-    })
-    
+    sizeInput.addEventListener("input", () => {
+        onSubregionChange();
+    });
+
     // Create the Remove button
-    const removeButton = document.createElement("button");
+    const removeButton = createElementWithClassNames("button","btn","btn-danger","btn-sm");
     removeButton.type = "button";
-    removeButton.className = "btn btn-danger btn-sm";
     removeButton.innerHTML = `<i class="bi-trash"></i>`;
-    removeButton.addEventListener("click", () => removeSubRegion(subRegionId));
+    removeButton.addEventListener("click", () => removeCallback(subRegionId));
 
-    const nameError = document.createElement("span");
-    nameError.id = `${nameInput.id}-msg`
+    // Error messages
+    const nameError = createElementWithClassNames("span","text-danger","field-validation-valid");
+    nameError.id = `${nameInput.id}-msg`;
     nameError.className = "text-danger field-validation-valid";
     
-    const sizeError = document.createElement("span");
-    sizeError.id = `${sizeInput.id}-msg`
-    sizeError.className = "text-danger field-validation-valid";
-    
+    const sizeError = createElementWithClassNames("span","text-danger","field-validation-valid");
+    sizeError.id = `${sizeInput.id}-msg`;
+
     // Append the inputs and button to the wrapper
     wrapper.append(nameInput, sizeInput, removeButton, nameError, sizeError);
-
-    // Add the wrapper to the subregion container
-    subRegionContainer.appendChild(wrapper);
-    //Call apiDataFillerScript to repopulate.
-    newSubregionInputAddedHandler()
-    onSubregionChange()
-
-    addSubregionValidation(nameInput, nameError, sizeInput, sizeError);
-
-    // Increment the count for the next subregion
-    subRegionCount++;
+    
+    return wrapper;
 }
 
 export function addSubregionValidation(nameInput: HTMLInputElement, nameError: HTMLSpanElement, sizeInput: HTMLInputElement, sizeError: HTMLSpanElement) {
@@ -87,11 +84,8 @@ export function addSubregionValidation(nameInput: HTMLInputElement, nameError: H
 function removeSubRegion(id: string) {
     const element = document.getElementById(id);
     if (element) {
-        // Remove the element from the DOM
         element.remove();
-        // Rebuild the subregions to fix the indices
         reIndexSubRegions();
-        //Call apiDataFillerScript
         newSubregionInputAddedHandler();
     }
 }
@@ -99,22 +93,18 @@ function removeSubRegion(id: string) {
 function reIndexSubRegions() {
     const subRegionContainer = document.getElementById("subregions-container") as HTMLDivElement;
     const subRegionDivs = subRegionContainer.querySelectorAll(".subRegion") as NodeListOf<HTMLDivElement>;
-
-    // Re-index the remaining subregions
+    
     subRegionCount = 0;
     subRegionDivs.forEach((div, index) => {
         const nameInput = div.querySelector("input[name$='Name']") as HTMLInputElement;
 
         if (nameInput) {
-            // Re-index Name input
             nameInput.name = `SubRegions[${index}].Name`;
-
-            // Re-index Size input
+            
             const sizeInput = div.querySelector("input[name$='Size']")  as HTMLInputElement;
             sizeInput.name = `SubRegions[${index}].Size`;
         }
-
-        // Update subregionCount to the correct next index
+        
         subRegionCount++;
     });
 }
