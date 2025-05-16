@@ -35,6 +35,7 @@ builder.Services.AddScoped<ISendMailManager, SendMailManager>();
 builder.Services.AddScoped<IStorageManager, StorageManager>();
 builder.Services.AddScoped<IPinCRepository, PinCRepository>();
 builder.Services.AddScoped<ICommuneManager, CommuneManager>();
+builder.Services.AddScoped<IPanelProjectPageManager, PanelProjectPageManager>();
 
 //Tenant specific logic
 builder.Services
