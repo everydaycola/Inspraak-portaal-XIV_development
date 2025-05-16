@@ -12,12 +12,14 @@
     "bootstrap-icons": "^1.11.3",
     "jquery": "^3.7.1",
     "jquery-validation": "^1.21.0",
-    "jquery-validation-unobtrusive": "^4.0.0"
+    "jquery-validation-unobtrusive": "^4.0.0",
+    "qrcode": "^1.5.4"
   },
   "devDependencies": {
     "@tsconfig/recommended": "^1.0.5",
     "@types/bootstrap": "^5.2.10",
     "@types/jquery": "^3.5.32",
+    "@types/qrcode": "^1.5.5",
     "sass": "^1.72.0",
     "typescript": "^5.4.3",
     "vite": "^6.2.0"
