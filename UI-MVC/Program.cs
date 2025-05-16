@@ -82,8 +82,6 @@ builder.Services
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
-app.UseExceptionHandler("/Error");
-app.UseStatusCodePagesWithReExecute("/Error/{0}");
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Error");

@@ -3,7 +3,6 @@ export function configureSearch() {
     const queryInputField: HTMLInputElement | null = document.querySelector("#searchBar");
     const tableRows: NodeListOf<HTMLTableRowElement> = document.querySelectorAll('table tbody tr');
 
-
     if (searchButton && queryInputField) {
         searchButton.addEventListener("click", function () {
             console.log("Searchbutton clicked.")

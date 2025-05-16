@@ -1,178 +1,148 @@
 import {addAnswerOption, reIndexAnswerOptions, resetAnswerCounters, createPercentageInput} from "./answersOption";
-import {setValidationMessages} from "./FormValidator" 
+import {setValidationMessages} from "./panelFormValidator" 
 import {criteriaInputUpdateHandler} from "./apiAutofill/apiDataFiller";
-import {attachEventHandlersToCriteriaInput} from "./apiAutofill/CriteriaHandler"; 
+import {attachEventHandlersToCriteriaInput} from "./apiAutofill/CriteriaHandler";
+import {createElementWithClassNames} from "../helpers/htmlHelper";
+import {create} from "qrcode"; 
 
 
 let criteriaCount = 0;
 
 export function addCriteria() {
     const criteriaContainer = document.getElementById("criteria-container") as HTMLDivElement;
-    const currentCount = criteriaCount++
+    const currentCount = criteriaCount++;
 
+    const criteriaElement = createCriteriaElement(currentCount);
+    criteriaContainer.appendChild(criteriaElement);
+    
+    const nameInput = criteriaElement.querySelector("input[name^='Distributions'][name$='Name']") as HTMLInputElement;
+    const nameError = criteriaElement.querySelector(`#${nameInput.id}-msg`) as HTMLSpanElement;
+    const questionInput = criteriaElement.querySelector("input[name^='Distributions'][name$='Question']") as HTMLInputElement;
+    const questionError = criteriaElement.querySelector(`#${questionInput.id}-msg`) as HTMLSpanElement;
+    const answerUl = criteriaElement.querySelector("ul.list-group") as HTMLUListElement;
+    const isDistributionKnownInput = criteriaElement.querySelector("input[name^='Distributions'][name$='IsDistributionKnown']") as HTMLInputElement;
+    
+    addAnswerOption(currentCount, answerUl, true);
+    addAnswerOption(currentCount, answerUl, true);
+
+    // Validation for Name
+    nameInput.required = true;
+    nameInput.minLength = 2;
+    nameInput.maxLength = 20;
+    setValidationMessages(nameInput.id, nameError.id, {
+        valueMissing: "Criteria moet een naam hebben.",
+        tooShort: "Criteria naam moet minimaal 2 karakters lang zijn.",
+        tooLong: "Criteria naam mag maximaal 20 karakters lang zijn."
+    });
+
+    // Validation for Question
+    questionInput.minLength = 6;
+    questionInput.maxLength = 100;
+    setValidationMessages(questionInput.id, questionError.id, {
+        tooShort: "Criteria vraag moet minimaal 6 karakters lang zijn.",
+        tooLong: "Criteria vraag mag maximaal 100 karakters lang zijn."
+    });
+
+    criteriaInputUpdateHandler();
+}
+
+function createCriteriaElement(currentCount: number): HTMLDivElement {
     const criteriaId = `criteria-${currentCount}`;
 
-    // Create the wrapper div
-    const wrapper = document.createElement("div");
+    // Wrapper
+    const wrapper = createElementWithClassNames("div","mt-4","criteria");
     wrapper.id = criteriaId;
-    wrapper.className = "mt-4 criteria";
-
-    // Create head div
-    const headDiv = document.createElement("div");
-    headDiv.className = "d-flex flex-row";
-
-    // Create name div
-    const nameDiv = document.createElement("div");
-    nameDiv.className = "d-flex flex-row col-3";
-
-    // Create name label
-    const nameLabel = document.createElement("label")
-    nameLabel.className = "card-text pe-4";
+    // Head
+    const headDiv = createElementWithClassNames("div","d-flex","flex-row");
+    // Name
+    const nameDiv = createElementWithClassNames("div","d-flex","flex-row","col-3");
+    const nameLabel = createElementWithClassNames("label","card-text","pe-4");
     nameLabel.htmlFor = "criteria-name";
-    nameLabel.innerHTML = `<strong>Naam:</strong>`
-
-    // Create name input
-    const nameInput = document.createElement("input")
+    nameLabel.innerHTML = `<strong>Naam:</strong>`;
+    const nameInput = createElementWithClassNames("input", "border","border-1","rounded-2");
     nameInput.id = `criteria-name-${currentCount}`;
     nameInput.className = "border border-1 rounded-2";
     nameInput.type = "text";
     nameInput.placeholder = `Criteria ${currentCount + 1}`;
-    nameInput.name = `Distributions[${currentCount}].Name`
+    nameInput.name = `Distributions[${currentCount}].Name`;
+    nameDiv.append(nameLabel, nameInput);
 
-    // Create isDefault div
-    const isDefaultDiv = document.createElement("div");
-    isDefaultDiv.className = "d-flex flex-row col-3 form-check form-switch"
-
-    // Create isDefault label
-    const isDefaultLabel = document.createElement("label")
-    isDefaultLabel.className = "card-text ps-3";
-    isDefaultLabel.htmlFor = "is-default-criteria";
-    isDefaultLabel.innerHTML = `<strong>Standaard Criteria</strong>`
-
-    // Create isDefault input
-    const isDefaultInput = document.createElement("input")
+    // isDefault
+    const isDefaultDiv = createElementWithClassNames("div","d-flex","flex-row","col-3","form-check","form-switch");
+    const isDefaultInput = createElementWithClassNames("input","border","border-1","rounded-2","form-check-input");
     isDefaultInput.id = `is-default-${criteriaId}`;
-    isDefaultInput.className = "border border-1 rounded-2 form-check-input";
     isDefaultInput.type = "checkbox";
     isDefaultInput.name = `Distributions[${currentCount}].IsDefault`;
     isDefaultInput.value = "true";
     isDefaultInput.checked = true;
+    const isDefaultLabel = createElementWithClassNames("label","card-text","ps-3");
+    isDefaultLabel.htmlFor = "is-default-criteria";
+    isDefaultLabel.innerHTML = `<strong>Standaard Criteria</strong>`;
+    isDefaultDiv.append(isDefaultInput, isDefaultLabel);
 
-    // Create Delete Button
-    const removeBtn = document.createElement("button");
+    // Remove Button
+    const removeBtn = createElementWithClassNames("button","btn","btn-danger","btn-sm");
     removeBtn.type = "button";
-    removeBtn.className = "btn btn-danger btn-sm";
     removeBtn.innerHTML = `<i class="bi-trash"></i>`;
     removeBtn.addEventListener("click", () => removeCriteria(currentCount));
 
-    // Create Question div
-    const questionDiv = document.createElement("div");
-    questionDiv.className = "d-flex flex-row my-2";
+    // Error span for name
+    const nameValidationSpan = createElementWithClassNames("span","text-danger","ps-1");
+    nameValidationSpan.id = `${nameInput.id}-msg`;
 
-    // Create Question label
-    const questionLabel = document.createElement("label");
-    questionLabel.className = "card-text pe-4";
+    // Head assembly
+    headDiv.append(nameDiv, isDefaultDiv, removeBtn, nameValidationSpan);
+
+    // Question
+    const questionDiv = createElementWithClassNames("div","d-flex","flex-row","my-2");
+    const questionLabel = createElementWithClassNames("label","card-text","pe-4");
     questionLabel.htmlFor = "criteria-question";
     questionLabel.innerHTML = `<strong>Vraag:</strong>`;
-
-    // Create Question input
-    const questionInput = document.createElement("input");
+    const questionInput = createElementWithClassNames("input","border","border-1","rounded-2","col-8","criteria-question");
     questionInput.id = `criteria-question-${currentCount}`;
-    questionInput.className = "border border-1 rounded-2 col-8 criteria-question";
     questionInput.type = "text";
     questionInput.placeholder = `Criteria ${currentCount + 1} vraag`;
     questionInput.name = `Distributions[${currentCount}].Question`;
+    // Error span for question
+    const questionValidationSpan = createElementWithClassNames("span","text-danger","ps-1");
+    questionValidationSpan.id = `${questionInput.id}-msg`;
+    questionDiv.append(questionLabel, questionInput, questionValidationSpan);
 
-    // Create Answer Heading
-    const answerHeading = document.createElement("h6");
-    answerHeading.className = "card-title pt-2"
-    answerHeading.innerHTML = `<strong>Mogelijke antwoorden</strong>`
+    // Answers
+    const answerHeading = createElementWithClassNames("h6","card-title","pt-2");
+    answerHeading.innerHTML = `<strong>Mogelijke antwoorden</strong>`;
 
-    // Create Answer List
-    const answerUl = document.createElement("ul");
-    answerUl.className = "list-group list-group-flush";
+    const answerUl = createElementWithClassNames("ul","list-group","list-group-flush");
 
-    // Create isDistributionKnown div
-    const isDistributionKnownDiv = document.createElement("div");
-    isDistributionKnownDiv.className = "d-flex flex-row col-3 form-check form-switch"
-
-    // Create Distribution known Checkbox
-    const isDistributionKnownInput = document.createElement("input")
+    // isDistributionKnown
+    const isDistributionKnownDiv = createElementWithClassNames("div","d-flex","flex-row","col-3","form-check","form-switch");
+    const isDistributionKnownInput = createElementWithClassNames("input","border","border-1","rounded-2","form-check-input");
     isDistributionKnownInput.id = `is-distribution-known-${currentCount}-criteria`;
-    isDistributionKnownInput.className = "border border-1 rounded-2 form-check-input";
     isDistributionKnownInput.type = "checkbox";
     isDistributionKnownInput.name = `Distributions[${currentCount}].IsDistributionKnown`;
     isDistributionKnownInput.value = "true";
     isDistributionKnownInput.checked = true;
     isDistributionKnownInput.addEventListener("click", () => {
-        toggleAnswerOptionPercentageInput(isDistributionKnownInput.checked, currentCount)
-    })
-
-    // Create isDistributionKnown label
-    const isDistributionKnownLabel = document.createElement("label")
-    isDistributionKnownLabel.className = "card-text pe-5";
+        toggleAnswerOptionPercentageInput(isDistributionKnownInput.checked, currentCount);
+    });
+    const isDistributionKnownLabel = createElementWithClassNames("label","card-text","pe-5");
     isDistributionKnownLabel.htmlFor = isDistributionKnownInput.name;
     isDistributionKnownLabel.innerText = "Verdeling gekend";
-    
-    // Create addAnswerOption Button
-    const addAnswerOptionBtn = document.createElement("button")
+    isDistributionKnownDiv.append(isDistributionKnownLabel, isDistributionKnownInput);
+
+    answerUl.append(isDistributionKnownDiv);
+
+    // Add Answer Option Button
+    const addAnswerOptionBtn = createElementWithClassNames("button","btn","btn-primary","col-2","ms-3","my-2","add-option-button");
     addAnswerOptionBtn.type = "button";
-    addAnswerOptionBtn.className = "btn btn-primary col-2 ms-3 my-2";
     addAnswerOptionBtn.innerText = "Mogelijkheid Toevoegen";
     addAnswerOptionBtn.addEventListener("click", () => addAnswerOption(currentCount, answerUl, isDistributionKnownInput.checked));
-    addAnswerOptionBtn.classList.add("add-option-button");
 
-    // Error spans
-    
-    const nameValidationSpan = document.createElement("span");
-    nameValidationSpan.id=`${nameInput.id}-msg`
-    nameValidationSpan.className = "text-danger ps-1";
+    // Final assembly
+    wrapper.append(headDiv, questionDiv, answerHeading, answerUl, addAnswerOptionBtn);
 
-    const questionValidationSpan = document.createElement("span");
-    questionValidationSpan.id = `${questionInput.id}-msg`
-    questionValidationSpan.className = "text-danger ps-1";
-    
-    // Appending
-    isDistributionKnownDiv.append(isDistributionKnownLabel, isDistributionKnownInput)
-    answerUl.append(isDistributionKnownDiv)
-
-    wrapper.append(headDiv, questionDiv, answerHeading, answerUl, addAnswerOptionBtn)
-
-    headDiv.append(nameDiv, isDefaultDiv, removeBtn, nameValidationSpan)
-
-    nameDiv.append(nameLabel, nameInput);
-    isDefaultDiv.append(isDefaultInput, isDefaultLabel);
-
-    questionDiv.append(questionLabel, questionInput, questionValidationSpan);
-    
-    criteriaContainer.appendChild(wrapper);
-
-    // add 2 Answer Options
-    addAnswerOption(currentCount, answerUl, true);
-    addAnswerOption(currentCount, answerUl, true);
-
-    //Validation
-    //Name
-    nameInput.required = true;
-    nameInput.minLength = 2;
-    nameInput.maxLength = 20;
-    setValidationMessages(nameInput.id,nameValidationSpan.id,{
-        valueMissing: "Criteria moet een naam hebben.",
-        tooShort: "Criteria naam moet minimaal 2 karakters lang zijn.",
-        tooLong: "Criteria naam mag maximaal 20 karakters lang zijn."
-    })
-
-    //Question
-    questionInput.minLength = 6;
-    questionInput.maxLength = 100;
-
-    setValidationMessages(questionInput.id,questionValidationSpan.id,{
-        tooShort: "Criteria vraag moet minimaal 6 karakters lang zijn.",
-        tooLong: "Criteria vraag mag maximaal 100 karakters lang zijn."
-    })
-    criteriaInputUpdateHandler()
+    return wrapper;
 }
-
 
 
 function removeCriteria(criteriaId: number) {
@@ -242,47 +212,3 @@ function reIndexCriteria() {
         criteriaCount++;
     });
 }
-
-//Validation
-export function validateCriteriaPercentages(): boolean {
-    let isValid = true;
-
-    const criteriaBlocks = document.querySelectorAll(".criteria");
-
-    criteriaBlocks.forEach((criteriaDiv, index) => {
-        const distKnownCheck = criteriaDiv.querySelector(`input[name$="IsDistributionKnown"]`) as HTMLInputElement
-        const defaultCheck = criteriaDiv.querySelector(`input[name$="IsDefault"]`) as HTMLInputElement
-        const error = document.createElement("div");
-        if (defaultCheck.checked && !distKnownCheck.checked) {
-            isValid = false
-
-            error.className = "text-danger distribution-error";
-            error.innerText = `Een standaard criteria moet een verdeling hebben.`;
-        } else if (distKnownCheck.checked) {
-            const inputs = criteriaDiv.querySelectorAll<HTMLInputElement>(
-                `input[name^="Distributions[${index}].AnswerOptions"][name$="DistributionPercentage"]`
-            );
-
-            const sum = Array.from(inputs)
-                .map(input => parseFloat(input.value) || 0)
-                .reduce((acc, val) => acc + val, 0);
-
-            // Remove existing message if any
-            let message = criteriaDiv.querySelector(".distribution-error");
-            if (message) message.remove();
-
-            if (Math.abs(sum) != 100) {
-                isValid = false;
-
-                error.className = "text-danger distribution-error";
-                error.innerText = `De verdeling van de antwoord opties moet 100% zijn. Nu: ${sum}%`;
-            }
-        }
-        // Place below answer list
-        const ul = criteriaDiv.querySelector("ul.list-group");
-        ul?.after(error);
-    });
-
-    return isValid;
-}
-

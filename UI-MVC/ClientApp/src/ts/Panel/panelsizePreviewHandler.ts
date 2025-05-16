@@ -1,5 +1,5 @@
-import {fetchFromAPI, getCurrentBaseUrl} from "./apiAutofill/apiConnection";
-
+import {getCurrentBaseUrl} from "../helpers/locationHelper";
+import {fetchFromAPI} from "../helpers/apihelper";
 
 export function setupPanelsizePreviewHandlers() {
     const reservePercentInput: HTMLInputElement | null = document.querySelector("#reserve");
@@ -42,7 +42,6 @@ async function handleInputChange(
     );
 
     const outputField = document.querySelector(".panel-size-output");
-    console.log("Outputfield " + outputField)
     if (outputField) {
         if (estimatedPanelSize >= 0) {
             outputField.innerHTML = "panel grootte: " + estimatedPanelSize;

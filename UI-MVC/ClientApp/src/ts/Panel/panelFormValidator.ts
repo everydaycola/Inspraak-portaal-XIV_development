@@ -71,3 +71,63 @@ export function setValidationMessages(ctrlID: string, msgEleID: string,
         }
     });
 }
+
+export function addSubregionValidation(nameInput: HTMLInputElement, nameError: HTMLSpanElement, sizeInput: HTMLInputElement, sizeError: HTMLSpanElement) {
+    //Name
+    if (!nameInput.required){
+        nameInput.required = true;
+    }
+    setValidationMessages(nameInput.id, nameError.id, {
+        valueMissing: "De naam van een (deel)gemeente of wijk is verplicht."
+    })
+    //Size
+    if (!sizeInput.required) {
+        sizeInput.required = true;
+    }
+    setValidationMessages(sizeInput.id, sizeError.id, {
+        valueMissing: "De grootte van een (deel)gemeente of wijk is verplicht."
+    })
+}
+
+export function validateCriteriaPercentages(): boolean {
+    let isValid = true;
+
+    const criteriaBlocks = document.querySelectorAll(".criteria");
+
+    criteriaBlocks.forEach((criteriaDiv, index) => {
+        const distKnownCheck = criteriaDiv.querySelector(`input[name$="IsDistributionKnown"]`) as HTMLInputElement
+        const defaultCheck = criteriaDiv.querySelector(`input[name$="IsDefault"]`) as HTMLInputElement
+        const error = document.createElement("div");
+        if (defaultCheck.checked && !distKnownCheck.checked) {
+            isValid = false
+
+            error.className = "text-danger distribution-error";
+            error.innerText = `Een standaard criteria moet een verdeling hebben.`;
+        } else if (distKnownCheck.checked) {
+            const inputs = criteriaDiv.querySelectorAll<HTMLInputElement>(
+                `input[name^="Distributions[${index}].AnswerOptions"][name$="DistributionPercentage"]`
+            );
+
+            const sum = Array.from(inputs)
+                .map(input => parseFloat(input.value) || 0)
+                .reduce((acc, val) => acc + val, 0);
+
+            // Remove existing message if any
+            let message = criteriaDiv.querySelector(".distribution-error");
+            if (message) message.remove();
+
+            if (Math.abs(sum) != 100) {
+                isValid = false;
+
+                error.className = "text-danger distribution-error";
+                error.innerText = `De verdeling van de antwoord opties moet 100% zijn. Nu: ${sum}%`;
+            }
+        }
+        // Place below answer list
+        const ul = criteriaDiv.querySelector("ul.list-group");
+        ul?.after(error);
+    });
+
+    return isValid;
+}
+

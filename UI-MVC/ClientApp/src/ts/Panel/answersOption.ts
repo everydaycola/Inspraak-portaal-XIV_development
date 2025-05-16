@@ -1,5 +1,5 @@
 ﻿import {round} from "@popperjs/core/lib/utils/math";
-import {setValidationMessages} from "./FormValidator";
+import {setValidationMessages} from "./panelFormValidator";
 
 export let answerOptionCounters: Map<number, number> = new Map()
 

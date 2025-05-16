@@ -1,6 +1,7 @@
-import {addSubRegion, addSubregionValidation} from "./subRegion";
-import {addCriteria, validateCriteriaPercentages} from "./criteria";
+import {addSubRegion} from "./subRegion";
+import {addCriteria} from "./criteria";
 import {onSubregionChange, setupPanelsizePreviewHandlers} from "./panelsizePreviewHandler";
+import {addSubregionValidation, validateCriteriaPercentages} from "./panelFormValidator";
 
 
 document.addEventListener("DOMContentLoaded",() => {
