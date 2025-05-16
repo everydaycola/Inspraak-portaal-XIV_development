@@ -31,6 +31,9 @@
         <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addWerksessieModal">
             Werksessie inplannen.
         </button>
+        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addSuggestionModal">
+            Suggestie vraag toevoegen.
+        </button>
     </div>
 
     @if (User.IsInRole(CustomIdentityConstants.OrganisatieRole))
@@ -47,7 +50,7 @@
                         <form id="addTextForm" asp-action="AddTextPost" method="post">
                             @if (ViewBag.OpenModal == "addTextModal")
                             {
-                                <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+                                <div asp-validation-summary="All" class="alert alert-danger"></div>
                             }
                             <input type="hidden" name="panelId" value="@Model.Panel.Id"/>
                             <div class="mb-3">
@@ -107,7 +110,7 @@
                             <input type="hidden" name="panelId" value="@Model.Panel.Id"/>
                             @if (ViewBag.OpenModal == "addBestandModal")
                             {
-                                <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+                                <div asp-validation-summary="All" class="alert alert-danger"></div>
                             }
 
                             <div class="mb-3">
@@ -167,7 +170,7 @@
                             <input type="hidden" name="panelId" value="@Model.Panel.Id"/>
                             @if (ViewBag.OpenModal == "addVideoModal")
                             {
-                                <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+                                <div asp-validation-summary="All" class="alert alert-danger"></div>
                             }
 
                             <div class="mb-3">
@@ -246,6 +249,52 @@
             </div>
         </div>
 
+        <!-- Suggestie Modal -->
+        <div class="modal fade" id="addSuggestionModal" tabindex="-1" aria-labelledby="addSuggestionModalLabel"
+             aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content shadow">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="addSuggestionModalLabel">Suggestie toevoegen</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Sluiten"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="addSuggestionForm" asp-action="AddSuggestionPost" method="post">
+                            @if (ViewBag.OpenModal == "addSuggestionModal")
+                            {
+                                <div asp-validation-summary="All" class="alert alert-danger"></div>
+                            }
+                            <input type="hidden" name="panelId" value="@Model.Panel.Id"/>
+                            <div class="mb-3">
+                                <label for="suggestionTitleInput" class="form-label">Onderwerp (*)</label>
+                                <input type="text" class="form-control" id="suggestionTitleInput" name="title"
+                                       placeholder="Voer een onderwerp in." required/>
+                            </div>
+
+                            @* suggestion post is always visible for panelmembers *@
+                            <input type="hidden" name="visibleForPanelMember" value="true"/>
+
+                            <h3>Panelleden op de hoogte brengen?</h3>
+                            <div class="form-check mb-3">
+                                <input class="form-check-input" type="checkbox" id="informPeopleViaMail" value="true"
+                                       name="informPeopleViaMail" checked/>
+                                <label class="form-check-label" for="informPeopleViaMail"
+                                       title="Wanneer dit vakje is aangevinkt worden de betreffende personen op de hoogte gebracht.">
+                                    Iedereen op de hoogte brengen via mail?
+                                </label>
+                            </div>
+
+                            <div class="text-end">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuleren
+                                </button>
+                                <button type="submit" class="btn btn-success">Opslaan</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         /*WERKSESSIE AANMAKEN.*/
         <div class="modal fade" id="addWerksessieModal" tabindex="-1" aria-labelledby="addWerksessieModalLabel"
              aria-hidden="true">
@@ -260,7 +309,7 @@
                             <input type="hidden" name="panelId" value="@Model.Panel.Id"/>
                             @if (ViewBag.OpenModal == "addWerksessieModal")
                             {
-                                <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+                                <div asp-validation-summary="All" class="alert alert-danger"></div>
                             }
                             <div class="mb-3">
                                 <label for="sessionTitleInput" class="form-label">Titel van de werksessie (*)</label>
@@ -308,138 +357,167 @@
         post.IsVisibleForPanelMembers || (!post.IsVisibleForPanelMembers && !User.IsInRole(CustomIdentityConstants.PanelMemberRole))
     )
     {
-        @if (post is TextPost textPost)
+        @switch (post)
         {
-            <div class="timeline-item mb-4 p-3 border rounded shadow-sm bg-white">
-                <div class="d-flex justify-content-between align-items-center">
-                    <h5 class="mb-1">@textPost.Title</h5>
-                    <small class="text-muted">@textPost.CreatedAt.ToString("dd MMM yyyy HH:mm")</small>
+            case TextPost textPost:
+                <div class="timeline-item mb-4 p-3 border rounded shadow-sm bg-white">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h5 class="mb-1">@textPost.Title</h5>
+                        <small class="text-muted">@textPost.CreatedAt.ToString("dd MMM yyyy HH:mm")</small>
+                    </div>
+                    <p class="mt-2 mb-0">@textPost.Content</p>
+                    <div class="mt-2">
+                        @await Html.PartialAsync("_ShareButtonPartial", new ShareButtonViewModel
+                        {
+                            PostId = textPost.Id,
+                            Title = textPost.Title,
+                            Text = textPost.Content,
+                            Image = null 
+                        })
+                    </div>
                 </div>
-                <p class="mt-2 mb-0">@textPost.Content</p>
-                <div class="mt-2">
-                    @await Html.PartialAsync("_ShareButtonPartial", new ShareButtonViewModel
-                    {
-                        PostId = textPost.Id,
-                        Title = textPost.Title,
-                        Text = textPost.Content,
-                        Image = null 
-                    })
-                </div>
-            </div>
-        }
+                break;
 
-        @if (post is DocumentPost docPost)
-        {
-            <div class="timeline-item mb-4 p-3 border rounded shadow-sm bg-white">
-                <div class="d-flex justify-content-between align-items-center">
-                    <h5 class="mb-1">@docPost.Title</h5>
-                    <small class="text-muted">@docPost.CreatedAt.ToString("dd MMM yyyy HH:mm")</small>
-                </div>
-                @if (
-                    docPost.DocumentName.Split('.').Last().ToLower() == "pdf" ||
-                    docPost.DocumentName.Split('.').Last().ToLower() == "txt"
-                )
-                {
-                    <a href="@Url.Action("GetFile", "Storage", new { fileName = docPost.DocumentName })" target="_blank"
-                       class="btn btn-outline-primary mt-2">
-                        Document bekijken
-                    </a>
-                }
-
-                else
-                {
-                    <img src="@Url.Action("GetFile", "Storage", new { fileName = docPost.DocumentName })"
-                         class="img-fluid mt-2"/>
-                }
-                <div class="mt-2">
-                    @await Html.PartialAsync("_ShareButtonPartial", new ShareButtonViewModel
+            case DocumentPost docPost:
+                <div class="timeline-item mb-4 p-3 border rounded shadow-sm bg-white">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h5 class="mb-1">@docPost.Title</h5>
+                        <small class="text-muted">@docPost.CreatedAt.ToString("dd MMM yyyy HH:mm")</small>
+                    </div>
+                    @if (
+                        docPost.DocumentName.Split('.').Last().ToLower() == "pdf" ||
+                        docPost.DocumentName.Split('.').Last().ToLower() == "txt"
+                    )
                     {
-                        PostId = docPost.Id,
-                        Title = docPost.Title,
-                        Text = $"Bekijk het document: {docPost.DocumentName}",
-                        Image = docPost.DocumentName.Split('.').Last().ToLower() != "pdf" && docPost.DocumentName.Split('.').Last().ToLower() != "txt"
-                            ? Url.Action("GetFile", "Storage", new { fileName = docPost.DocumentName })
-                            : null
-                    })
-                </div>
-            </div>
-        }
-
-        @if (post is MeetingPost meetingPost)
-        {
-            <div class="timeline-item mb-4 p-3 border rounded shadow-sm bg-white">
-                <div class="d-flex justify-content-between align-items-center">
-                    <h5 class="mb-1">@meetingPost.Title</h5>
-                    <small class="text-muted">@meetingPost.CreatedAt.ToString("dd MMM yyyy HH:mm")</small>
-                </div>
-                <h6 class="text-muted mt-3">Verslagen:</h6>
-                <div class="d-flex flex-column gap-2">
-                    @foreach (string documentName in meetingPost.DocumentNames)
-                    {
-                        <a href="@Url.Action("GetFile", "Storage", new { fileName = documentName })" target="_blank"
-                           class="btn btn-outline-primary">
+                        <a href="@Url.Action("GetFile", "Storage", new { fileName = docPost.DocumentName })"
+                           target="_blank"
+                           class="btn btn-outline-primary mt-2">
                             Document bekijken
                         </a>
                     }
+
+                    else
+                    {
+                        <img src="@Url.Action("GetFile", "Storage", new { fileName = docPost.DocumentName })"
+                             class="img-fluid mt-2"/>
+                    }
+                    <div class="mt-2">
+                        @await Html.PartialAsync("_ShareButtonPartial", new ShareButtonViewModel
+                        {
+                            PostId = docPost.Id,
+                            Title = docPost.Title,
+                            Text = $"Bekijk het document: {docPost.DocumentName}",
+                            Image = docPost.DocumentName.Split('.').Last().ToLower() != "pdf" && docPost.DocumentName.Split('.').Last().ToLower() != "txt"
+                                ? Url.Action("GetFile", "Storage", new { fileName = docPost.DocumentName })
+                                : null
+                        })
+                    </div>
                 </div>
-                <!-- Dropdown toggle for upload -->
-                <div class="mt-3">
-                    <button class="btn btn-secondary" type="button" data-bs-toggle="collapse"
-                            data-bs-target="#uploadCollapse-@meetingPost.Id" aria-expanded="false"
-                            aria-controls="uploadCollapse-@meetingPost.Id">
-                        + Voeg verslag toe
-                    </button>
-                    <div class="collapse mt-2" id="uploadCollapse-@meetingPost.Id">
-                        <form method="post" enctype="multipart/form-data" asp-action="AddSummaryToMeetingPost">
-                            @if (ViewBag.SummaryCreationFailed != null && ViewBag.SummaryCreationFailed == true)
-                            {
-                                <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
-                            }
-                            <input type="hidden" name="MeetingId" value="@meetingPost.Id"/>
-                            <input type="hidden" name="panelId" value="@Model.Panel.Id"/>
-                            <div class="mb-2">
-                                <input type="file" class="form-control" name="VerslagFile"
-                                       accept="image/*, .pdf, .txt, .dockx" required/>
+                break;
+
+            case MeetingPost meetingPost:
+                <div class="timeline-item mb-4 p-3 border rounded shadow-sm bg-white">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h5 class="mb-1">@meetingPost.Title</h5>
+                        <small class="text-muted">@meetingPost.CreatedAt.ToString("dd MMM yyyy HH:mm")</small>
+                    </div>
+                    <h6 class="text-muted mt-3">Verslagen:</h6>
+                    <div class="d-flex flex-column gap-2">
+                        @foreach (var documentName in meetingPost.DocumentNames)
+                        {
+                            <a href="@Url.Action("GetFile", "Storage", new { fileName = documentName })" target="_blank"
+                               class="btn btn-outline-primary">
+                                Document bekijken
+                            </a>
+                        }
+                    </div>
+                    <!-- Dropdown toggle for upload -->
+                    <div class="mt-3">
+                        <button class="btn btn-secondary" type="button" data-bs-toggle="collapse"
+                                data-bs-target="#uploadCollapse-@meetingPost.Id" aria-expanded="false"
+                                aria-controls="uploadCollapse-@meetingPost.Id">
+                            + Voeg verslag toe
+                        </button>
+                        <div class="collapse mt-2" id="uploadCollapse-@meetingPost.Id">
+                            <form method="post" enctype="multipart/form-data" asp-action="AddSummaryToMeetingPost">
+                                @if (ViewBag.SummaryCreationFailed != null && ViewBag.SummaryCreationFailed == true)
+                                {
+                                    <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+                                }
+                                <input type="hidden" name="MeetingId" value="@meetingPost.Id"/>
+                                <input type="hidden" name="panelId" value="@Model.Panel.Id"/>
+                                <div class="mb-2">
+                                    <input type="file" class="form-control" name="VerslagFile"
+                                           accept="image/*, .pdf, .txt, .dockx" required/>
+                                </div>
+                                <button type="submit" class="btn btn-primary">Uploaden</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                break;
+
+            case YoutubeVideoPost youtubePost:
+                <div class="timeline-item mb-4 p-3 border rounded shadow-sm bg-white">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h5 class="mb-1">@youtubePost.Title</h5>
+                        <small class="text-muted">@youtubePost.CreatedAt.ToString("dd MMM yyyy HH:mm")</small>
+                    </div>
+                    <div class="mt-3 ratio ratio-16x9" style="max-height: 500px;">
+                        <iframe
+                            src="https://www.youtube.com/embed/@youtubePost.VideoId"
+                            title="@youtubePost.Title"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen>
+                        </iframe>
+                    </div>
+                </div>
+                break;
+
+            case EmbeddedVideoPost videoPost:
+                <div class="timeline-item mb-4 p-3 border rounded shadow-sm bg-white">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h5 class="mb-1">@videoPost.Title</h5>
+                        <small class="text-muted">@videoPost.CreatedAt.ToString("dd MMM yyyy HH:mm")</small>
+                    </div>
+                    <div class="mt-3">
+                        <video class="w-100" style="max-height: 500px; object-fit: contain;" controls>
+                            <source src="@videoPost.VideoUrl" type="video/mp4">
+                            Uw browser ondersteunt de video-tag niet.
+                        </video>
+                    </div>
+                </div>
+                break;
+
+            case SuggestionPost suggestionPost:
+                <div class="timeline-item mb-4 p-3 border rounded shadow-sm bg-white">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h5 class="mb-1">@suggestionPost.Title</h5>
+                        <small class="text-muted">@suggestionPost.CreatedAt.ToString("dd MMM yyyy HH:mm")</small>
+                    </div>
+                    <div class="mt-2 p-3 bg-light rounded">
+                        @foreach (var suggestion in suggestionPost.Suggestions.OrderBy(s => s.CreatedAt))
+                        {
+                            <div class="suggestion-item mb-3">
+                                <p class="mb-1"><i class="bi bi-lightbulb me-2"></i>@suggestion.Title</p>
+                                <small class="text-muted d-block">
+                                    Door: @suggestion.Owner - @suggestion.CreatedAt.ToString("dd MMM yyyy HH:mm")
+                                </small>
                             </div>
-                            <button type="submit" class="btn btn-primary">Uploaden</button>
+                        }
+
+                        <form asp-action="AddSuggestion" method="post" class="mt-3">
+                            <input type="hidden" name="panelId" value="@Model.Panel.Id"/>
+                            <input type="hidden" name="postId" value="@suggestionPost.Id"/>
+                            <div class="input-group">
+                                <input type="text" name="suggestion" class="form-control"
+                                       placeholder="Voeg een suggestie toe..." required/>
+                                <button type="submit" class="btn btn-primary">Toevoegen</button>
+                            </div>
                         </form>
                     </div>
                 </div>
-            </div>
-        }
-        
-        @if (post is YoutubeVideoPost youtubePost)
-        {
-            <div class="timeline-item mb-4 p-3 border rounded shadow-sm bg-white">
-                <div class="d-flex justify-content-between align-items-center">
-                    <h5 class="mb-1">@youtubePost.Title</h5>
-                    <small class="text-muted">@youtubePost.CreatedAt.ToString("dd MMM yyyy HH:mm")</small>
-                </div>
-                <div class="mt-3 ratio ratio-16x9" style="max-height: 500px;">
-                    <iframe 
-                        src="https://www.youtube.com/embed/@youtubePost.VideoId" 
-                        title="@youtubePost.Title" 
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
-                        allowfullscreen>
-                    </iframe>
-                </div>
-            </div>
-        }
-        
-        @if (post is EmbeddedVideoPost videoPost)
-        {
-            <div class="timeline-item mb-4 p-3 border rounded shadow-sm bg-white">
-                <div class="d-flex justify-content-between align-items-center">
-                    <h5 class="mb-1">@videoPost.Title</h5>
-                    <small class="text-muted">@videoPost.CreatedAt.ToString("dd MMM yyyy HH:mm")</small>
-                </div>
-                <div class="mt-3">
-                    <video class="w-100" style="max-height: 500px; object-fit: contain;" controls>
-                        <source src="@videoPost.VideoUrl" type="video/mp4">
-                        Uw browser ondersteunt de video-tag niet.
-                    </video>
-                </div>
-            </div>
+                break;
         }
     }
 }

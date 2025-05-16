@@ -134,7 +134,7 @@ tests:
   # a relative path to the directory where it is located (e.g. 'dotnet test ./test/UnitTests').
   #
   # You may want to define separate testing jobs for different types of testing
-  # (e.g. integration tests, unit tests etc).
+  # (e.g. integration tests, unit tests etc). 
   script:
     - 'dotnet test --no-restore --logger junit --collect "XPlat Code Coverage"'
     - 'dotnet tool install dotnet-reportgenerator-globaltool 
@@ -158,6 +158,24 @@ deploy:
   rules:
     - if: '$CI_COMMIT_BRANCH == "main"'
   image: google/cloud-sdk
+  variables:
+    GCP_SA_KEY_JSON: "$GCP_SA_KEY_JSON"
+  before_script:
+    - echo "$GCP_SA_KEY_JSON" > gcp_sa_key.json
+    - chmod 400 gcp_sa_key.json
   script:
-    - gcloud auth activate-service-account --key-file="$GCP_SA_KEY_JSON" --project="cs2-eycken-tiba"
-    - gcloud compute instance-groups managed rolling-action replace web-instance-group --max-surge=2 --max-unavailable=1 --replacement-method=substitute --zone=europe-west1-d
+    - gcloud auth activate-service-account --key-file="gcp_sa_key.json" --project="$PROJECT_ID"
+    - |
+      if gcloud compute instance-groups managed describe "$MIG_NAME" --zone="$ZONE" > /dev/null 2>&1; then
+        echo "Instance group exists. Proceeding with rolling replace..."
+        gcloud compute instance-groups managed rolling-action replace "$MIG_NAME" \
+          --max-surge=2 \
+          --max-unavailable=1 \
+          --replacement-method=substitute \
+          --zone="$ZONE"
+      else
+        echo "Instance group '$MIG_NAME' not found in zone '$ZONE'. Skipping deployment."
+        exit 0
+      fi
+  after_script:
+    - rm gcp_sa_key.json
