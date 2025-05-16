@@ -1,5 +1,4 @@
-﻿// apiClient.ts
-export async function fetchFromAPI<T>(
+﻿export async function fetchFromAPI<T>(
     url: string,
     options?: RequestInit
 ): Promise<T> {
@@ -22,15 +21,4 @@ export async function fetchFromAPI<T>(
         console.error('Fetch error:', error);
         throw error;
     }
-}
-export function getCurrentBaseUrl(): string {
-    return `${window.location.protocol}//${window.location.hostname}${window.location.port ? `:${window.location.port}` : ''}`;
-}
-export async function fetchCommunes(){
-    const endpointuri = getCurrentBaseUrl() + "/api/Commune";
-    return await fetchFromAPI(endpointuri);
-}
-export async function fetchBasicCommunes(){
-    const endpointuri = getCurrentBaseUrl() + "/api/Commune/basic";
-    return await fetchFromAPI(endpointuri);
 }
