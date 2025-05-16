@@ -1,4 +1,5 @@
-﻿import {createElementWithClassNames} from "./helpers/htmlHelper";
+﻿import {createElementWithClassNames} from "./customhelpers/htmlHelper";
+
 
 export function createRemoveBtn(removalFunction: (() => void) | ((event: MouseEvent) => void)): HTMLButtonElement {
     const removeBtn = createElementWithClassNames("button", "btn", "btn-danger", "btn-sm") as HTMLButtonElement;

@@ -1,8 +1,8 @@
 import {addAnswerOption, reIndexAnswerOptions, resetAnswerCounters, createPercentageInput} from "./answersOption";
 import {setValidationMessages} from "./panelFormValidator"
 import {criteriaInputUpdateHandler} from "../apiAutofill/apiDataFiller";
-import {createElementWithClassNames} from "../../helpers/htmlHelper";
 import {createRemoveBtn} from "../../components";
+import {createElementWithClassNames} from "../../customhelpers/htmlHelper";
 
 let criteriaCount = 0;
 

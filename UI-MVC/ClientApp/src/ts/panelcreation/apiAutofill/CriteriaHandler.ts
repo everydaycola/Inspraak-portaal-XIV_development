@@ -1,5 +1,6 @@
-import {createSuggestionBox, wrapElementWithBootstrapRow} from "../../helpers/htmlHelper";
+
 import {getAllSubRegions} from "./SubRegionHandler";
+import {createSuggestionBox, wrapElementWithBootstrapRow} from "../../customhelpers/htmlHelper";
 
 const available_criteria_categories : string[] = ["Geslacht","Werkend", "Opleidingsgraad"]
 

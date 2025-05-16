@@ -10,7 +10,7 @@ import '../scss/customnavbar.scss'
 
 // Custom Ts
 import {setupNavBarInteraction} from "./navbar/navbar";
-import {configureAutoOpeningModals} from "./helpers/bootstrapAutoModalOpeningHelper";
+import {configureAutoOpeningModals} from "./customhelpers/bootstrapAutoModalOpeningHelper";
 
 console.log('The \'site\' bundle has been loaded!');
 setupNavBarInteraction()

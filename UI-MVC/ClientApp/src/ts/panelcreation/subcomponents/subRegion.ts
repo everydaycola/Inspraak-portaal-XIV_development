@@ -1,6 +1,6 @@
 ﻿import {newSubregionInputAddedHandler} from "../apiAutofill/apiDataFiller";
 import {onSubregionChange} from "./panelsizePreviewHandler";
-import {createElementWithClassNames} from "../../helpers/htmlHelper";
+import {createElementWithClassNames} from "../../customhelpers/htmlHelper";
 import {setValidationMessages} from "./panelFormValidator";
 
 
