@@ -15,7 +15,7 @@ export default defineConfig({
             input: {
                 site: resolve(__dirname, 'src/ts/siteEntrypoint.ts'),
                 register: resolve(__dirname, 'src/ts/register/registerEntrypoint.ts'),
-                panelCreation: resolve(__dirname, 'src/ts/panel/panelCreationEntrypoint.ts'),
+                panelCreation: resolve(__dirname, 'src/ts/panelcreation/panelCreationEntrypoint.ts'),
                 adminOrgMan: resolve(__dirname, 'src/ts/organisationmanagement/adminOrgManEntrypoint.ts'),
                 accountSettings: resolve(__dirname, 'src/ts/accountSettings/accountSettingsEntrypoint.ts')
             },
