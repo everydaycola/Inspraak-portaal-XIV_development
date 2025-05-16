@@ -1,5 +1,5 @@
 ﻿// apiClient.ts
-async function fetchFromAPI<T>(
+export async function fetchFromAPI<T>(
     url: string,
     options?: RequestInit
 ): Promise<T> {
@@ -23,7 +23,7 @@ async function fetchFromAPI<T>(
         throw error;
     }
 }
-function getCurrentBaseUrl(): string {
+export function getCurrentBaseUrl(): string {
     return `${window.location.protocol}//${window.location.hostname}${window.location.port ? `:${window.location.port}` : ''}`;
 }
 export async function fetchCommunes(){
