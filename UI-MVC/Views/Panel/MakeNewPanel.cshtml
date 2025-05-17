@@ -14,10 +14,10 @@
 }
 
 <div class="container mt-5">
-    <div class="card shadow-sm border-0">
-        <div class="card-header">
-            <h3 class="mb-0">Nieuw panel aanmaken</h3>
-        </div>
+    <div class="row m-2">
+        <h2>Nieuw panel aanmaken</h2>
+    </div>
+    <div class="card mt-4 shadow-sm border-0">
         <div class="card-body">
             <div class="mb-4">
                 <form id="new-panel-form" method="post" asp-controller="Panel" asp-action="AddNewPanel">
@@ -53,18 +53,18 @@
                             <input id="reserve" asp-for="ReservePercentage" min="0"
                                    class="border border-1 rounded-2" type="number" placeholder="5"/>%
                             <span class="text-danger" asp-validation-for="ReservePercentage"></span>
-                            
+
                             <label class="card-text pe-4 mx-2" for="sample-rate"><strong>Sample rate:</strong></label>
                             <input id="sample-rate" asp-for="SampleRate" min="0.001" step=".001"
                                    class="border border-1 rounded-2" type="number" placeholder="0.5"/>%
                             <span class="text-danger" asp-validation-for="SampleRate"></span>
-                            
+
                             <label class="card-text pe-4 mx-2" for="response-rate"><strong>Response rate:</strong></label>
                             <input id="response-rate" asp-for="ResponseRate" min="2" max="10"
                                    class="border border-1 rounded-2" type="number" placeholder="2"/>%
                             <span class="text-danger" asp-validation-for="ResponseRate"></span>
                         </div>
-                        
+
                         <div class="d-flex flex-row py-2">
                             <!-- TODO: Actualy calculate the expected panel size. -->
                             <p class="card-text pe-4 panel-size-output">Panelgrootte:</p>

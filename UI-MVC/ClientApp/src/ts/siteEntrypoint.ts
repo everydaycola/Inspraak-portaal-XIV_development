@@ -7,6 +7,7 @@ import 'bootstrap/dist/css/bootstrap.css';
 import '../scss/site.scss'
 import '../scss/register.scss'
 import '../scss/customnavbar.scss'
+import '../scss/bootstrapOverwrite.scss'
 
 // Custom Ts
 import {setupNavBarInteraction} from "./navbar/navbar";
