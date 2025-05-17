@@ -1,9 +1,11 @@
 ﻿@using DAL
+@using Microsoft.EntityFrameworkCore.Metadata.Internal
 @using UI_MVC.TempTenant
 @{
     ViewData["Title"] = "Home Page";
 }
 @inject Organisation Organisation
+@model UI_MVC.Models.ViewModels.HomePanelsViewModel
 
 @section Scripts{
     <script src="~/dist/index.entry.js" type="module"></script>
@@ -38,5 +40,18 @@ else
     <div class="text-center">
         <h1 class="display-4">Welcome to @Organisation.Name</h1>
         <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+    </div>
+    
+    <div class="card border-0 d-flex flex-column">
+        <h2 class="card-title">Publieke Panels</h2>
+        @foreach (var panel in Model.Panels)
+        {
+            if (panel.Posts.Any(post => post.IsGloballyVisible))
+            {
+                <a class="card col-5 m-2" href="@Url.Action("Index","PanelProjectPage", new{panelId = panel.Id})">
+                    <h3 class="card-title p-4">@panel.Name</h3>
+                </a>
+            }
+        }
     </div>
 }

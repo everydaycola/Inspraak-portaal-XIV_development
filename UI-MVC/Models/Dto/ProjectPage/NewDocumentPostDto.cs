@@ -19,6 +19,8 @@ public class NewDocumentPostDto : IValidatableObject
     public bool VisibleForPanelMember { get; set; }
     
     public bool InformPeopleViaMail { get; set; }
+    
+    public bool IsGloballyVisible { get; set; }
 
 
     public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)

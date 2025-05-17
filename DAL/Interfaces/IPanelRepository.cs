@@ -20,6 +20,7 @@ public interface IPanelRepository
     public Panel ReadPanelWithPostsAndSuggestions(Guid panelId);
     public PlanningGroupMember ReadPlanningGroupMember(Guid planningsGroupMemberId);
     public Post ReadPost(Guid id);
+    public IEnumerable<Panel> ReadAllPanelsWithPosts();
 
     //UPDATE
     public void UpdatePanel(Panel panel);

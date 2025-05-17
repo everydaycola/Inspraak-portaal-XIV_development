@@ -86,6 +86,11 @@ public class PanelManager : IPanelManager
         return _repo.ReadPanelWithCriteriaAndAnswerOptions(panelId);
     }
 
+    public IEnumerable<Panel> GetAllPanelsWithPosts()
+    {
+        return _repo.ReadAllPanelsWithPosts();
+    }
+
     //ADD
     public Panel AddPanel(string name, double sampleRate,
         ICollection<Criteria> distribution, int citizenCount, double reservePercentage,

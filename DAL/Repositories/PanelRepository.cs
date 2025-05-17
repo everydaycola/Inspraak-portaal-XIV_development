@@ -49,6 +49,12 @@ public class PanelRepository : IPanelRepository
         return _context.Posts.Find(id);
     }
 
+    public IEnumerable<Panel> ReadAllPanelsWithPosts()
+    {
+        return _context.Panels
+            .Include(p => p.Posts);
+    }
+
 
     public void CreatePlanningsGroupMember(PlanningGroupMember member)
     {
