@@ -12,4 +12,5 @@ public abstract class Post
     public DateTime CreatedAt { get; set; }
     [Required(ErrorMessage = "Post moet een zichbaarheids status hebben")]
     public bool IsVisibleForPanelMembers { get; set; } = false;
+    public bool IsGloballyVisible { get; set; } = false;
 }

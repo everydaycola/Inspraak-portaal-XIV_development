@@ -51,6 +51,12 @@ public class PanelRepository : IPanelRepository
         return _context.Posts.Find(id);
     }
 
+    public IEnumerable<Panel> ReadAllPanelsWithPosts()
+    {
+        return _context.Panels
+            .Include(p => p.Posts);
+    }
+    
     public Vote ReadVoteByPanelMemberAndSuggestionOrDefault(ApplicationUser user, Guid suggestionId)
     {
         return _context.Votes
@@ -66,7 +72,6 @@ public class PanelRepository : IPanelRepository
     {
         return _context.Suggestions.Find(suggestionId);
     }
-
 
     public void CreatePlanningsGroupMember(PlanningGroupMember member)
     {

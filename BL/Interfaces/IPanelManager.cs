@@ -13,8 +13,8 @@ public interface IPanelManager
     public IEnumerable<PanelMember> GetAllPanelMembersForPanel(Guid panelId);
     public Panel GetPanelWithCriteriaAndCriteriaAnswerOptions(Guid panelId);
     public IEnumerable<PlanningGroupMember> GetAllPlanningGroupMembersWithIdentityUserForPanel(Guid panelId);
-
     public Dictionary<string, int> CalculateCrossDistributionAbsolute(Guid panelId);
+    public IEnumerable<Panel> GetAllPanelsWithPosts();
 
     //ADD
     public Panel AddPanel(string name, double sampleRate,

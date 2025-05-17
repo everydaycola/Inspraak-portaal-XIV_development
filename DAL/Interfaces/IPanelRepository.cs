@@ -24,6 +24,7 @@ public interface IPanelRepository
     public Post ReadPost(Guid id);
     public Vote ReadVoteByPanelMemberAndSuggestionOrDefault(ApplicationUser user, Guid suggestionId);
     public Suggestion ReadSuggestion(Guid suggestionId);
+    public IEnumerable<Panel> ReadAllPanelsWithPosts();
 
     //UPDATE
     public void UpdatePanel(Panel panel);

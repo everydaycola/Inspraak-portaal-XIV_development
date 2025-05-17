@@ -50,7 +50,7 @@ public class PanelProjectPageController : Controller
         });
     }
 
-    [Authorize(Roles = "Organisatie,PanelMember")]
+    //[Authorize(Roles = "Organisatie,PanelMember")]
     public async Task<IActionResult> Index(Guid? panelId)
     {
         var user = await _userManager.GetUserAsync(User);
@@ -76,7 +76,7 @@ public class PanelProjectPageController : Controller
             return await SendBack("addTextModal", newTextPost.PanelId);
         }
 
-        _projectPageManager.AddTextPost(newTextPost.PanelId, newTextPost.Title, newTextPost.Content, newTextPost.VisibleForPanelMember);
+        _projectPageManager.AddTextPost(newTextPost.PanelId, newTextPost.Title, newTextPost.Content, newTextPost.VisibleForPanelMember, newTextPost.IsGloballyVisible);
         
         _ = HandleMailSending(newTextPost.InformPeopleViaMail, newTextPost.VisibleForPanelMember, newTextPost.PanelId)
             .ContinueWith(task => 
@@ -105,7 +105,7 @@ public class PanelProjectPageController : Controller
         // Save the file
         await _storageManager.AddFileAsync(uniqueFileName, newDocumentPost.File.ContentType, newDocumentPost.File.OpenReadStream());
         //SAVE META DATA IN DB
-        _projectPageManager.AddDocumentPost(newDocumentPost.PanelId, newDocumentPost.Title, uniqueFileName, newDocumentPost.VisibleForPanelMember);
+        _projectPageManager.AddDocumentPost(newDocumentPost.PanelId, newDocumentPost.Title, uniqueFileName, newDocumentPost.VisibleForPanelMember, newDocumentPost.IsGloballyVisible);
         // handle mail sending
         _ = HandleMailSending(newDocumentPost.InformPeopleViaMail, newDocumentPost.VisibleForPanelMember, newDocumentPost.PanelId)
             .ContinueWith(task => 
@@ -175,7 +175,8 @@ public class PanelProjectPageController : Controller
                 newVideoPost.Title,
                 newVideoPost.YoutubeUrl,
                 newVideoPost.VisibleForPanelMember,
-                newVideoPost.InformPeopleViaMail);
+                newVideoPost.InformPeopleViaMail,
+                newVideoPost.IsGloballyVisible);
         } 
         
         return await AddEmbedVideoPost(
@@ -183,7 +184,8 @@ public class PanelProjectPageController : Controller
             newVideoPost.Title,
             newVideoPost.VideoUrl,
             newVideoPost.VisibleForPanelMember,
-            newVideoPost.InformPeopleViaMail);
+            newVideoPost.InformPeopleViaMail,
+            newVideoPost.IsGloballyVisible);
             
     }
 
@@ -192,13 +194,15 @@ public class PanelProjectPageController : Controller
         string title,
         string videoUrl,
         bool visibleForPanelMember,
-        bool informPeopleViaMail)
+        bool informPeopleViaMail,
+        bool isGloballyVisible)
     {
         _projectPageManager.AddEmbedVideoPost(
             panelId,
             title,
             videoUrl,
-            visibleForPanelMember
+            visibleForPanelMember,
+            isGloballyVisible
         );
 
         // Send email notifications
@@ -220,7 +224,8 @@ public class PanelProjectPageController : Controller
         string title,
         string youtubeUrl,
         bool visibleForPanelMember,
-        bool informPeopleViaMail)
+        bool informPeopleViaMail,
+        bool isGloballyVisible)
     {
         // Prepare video data
         string youtubeId = null;
@@ -246,7 +251,8 @@ public class PanelProjectPageController : Controller
             panelId,
             title,
             youtubeId,
-            visibleForPanelMember
+            visibleForPanelMember,
+            isGloballyVisible
         );
 
         // Send email notifications
