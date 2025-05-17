@@ -30,9 +30,8 @@ async function handleInputChange(
 ) {
     const baseUrl = getCurrentBaseUrl();
     const citizenCount = getSelectedCommunesTotalCount();
-    const reservePercentage = parseFloat(reservePercentInput.value);
-    const samplePercentage = parseFloat(sampleRateInput.value);
-
+    const reservePercentage = parseFloat(reservePercentInput.value) / 100;
+    const samplePercentage = parseFloat(sampleRateInput.value) / 100;
     const reserveCount: number = await fetchFromAPI(
         `${baseUrl}/api/Calculations/reservesize?citizenCount=${citizenCount}&reservePercentage=${reservePercentage}`
     );
