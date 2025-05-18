@@ -1,4 +1,7 @@
-﻿using Domain.CitizenPanel;
+﻿using System.Security.Claims;
+using Domain;
+using Domain.CitizenPanel;
+using Domain.Enums;
 using Domain.Interfaces.Posts.PostItems;
 
 namespace BL.Interfaces;
@@ -6,9 +9,10 @@ namespace BL.Interfaces;
 public interface IPanelProjectPageManager
 {
     // GET
-    public Panel GetPanelWithPostsAndSuggestions(Guid panelId);
+    public Panel GetPanelWithPostsAndSuggestionsAndVotes(Guid panelId);
     
     // CHANGE
+    public void ChangeVote(ApplicationUser user, Guid suggestionId, VoteType voteType);
     
     // ADD
     public void AddTextPost(Guid panelId,string title, string content, bool isVisibleForPanelMembers, bool isGloballyVisible);
@@ -18,6 +22,6 @@ public interface IPanelProjectPageManager
     public void AddYoutubeVideoPost(Guid panelId, string title, string videoId, bool visibleForPanelMember, bool isGloballyVisible);
     public void AddSuggestionPost(Guid panelId, string title, bool visibleForPanelMember);
     public void AddSummaryToMeetingPost(Guid meetingId, string uniqueFileName);
-    public Suggestion AddSuggestionToPost(Guid PostId, string suggestion, string owner);
+    public void AddSuggestionToPost(Guid PostId, string suggestion, string owner);
     // REMOVE
 }

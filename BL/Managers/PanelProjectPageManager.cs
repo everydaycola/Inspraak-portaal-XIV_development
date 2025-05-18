@@ -1,10 +1,14 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.Security.Claims;
 using BL.Interfaces;
 using DAL.Interfaces;
+using Domain;
 using Domain.CitizenPanel;
+using Domain.Enums;
 using Domain.Interfaces;
 using Domain.Interfaces.Posts;
 using Domain.Interfaces.Posts.PostItems;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
 
 namespace BL.Managers;
@@ -15,20 +19,40 @@ public class PanelProjectPageManager : IPanelProjectPageManager
     private readonly ILogger<PanelManager> _logger;
     private readonly IPanelRepository _repo;
 
-    public PanelProjectPageManager(ILogger<PanelManager> logger, IPanelRepository repo)
+    public PanelProjectPageManager(ILogger<PanelManager> logger, IPanelRepository repo, IUserRepository userRepo, UserManager<ApplicationUser> userManager)
     {
         _logger = logger;
         _repo = repo;
     }
     
-    public Panel GetPanelWithPostsAndSuggestions(Guid panelId)
+    public Panel GetPanelWithPostsAndSuggestionsAndVotes(Guid panelId)
     {
-        return _repo.ReadPanelWithPostsAndSuggestions(panelId);
+        return _repo.ReadPanelWithPostsAndSuggestionsAndVotes(panelId);
     }
-    
+
+    public void ChangeVote(ApplicationUser user, Guid suggestionId, VoteType voteType)
+    {
+        var vote = _repo.ReadVoteByPanelMemberAndSuggestionOrDefault(user, suggestionId);
+        if (vote is null)
+        {
+            _repo.CreateVote(new Vote
+            {
+                Owner = user,
+                Suggestion = _repo.ReadSuggestion(suggestionId),
+                VoteType = voteType
+            });
+        }
+        else
+        {
+            vote.VoteType = voteType;
+            _repo.UpdateVote(vote);
+        }
+
+    }
+
     public void AddSummaryToMeetingPost(Guid meetingId, string uniqueFileName)
     {
-        _repo.AddSummaryToMeetingPost(meetingId, uniqueFileName);
+        _repo.CreateSummaryToMeetingPost(meetingId, uniqueFileName);
     }
     
     // Generic helper method for post validation and creation
@@ -114,25 +138,19 @@ public class PanelProjectPageManager : IPanelProjectPageManager
         });
     }
 
-    public Suggestion AddSuggestionToPost(Guid PostId, string suggestionTitle, string owner)
+    public void AddSuggestionToPost(Guid PostId, string suggestionTitle, string owner)
     {
-        var post = _repo.ReadPost(PostId);
-
-        if (post is not SuggestionPost suggestionPost)
+        if (_repo.ReadPost(PostId) is not SuggestionPost suggestionPost)
             // should not happen
             throw new InvalidCastException("Post is not a suggestion post");
 
-        var suggestion = new Suggestion
+        suggestionPost.Suggestions.Add(new Suggestion
         {
             Title = suggestionTitle,
             CreatedAt = DateTime.UtcNow,
-            Owner = owner
-        };
-        suggestionPost.Suggestions.Add(suggestion);
+            OwnerEmail = owner
+        });
         // update the post with the new suggestion
         _repo.UpdateSuggestionPost(suggestionPost);
-
-        return suggestion;
     }
-    
 }

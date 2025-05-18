@@ -1,9 +1,11 @@
+using System.Security.Claims;
 using DAL.EF;
 using DAL.Interfaces;
 using Domain;
 using Domain.CitizenPanel;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using Microsoft.Identity.Client;
 
 namespace DAL.Repositories;
