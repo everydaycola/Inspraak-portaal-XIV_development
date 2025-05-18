@@ -1,17 +1,17 @@
-﻿@model IEnumerable<Domain.CitizenPanel.Panel>
+﻿@model UI_MVC.Models.ViewModels.PanelSelectionViewModel
 @{
     ViewData["Title"] = "Panel beheer | Selecteer panel";
 }
 
-<div class="container">
-    @if(Model.Any()){
+<div class="container mt-5">
+    @if(Model.Panels.Any()){
     <h2 class="mb-3">Selecteer het panel dat je wilt beheren.</h2>
     <form asp-action="SelectPanel" asp-controller="PanelManagement" method="post">
-        <input type="hidden" name="returnUrl" value="@ViewData["ReturnUrl"]" />
+        <input type="hidden" name="returnAction" value="@Model.ReturnAction" />
         <div class="form-group">
             <select class="form-select" id="panelSelect" name="panelId" aria-label="Select a panel">
                 <option selected disabled>Kies een panel</option>
-                @foreach (var panel in Model)
+                @foreach (var panel in Model.Panels)
                 {
                     <option value="@panel.Id">@panel.Name</option>
                 }

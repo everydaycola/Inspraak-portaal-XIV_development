@@ -33,7 +33,7 @@ public class PanelManagementController : Controller
     {
         if (id == Guid.Empty)
         {
-            return RedirectToAction("PanelSelection");
+            return RedirectToAction("PanelSelection", new { id = id, returnAction = "Index"});
         }
         var panel = _manager.GetPanelWithRepresentationGroup(id);
         var panelSize = _calcManager.CalculatePanelSize(panel.RepresentationGroup.CitizenCount, panel.SampleRate);
@@ -64,7 +64,7 @@ public class PanelManagementController : Controller
     {
         if (id == Guid.Empty)
         {
-            return RedirectToAction("PanelSelection");
+            return RedirectToAction("PanelSelection", new { id = id, returnAction = "People"});
         }
         var panel = _manager.GetPanelWithRepresentationGroup(id);
         var panelSize = _calcManager.CalculatePanelSize(panel.RepresentationGroup.CitizenCount, panel.SampleRate);
@@ -100,9 +100,10 @@ public class PanelManagementController : Controller
     }
     
     [HttpPost]
-    public IActionResult SelectPanel(Guid panelId)
+    public IActionResult SelectPanel(Guid panelId, string returnAction)
     {
-        return RedirectToAction("Index", new { id = panelId });
+        var action = string.IsNullOrEmpty(returnAction) ? "Index" : returnAction;
+        return RedirectToAction(action, new { id = panelId });
     }
     
     [HttpPost]
@@ -131,14 +132,19 @@ public class PanelManagementController : Controller
     }
     
     [Authorize]
-    public IActionResult PanelSelection()
+    public IActionResult PanelSelection(string returnAction)
     {
-        var panels = _manager.GetAllPanels().ToList(); // Materialize the collection
+        var panels = _manager.GetAllPanels().ToList(); 
         if (panels.Count == 1)
         {
-            return RedirectToAction("Index", new { id = panels[0].Id });
+            var action = string.IsNullOrEmpty(returnAction) ? "Index" : returnAction;
+            return RedirectToAction(action, new { id = panels[0].Id, returnAction = returnAction});
         }
-        return View(panels);
+        return View(new PanelSelectionViewModel
+        {
+            Panels = panels,
+            ReturnAction = returnAction
+        });
     }
     public IActionResult ToggleRegistration(Guid panelId)
     {
