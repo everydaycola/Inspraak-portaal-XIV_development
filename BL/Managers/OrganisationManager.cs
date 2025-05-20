@@ -24,7 +24,21 @@ public class OrganisationManager : IOrganisationManager
         return _repo.ReadAllOrganisations();
     }
 
-    public Organisation UpdateOrganisation(string organisationId, string name, string backgroundColor, string backgroundImage)
+    public Organisation AddOrganisation(string organisationId, string name, string backgroundColor,
+        string backgroundImage)
+    {
+        Organisation newOrganisation = new Organisation()
+        {
+            Id = organisationId,
+            Name = name,
+            BackgroundColor = backgroundColor,
+            BackgroundImage = backgroundImage
+        };
+        return _repo.CreateOrganisation(newOrganisation);
+    }
+
+    public Organisation UpdateOrganisation(string organisationId, string name, string backgroundColor,
+        string backgroundImage)
     {
         var existingOrganisation = _repo.ReadOrganisationById(organisationId);
         if (existingOrganisation != null)

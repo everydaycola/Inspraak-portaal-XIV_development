@@ -17,6 +17,14 @@ public class OrganisationRepository : IOrganisationRepository
         return _context.Organisations.SingleOrDefault(o => o.Id == id);
     }
 
+    public Organisation CreateOrganisation(Organisation newOrganisation)
+    {
+        _context.Organisations.Add(newOrganisation);
+        var organisation = _context.Organisations.SingleOrDefault(o => o.Id == newOrganisation.Id);
+        _context.SaveChanges();
+        return organisation;
+    }
+
     public IEnumerable<Organisation> ReadAllOrganisations()
     {
         return _context.Organisations.ToList();
