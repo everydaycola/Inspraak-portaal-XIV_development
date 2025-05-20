@@ -20,8 +20,8 @@ public class OrganisationRepository : IOrganisationRepository
     public Organisation CreateOrganisation(Organisation newOrganisation)
     {
         _context.Organisations.Add(newOrganisation);
-        var organisation = _context.Organisations.SingleOrDefault(o => o.Id == newOrganisation.Id);
         _context.SaveChanges();
+        var organisation = _context.Organisations.SingleOrDefault(o => o.Id == newOrganisation.Id);
         return organisation;
     }
 
