@@ -381,9 +381,9 @@
 @foreach (var post in Model.Panel.Posts.OrderByDescending(p => p.CreatedAt))
 {
     @if (
-        post.IsGloballyVisible ||
+        post.IsGloballyVisible || 
         User.IsInRole(CustomIdentityConstants.OrganisatieRole) ||
-        User.IsInRole(CustomIdentityConstants.AdminRole) ||
+        User.IsInRole(CustomIdentityConstants.AdminRole) || 
         (post.IsVisibleForPanelMembers && User.IsInRole(CustomIdentityConstants.PanelMemberRole)) ||
         (post.GetType() == typeof(MeetingPost) && User.IsInRole(CustomIdentityConstants.PanelMemberRole))
     )
@@ -399,7 +399,7 @@
                     <p class="mt-2 mb-0">@textPost.Content</p>
                     <div class="mt-2">
                         <button class="btn btn-outline-info btn-sm mt-2 copy-link-btn"
-                                data-clipboard-text="@($"{Context.Request.Scheme}://{Context.Request.Host}{Url.Action("Index", "PanelProjectPage", new { panelId = Model.Panel.Id })}")">
+                                data-clipboard-text="@($"{Context.Request.Scheme}://{Context.Request.Host}{Url.Action("Index","PanelProjectPage", new{panelId = Model.Panel.Id})}")">
                             <i class="bi bi-link-45deg"></i> Link kopiëren
                         </button>
                     </div>
@@ -524,6 +524,7 @@
                     <div class="mt-2 p-3 bg-light rounded">
                         @foreach (var suggestion in suggestionPost.Suggestions.OrderBy(s => s.CreatedAt))
                         {
+                            
                             <div class="suggestion-item mb-3">
                                 <div class="d-flex justify-content-between align-items-start">
                                     <div>
@@ -533,8 +534,7 @@
                                         </small>
                                     </div>
                                     <div id="votes" class="btn-group" role="group">
-                                        <button type="button"
-                                                class="btn btn-outline-success vote-btn @(suggestion.Votes.Any(v => v.VoteType == VoteType.Up && v.Owner == Model.CurrentUser) ? "active" : "")"
+                                        <button type="button" class="btn btn-outline-success vote-btn @(suggestion.Votes.Any(v => v.VoteType == VoteType.Up && v.Owner == Model.CurrentUser) ? "active" : "")"
                                                 data-vote-type="Up" data-suggestion-id="@suggestion.Id"
                                                 style="outline: none !important; box-shadow: none !important;">
                                             <i class="bi bi-hand-thumbs-up"></i>
@@ -542,8 +542,7 @@
                                                 @suggestion.Votes.Count(v => v.VoteType == VoteType.Up)
                                             </span>
                                         </button>
-                                        <button type="button"
-                                                class="btn btn-outline-secondary vote-btn @(suggestion.Votes.Any(v => v.VoteType == VoteType.Neutral && v.Owner == Model.CurrentUser) ? "active" : "")"
+                                        <button type="button" class="btn btn-outline-secondary vote-btn @(suggestion.Votes.Any(v => v.VoteType == VoteType.Neutral && v.Owner == Model.CurrentUser) ? "active" : "")"
                                                 data-vote-type="Neutral" data-suggestion-id="@suggestion.Id"
                                                 style="outline: none !important; box-shadow: none !important;">
                                             <i class="bi bi-dash-circle"></i>
@@ -551,8 +550,7 @@
                                                 @suggestion.Votes.Count(v => v.VoteType == VoteType.Neutral)
                                             </span>
                                         </button>
-                                        <button type="button"
-                                                class="btn btn-outline-danger vote-btn @(suggestion.Votes.Any(v => v.VoteType == VoteType.Down && v.Owner == Model.CurrentUser) ? "active" : "")"
+                                        <button type="button" class="btn btn-outline-danger vote-btn @(suggestion.Votes.Any(v => v.VoteType == VoteType.Down && v.Owner == Model.CurrentUser) ? "active" : "")"
                                                 data-vote-type="Down" data-suggestion-id="@suggestion.Id"
                                                 style="outline: none !important; box-shadow: none !important;">
                                             <i class="bi bi-hand-thumbs-down"></i>

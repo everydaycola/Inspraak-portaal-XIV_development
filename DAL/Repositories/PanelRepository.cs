@@ -225,7 +225,7 @@ public class PanelRepository : IPanelRepository
             .ThenInclude(p => p.AnswerOptions)
             .Single(p => p.Id == panelId);
     }
-    
+
     public Panel ReadPanelWithPostsAndSuggestionsAndVotes(Guid panelId)
     {
         return _context.Panels
@@ -234,8 +234,6 @@ public class PanelRepository : IPanelRepository
             .ThenInclude(s => s.Votes)
             .Single(p => p.Id == panelId);
     }
-
-
 
     public PlanningGroupMember ReadPlanningGroupMember(Guid planningsGroupMemberId)
     {
