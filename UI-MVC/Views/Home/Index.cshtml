@@ -37,18 +37,13 @@
 }
 else
 {
-    <div class="text-center">
-        <h1 class="display-4">Welcome to @Organisation.Name</h1>
-        <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
-    </div>
-    
-    <div class="card border-0 d-flex flex-column">
-        <h2 class="card-title">Publieke Panels</h2>
+    <div class="container mt-5">
+        <h2>Publieke Panels</h2>
         @foreach (var panel in Model.Panels)
         {
             if (panel.Posts.Any(post => post.IsGloballyVisible))
             {
-                <a class="card col-5 m-2" href="@Url.Action("Index","PanelProjectPage", new{panelId = panel.Id})">
+                <a class="card col-5 m-2" href="@Url.Action("Index","PanelProjectPage", new{id = panel.Id})">
                     <h3 class="card-title p-4">@panel.Name</h3>
                 </a>
             }

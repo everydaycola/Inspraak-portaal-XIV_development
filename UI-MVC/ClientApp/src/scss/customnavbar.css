@@ -98,6 +98,9 @@
     grid-row: 1/2;
     overflow-y: auto;
   }
+  .main-container > main {
+    width: 100%;
+  }
   footer {
     grid-column: 2/3;
     grid-row: 2/3;

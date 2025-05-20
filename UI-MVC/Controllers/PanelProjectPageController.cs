@@ -77,7 +77,7 @@ public class PanelProjectPageController : Controller
 
         return View(new ProjectPageDto
         {
-            Panel = _projectPageManager.GetPanelWithPostsAndSuggestions(id.Value),
+            Panel = _projectPageManager.GetPanelWithPostsAndSuggestionsAndVotes(id.Value),
         });
     }
 

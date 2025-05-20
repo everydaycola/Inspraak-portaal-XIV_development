@@ -105,6 +105,9 @@ $open-animation-time: 2s;
     grid-row: 1/2;
     overflow-y: auto; // allows scrolling on content
   }
+  .main-container > main{
+    width:100%;
+  }
 
   footer {
     grid-column: 2/3;

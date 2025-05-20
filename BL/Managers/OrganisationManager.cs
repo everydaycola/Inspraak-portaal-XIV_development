@@ -24,14 +24,19 @@ public class OrganisationManager : IOrganisationManager
         return _repo.ReadAllOrganisations();
     }
 
-    public Organisation UpdateOrganisation(string organisationId, string name, string backgroundColor, string backgroundImage)
+    public Organisation UpdateOrganisation(string organisationId, string name, string backgroundColor, string backgroundImage, string logoImageName)
     {
         var existingOrganisation = _repo.ReadOrganisationById(organisationId);
         if (existingOrganisation != null)
         {
             existingOrganisation.Name = name;
             existingOrganisation.BackgroundColor = backgroundColor;
-            existingOrganisation.BackgroundImage = backgroundImage;
+            if(backgroundImage != ""){
+                existingOrganisation.BackgroundImage = backgroundImage;
+            }
+            if(logoImageName != ""){
+                existingOrganisation.LogoImageName = logoImageName;
+            }
             return _repo.UpdateOrganisation(existingOrganisation);
         }
 
