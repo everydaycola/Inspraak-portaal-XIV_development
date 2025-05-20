@@ -4,11 +4,20 @@ namespace Domain.Interfaces.Posts;
 
 public class MeetingPost : Post, IValidatableObject
 {
-    public DocumentCollection Documents { get; set; } = new();
+    [Required(ErrorMessage = "Post moet een lijst van documenten hebben")]
+    public ICollection<string> DocumentNames { get; set; } = [];
 
-    // Forward the validation to the Documents collection
-    IEnumerable<ValidationResult> IValidatableObject.Validate(ValidationContext validationContext)
+    public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
     {
-        return Documents.Validate(validationContext);
+        if (DocumentNames == null) return [];
+        var validationResults = new List<ValidationResult>();
+        foreach (var documentName in DocumentNames)
+        {
+            if (documentName != null && documentName.Length > 300)
+            {
+                validationResults.Add(new ValidationResult("Document naam is te lang", [nameof(DocumentNames)]));
+            }
+        }
+        return validationResults;
     }
 }

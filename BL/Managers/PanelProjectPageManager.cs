@@ -1,5 +1,4 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using System.Security.Claims;
 using BL.Interfaces;
 using DAL.Interfaces;
 using Domain;
@@ -27,7 +26,7 @@ public class PanelProjectPageManager : IPanelProjectPageManager
     
     public Panel GetPanelWithPostsAndSuggestionsAndVotesAndDocuments(Guid panelId)
     {
-        return _repo.ReadPanelWithPostsAndSuggestionsAndVotesAndDocuments(panelId);
+        return _repo.ReadPanelWithPostsAndSuggestionsAndVotes(panelId);
     }
 
     public void ChangeVote(ApplicationUser user, Guid suggestionId, VoteType voteType)
@@ -58,11 +57,11 @@ public class PanelProjectPageManager : IPanelProjectPageManager
         {
             // Add the document to the appropriate post type
             case MeetingPost mp:
-                mp.Documents.DocumentNames.Add(uniqueFileName);
+                mp.DocumentNames.Add(uniqueFileName);
                 _repo.UpdatePost(mp);
                 break;
             case SuggestionPost sp:
-                sp.Documents.DocumentNames.Add(uniqueFileName);
+                sp.DocumentNames.Add(uniqueFileName);
                 _repo.UpdatePost(sp);
                 break;
             default:

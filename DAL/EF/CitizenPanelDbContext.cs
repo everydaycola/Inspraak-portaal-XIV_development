@@ -31,7 +31,6 @@ public class CitizenPanelDbContext : IdentityDbContext<ApplicationUser>
     public DbSet<Suggestion> Suggestions { get; set; }
     public DbSet<Vote> Votes { get; set; }
     public DbSet<Post> Posts { get; set; }
-    public DbSet<DocumentCollection> DocumentCollections { get; set; }
     
     public CitizenPanelDbContext(DbContextOptions options, OrganisationContext organisationContext) : base(options)
     {
@@ -100,23 +99,23 @@ public class CitizenPanelDbContext : IdentityDbContext<ApplicationUser>
             .WithOne(s => s.Suggestion);
         modelBuilder.Entity<Vote>()
             .HasOne(v => v.Owner);
-        modelBuilder.Entity<MeetingPost>()
-            .HasOne(p => p.Documents)
-            .WithMany()
-            .HasForeignKey("DocumentsId");
-
-        modelBuilder.Entity<SuggestionPost>()
-            .HasOne(p => p.Documents)
-            .WithMany()
-            .HasForeignKey("SuggestionPost_DocumentsId");
-
         //ENSURE EF KNOWS HOW TO HANDLE DOCUMENTNAMES.
-        modelBuilder.Entity<DocumentCollection>().Property(d => d.DocumentNames)
-            .HasConversion(
-                v => JsonSerializer.Serialize(v, (JsonSerializerOptions?)null),
-                v => JsonSerializer.Deserialize<List<string>>(v, (JsonSerializerOptions?)null)!
-                );
-            
+        modelBuilder.Entity<MeetingPost>(b =>
+        {
+            b.Property(p => p.DocumentNames)
+                .HasConversion(
+                    v => JsonSerializer.Serialize(v, (JsonSerializerOptions?)null),
+                    v => JsonSerializer.Deserialize<List<string>>(v, (JsonSerializerOptions?)null)!);
+        });
+        
+        modelBuilder.Entity<SuggestionPost>(b =>
+        {
+            b.Property(p => p.DocumentNames)
+                .HasConversion(
+                    v => JsonSerializer.Serialize(v, (JsonSerializerOptions?)null),
+                    v => JsonSerializer.Deserialize<List<string>>(v, (JsonSerializerOptions?)null)!);
+        });
+        
         modelBuilder.Entity<Vote>()
             .Property("SuggestionId");
         modelBuilder.Entity<Vote>()

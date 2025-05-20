@@ -446,7 +446,7 @@
                     </div>
                     <h6 class="text-muted mt-3">Verslagen:</h6>
                     <div class="d-flex flex-column gap-2">
-                        @foreach (var documentName in meetingPost.Documents.DocumentNames)
+                        @foreach (var documentName in meetingPost.DocumentNames)
                         {
                             <a href="@Url.Action("GetFile", "Storage", new { fileName = documentName })" target="_blank"
                                class="btn btn-outline-primary">
@@ -576,7 +576,7 @@
                         </form>
 
                         <div class="d-flex flex-column gap-2">
-                            @foreach (var documentName in suggestionPost.Documents.DocumentNames)
+                            @foreach (var documentName in suggestionPost.DocumentNames)
                             {
                                 <a href="@Url.Action("GetFile", "Storage", new { fileName = documentName })"
                                    target="_blank"

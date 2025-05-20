@@ -204,7 +204,7 @@ public class PanelRepository : IPanelRepository
     public void CreatePost<T>(Guid panelId, T post) where T : Post
     {
         _context.Posts.Add(post);
-        var panel = ReadPanelWithPostsAndSuggestionsAndVotesAndDocuments(panelId);
+        var panel = ReadPanelWithPostsAndSuggestionsAndVotes(panelId);
         if (panel == null) return;
         panel.Posts.Add(post);
         _context.SaveChanges();
@@ -226,34 +226,15 @@ public class PanelRepository : IPanelRepository
             .Single(p => p.Id == panelId);
     }
     
-    public Panel ReadPanelWithPostsAndSuggestionsAndVotesAndDocuments(Guid panelId)
+    public Panel ReadPanelWithPostsAndSuggestionsAndVotes(Guid panelId)
     {
-        var panel = _context.Panels
+        return _context.Panels
             .Include(p => p.Posts)
-            .ThenInclude(post => (post as SuggestionPost).Suggestions)
-            .ThenInclude(suggestion => suggestion.Votes)
+            .ThenInclude(p => (p as SuggestionPost).Suggestions)
+            .ThenInclude(s => s.Votes)
             .Single(p => p.Id == panelId);
-    
-        // Load documents for SuggestionPosts
-        var suggestionPosts = panel.Posts.OfType<SuggestionPost>().ToList();
-        foreach (var post in suggestionPosts)
-        {
-            _context.Entry(post)
-                .Reference(p => p.Documents)
-                .Load();
-        }
-    
-        // Load documents for MeetingPosts
-        var meetingPosts = panel.Posts.OfType<MeetingPost>().ToList();
-        foreach (var post in meetingPosts)
-        {
-            _context.Entry(post)
-                .Reference(p => p.Documents)
-                .Load();
-        }
-    
-        return panel;
     }
+
 
 
     public PlanningGroupMember ReadPlanningGroupMember(Guid planningsGroupMemberId)

@@ -19,7 +19,7 @@ public interface IPanelRepository
     public IEnumerable<PanelMember> ReadPanelMembersWithCriteria(Guid id);
     public Panel ReadPanelWithCriteriaAndAnswerOptions(Guid panelId);
     public IEnumerable<PlanningGroupMember> ReadAllPlanningGroupMembersWithIdentityUserForPanel(Guid panelId);
-    public Panel ReadPanelWithPostsAndSuggestionsAndVotesAndDocuments(Guid panelId);
+    public Panel ReadPanelWithPostsAndSuggestionsAndVotes(Guid panelId);
     public PlanningGroupMember ReadPlanningGroupMember(Guid planningsGroupMemberId);
     public Post ReadPost(Guid id);
     public Vote ReadVoteByPanelMemberAndSuggestionOrDefault(ApplicationUser user, Guid suggestionId);
