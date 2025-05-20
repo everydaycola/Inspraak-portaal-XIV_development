@@ -1,5 +1,4 @@
 ﻿@using DAL
-@using Domain.Interfaces.Posts
 @using Microsoft.EntityFrameworkCore.Metadata.Internal
 @using UI_MVC.TempTenant
 @{
@@ -18,16 +17,15 @@
         <div class="row g-0 h-100 flex-column flex-lg-row">
             <!-- Image on the left (or top on small screens) -->
             <div class="col-12 col-lg-6 h-50 h-lg-100">
-                <img src="~/images/burgerpanel.jpg"
-                     class="img-fluid w-100 h-100"
-                     style="object-fit: cover;"
+                <img src="~/images/burgerpanel.jpg" 
+                     class="img-fluid w-100 h-100" 
+                     style="object-fit: cover;" 
                      alt="Inspraak Portaal">
             </div>
             <!-- Content on the right (or bottom on small screens) -->
             <div class="col-12 col-lg-6 d-flex align-items-start h-50 h-lg-100">
                 <div class="card-body">
-                    <img class="header-image" style="width:40%; margin: 0;"
-                         src="~/images/icons/inspraak_portaal_light_mode.svg" alt="inspraak-portaal-logo"/>
+                    <img class="header-image" style="width:40%; margin: 0;" src="~/images/icons/inspraak_portaal_light_mode.svg" alt="inspraak-portaal-logo"/>
                     <h2>Welkom!</h2>
                     <p>Het Inspraak Portaal is een platform die het organiseren van burgerpanels vereenvoudigd.</p>
                     <p>Zelf interesse in een burgerpanel? Meld je dan aan voor jou organisatie!</p>
@@ -43,7 +41,7 @@ else
         <h1 class="display-4">Welcome to @Organisation.Name</h1>
         <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
     </div>
-
+    
     <div class="card border-0 d-flex flex-column">
         <h2 class="card-title">Publieke Panels</h2>
         @foreach (var panel in Model.Panels)
@@ -53,7 +51,7 @@ else
                 panel.Posts.Any(post => post is SuggestionPost suggestionPost && suggestionPost.Suggestions.Any(sp => sp.IsGloballyVisible)
                 ))
             {
-                <a class="card col-5 m-2" href="@Url.Action("Index", "PanelProjectPage", new { panelId = panel.Id })">
+                <a class="card col-5 m-2" href="@Url.Action("Index","PanelProjectPage", new{panelId = panel.Id})">
                     <h3 class="card-title p-4">@panel.Name</h3>
                 </a>
             }
