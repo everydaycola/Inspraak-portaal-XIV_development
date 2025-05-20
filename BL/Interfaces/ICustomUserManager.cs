@@ -1,4 +1,6 @@
-﻿using Domain.CitizenPanel;
+﻿using System.Security.Claims;
+using Domain;
+using Domain.CitizenPanel;
 
 namespace BL.Interfaces;
 

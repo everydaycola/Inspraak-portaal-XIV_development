@@ -19,6 +19,7 @@ export default defineConfig({
                 adminOrgMan: resolve(__dirname, 'src/ts/organisationmanagement/adminOrgManEntrypoint.ts'),
                 accountSettings: resolve(__dirname, 'src/ts/accountSettings/accountSettingsEntrypoint.ts'),
                 shareButtonPartial: resolve(__dirname, 'src/ts/panelProjectPage/share.ts'),
+                suggestionVoting: resolve(__dirname, 'src/ts/PanelProjectPage/suggestionVoting.ts'),
             },
             output: {
                 entryFileNames: '[name].entry.js',

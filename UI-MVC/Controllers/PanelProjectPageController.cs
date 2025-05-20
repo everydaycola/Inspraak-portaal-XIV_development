@@ -1,11 +1,9 @@
 ﻿using System.Text.RegularExpressions;
 using BL.Interfaces;
 using Domain;
-using Domain.CitizenPanel;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using StackExchange.Redis;
 using UI_MVC.Models.Dto.ProjectPage;
 
 namespace UI_MVC.Controllers;
@@ -34,24 +32,25 @@ public class PanelProjectPageController : Controller
         _projectPageManager = projectPageManager;
     }
     
-    private IActionResult HandleValidationError(string message, string modalName, Guid panelId)
+    private async Task<IActionResult> HandleValidationError(string message, string modalName, Guid panelId)
     {
         _logger.Log(LogLevel.Warning, modalName + ": Validation Error: " + message);
         ModelState.AddModelError("", message);
-        return SendBack(modalName, panelId);
+        return await SendBack(modalName, panelId);
     }
     
-    private IActionResult SendBack(string modalName, Guid panelId)
+    private async Task<IActionResult> SendBack(string modalName, Guid panelId)
     {
         ViewBag.OpenModal = modalName;
+        var user = await _userManager.GetUserAsync(User);
         return View("Index", new ProjectPageDto
         {
-            Panel = _projectPageManager.GetPanelWithPostsAndSuggestions(panelId)
+            Panel = _projectPageManager.GetPanelWithPostsAndSuggestionsAndVotes(panelId),
+            CurrentUser = user
         });
     }
 
-    [Authorize(Roles = "Organisatie,PanelMember")]
-    public async Task<IActionResult> Index(Guid? id)
+   public async Task<IActionResult> Index(Guid? id)
     {
         if (!id.HasValue)
         {
@@ -88,12 +87,12 @@ public class PanelProjectPageController : Controller
     {
         if (!ModelState.IsValid)
         {
-            return SendBack("addTextModal", newTextPost.PanelId);
+            return await SendBack("addTextModal", newTextPost.PanelId);
         }
 
-        _projectPageManager.AddTextPost(newTextPost.PanelId, newTextPost.Title, newTextPost.Content, newTextPost.VisibleForPanelMember);
+        _projectPageManager.AddTextPost(newTextPost.PanelId, newTextPost.Title, newTextPost.Content, newTextPost.VisibleForPanelMember, newTextPost.IsGloballyVisible);
         
-        _ = HandleMailSending(newTextPost.InformPeopleViaMail, newTextPost.VisibleForPanelMember, _projectPageManager.GetPanelWithPostsAndSuggestions(newTextPost.PanelId))
+        _ = HandleMailSending(newTextPost.InformPeopleViaMail, newTextPost.VisibleForPanelMember, newTextPost.PanelId)
             .ContinueWith(task => 
             {
                 if (task.IsFaulted)
@@ -103,10 +102,7 @@ public class PanelProjectPageController : Controller
             });
 
 
-        return View("Index", new ProjectPageDto
-        {
-            Panel = _projectPageManager.GetPanelWithPostsAndSuggestions(newTextPost.PanelId)
-        });
+        return RedirectToAction("Index", new { newTextPost.PanelId });
     }
 
     [HttpPost]
@@ -115,7 +111,7 @@ public class PanelProjectPageController : Controller
     {
         if (!ModelState.IsValid)
         {
-            return SendBack("addBestandModal", newDocumentPost.PanelId);
+            return await SendBack("addBestandModal", newDocumentPost.PanelId);
         }
         
         //Generate a unique filename
@@ -123,9 +119,9 @@ public class PanelProjectPageController : Controller
         // Save the file
         await _storageManager.AddFileAsync(uniqueFileName, newDocumentPost.File.ContentType, newDocumentPost.File.OpenReadStream());
         //SAVE META DATA IN DB
-        _projectPageManager.AddDocumentPost(newDocumentPost.PanelId, newDocumentPost.Title, uniqueFileName, newDocumentPost.VisibleForPanelMember);
+        _projectPageManager.AddDocumentPost(newDocumentPost.PanelId, newDocumentPost.Title, uniqueFileName, newDocumentPost.VisibleForPanelMember, newDocumentPost.IsGloballyVisible);
         // handle mail sending
-        _ = HandleMailSending(newDocumentPost.InformPeopleViaMail, newDocumentPost.VisibleForPanelMember, _projectPageManager.GetPanelWithPostsAndSuggestions(newDocumentPost.PanelId))
+        _ = HandleMailSending(newDocumentPost.InformPeopleViaMail, newDocumentPost.VisibleForPanelMember, newDocumentPost.PanelId)
             .ContinueWith(task => 
             {
                 if (task.IsFaulted)
@@ -135,25 +131,23 @@ public class PanelProjectPageController : Controller
             });
 
 
-        return View("Index", new ProjectPageDto
-        {
-            Panel = _projectPageManager.GetPanelWithPostsAndSuggestions(newDocumentPost.PanelId)
-        });
+        return RedirectToAction("Index", new { newDocumentPost.PanelId });
     }
 
-    private async Task HandleMailSending(bool informPeopleViaMail, bool visibleForPanelMember, Panel panel)
+    private async Task HandleMailSending(bool informPeopleViaMail, bool visibleForPanelMember, Guid panelId)
     {
+        var name = _panelManager.GetPanel(panelId).Name;
         var baseUrl = $"{Request.Scheme}://{Request.Host}{Request.PathBase}";
         if (informPeopleViaMail)
         {
             //Informeer project group.
-            var projectGroupmembers = _panelManager.GetAllPlanningGroupMembersWithIdentityUserForPanel(panel.Id);
+            var projectGroupMembers = _panelManager.GetAllPlanningGroupMembersWithIdentityUserForPanel(panelId);
             _logger.Log(LogLevel.Information, "Projectgroep op de hoogte brengen.");
-            var mailSubject = "Er is een nieuwe post geplaatst op een panel waaraan jij deelneemt!";
-            var textPart = "Nieuwe post op" + panel.Name + "geplaatst";
+            const string mailSubject = "Er is een nieuwe post geplaatst op een panel waaraan jij deelneemt!";
+            var textPart = "Nieuwe post op" + name + "geplaatst";
             var htmlPart =
-                $"<p>Gebruik onderstaande link om deze te bekijken</p><a href={baseUrl}/PanelProjectPage?panelId={panel.Id}>Project pagina bezoeken.</a>";
-            foreach (var member in projectGroupmembers)
+                $"<p>Gebruik onderstaande link om deze te bekijken</p><a href={baseUrl}/PanelProjectPage?panelId={panelId}>Project pagina bezoeken.</a>";
+            foreach (var member in projectGroupMembers)
             {
                 await _sendMailManager.SendSingleMailAsync(member.User.Email,
                     mailSubject, textPart, htmlPart);
@@ -163,16 +157,15 @@ public class PanelProjectPageController : Controller
             //Breng panelleden op de hoogte wanneer dit zichtbaar is voor hen.
             if (visibleForPanelMember)
             {
-                var panelMembers = _panelManager.GetAllPanelMembersForPanel(panel.Id);
                 _logger.Log(LogLevel.Information, "Panelmembers op de hoogte brengen.");
-                foreach (var panelMember in panelMembers)
+                foreach (var panelMember in _panelManager.GetAllPanelMembersForPanel(panelId))
                 {
                     if (!panelMember.HasRegistered || !panelMember.Selected) continue;
                     await _sendMailManager.SendSingleMailAsync(panelMember.Email,
                         mailSubject,
-                        "Nieuwe post op " + panel.Name + " geplaatst",
-                        "<h1>Nieuwe post op panel " + panel.Name + "</h1>" +
-                        $"<p>Gebruik onderstaande link om deze te bekijken</p><a href={baseUrl}/PanelProjectPage?panelId={panel.Id}>Project pagina bezoeken.</a>");
+                        "Nieuwe post op " + name + " geplaatst",
+                        "<h1>Nieuwe post op panel " + name + "</h1>" +
+                        $"<p>Gebruik onderstaande link om deze te bekijken</p><a href={baseUrl}/PanelProjectPage?panelId={panelId}>Project pagina bezoeken.</a>");
                     _logger.Log(LogLevel.Information, "Mail succesvol verstuurd!");
                 }
             }
@@ -186,7 +179,7 @@ public class PanelProjectPageController : Controller
     {
         if (!ModelState.IsValid)
         {
-            return SendBack("addVideoModal", newVideoPost.PanelId);
+            return await SendBack("addVideoModal", newVideoPost.PanelId);
         }
         
         if (!string.IsNullOrWhiteSpace(newVideoPost.YoutubeUrl))
@@ -196,7 +189,8 @@ public class PanelProjectPageController : Controller
                 newVideoPost.Title,
                 newVideoPost.YoutubeUrl,
                 newVideoPost.VisibleForPanelMember,
-                newVideoPost.InformPeopleViaMail);
+                newVideoPost.InformPeopleViaMail,
+                newVideoPost.IsGloballyVisible);
         } 
         
         return await AddEmbedVideoPost(
@@ -204,28 +198,29 @@ public class PanelProjectPageController : Controller
             newVideoPost.Title,
             newVideoPost.VideoUrl,
             newVideoPost.VisibleForPanelMember,
-            newVideoPost.InformPeopleViaMail);
+            newVideoPost.InformPeopleViaMail,
+            newVideoPost.IsGloballyVisible);
             
     }
 
-    private async Task<IActionResult> AddEmbedVideoPost(
+    private Task<IActionResult> AddEmbedVideoPost(
         Guid panelId,
         string title,
         string videoUrl,
         bool visibleForPanelMember,
-        bool informPeopleViaMail)
+        bool informPeopleViaMail,
+        bool isGloballyVisible)
     {
         _projectPageManager.AddEmbedVideoPost(
             panelId,
             title,
             videoUrl,
-            visibleForPanelMember
+            visibleForPanelMember,
+            isGloballyVisible
         );
 
-        var panelWithPosts = _projectPageManager.GetPanelWithPostsAndSuggestions(panelId);
-        
         // Send email notifications
-        _ = HandleMailSending(informPeopleViaMail, visibleForPanelMember, panelWithPosts)
+        _ = HandleMailSending(informPeopleViaMail, visibleForPanelMember, panelId)
             .ContinueWith(task => 
             {
                 if (task.IsFaulted)
@@ -235,10 +230,7 @@ public class PanelProjectPageController : Controller
             });
 
 
-        return View("Index", new ProjectPageDto
-        {
-            Panel = panelWithPosts
-        });
+        return Task.FromResult<IActionResult>(RedirectToAction("Index", new { panelId }));
     }
     
     private async Task<IActionResult> AddYoutubeVideoPost(
@@ -246,7 +238,8 @@ public class PanelProjectPageController : Controller
         string title,
         string youtubeUrl,
         bool visibleForPanelMember,
-        bool informPeopleViaMail)
+        bool informPeopleViaMail,
+        bool isGloballyVisible)
     {
         // Prepare video data
         string youtubeId = null;
@@ -265,19 +258,19 @@ public class PanelProjectPageController : Controller
         
         if (youtubeId == null)
         {
-            return HandleValidationError("Ongeldige YouTube URL. Voer een geldige YouTube video URL in.", "addVideoModal", panelId);
+            return await HandleValidationError("Ongeldige YouTube URL. Voer een geldige YouTube video URL in.", "addVideoModal", panelId);
         }
 
         _projectPageManager.AddYoutubeVideoPost(
             panelId,
             title,
             youtubeId,
-            visibleForPanelMember
+            visibleForPanelMember,
+            isGloballyVisible
         );
 
         // Send email notifications
-        var panelWithPosts = _projectPageManager.GetPanelWithPostsAndSuggestions(panelId);
-        _ = HandleMailSending(informPeopleViaMail, visibleForPanelMember, panelWithPosts)
+        _ = HandleMailSending(informPeopleViaMail, visibleForPanelMember, panelId)
             .ContinueWith(task => 
             {
                 if (task.IsFaulted)
@@ -287,10 +280,7 @@ public class PanelProjectPageController : Controller
             });
 
 
-        return View("Index", new ProjectPageDto
-        {
-            Panel = panelWithPosts
-        });
+        return RedirectToAction("Index", new { panelId });
     }
 
     [HttpPost]
@@ -304,23 +294,24 @@ public class PanelProjectPageController : Controller
     {
         if (!ModelState.IsValid)
         {
-            return SendBack("addWerksessieModal", panelId);
+            return await SendBack("addWerksessieModal", panelId);
         }
         
         // Parse the time, throw an error if it fails.
         if (!TimeSpan.TryParse(sessionTime, out var parsedTime))
         {
-            return HandleValidationError("Ongeldig tijdstip.", "addWerksessieModal", panelId);
+            return await HandleValidationError("Ongeldig tijdstip.", "addWerksessieModal", panelId);
         }
 
-        var utcMeetingTime = TimeZoneInfo.ConvertTimeToUtc(sessionDate.Date + parsedTime);
-
         // Add the meeting post to the panel
-        _projectPageManager.AddMeetingPost(panelId, title, utcMeetingTime, true);
-        var updatedPanel = _projectPageManager.GetPanelWithPostsAndSuggestions(panelId);
+        _projectPageManager.AddMeetingPost(
+            panelId, 
+            title, 
+            TimeZoneInfo.ConvertTimeToUtc(sessionDate.Date + parsedTime), 
+            true);
 
         // Notify panel members if requested
-        _ = HandleMailSending(informPeopleViaMail, true, updatedPanel)
+        _ = HandleMailSending(informPeopleViaMail, true, panelId)
             .ContinueWith(task => 
             {
                 if (task.IsFaulted)
@@ -330,7 +321,7 @@ public class PanelProjectPageController : Controller
             });
 
 
-        return View("Index", new ProjectPageDto { Panel = updatedPanel });
+        return RedirectToAction("Index", new { panelId });
     }
 
 
@@ -343,13 +334,13 @@ public class PanelProjectPageController : Controller
         {
             ModelState.AddModelError("file", "Ongeldig bestandstype. Toegestane types: afbeeldingen, pdf, txt, dockx. Uw bestand is type: " + extension);
             ViewBag.SummaryCreationFailed = true;
-            return View("Index", new ProjectPageDto { Panel = _projectPageManager.GetPanelWithPostsAndSuggestions(panelId) });
+            return RedirectToAction("Index", new { panelId });
         }
         
         var uniqueFileName = Guid.NewGuid() + Path.GetExtension(verslagFile.FileName);
         await _storageManager.AddFileAsync(uniqueFileName, verslagFile.ContentType, verslagFile.OpenReadStream());
         _projectPageManager.AddSummaryToMeetingPost(meetingId, uniqueFileName);
-        return View("Index", new ProjectPageDto { Panel = _projectPageManager.GetPanelWithPostsAndSuggestions(panelId) });
+        return RedirectToAction("Index", new { panelId });
     }
 
     [HttpPost]
@@ -358,14 +349,13 @@ public class PanelProjectPageController : Controller
     {
         if (!ModelState.IsValid)
         {
-            return SendBack("addSuggestionModal", suggestionPostDto.PanelId);
+            return await SendBack("addSuggestionModal", suggestionPostDto.PanelId);
         }
 
         _projectPageManager.AddSuggestionPost(suggestionPostDto.PanelId, suggestionPostDto.Title,
             suggestionPostDto.VisibleForPanelMember);
 
-        var panelWithPosts = _projectPageManager.GetPanelWithPostsAndSuggestions(suggestionPostDto.PanelId);
-        _ = HandleMailSending(suggestionPostDto.InformPeopleViaMail, true, panelWithPosts)
+        _ = HandleMailSending(suggestionPostDto.InformPeopleViaMail, true, suggestionPostDto.PanelId)
             .ContinueWith(task => 
             {
                 if (task.IsFaulted)
@@ -375,7 +365,7 @@ public class PanelProjectPageController : Controller
             });
 
 
-        return View("Index", new ProjectPageDto { Panel = panelWithPosts });
+        return RedirectToAction("Index", new { suggestionPostDto.PanelId });
     }
 
     [HttpPost]
@@ -384,7 +374,7 @@ public class PanelProjectPageController : Controller
     {
         if (string.IsNullOrWhiteSpace(suggestion) || suggestion.Length > 1000)
         {
-            return View("Index", new ProjectPageDto { Panel = _projectPageManager.GetPanelWithPostsAndSuggestions(panelId) });
+            return RedirectToAction("Index", new { panelId });
         }
         
         var user = await _userManager.GetUserAsync(HttpContext.User);
@@ -396,6 +386,7 @@ public class PanelProjectPageController : Controller
         
         _projectPageManager.AddSuggestionToPost(postId, suggestion, email);
 
-        return View("Index", new ProjectPageDto { Panel = _projectPageManager.GetPanelWithPostsAndSuggestions(panelId) });
+        return RedirectToAction("Index", new { panelId });
+
     }
 }
