@@ -8,6 +8,7 @@
     <h2 class="mb-3">Selecteer het panel dat je wilt beheren.</h2>
     <form asp-action="SelectPanel" asp-controller="PanelManagement" method="post">
         <input type="hidden" name="returnAction" value="@Model.ReturnAction" />
+        <input type="hidden" name="returnController" value="@Model.ReturnController" />
         <div class="form-group">
             <select class="form-select" id="panelSelect" name="panelId" aria-label="Select a panel">
                 <option selected disabled>Kies een panel</option>

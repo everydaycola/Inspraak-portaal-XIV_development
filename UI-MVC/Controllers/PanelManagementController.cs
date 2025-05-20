@@ -100,10 +100,11 @@ public class PanelManagementController : Controller
     }
     
     [HttpPost]
-    public IActionResult SelectPanel(Guid panelId, string returnAction)
+    public IActionResult SelectPanel(Guid panelId, string returnAction, string returnController)
     {
         var action = string.IsNullOrEmpty(returnAction) ? "Index" : returnAction;
-        return RedirectToAction(action, new { id = panelId });
+        var controller = string.IsNullOrEmpty(returnController) ? ControllerContext.ActionDescriptor.ControllerName : returnController;
+        return RedirectToAction(action, controller, new { id = panelId});
     }
     
     [HttpPost]
@@ -132,18 +133,20 @@ public class PanelManagementController : Controller
     }
     
     [Authorize]
-    public IActionResult PanelSelection(string returnAction)
+    public IActionResult PanelSelection(string returnAction, string returnController)
     {
         var panels = _manager.GetAllPanels().ToList(); 
         if (panels.Count == 1)
         {
             var action = string.IsNullOrEmpty(returnAction) ? "Index" : returnAction;
-            return RedirectToAction(action, new { id = panels[0].Id, returnAction = returnAction});
+            var controller = string.IsNullOrEmpty(returnController) ? ControllerContext.ActionDescriptor.ControllerName : returnController;
+            return RedirectToAction(action, controller, new { id = panels[0].Id, returnAction = returnAction });
         }
         return View(new PanelSelectionViewModel
         {
             Panels = panels,
-            ReturnAction = returnAction
+            ReturnAction = returnAction,
+            ReturnController = returnController
         });
     }
     public IActionResult ToggleRegistration(Guid panelId)

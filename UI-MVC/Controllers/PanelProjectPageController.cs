@@ -51,17 +51,34 @@ public class PanelProjectPageController : Controller
     }
 
     [Authorize(Roles = "Organisatie,PanelMember")]
-    public async Task<IActionResult> Index(Guid? panelId)
+    public async Task<IActionResult> Index(Guid? id)
     {
-        if (!panelId.HasValue)
+        if (!id.HasValue)
         {
-            var user = await _userManager.GetUserAsync(HttpContext.User);
-            panelId = _customUserManager.getPanelForUser(user.Id).Id;
+            if (HttpContext.User.IsInRole(CustomIdentityConstants.OrganisatieRole))
+            {
+                var panels = _panelManager.GetAllPanels().ToList(); 
+                if (panels.Count == 1)
+                {
+                    var returnAction = "Index";
+                    var action = string.IsNullOrEmpty(returnAction) ? "Index" : returnAction;
+                    return RedirectToAction(action, new { id = panels[0].Id});
+                }
+                else
+                {
+                    return RedirectToAction("PanelSelection", "PanelManagement", new { returnAction = "Index", returnController = "PanelProjectPage"});
+                }
+            }
+            else
+            {
+                var user = await _userManager.GetUserAsync(HttpContext.User);
+                id = _customUserManager.getPanelForUser(user.Id).Id;
+            }
         }
 
         return View(new ProjectPageDto
         {
-            Panel = _projectPageManager.GetPanelWithPostsAndSuggestions(panelId.Value),
+            Panel = _projectPageManager.GetPanelWithPostsAndSuggestions(id.Value),
         });
     }
 

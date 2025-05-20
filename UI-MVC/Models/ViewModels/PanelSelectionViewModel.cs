@@ -6,4 +6,5 @@ public class PanelSelectionViewModel
 {
     public IEnumerable<Panel> Panels { get; set; }
     public string ReturnAction { get; set; }
+    public string ReturnController { get; set; }
 }
