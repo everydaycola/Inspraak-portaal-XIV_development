@@ -18,17 +18,17 @@ public class CommuneManager : ICommuneManager
     public async Task<List<Commune>> GetCommunes()
     {
         var gemeenteNamen = await _pinCRepository.GetCommuneNamesAsync();
-        var populationData = await _pinCRepository.GetDataFromAPI("v1111a_tot_bevolking");
-        var percentageMenData = await _pinCRepository.GetDataFromAPI("vp1111a_mannen");
-        var middleSchoolStudents = await _pinCRepository.GetDataFromAPI("v2302_so_lln");
-        var higherEducationData = await _pinCRepository.GetDataFromAPI("v2390_hoog");
-        var workingData = await _pinCRepository.GetDataFromAPI("v1201_ksz_werkend");
-        var lookingForWorkData = await _pinCRepository.GetDataFromAPI("v1201_ksz_werkzoekend");
-        var notWorkingData = await _pinCRepository.GetDataFromAPI("v1201_ksz_nba");
-        var caughtDrinkingAndDrivingData = await _pinCRepository.GetDataFromAPI("v2803_alco");
-        var peopleInjuredInTrafficAccident = await _pinCRepository.GetDataFromAPI("v2802_t");
-        var deathsByTrafficAccident = await _pinCRepository.GetDataFromAPI("v2802_vh_ver_do");
-        var totalRegisteredCats = await _pinCRepository.GetDataFromAPI("v3702_kat");
+        var populationData = await _pinCRepository.GetDataFromApi("v1111a_tot_bevolking");
+        var percentageMenData = await _pinCRepository.GetDataFromApi("vp1111a_mannen");
+        var middleSchoolStudents = await _pinCRepository.GetDataFromApi("v2302_so_lln");
+        var higherEducationData = await _pinCRepository.GetDataFromApi("v2390_hoog");
+        var workingData = await _pinCRepository.GetDataFromApi("v1201_ksz_werkend");
+        var lookingForWorkData = await _pinCRepository.GetDataFromApi("v1201_ksz_werkzoekend");
+        var notWorkingData = await _pinCRepository.GetDataFromApi("v1201_ksz_nba");
+        var caughtDrinkingAndDrivingData = await _pinCRepository.GetDataFromApi("v2803_alco");
+        var peopleInjuredInTrafficAccident = await _pinCRepository.GetDataFromApi("v2802_t");
+        var deathsByTrafficAccident = await _pinCRepository.GetDataFromApi("v2802_vh_ver_do");
+        var totalRegisteredCats = await _pinCRepository.GetDataFromApi("v3702_kat");
         return populationData
             .Where(p => gemeenteNamen.ContainsKey(p.Key))
             .Select(p => new Commune
@@ -53,8 +53,8 @@ public class CommuneManager : ICommuneManager
     public async Task<List<CommuneBasicDto>> GetCommunesBasic()
     {
         var gemeenteNamen = await _pinCRepository.GetCommuneNamesAsync();
-        var populationData = await _pinCRepository.GetDataFromAPI("v1111a_tot_bevolking");
-        var percentageMenData = await _pinCRepository.GetDataFromAPI("vp1111a_mannen");
+        var populationData = await _pinCRepository.GetDataFromApi("v1111a_tot_bevolking");
+        var percentageMenData = await _pinCRepository.GetDataFromApi("vp1111a_mannen");
         return populationData
             .Where(p => gemeenteNamen.ContainsKey(p.Key))
             .Select(p => new CommuneBasicDto

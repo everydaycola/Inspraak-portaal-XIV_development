@@ -52,7 +52,13 @@ public class PanelProjectPageManager : IPanelProjectPageManager
 
     public void AddSummaryToMeetingPost(Guid meetingId, string uniqueFileName)
     {
-        _repo.CreateSummaryToMeetingPost(meetingId, uniqueFileName);
+        if (_repo.ReadPost(meetingId) is not MeetingPost meetingPost)
+        {
+            _logger.Log(LogLevel.Critical, "Meeting post with id " + meetingId + " does not exist.");
+            return;
+        }
+        meetingPost.DocumentNames.Add(uniqueFileName);
+        _repo.UpdatePost(meetingPost);
     }
     
     // Generic helper method for post validation and creation

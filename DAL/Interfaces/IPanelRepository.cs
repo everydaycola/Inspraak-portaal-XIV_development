@@ -10,39 +10,39 @@ namespace DAL.Interfaces;
 
 public interface IPanelRepository
 {
-    //READ
-    public Panel ReadPanel(Guid id);
-    public IEnumerable<Panel> ReadAllPanels();
-    public PanelMember ReadPanelMemberWithCriteriaResponses(Guid id);
-    public PanelMember ReadPanelMemberWithPanel(Guid id);
-    public Panel ReadPanelWithRepresentationGroup(Guid id);
-    public IEnumerable<PanelMember> ReadPanelMembersWithCriteria(Guid id);
+    // READ
+    public Panel ReadPanel(Guid panelId);
+    public Panel ReadPanelWithRepresentationGroup(Guid panelId);
     public Panel ReadPanelWithCriteriaAndAnswerOptions(Guid panelId);
-    public IEnumerable<PlanningGroupMember> ReadAllPlanningGroupMembersWithIdentityUserForPanel(Guid panelId);
     public Panel ReadPanelWithPostsAndSuggestionsAndVotes(Guid panelId);
+    public IEnumerable<Panel> ReadAllPanels();
+    public IEnumerable<Panel> ReadAllPanelsWithPosts();
+    public PanelMember ReadPanelMemberWithCriteriaResponses(Guid panelMemberId);
+    public PanelMember ReadPanelMemberWithPanelAndCriteriaResponseAndCriteria(Guid panelMemberId);
+    public IEnumerable<PanelMember> ReadAllPanelMembersForPanel(Guid panelId, bool includeUnselected = true, bool includeRegistered = true);
+    public IEnumerable<PanelMember> ReadPanelMembersWithCriteriaAndResponsesByPanel(Guid panelId);
     public PlanningGroupMember ReadPlanningGroupMember(Guid planningsGroupMemberId);
-    public Post ReadPost(Guid id);
+    public IEnumerable<PlanningGroupMember> ReadAllPlanningGroupMembersWithIdentityUserByPanel(Guid panelId);
+    public Post ReadPost(Guid postId);
     public Vote ReadVoteByPanelMemberAndSuggestionOrDefault(ApplicationUser user, Guid suggestionId);
     public Suggestion ReadSuggestion(Guid suggestionId);
-    public IEnumerable<Panel> ReadAllPanelsWithPosts();
-
-    //UPDATE
-    public void UpdatePanel(Panel panel);
-    public void UpdatePanelMember(PanelMember member);
-
-    public void UpdatePanelMembersToSelected(ICollection<PanelMember> selectedMembers);
-    public void UpdateSuggestionPost(SuggestionPost suggestionPost);
-    public void UpdateVote(Vote vote);
-    //CREATE
-    public void CreatePanelMember(PanelMember panelMember);
-    public void CreatePanelMembers(List<PanelMember> panelMembers);
+    
+    
+    // CREATE
+    public void CreatePanelMembers(ICollection<PanelMember> panelMembers);
     public void CreatePost<T>(Guid panelId, T post) where T : Post;
     public void CreatePlanningsGroupMember(PlanningGroupMember member);
-    public void CreateSummaryToMeetingPost(Guid meetingId, string uniqueFileName);
     public void CreateVote(Vote vote);
     
-    //REMOVE
-    public void RemoveAllUnselectedPanelmembers(Guid panelId);
-    public void RemovePlanningGroupMember(Guid planningsGroupMemberId);
-    public void RemoveVote(Vote vote);
+    // UPDATE
+    public void UpdatePanel(Panel panel);
+    public void UpdatePanelMember(PanelMember panelMember);
+    public void UpdatePanelMembers(ICollection<PanelMember> panelMembers);
+    public void UpdateSuggestionPost(SuggestionPost suggestionPost);
+    public void UpdatePost(Post post);
+    public void UpdateVote(Vote vote);
+    
+    // DELETE
+    public void DeletePanelMembers(ICollection<PanelMember> panelMembers);
+    public void DeletePlanningGroupMember(PlanningGroupMember planningsGroupMember);
 }

@@ -1,4 +1,4 @@
-using DAL;
+namespace DAL;
 
 public class OrganisationContext
 {
