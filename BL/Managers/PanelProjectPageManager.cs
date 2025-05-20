@@ -127,14 +127,15 @@ public class PanelProjectPageManager : IPanelProjectPageManager
         });
     }
 
-    public void AddSuggestionPost(Guid panelId, string title, bool visibleForPanelMember)
+    public void AddSuggestionPost(Guid panelId, string title, bool visibleForPanelMember, bool isGloballyVisible)
     {
         AddPost(panelId, new SuggestionPost
         {
             Title = title,
             CreatedAt = DateTime.UtcNow,
             IsVisibleForPanelMembers = visibleForPanelMember,
-            Suggestions = []
+            Suggestions = [],
+            IsGloballyVisible = isGloballyVisible
         });
     }
 

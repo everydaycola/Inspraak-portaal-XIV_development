@@ -339,7 +339,7 @@ public class PanelProjectPageController : Controller
         }
 
         _projectPageManager.AddSuggestionPost(suggestionPostDto.PanelId, suggestionPostDto.Title,
-            suggestionPostDto.VisibleForPanelMember);
+            suggestionPostDto.VisibleForPanelMember, suggestionPostDto.IsGloballyVisible);
 
         _ = HandleMailSending(suggestionPostDto.InformPeopleViaMail, true, suggestionPostDto.PanelId)
             .ContinueWith(task => 
