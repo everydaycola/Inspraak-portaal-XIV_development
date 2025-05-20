@@ -45,7 +45,7 @@ public class PanelProjectPageController : Controller
         var user = await _userManager.GetUserAsync(User);
         return View("Index", new ProjectPageDto
         {
-            Panel = _projectPageManager.GetPanelWithPostsAndSuggestionsAndVotes(panelId),
+            Panel = _projectPageManager.GetPanelWithPostsAndSuggestionsAndVotesAndDocuments(panelId),
             CurrentUser = user
         });
     }
@@ -62,7 +62,7 @@ public class PanelProjectPageController : Controller
 
         return View(new ProjectPageDto
         {
-            Panel = _projectPageManager.GetPanelWithPostsAndSuggestionsAndVotes(panelId.Value),
+            Panel = _projectPageManager.GetPanelWithPostsAndSuggestionsAndVotesAndDocuments(panelId.Value),
             CurrentUser = user
         });
     }
@@ -325,7 +325,7 @@ public class PanelProjectPageController : Controller
         
         var uniqueFileName = Guid.NewGuid() + Path.GetExtension(verslagFile.FileName);
         await _storageManager.AddFileAsync(uniqueFileName, verslagFile.ContentType, verslagFile.OpenReadStream());
-        _projectPageManager.AddSummaryToMeetingPost(meetingId, uniqueFileName);
+        _projectPageManager.AddDocumentToPost(meetingId, uniqueFileName);
         return RedirectToAction("Index", new { panelId });
     }
 

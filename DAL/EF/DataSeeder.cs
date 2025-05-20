@@ -49,27 +49,12 @@ public static class DataSeeder
             Posts = new List<Post>
             {
                 //PROJECT PAGE POSTS
-                /*new TextPost()
+                new TextPost
                 {
-                    Content = "Test post!",
+                    Title = "Test post!",
+                    Content = "Test post content!",
                     CreatedAt = DateTime.UtcNow,
                 },
-                new DocumentPost()
-                {
-                    DocumentName = "/mydocument",
-                    CreatedAt = DateTime.UtcNow,
-                },
-                new EmbeddedVideoPost()
-                {
-                    VideoUrl = "/myvideo",
-                    CreatedAt = DateTime.UtcNow,
-                },*/
-                new MeetingPost()
-                {
-                    CreatedAt = DateTime.UtcNow,
-                    Title = "Bijeenkomst #1 - Gesprekken over duidelijkheid verkeersregels.",
-                    DocumentNames = new List<string> { "Testeken1", "testeken2" }
-                }
             },
             Criteria = new List<Criteria>
             {
