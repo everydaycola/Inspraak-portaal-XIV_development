@@ -16,21 +16,29 @@ public class OrganisationController : Controller
         {
             ModelState.AddModelError("", "Deze organisatie bestaat al, kies een andere naam!");
         }
+
         var organisation = _organisationManager.AddOrganisation(name.ToLower(), name, "#FFFFFF", "");
-        
+
         var subdomain = organisation.Name.ToLowerInvariant();
-        var currentDomain = HttpContext.Request.Host.Host;
+        var currentHost = HttpContext.Request.Host;
         var protocol = HttpContext.Request.Scheme;
+        var baseDomain = currentHost.Host;
 
-        if (currentDomain.StartsWith("www."))
+        if (baseDomain.StartsWith("www."))
         {
-            currentDomain = currentDomain.Substring(4);
+            baseDomain = baseDomain.Substring(4);
         }
-        
-        var baseDomain = currentDomain.Split('.').Skip(currentDomain.Split('.').Length - 2).Aggregate((a, b) => a + "." + b);
-        var newUrl = $"{protocol}://{subdomain}.{baseDomain}/"; // Or /{controller}/Details if using controller
 
-        return Redirect(newUrl);   
+        var parts = baseDomain.Split('.');
+        if (parts.Length > 1)
+        {
+            baseDomain = $"{parts[parts.Length - 2]}.{parts[parts.Length - 1]}";
+        }
+
+        var port = currentHost.Port.HasValue ? $":{currentHost.Port}" : "";
+        var newUrl = $"{protocol}://{subdomain}.{baseDomain}{port}/";
+
+        return Redirect(newUrl);
     }
 
     public OrganisationController(ILogger<HomeController> logger, IOrganisationManager organisationManager)
@@ -42,6 +50,6 @@ public class OrganisationController : Controller
     [HttpGet]
     public IActionResult OrganisationCreation()
     {
-        return View();   
+        return View();
     }
 }
