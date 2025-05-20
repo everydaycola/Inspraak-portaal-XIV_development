@@ -62,7 +62,8 @@ builder.Services.AddStackExchangeRedisCache(options =>
 });
 
 
-var connectionString = builder.Configuration.GetValue<string>("ConnectionStrings__DefaultConnection");
+var connectionString = builder.Configuration.GetValue<string>("ConnectionStrings__DefaultConnection")
+                       ?? Environment.GetEnvironmentVariable("ConnectionStrings__DefaultConnection");
 builder.Services.AddDbContext<CitizenPanelDbContext>(options => { options.UseNpgsql(connectionString); });
 
 
