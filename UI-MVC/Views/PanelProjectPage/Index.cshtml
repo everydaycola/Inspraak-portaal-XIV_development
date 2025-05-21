@@ -382,12 +382,11 @@
 @foreach (var post in Model.Panel.Posts.OrderByDescending(p => p.CreatedAt))
 {
     @if (
-        post.IsGloballyVisible ||
+        post.IsGloballyVisible || 
         User.IsInRole(CustomIdentityConstants.OrganisatieRole) ||
-        User.IsInRole(CustomIdentityConstants.AdminRole) ||
+        User.IsInRole(CustomIdentityConstants.AdminRole) || 
         (post.IsVisibleForPanelMembers && User.IsInRole(CustomIdentityConstants.PanelMemberRole)) ||
-        (post.GetType() == typeof(MeetingPost) && User.IsInRole(CustomIdentityConstants.PanelMemberRole)) ||
-        (post is SuggestionPost suggestionP && suggestionP.Suggestions.Any(s => s.IsGloballyVisible))
+        (post.GetType() == typeof(MeetingPost) && User.IsInRole(CustomIdentityConstants.PanelMemberRole))
     )
     {
         @switch (post)
@@ -401,7 +400,7 @@
                     <p class="mt-2 mb-0">@textPost.Content</p>
                     <div class="mt-2">
                         <button class="btn btn-outline-info btn-sm mt-2 copy-link-btn"
-                                data-clipboard-text="@($"{Context.Request.Scheme}://{Context.Request.Host}{Url.Action("Index", "PanelProjectPage", new { panelId = Model.Panel.Id })}")">
+                                data-clipboard-text="@($"{Context.Request.Scheme}://{Context.Request.Host}{Url.Action("Index","PanelProjectPage", new{panelId = Model.Panel.Id})}")">
                             <i class="bi bi-link-45deg"></i> Link kopiëren
                         </button>
                     </div>
@@ -616,7 +615,7 @@
                                 <input type="hidden" name="postId" value="@suggestionPost.Id"/>
                                 <div class="input-group">
                                     <input type="text" name="suggestion" class="form-control"
-                                           placeholder="Voeg een suggestie toe..." required/>
+                                           placeholder="Voeg een aanbeveling toe..." required/>
                                     <button type="submit" class="btn btn-primary">Toevoegen</button>
                                 </div>
                             </form>
