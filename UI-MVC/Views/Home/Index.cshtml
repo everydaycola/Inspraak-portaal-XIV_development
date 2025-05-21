@@ -1,4 +1,5 @@
 ﻿@using DAL
+@using Domain.Interfaces.Posts
 @using Microsoft.EntityFrameworkCore.Metadata.Internal
 @using UI_MVC.TempTenant
 @{
@@ -46,7 +47,10 @@ else
         <h2 class="card-title">Publieke Panels</h2>
         @foreach (var panel in Model.Panels)
         {
-            if (panel.Posts.Any(post => post.IsGloballyVisible))
+            if (
+                panel.Posts.Any(post => post.IsGloballyVisible) ||
+                panel.Posts.Any(post => post is SuggestionPost suggestionPost && suggestionPost.Suggestions.Any(sp => sp.IsGloballyVisible)
+                ))
             {
                 <a class="card col-5 m-2" href="@Url.Action("Index","PanelProjectPage", new{panelId = panel.Id})">
                     <h3 class="card-title p-4">@panel.Name</h3>

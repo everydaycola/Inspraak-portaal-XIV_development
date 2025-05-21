@@ -51,10 +51,11 @@ public class PanelRepository : IPanelRepository
         return _context.Posts.Find(id);
     }
 
-    public IEnumerable<Panel> ReadAllPanelsWithPosts()
+    public IEnumerable<Panel> ReadAllPanelsWithPostsAndSuggestions()
     {
         return _context.Panels
-            .Include(p => p.Posts);
+            .Include(p => p.Posts)
+            .ThenInclude(post => (post as SuggestionPost).Suggestions);
     }
     
     public Vote ReadVoteByPanelMemberAndSuggestionOrDefault(ApplicationUser user, Guid suggestionId)
@@ -166,6 +167,12 @@ public class PanelRepository : IPanelRepository
     public void UpdateVote(Vote vote)
     {
         _context.Votes.Update(vote);
+        _context.SaveChanges();
+    }
+
+    public void UpdateSuggestion(Suggestion suggestion)
+    {
+        _context.Suggestions.Update(suggestion);
         _context.SaveChanges();
     }
 

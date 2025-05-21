@@ -13,7 +13,8 @@ public class Suggestion
     public DateTime CreatedAt { get; set; }
     // not used because there is no real reason (yet)
     // [EmailAddress(ErrorMessage = "It seems this is not a correct email address")]
-    [MaxLength(300, ErrorMessage = "Email van suggestie eigenaar is te lang")]
+    [MaxLength(300, ErrorMessage = "Email van aanbeveling eigenaar is te lang")]
     public string OwnerEmail { get; set; }
     public ICollection<Vote> Votes { get; set; } = [];
+    public bool IsGloballyVisible { get; set; } = false;
 }
