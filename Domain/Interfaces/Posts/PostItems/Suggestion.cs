@@ -16,4 +16,5 @@ public class Suggestion
     [MaxLength(300, ErrorMessage = "Email van aanbeveling eigenaar is te lang")]
     public string OwnerEmail { get; set; }
     public ICollection<Vote> Votes { get; set; } = [];
+    public bool IsGloballyVisible { get; set; } = false;
 }

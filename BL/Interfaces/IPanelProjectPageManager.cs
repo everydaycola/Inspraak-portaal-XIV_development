@@ -10,10 +10,11 @@ public interface IPanelProjectPageManager
 {
     // GET
     public Panel GetPanelWithPostsAndSuggestionsAndVotesAndDocuments(Guid panelId);
-    
+    public Suggestion GetSuggestion(Guid suggestionId);
+
     // CHANGE
     public void ChangeVote(ApplicationUser user, Guid suggestionId, VoteType voteType);
-    
+    public void ChangeSuggestionVisibility(Guid suggesionId);
     // ADD
     public void AddTextPost(Guid panelId,string title, string content, bool isVisibleForPanelMembers, bool isGloballyVisible);
     public void AddDocumentPost(Guid panelId, string title, string documentUrl, bool isVisibleForPanelMembers, bool isGloballyVisible);

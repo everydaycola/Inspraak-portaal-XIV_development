@@ -19,7 +19,7 @@ public class HomeController : Controller
 
     public IActionResult Index()
     {
-        var panels = _panelManager.GetAllPanelsWithPosts();
+        var panels = _panelManager.GetAllPanelsWithPostsAndSuggestions();
         
         return View(new HomePanelsViewModel
         {
