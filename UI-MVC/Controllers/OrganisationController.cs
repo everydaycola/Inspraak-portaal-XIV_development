@@ -12,9 +12,10 @@ public class OrganisationController : Controller
     [HttpPost]
     public IActionResult OrganisationCreation(string name)
     {
-        if (_organisationManager.GetOrganisationById(name) != null)
+        if (_organisationManager.GetOrganisationById(name.ToLower()) != null)
         {
             ModelState.AddModelError("", "Deze organisatie bestaat al, kies een andere naam!");
+            return View();
         }
 
         var organisation = _organisationManager.AddOrganisation(name.ToLower(), name, "#FFFFFF", "");

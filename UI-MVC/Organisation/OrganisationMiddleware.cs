@@ -1,3 +1,5 @@
+using DAL;
+
 namespace UI_MVC.TempTenant;
 
 public class OrganisationMiddleware(OrganisationContext organisationContext, AvailableOrganisations availableTenants)
