@@ -1,6 +1,10 @@
-﻿namespace Domain.Interfaces;
+﻿using System.ComponentModel.DataAnnotations;
 
-public class Question: IQuestion
+namespace Domain.Interfaces;
+
+public class Question : IQuestion
 {
-    
+    [Key] public int Id { get; set; }
+    [Required] public string QuestionText { get; set; }
+    [Required] public ICollection<AnswerOption> AnswerOptions { get; set; }
 }

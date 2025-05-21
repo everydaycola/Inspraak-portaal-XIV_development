@@ -2,6 +2,7 @@ using BL.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using UI_MVC.Models.Dto;
+using UI_MVC.Models.Dto.OrganisationDtos;
 
 namespace UI_MVC.Controllers;
 

@@ -31,7 +31,9 @@ public class CitizenPanelDbContext : IdentityDbContext<ApplicationUser>
     public DbSet<Suggestion> Suggestions { get; set; }
     public DbSet<Vote> Votes { get; set; }
     public DbSet<Post> Posts { get; set; }
-    
+    public DbSet<Question> Questions { get; set; }
+    public DbSet<AnswerOption> AnswerOptions { get; set; }
+
     public CitizenPanelDbContext(DbContextOptions options, OrganisationContext organisationContext) : base(options)
     {
         _organisationContext = organisationContext;
@@ -40,19 +42,20 @@ public class CitizenPanelDbContext : IdentityDbContext<ApplicationUser>
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         var organisationalModels = modelBuilder.Model.GetEntityTypes()
-                .Where(entity => typeof(IOrganisational).IsAssignableFrom(entity.ClrType)
-                && !typeof(IdentityUser).IsAssignableFrom(entity.ClrType));
+            .Where(entity => typeof(IOrganisational).IsAssignableFrom(entity.ClrType)
+                             && !typeof(IdentityUser).IsAssignableFrom(entity.ClrType));
         foreach (var organisationalModel in organisationalModels)
         {
             modelBuilder.Entity(organisationalModel.ClrType)
-                .HasQueryFilter<IOrganisational>(e => e.OrganisationId == OrganisationId )
+                .HasQueryFilter<IOrganisational>(e => e.OrganisationId == OrganisationId)
                 .HasIndex(nameof(IOrganisational.OrganisationId));
-            
+
             modelBuilder.Entity(organisationalModel.ClrType)
                 .Property(nameof(IOrganisational.OrganisationId))
                 .IsRequired()
                 .HasValueGenerator<TenantIdValueGenerator>();
         }
+
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(CitizenPanelDbContext).Assembly);
         base.OnModelCreating(modelBuilder);
         // panel 1-1 representationgroup
@@ -60,11 +63,11 @@ public class CitizenPanelDbContext : IdentityDbContext<ApplicationUser>
             .HasOne(p => p.Panel)
             .WithOne(p => p.RepresentationGroup)
             .HasForeignKey<RepresentationGroup>("PanelId");
-        
+
         //Criteria * - 1 panels
         modelBuilder.Entity<Panel>()
             .HasMany(p => p.Criteria);
-        
+
         //Criteria 1 - * Answeroptions.
         modelBuilder.Entity<Criteria>()
             .HasMany(c => c.AnswerOptions)
@@ -73,15 +76,15 @@ public class CitizenPanelDbContext : IdentityDbContext<ApplicationUser>
         // CriteriaResponse 1 - * Criteria
         modelBuilder.Entity<CriteriaResponse>()
             .HasOne(c => c.Criteria);
-        
+
         // Panelmember 1 - * CriteriaResponse
         modelBuilder.Entity<PanelMember>()
             .HasMany(pm => pm.Responses);
-        
+
         //Planningroepmember 1..*-* Panel
         modelBuilder.Entity<PlanningGroupMember>()
             .HasOne(pgm => pgm.Panel);
-        
+
         //Panel 1 - * Posts
         modelBuilder.Entity<Panel>()
             .HasMany(p => p.Posts);
@@ -107,23 +110,30 @@ public class CitizenPanelDbContext : IdentityDbContext<ApplicationUser>
                     v => JsonSerializer.Serialize(v, (JsonSerializerOptions?)null),
                     v => JsonSerializer.Deserialize<List<string>>(v, (JsonSerializerOptions?)null)!);
         });
-        
+
         modelBuilder.Entity<Vote>()
             .Property("SuggestionId");
         modelBuilder.Entity<Vote>()
             .Property("OwnerId");
         modelBuilder.Entity<Vote>()
             .HasKey("SuggestionId", "OwnerId");
+        modelBuilder.Entity<Question>()
+            .HasMany(q => q.AnswerOptions)
+            .WithOne(ao => ao.Question)
+            .HasForeignKey(ao => ao.QuestionId);
     }
+
     public bool CreateDatabase(bool dropDatabase)
     {
         if (dropDatabase)
         {
             Database.EnsureDeleted();
         }
+
         return Database.EnsureCreated();
     }
 }
+
 public static class QueryFilterExtensions
 {
     public static EntityTypeBuilder HasQueryFilter<TInterface>(this EntityTypeBuilder entityTypeBuilder,
@@ -138,6 +148,7 @@ public static class QueryFilterExtensions
         return entityTypeBuilder.HasQueryFilter(lambdaExpression);
     }
 }
+
 public class TenantIdValueGenerator : ValueGenerator<string>
 {
     public override string Next(EntityEntry entry)
@@ -149,6 +160,7 @@ public class TenantIdValueGenerator : ValueGenerator<string>
 
         throw new InvalidOperationException("Could not generate a new TenantId");
     }
+
     public override bool GeneratesTemporaryValues { get; }
         = false;
 }
