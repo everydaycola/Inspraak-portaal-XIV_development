@@ -386,7 +386,8 @@
         User.IsInRole(CustomIdentityConstants.OrganisatieRole) ||
         User.IsInRole(CustomIdentityConstants.AdminRole) || 
         (post.IsVisibleForPanelMembers && User.IsInRole(CustomIdentityConstants.PanelMemberRole)) ||
-        (post.GetType() == typeof(MeetingPost) && User.IsInRole(CustomIdentityConstants.PanelMemberRole))
+        (post.GetType() == typeof(MeetingPost) && User.IsInRole(CustomIdentityConstants.PanelMemberRole)) ||
+        (post is SuggestionPost suggestionP && suggestionP.Suggestions.Any(sp => sp.IsGloballyVisible))
     )
     {
         @switch (post)
