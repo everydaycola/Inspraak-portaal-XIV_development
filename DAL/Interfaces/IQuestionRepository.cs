@@ -6,7 +6,7 @@ public interface IQuestionRepository
 {
     IEnumerable<Question> ReadAllQuestions();
     Question ReadQuestionById(int id);
-    Question CreateQuestion(Question question);
-    Question UpdateQuestion(Question question);
+    void CreateQuestion(Question question);
+    void UpdateQuestion(Question question);
     void DeleteQuestion(int id);
 }

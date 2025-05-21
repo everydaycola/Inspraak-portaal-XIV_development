@@ -26,7 +26,7 @@ public class QuestionManager : IQuestionManager
         return _questionRepository.ReadQuestionById(id);
     }
 
-    public Question AddQuestion(int id, string question, ICollection<AnswerOption> answerOption)
+    public void AddQuestion(int id, string question, ICollection<AnswerOption> answerOption)
     {
         Question newQuestion = new Question()
         {
@@ -34,10 +34,9 @@ public class QuestionManager : IQuestionManager
             QuestionText = question,
             AnswerOptions = answerOption
         };
-        return _questionRepository.CreateQuestion(newQuestion);
     }
 
-    public Question UpdateQuestion(int id, string question, ICollection<AnswerOption> answerOption)
+    public void UpdateQuestion(int id, string question, ICollection<AnswerOption> answerOption)
     {
         Question newQuestion = new Question()
         {
@@ -45,7 +44,6 @@ public class QuestionManager : IQuestionManager
             QuestionText = question,
             AnswerOptions = answerOption
         };
-        return _questionRepository.UpdateQuestion(newQuestion);
     }
 
     public void RemoveQuestion(int id)

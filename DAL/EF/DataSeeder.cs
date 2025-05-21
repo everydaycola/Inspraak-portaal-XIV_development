@@ -211,41 +211,43 @@ public static class DataSeeder
 
         if (!context.Questions.Any())
         {
-            var question1 = new Question
+            if (!context.Questions.Any(q => q.QuestionText == "Heeft uw organisatie behoefte aan brede burgerbetrokkenheid?"))
             {
-                Id = 1,
-                QuestionText = "Heeft uw organisatie behoefte aan brede burgerbetrokkenheid?"
-            };
-            question1.AnswerOptions.Add(new AnswerOption { AnswerOptionText = "Ja", Weight = 5, Question = question1 });
-            question1.AnswerOptions.Add(new AnswerOption { AnswerOptionText = "Nee", Weight = 0, Question = question1 });
+                var question1 = new Question
+                {
+                    QuestionText = "Heeft uw organisatie behoefte aan brede burgerbetrokkenheid?",
+                    AnswerOptions = new List<AnswerOption>
+                    {
+                        new AnswerOption { AnswerOptionText = "Ja", Weight = 5 },
+                        new AnswerOption { AnswerOptionText = "Nee", Weight = 0 }
+                    }
+                };
+                context.Questions.Add(question1);
+            }
 
-            var question2 = new Question
+            if (!context.Questions.Any(q => q.QuestionText == "Bent u bereid om de aanbevelingen van burgers serieus te overwegen?"))
             {
-                Id = 2,
-                QuestionText = "Bent u bereid om de aanbevelingen van burgers serieus te overwegen?"
-            };
-            question2.AnswerOptions.Add(new AnswerOption { AnswerOptionText = "Ja", Weight = 10, Question = question2 });
-            question2.AnswerOptions.Add(new AnswerOption { AnswerOptionText = "Nee", Weight = -5, Question = question2 });
-
-            var question3 = new Question
-            {
-                Id = 3,
-                QuestionText = "Heeft u een concreet vraagstuk waarvoor input van burgers waardevol is?"
-            };
-            question3.AnswerOptions.Add(new AnswerOption { AnswerOptionText = "Ja", Weight = 7, Question = question3 });
-            question3.AnswerOptions.Add(new AnswerOption { AnswerOptionText = "Nee", Weight = -2, Question = question3 });
-
-            context.Questions.AddRange(question1, question2, question3);
-            context.SaveChanges();
+                var question2 = new Question
+                {
+                    QuestionText = "Bent u bereid om de aanbevelingen van burgers serieus te overwegen?",
+                    AnswerOptions = new List<AnswerOption>
+                    {
+                        new AnswerOption { AnswerOptionText = "Ja", Weight = 10 },
+                        new AnswerOption { AnswerOptionText = "Nee", Weight = -5 },
+                        new AnswerOption { AnswerOptionText = "Misschien", Weight = 0 }
+                    }
+                };
+                context.Questions.Add(question2);
+            }
         }
-        
+
         // adding panel members also adds dependant objects
         // so panel member => panel
         //    panel => representation group
         //    panel => criteria
         //    criteria => criteria answer option
         //    plannings group member => identityUser
-        
+
         AddMultipleEntities(panelMembersMen);
         AddMultipleEntities(panelMembersWomen);
         AddMultipleEntities([pgm1, pgm2, pgm3]);

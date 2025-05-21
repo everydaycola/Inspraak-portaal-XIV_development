@@ -1,49 +1,262 @@
-@model List<UI_MVC.Models.ViewModels.QuestionManagementViewModel>
+@model UI_MVC.Models.ViewModels.QuestionIndexViewModel
 
 @{
-    ViewData["Title"] = "Alle Vragen";
+    ViewData["Title"] = "Vraagbeheer";
+}
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const addAnswerOptionBtn = document.getElementById('addAnswerOption');
+            const answerOptionsContainer = document.getElementById('answerOptionsContainer');
+            const questionForm = document.getElementById('questionForm');
+            const questionIdInput = document.getElementById('QuestionToEdit_Id');
+            const questionTextInput = document.getElementById('QuestionToEdit_Question');
+            const questionFormTitle = document.getElementById('questionFormTitle');
+            const questionSubmitBtn = document.getElementById('questionSubmitBtn');
+            const newQuestionBtn = document.getElementById('newQuestionBtn');
+            const validationSummary = document.querySelector('[data-valmsg-summary="true"]');
+
+            function getNextAnswerOptionIndex() {
+                let maxIndex = -1;
+                document.querySelectorAll('[name^="QuestionToEdit.AnswerOptions["]').forEach(input => {
+                    const match = input.name.match(/\[(\d+)\]/);
+                    if (match && parseInt(match[1]) > maxIndex) {
+                        maxIndex = parseInt(match[1]);
+                    }
+                });
+                return maxIndex + 1;
+            }
+
+            function addAnswerOptionRow(id = 0, text = '', weight = 0) {
+                const currentIndex = getNextAnswerOptionIndex();
+                const newRow = document.createElement('div');
+                newRow.classList.add('d-flex', 'align-items-center', 'mb-2', 'answer-option-row');
+                newRow.innerHTML = `
+                    <input type="hidden" name="QuestionToEdit.AnswerOptions[${currentIndex}].Id" value="${id}" />
+                    <input type="text" name="QuestionToEdit.AnswerOptions[${currentIndex}].AnswerOptionText" class="form-control me-2" placeholder="Antwoordtekst" value="${text}" required />
+                    <input type="number" name="QuestionToEdit.AnswerOptions[${currentIndex}].Weight" class="form-control me-2" placeholder="Gewicht" value="${weight}" required />
+                    <button type="button" class="btn btn-sm btn-outline-danger remove-answer-option">X</button>
+                `;
+                answerOptionsContainer.appendChild(newRow);
+
+                newRow.querySelector('.remove-answer-option').addEventListener('click', function() {
+                    newRow.remove();
+                });
+            }
+
+            // Populate options if QuestionToEdit already has data (e.g., after a validation error)
+            @if (Model.QuestionToEdit.AnswerOptions != null && Model.QuestionToEdit.AnswerOptions.Any())
+            {
+                <text>
+                    // Only populate if there are already options in the model (e.g., re-displaying after validation failure)
+                    // The server-side rendering in the form below also handles this.
+                    // This JavaScript section ensures the "add" buttons are available if the form was pre-populated.
+                </text>
+            }
+            else
+            {
+                <text>
+                    // For a fresh form, add at least two answer options
+                    addAnswerOptionRow();
+                    addAnswerOptionRow();
+                </text>
+            }
+
+
+            addAnswerOptionBtn.addEventListener('click', function () {
+                addAnswerOptionRow();
+            });
+
+            // Handle remove buttons for initially rendered options
+            document.querySelectorAll('.remove-answer-option').forEach(button => {
+                button.addEventListener('click', function() {
+                    this.closest('.answer-option-row').remove();
+                });
+            });
+
+
+            // Handle edit question button click
+            document.querySelectorAll('.edit-question-button').forEach(button => {
+                button.addEventListener('click', function () {
+                    const questionId = this.dataset.questionId;
+                    fetch(`/Question/GetQuestionData?id=${questionId}`)
+                        .then(response => {
+                            if (!response.ok) {
+                                throw new Error('Vraag niet gevonden of serverfout.');
+                            }
+                            return response.json();
+                        })
+                        .then(question => {
+                            questionIdInput.value = question.id;
+                            questionTextInput.value = question.question; // Matches ViewModel.Question
+                            questionFormTitle.textContent = 'Vraag bewerken';
+                            questionSubmitBtn.textContent = 'Vraag bijwerken';
+                            answerOptionsContainer.innerHTML = ''; // Clear existing options
+
+                            question.answerOptions.forEach(option => {
+                                addAnswerOptionRow(option.id, option.answerOptionText, option.weight); // Matches ViewModel.AnswerOptionText
+                            });
+
+                            questionForm.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                        })
+                        .catch(error => {
+                            alert(error.message);
+                            console.error('Error fetching question for edit:', error);
+                        });
+                });
+            });
+
+            // Handle new question button click (to reset form)
+            newQuestionBtn.addEventListener('click', function() {
+                questionIdInput.value = 0; // Reset ID for new question
+                questionTextInput.value = '';
+                answerOptionsContainer.innerHTML = '';
+                addAnswerOptionRow(); // Add minimum two options
+                addAnswerOptionRow();
+                questionFormTitle.textContent = 'Nieuwe vraag toevoegen';
+                questionSubmitBtn.textContent = 'Vraag toevoegen';
+
+                if (validationSummary) {
+                    validationSummary.innerHTML = ''; // Clear validation errors
+                }
+            });
+
+            // Toon TempData berichten als toasts
+            const successToastEl = document.getElementById('liveToast');
+            const errorToastEl = document.getElementById('errorToast');
+            const successToastBody = document.getElementById('toastMessage');
+            const errorToastBody = document.getElementById('errorToastMessage');
+
+            @if (TempData["SuccessMessage"] != null)
+            {
+                <text>
+                    successToastBody.textContent = "@Html.Raw(TempData["SuccessMessage"])";
+                    const successToast = new bootstrap.Toast(successToastEl);
+                    successToast.show();
+                </text>
+            }
+            @if (TempData["ErrorMessage"] != null)
+            {
+                <text>
+                    errorToastBody.textContent = "@Html.Raw(TempData["ErrorMessage"])";
+                    const errorToast = new bootstrap.Toast(errorToastEl);
+                    errorToast.show();
+                </text>
+            }
+
+            // This block handles re-populating the form if there was a validation error on POST
+            @if (Model.QuestionToEdit.Id != 0 || !string.IsNullOrEmpty(Model.QuestionToEdit.Question))
+            {
+                <text>
+                    questionIdInput.value = @Model.QuestionToEdit.Id;
+                    questionTextInput.value = `@Html.Raw(Model.QuestionToEdit.Question)`;
+                    questionFormTitle.textContent = '@(Model.QuestionToEdit.Id != 0 ? "Vraag bewerken" : "Nieuwe vraag toevoegen")';
+                    questionSubmitBtn.textContent = '@(Model.QuestionToEdit.Id != 0 ? "Vraag bijwerken" : "Vraag toevoegen")';
+                    answerOptionsContainer.innerHTML = '';
+                    @foreach (var option in Model.QuestionToEdit.AnswerOptions)
+                    {
+                        <text>
+                            addAnswerOptionRow(@option.Id, `@Html.Raw(option.AnswerOptionText)`, @option.Weight);
+                        </text>
+                    }
+                </text>
+            }
+        });
+    </script>
 }
 
 <div class="container mt-5">
-    <h2>Alle Vragen</h2>
+    <h2 class="mb-4">Vraagbeheer</h2>
 
+    <div class="card shadow-sm border-0 mb-5">
+        <div class="card-header bg-primary text-white">
+            <h3 class="mb-0" id="questionFormTitle">Nieuwe vraag toevoegen</h3>
+        </div>
+        <div class="card-body">
+            <form id="questionForm" asp-action="AddOrUpdate" asp-controller="Question" method="post">
+                <div asp-validation-summary="ModelOnly" class="text-danger" data-valmsg-summary="true"></div>
+                <input type="hidden" asp-for="QuestionToEdit.Id" />
+                <div class="mb-3">
+                    <label asp-for="QuestionToEdit.Question" class="form-label">Vraagtekst</label>
+                    <input type="text" asp-for="QuestionToEdit.Question" class="form-control" placeholder="Voer de vraagtekst in" required />
+                    <span asp-validation-for="QuestionToEdit.Question" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Antwoordopties</label>
+                    <div id="answerOptionsContainer">
+                        @* Render existing options if model has them (e.g., after validation error) *@
+                        @if (Model.QuestionToEdit.AnswerOptions != null)
+                        {
+                            @for (int i = 0; i < Model.QuestionToEdit.AnswerOptions.Count; i++)
+                            {
+                                <div class="d-flex align-items-center mb-2 answer-option-row">
+                                    <input type="hidden" name="QuestionToEdit.AnswerOptions[@i].Id" value="@Model.QuestionToEdit.AnswerOptions[i].Id" />
+                                    <input type="text" name="QuestionToEdit.AnswerOptions[@i].AnswerOptionText" class="form-control me-2" placeholder="Antwoordtekst" value="@Model.QuestionToEdit.AnswerOptions[i].AnswerOptionText" required />
+                                    <input type="number" name="QuestionToEdit.AnswerOptions[@i].Weight" class="form-control me-2" placeholder="Gewicht" value="@Model.QuestionToEdit.AnswerOptions[i].Weight" required />
+                                    <button type="button" class="btn btn-sm btn-outline-danger remove-answer-option">X</button>
+                                </div>
+                            }
+                        }
+                    </div>
+                    <button type="button" class="btn btn-outline-secondary btn-sm" id="addAnswerOption">
+                        <i class="bi bi-plus-circle"></i> Optie toevoegen
+                    </button>
+                    @* This span will display validation errors for the AnswerOptions collection itself (e.g., MinLength) *@
+                    <span asp-validation-for="QuestionToEdit.AnswerOptions" class="text-danger"></span>
+                </div>
+
+                <button type="submit" class="btn btn-success" id="questionSubmitBtn">Vraag toevoegen</button>
+                <button type="button" class="btn btn-secondary ms-2" id="newQuestionBtn">Nieuwe vraag</button>
+            </form>
+        </div>
+    </div>
+
+    <hr class="my-5">
+
+    <h3 class="mb-4">Overzicht van vragen</h3>
     <p>
-        <a asp-action="Create" class="btn btn-success mb-3">Nieuwe Vraag Toevoegen</a>
+        <button id="addQuestionFormTrigger" class="btn btn-success mb-3" onclick="document.getElementById('questionForm').scrollIntoView({ behavior: 'smooth', block: 'start' }); document.getElementById('newQuestionBtn').click();">
+            Nieuwe Vraag Toevoegen
+        </button>
     </p>
 
-    @if (Model != null && Model.Any())
+    @if (Model.Questions != null && Model.Questions.Any())
     {
-        <table class="table table-striped">
+        <table class="table table-striped table-hover">
             <thead>
                 <tr>
-                    <th>Vraag</th>
-                    <th>Antwoord Opties</th>
-                    <th></th>
+                    <th>ID</th>
+                    <th>Vraagtekst</th>
+                    <th>Antwoordopties</th>
+                    <th>Acties</th>
                 </tr>
             </thead>
             <tbody>
-                @foreach (var question in Model)
+                @foreach (var question in Model.Questions)
                 {
                     <tr>
+                        <td>@question.Id</td>
                         <td>@question.Question</td>
                         <td>
                             @if (question.AnswerOptions != null && question.AnswerOptions.Any())
                             {
-                                <ul>
+                                <ul class="list-unstyled mb-0">
                                     @foreach (var option in question.AnswerOptions)
                                     {
-                                        <li>@option.AnswerOptionText</li>
+                                        <li>@option.AnswerOptionText (Gewicht: @option.Weight)</li>
                                     }
                                 </ul>
                             }
                             else
                             {
-                                <span>Geen antwoord opties</span>
+                                <span>Geen opties</span>
                             }
                         </td>
                         <td>
-                            <a asp-action="Edit" asp-route-id="@question.Id" class="btn btn-sm btn-primary">Bewerken</a>
-                            <form asp-action="Delete" asp-route-id="@question.Id" method="post" class="d-inline">
+                            <button class="btn btn-sm btn-primary edit-question-button" data-question-id="@question.Id">Bewerken</button>
+                            <form asp-action="Delete" asp-controller="Question" asp-route-id="@question.Id" method="post" class="d-inline">
                                 <button type="submit" class="btn btn-sm btn-danger"
                                         onclick="return confirm('Weet je zeker dat je deze vraag wilt verwijderen?');">
                                     Verwijderen
@@ -57,6 +270,21 @@
     }
     else
     {
-        <p>Er zijn nog geen vragen.</p>
+        <p>Er zijn nog geen vragen om weer te geven.</p>
     }
+</div>
+
+<div class="toast-container position-fixed bottom-0 end-0 p-3">
+    <div id="liveToast" class="toast align-items-center text-white bg-success border-0" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="d-flex">
+            <div class="toast-body" id="toastMessage"></div>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+    </div>
+    <div id="errorToast" class="toast align-items-center text-white bg-danger border-0" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="d-flex">
+            <div class="toast-body" id="errorToastMessage"></div>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+    </div>
 </div>

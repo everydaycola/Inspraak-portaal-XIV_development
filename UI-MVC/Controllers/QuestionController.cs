@@ -8,86 +8,104 @@ namespace UI_MVC.Controllers;
 public class QuestionController : Controller
 {
     private readonly IQuestionManager _questionManager;
+    private readonly ILogger<QuestionController> _logger;
 
-    public QuestionController(IQuestionManager questionManager)
+    public QuestionController(IQuestionManager questionManager, ILogger<QuestionController> logger)
     {
         _questionManager = questionManager;
+        _logger = logger;
     }
 
     [HttpGet]
     public IActionResult Index()
     {
-        var questions = _questionManager.GetAllQuestions()
-            .Select(q => new QuestionManagementViewModel()
+        var questionObject = _questionManager.GetAllQuestions();
+
+        var questionViewModels = questionObject.Select(q => new QuestionManagementViewModel()
+        {
+            Id = q.Id,
+            Question = q.QuestionText,
+            AnswerOptions = q.AnswerOptions.Select(ao => new AnswerOptionCrudViewModel
+            {
+                Id = ao.Id,
+                AnswerOptionText = ao.AnswerOptionText,
+                Weight = ao.Weight
+            }).ToList()
+        }).ToList();
+
+        var model = new QuestionIndexViewModel()
+        {
+            Questions = questionViewModels,
+            QuestionToEdit = new QuestionManagementViewModel()
+        };
+
+        return View(model);
+    }
+
+    [HttpPost]
+    public IActionResult AddOrUpdate(QuestionManagementViewModel model)
+    {
+        // This is the problematic part you mentioned, now it should work better
+        if (!ModelState.IsValid)
+        {
+            var allDomainQuestions = _questionManager.GetAllQuestions();
+
+            var allQuestionViewModels = allDomainQuestions.Select(q => new QuestionManagementViewModel
             {
                 Id = q.Id,
                 Question = q.QuestionText,
-                // Voeg andere relevante eigenschappen toe
-            })
-            .ToList();
+                AnswerOptions = q.AnswerOptions.Select(ao => new AnswerOptionCrudViewModel
+                {
+                    Id = ao.Id,
+                    AnswerOptionText = ao.AnswerOptionText,
+                    Weight = ao.Weight
+                }).ToList()
+            }).ToList();
 
-        return View(questions);
-    }
+            var indexModel = new QuestionIndexViewModel()
+            {
+                Questions = allQuestionViewModels,
+                QuestionToEdit = model
+            };
 
-    [HttpGet]
-    public IActionResult Create()
-    {
-        return View();
-    }
-
-    [HttpPost]
-    public IActionResult Create(QuestionManagementViewModel model)
-    {
-        if (ModelState.IsValid)
-        {
-            var answerOptions = model.AnswerOptions?
-                .Select(optionText => new AnswerOption { AnswerOptionText = optionText.AnswerOptionText })
-                .ToList() as ICollection<AnswerOption>;
-
-            var newQuestion = _questionManager.AddQuestion(model.Id, model.Question, answerOptions);
-            return RedirectToAction("Index");
+            _logger.LogInformation("Controleer de ingevoerde gegevens. Er zijn fouten opgetreden.");
+            return View("Index", indexModel);
         }
 
-        return View(model);
-    }
-
-    [HttpGet]
-    public IActionResult Edit(int id)
-    {
-        var question = _questionManager.GetQuestionById(id);
-        if (question == null)
-        {
-            return NotFound();
-        }
-
-        var model = new QuestionManagementViewModel()
-        {
-            Id = question.Id,
-            Question = question.QuestionText,
-            AnswerOptions = question.AnswerOptions?
-                .Select(optionText => new AnswerOption { AnswerOptionText = optionText.AnswerOptionText })
-                .ToList()
-        };
-        return View(model);
-    }
-
-    [HttpPost]
-    public IActionResult Edit(QuestionManagementViewModel model)
-    {
-        if (ModelState.IsValid)
-        {
-            _questionManager.UpdateQuestion(model.Id, model.Question,
-                model.AnswerOptions /* andere properties */);
-            return RedirectToAction("Index");
-        }
-
-        return View(model);
+        return View("Index");
     }
 
     [HttpPost]
     public IActionResult Delete(int id)
     {
         _questionManager.RemoveQuestion(id);
+        _logger.LogInformation("Vraag succesvol verwijderd!");
         return RedirectToAction("Index");
+    }
+
+    [HttpGet]
+    public IActionResult GetQuestionData(int id)
+    {
+        // Manager returns Domain.Models.Question
+        var domainQuestion = _questionManager.GetQuestionById(id);
+        if (domainQuestion == null)
+        {
+            return NotFound();
+        }
+
+        // Map Domain.Models.Question to UI_MVC.Models.ViewModels.QuestionManagementViewModel for JavaScript
+        var questionViewModel = new QuestionManagementViewModel
+        {
+            Id = domainQuestion.Id,
+            Question = domainQuestion.QuestionText,
+            AnswerOptions = domainQuestion.AnswerOptions.Select(ao => new AnswerOptionCrudViewModel
+            {
+                Id = ao.Id,
+                AnswerOptionText = ao.AnswerOptionText,
+                Weight = ao.Weight
+            }).ToList()
+        };
+
+        return Json(questionViewModel); // Return as JSON
     }
 }

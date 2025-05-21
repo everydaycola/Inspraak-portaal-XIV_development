@@ -23,14 +23,13 @@ public class QuestionRepository : IQuestionRepository
         return _context.Questions.Include(q => q.AnswerOptions).FirstOrDefault(q => q.Id == id);
     }
 
-    public Question CreateQuestion(Question question)
+    public void CreateQuestion(Question question)
     {
         _context.Questions.Add(question);
         _context.SaveChanges();
-        return _context.Questions.Find(question.Id);
     }
 
-    public Question UpdateQuestion(Question updatedQuestion)
+    public void UpdateQuestion(Question updatedQuestion)
     {
         var existingQuestion = _context.Questions
             .Include(q => q.AnswerOptions)
@@ -63,8 +62,6 @@ public class QuestionRepository : IQuestionRepository
 
             _context.SaveChanges();
         }
-
-        return _context.Questions.Find(updatedQuestion.Id);
     }
 
     public void DeleteQuestion(int id)

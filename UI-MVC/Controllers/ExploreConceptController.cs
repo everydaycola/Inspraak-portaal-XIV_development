@@ -1,3 +1,4 @@
+using BL.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using UI_MVC.Models.ViewModels;
 
@@ -6,37 +7,37 @@ namespace UI_MVC.Controllers;
 public class ExploreConceptController : Controller
 {
     private readonly ILogger<HomeController> _logger;
+    private readonly IQuestionManager _questionManager;
 
-    public ExploreConceptController(ILogger<HomeController> logger)
+    public ExploreConceptController(ILogger<HomeController> logger, IQuestionManager questionManager)
     {
         _logger = logger;
+        _questionManager = questionManager;
     }
 
     public IActionResult Index()
     {
+        var domainQuestions = _questionManager.GetAllQuestions();
+        var questionsForView = domainQuestions.Select(q => new QuestionsViewModel
+        {
+            Id = q.Id,
+            Question = q.QuestionText,
+            Weight = q.Weight,
+            AnswerOptions = q.AnswerOptions.Select(ao => new AnswerOptionCrudViewModel()
+            {
+                Id = ao.Id,
+                AnswerOptionText = ao.AnswerOptionText, // Map domain property Text naar ViewModel AnswerOptionText
+                Weight = ao.Weight
+            }).ToList()
+        }).ToList();
+
         var viewModel = new ExploreConceptViewModel
         {
-            Questions = new List<QuestionsViewModel>
-            {
-                new QuestionsViewModel
-                {
-                    Id = 1, Question = "Heeft uw organisatie behoefte aan brede burgerbetrokkenheid?",
-                    Weight = 1.5
-                },
-                new QuestionsViewModel
-                {
-                    Id = 2,
-                    Question = "Bent u bereid om de aanbevelingen van burgers serieus te overwegen?",
-                    Weight = 2.0
-                },
-                new QuestionsViewModel
-                {
-                    Id = 3,
-                    Question = "Heeft u een concreet vraagstuk waarvoor input van burgers waardevol is?",
-                    Weight = 1.0,
-                }
-            }
+            Questions = questionsForView,
+            SubmittedAnswers =
+                new List<QuestionAnswerViewModel>()
         };
+
         return View(viewModel);
     }
 }

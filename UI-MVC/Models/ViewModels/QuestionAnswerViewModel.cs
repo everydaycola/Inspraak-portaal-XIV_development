@@ -1,7 +1,9 @@
+using System.ComponentModel.DataAnnotations;
+
 namespace UI_MVC.Models.ViewModels;
 
 public class QuestionAnswerViewModel
 {
-    public int Id { get; set; }
-    public bool Answer { get; set; }
+    [Key] public int QuestionId { get; set; }
+    public int SelectedAnswerOptionId { get; set; }
 }

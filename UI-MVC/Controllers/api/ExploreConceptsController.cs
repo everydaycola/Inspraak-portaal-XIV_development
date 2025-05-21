@@ -1,3 +1,4 @@
+using BL.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using UI_MVC.Models.ViewModels;
 
@@ -7,12 +8,12 @@ namespace UI_MVC.Controllers.api;
 [Route("api/[controller]")]
 public class ExploreConceptsController : ControllerBase
 {
-    private static readonly Dictionary<int, int> _questionWeights = new Dictionary<int, int>
+    private readonly IQuestionManager _questionManager; // Inject the manager
+
+    public ExploreConceptsController(IQuestionManager questionManager)
     {
-        { 0, 5 },
-        { 1, 10 },
-        { 2, 7 }
-    };
+        _questionManager = questionManager;
+    }
 
     [HttpPost("SubmitAnswers")]
     public IActionResult SubmitAnswers([FromForm] ExploreConceptViewModel model)
@@ -24,27 +25,38 @@ public class ExploreConceptsController : ControllerBase
 
         var totalScore = 0;
         var results = new List<object>();
-        foreach (var submittedAnswer in model.SubmittedAnswers)
+          foreach (var submittedAnswer in model.SubmittedAnswers)
         {
-            if (_questionWeights.TryGetValue(submittedAnswer.Id, out var weight))
+            var question = _questionManager.GetQuestionById(submittedAnswer.QuestionId);
+
+            if (question == null)
             {
-                if (submittedAnswer.Answer)
-                {
-                    totalScore += weight;
-                    results.Add(new { QuestionId = submittedAnswer.Id, Answer = "Ja", Score = weight });
-                }
-                else
-                {
-                    results.Add(new { QuestionId = submittedAnswer.Id, Answer = "Nee", Score = 0 });
-                }
+                return BadRequest($"Unknown question ID submitted: {submittedAnswer.QuestionId}");
             }
-            else
+
+            var selectedOption = question.AnswerOptions
+                .FirstOrDefault(ao => ao.Id == submittedAnswer.SelectedAnswerOptionId);
+
+            if (selectedOption == null)
             {
-                return BadRequest($"Unknown question ID submitted: {submittedAnswer.Id}");
+                // This indicates a submitted SelectedAnswerOptionId that doesn't exist for this question
+                return BadRequest($"Unknown answer option ID '{submittedAnswer.SelectedAnswerOptionId}' for question ID '{submittedAnswer.QuestionId}'");
             }
+
+            // 3. Use the weight from the selected answer option
+            var score = selectedOption.Weight;
+            totalScore += score;
+
+            results.Add(new
+            {
+                QuestionId = submittedAnswer.QuestionId, // Use QuestionId
+                QuestionText = question.QuestionText,
+                SelectedAnswerText = selectedOption.AnswerOptionText, // Use selectedOption.Text
+                Score = score
+            });
         }
 
-        string suitabilityMessage = "Not yet determined.";
+        string suitabilityMessage;
         if (totalScore >= 20)
         {
             suitabilityMessage = "Een burgerpanel is zeer geschikt voor uw organisatie!";

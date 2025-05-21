@@ -36,6 +36,8 @@ builder.Services.AddScoped<IStorageManager, StorageManager>();
 builder.Services.AddScoped<IPinCRepository, PinCRepository>();
 builder.Services.AddScoped<ICommuneManager, CommuneManager>();
 builder.Services.AddScoped<IPanelProjectPageManager, PanelProjectPageManager>();
+builder.Services.AddScoped<IQuestionRepository, QuestionRepository>();
+builder.Services.AddScoped<IQuestionManager, QuestionManager>();
 
 //Tenant specific logic
 builder.Services
