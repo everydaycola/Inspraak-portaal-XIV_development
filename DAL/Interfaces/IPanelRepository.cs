@@ -16,7 +16,7 @@ public interface IPanelRepository
     public Panel ReadPanelWithCriteriaAndAnswerOptions(Guid panelId);
     public Panel ReadPanelWithPostsAndSuggestionsAndVotes(Guid panelId);
     public IEnumerable<Panel> ReadAllPanels();
-    public IEnumerable<Panel> ReadAllPanelsWithPosts();
+    public IEnumerable<Panel> ReadAllPanelsWithPostsAndSuggestions();
     public PanelMember ReadPanelMemberWithCriteriaResponses(Guid panelMemberId);
     public PanelMember ReadPanelMemberWithPanelAndCriteriaResponseAndCriteria(Guid panelMemberId);
     public IEnumerable<PanelMember> ReadAllPanelMembersForPanel(Guid panelId, bool includeUnselected = true, bool includeRegistered = true);
@@ -39,6 +39,7 @@ public interface IPanelRepository
     public void UpdatePanelMember(PanelMember panelMember);
     public void UpdatePanelMembers(ICollection<PanelMember> panelMembers);
     public void UpdateSuggestionPost(SuggestionPost suggestionPost);
+    public void UpdateSuggestion(Suggestion suggestion);
     public void UpdatePost(Post post);
     public void UpdateVote(Vote vote);
     

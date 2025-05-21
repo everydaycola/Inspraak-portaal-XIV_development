@@ -20,6 +20,7 @@ export default defineConfig({
                 accountSettings: resolve(__dirname, 'src/ts/accountSettings/accountSettingsEntrypoint.ts'),
                 shareButtonPartial: resolve(__dirname, 'src/ts/panelProjectPage/share.ts'),
                 suggestionVoting: resolve(__dirname, 'src/ts/PanelProjectPage/suggestionVoting.ts'),
+                suggestionVisibility: resolve(__dirname, 'src/ts/PanelProjectPage/suggestionVisibility.ts')
             },
             output: {
                 entryFileNames: '[name].entry.js',

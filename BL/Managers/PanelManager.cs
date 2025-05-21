@@ -86,9 +86,9 @@ public class PanelManager : IPanelManager
         return _repo.ReadPanelWithCriteriaAndAnswerOptions(panelId);
     }
 
-    public IEnumerable<Panel> GetAllPanelsWithPosts()
+    public IEnumerable<Panel> GetAllPanelsWithPostsAndSuggestions()
     {
-        return _repo.ReadAllPanelsWithPosts();
+        return _repo.ReadAllPanelsWithPostsAndSuggestions();
     }
 
     //ADD

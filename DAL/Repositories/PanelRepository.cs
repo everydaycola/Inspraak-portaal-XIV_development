@@ -54,10 +54,11 @@ public class PanelRepository : IPanelRepository
         return _context.Panels.ToList();
     }
     
-    public IEnumerable<Panel> ReadAllPanelsWithPosts()
+    public IEnumerable<Panel> ReadAllPanelsWithPostsAndSuggestions()
     {
         return _context.Panels
             .Include(p => p.Posts)
+            .ThenInclude(post => (post as SuggestionPost).Suggestions)
             .ToList();
     }
     
@@ -189,6 +190,12 @@ public class PanelRepository : IPanelRepository
     public void UpdateSuggestionPost(SuggestionPost suggestionPost)
     {
         _context.Posts.Update(suggestionPost);
+        _context.SaveChanges();
+    }
+    
+    public void UpdateSuggestion(Suggestion suggestion)
+    {
+        _context.Suggestions.Update(suggestion);
         _context.SaveChanges();
     }
     

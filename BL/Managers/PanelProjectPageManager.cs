@@ -30,6 +30,11 @@ public class PanelProjectPageManager : IPanelProjectPageManager
         return _repo.ReadPanelWithPostsAndSuggestionsAndVotes(panelId);
     }
 
+    public Suggestion GetSuggestion(Guid suggestionId)
+    {
+        return _repo.ReadSuggestion(suggestionId);
+    }
+
     public void ChangeVote(ApplicationUser user, Guid suggestionId, VoteType voteType)
     {
         var vote = _repo.ReadVoteByPanelMemberAndSuggestionOrDefault(user, suggestionId);
@@ -49,6 +54,14 @@ public class PanelProjectPageManager : IPanelProjectPageManager
         }
 
     }
+
+    public void ChangeSuggestionVisibility(Guid suggestionId)
+    {
+        var suggestion = _repo.ReadSuggestion(suggestionId);
+        suggestion.IsGloballyVisible = !suggestion.IsGloballyVisible;
+        _repo.UpdateSuggestion(suggestion);
+    }
+    
 
     public void AddSummaryToMeetingPost(Guid meetingId, string uniqueFileName)
     {
