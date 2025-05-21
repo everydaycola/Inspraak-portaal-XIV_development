@@ -36,7 +36,7 @@ public class OrganisationController : Controller
         }
 
         var port = currentHost.Port.HasValue ? $":{currentHost.Port}" : "";
-        var newUrl = $"{protocol}://{subdomain}.{baseDomain}{port}/";
+        var newUrl = $"{protocol}://{subdomain}.{baseDomain}{port}/Identity/Account/Register";
 
         return Redirect(newUrl);
     }
