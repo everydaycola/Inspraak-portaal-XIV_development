@@ -18,7 +18,6 @@
 <div class="large-grid-container">
     <nav class="navbar navbar-expand-sm navbar-toggleable-sm border-bottom box-shadow mb-3" style="background-color:@Organisation.BackgroundColor">
         <div class="container-fluid">
-            <button class="btn btn-primary expand-navbar">&gt;</button>
             <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">
                 @if (Organisation != null && Organisation.LogoImageName != null)
                 {
@@ -42,7 +41,7 @@
                     <li class="nav-item">
                         <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Index">
                             <img src="~/images/home_icon.svg" class="navbar-icon" alt="Home"/>
-                            <p class="nav-link-description l-invisible">Home</p>
+                            <p class="nav-link-description">Home</p>
                         </a>
                     </li>
                     @if (User.Identity != null && User.Identity.IsAuthenticated && User.IsInRole(CustomIdentityConstants.OrganisatieRole))

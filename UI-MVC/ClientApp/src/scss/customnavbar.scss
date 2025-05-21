@@ -7,30 +7,16 @@ $open-animation-time: 2s;
   width: #{constants.$navbar-icon-size};
   height: #{constants.$navbar-icon-size};
 }
-.invisible{
-  display:none;
-  visibility: hidden;
-  opacity:0;
-}
-.show{
- display:initial;
-  visibility: visible;
-  opacity: 1;
-}
-.expand-navbar{
-  display:none;
-  visibility:hidden;
-}
 
 //This is the li item element for each of the nav options.
 .nav-link {
-  display:flex;
+  display:flex !important;
   flex-direction:row;
   align-items:center;
   justify-content:center;
 }
 .nav-link-description{
-  margin-left:#{constants.$gap-size/2}
+  margin: 0 0 0 #{constants.$gap-size/4};
 }
 
 @media (min-width: 992px) {
@@ -53,16 +39,13 @@ $open-animation-time: 2s;
   }
   .large-grid-container {
     display: grid;
-    grid-template-columns: 5fr 95fr;
+    grid-template-columns: 10fr 90fr;
     grid-template-rows: 0.95fr 0.05fr;
     min-height: 100vh;
     height:fit-content;
     grid-gap: #{constants.$gap-size};
     margin-bottom: 0 !important;
     transition: grid-template-columns 0.3s ease-in-out;
-  }
-  .opened-large-grid-container{
-    grid-template-columns: 10fr 90fr;
   }
 
   .navbar {
@@ -104,6 +87,7 @@ $open-animation-time: 2s;
     grid-column: 2/3;
     grid-row: 1/2;
     overflow-y: auto; // allows scrolling on content
+    overflow-x:hidden;
   }
   .main-container > main{
     width:100%;
