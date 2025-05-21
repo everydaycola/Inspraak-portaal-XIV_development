@@ -1,0 +1,104 @@
+@model UI_MVC.Models.ViewModels.ExploreConceptViewModel
+
+@{
+    ViewData["Title"] = "Verkenning Burgerpanel";
+}
+
+<div class="card p-0 mt-5 col-11 m-sm-4 m-md-4" style="overflow: hidden;">
+    <div class="row g-0 h-100 flex-column flex-lg-row">
+        <div class="col-12 col-lg-6 d-flex align-items-start h-50 h-lg-100">
+            <div class="card-body">
+                <h2>Wat is een burgerpanel?</h2>
+                <p>Een
+                    <b>burgerpanel</b> is een krachtige methode om inwoners direct te betrekken bij belangrijke
+                    beslissingen en
+                    vraagstukken. Het brengt een diverse groep burgers samen die representatief is voor de bevolking.
+                    Deze deelnemers krijgen de tijd en middelen om zich te verdiepen in een onderwerp, expertise te
+                    horen van verschillende kanten, en met elkaar in gesprek te gaan.
+                </p>
+                <p>Het doel? Tot
+                    <b>doordachte aanbevelingen</b> komen die breed gedragen worden en de complexiteit van de
+                    samenleving weerspiegelen. Burgerpanels
+                    zijn een uitstekende manier om de stem van de burger echt te laten meetellen en zo tot betere
+                    beslissingen te komen.
+                </p>
+
+                <h3>Hoe werkt een burgerpanel via het Inspraak Portaal?</h3>
+                <p>Via het Inspraak Portaal begeleiden we je stap voor stap bij het opzetten en uitvoeren van jouw
+                    burgerpanel:</p>
+                <ul>
+                    <li>
+                        <b>Samenstelling:</b> We helpen je een diverse en representatieve groep deelnemers samen te
+                        stellen.
+                    </li>
+                    <li>
+                        <b>Informatievoorziening:</b> De deelnemers ontvangen uitgebreide en neutrale informatie over
+                        het vraagstuk.
+                    </li>
+                    <li>
+                        <b>Dialoog en deliberatie:</b> Geleid door ervaren facilitators, gaan de deelnemers met elkaar
+                        in gesprek, wisselen standpunten
+                        uit en wegen argumenten af.
+                    </li>
+                    <li>
+                        <b>Expertise en input:</b> Er worden experts en belanghebbenden uitgenodigd om de deelnemers van
+                        alle relevante informatie
+                        te voorzien.
+                    </li>
+                    <li>
+                        <b>Aanbevelingen:</b> Uiteindelijk formuleren de deelnemers gezamenlijk concrete aanbevelingen
+                        voor de organisatie of
+                        overheid.
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="card shadow-sm border-0">
+        <div class="card-header bg-primary text-white">
+            <h3 class="mb-0">Ontdek of een burgerpanel iets voor jou is</h3>
+        </div>
+        <div class="card-body">
+            <div class="mb-4">
+                <form id="exploreconcept-form" method="post" asp-controller="ExploreConcepts"
+                      asp-action="SubmitAnswers">
+                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                    <div class="d-flex flex-column">
+                        <h5 class="card-title">Beantwoord de volgende vragen:</h5>
+                        @for (int i = 0; i < Model.Questions.Count; i++)
+                        {
+                            <div class="py-2">
+                                <input type="hidden" name="SubmittedAnswers[@i].QuestionId"
+                                       value="@Model.Questions[i].Id"/>
+                                <label class="card-text pe-4" for="@($"question-{Model.Questions[i].Id}")">
+                                    <strong>@Model.Questions[i].Question</strong>
+                                </label>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio"
+                                           id="@($"question-{Model.Questions[i].Id}-yes")"
+                                           name="SubmittedAnswers[@i].Answer" value="true" required/> <label
+                                        class="form-check-label"
+                                        for="@($"question-{Model.Questions[i].Id}-yes")">Ja</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio"
+                                           id="@($"question-{Model.Questions[i].Id}-no")"
+                                           name="SubmittedAnswers[@i].Answer" value="false" required/> <label
+                                        class="form-check-label"
+                                        for="@($"question-{Model.Questions[i].Id}-no")">Nee</label>
+                                </div>
+                            </div>
+                        }
+                        <div class="mt-4">
+                            <button class="btn btn-primary" type="submit">Resultaat bekijken</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="text-center">
+        <h1 class="display-4">Dit is iets/niets voor jou</h1>
+        <p>De conclusie van deze antwoorden is dat het niet/iets voor jou is, je zou beter ... doen</p>
+    </div>
+</div>

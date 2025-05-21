@@ -14,22 +14,38 @@
 
 @if (Organisation.Id == null)
 {
-    <div class="card p-0 mt-5 col-11 m-sm-4 m-md-4" style=" overflow: hidden;">
+    <div class="card p-0 mt-5 col-11 m-sm-4 m-md-4" style="overflow: hidden;">
         <div class="row g-0 h-100 flex-column flex-lg-row">
-            <!-- Image on the left (or top on small screens) -->
+            <div class="col-12 col-lg-6 d-flex align-items-start h-50 h-lg-100">
+                <div class="card-body">
+                    <img class="header-image" style="width:40%; margin: 0;" src="~/images/icons/inspraak_portaal_light_mode.svg" alt="inspraak-portaal-logo"/>
+                    <h2>Nieuw bij burgerpanels?</h2>
+                    <p>Het Inspraak Portaal vereenvoudigt het organiseren van burgerpanels. Ben je nog niet zeker of een burgerpanel iets voor jouw initiatief is?</p>
+                    <p>Beantwoord dan enkele korte vragen om te ontdekken hoe een burgerpanel jou kan helpen!</p>
+                    <a href="./ExploreConcept" class="btn btn-primary">Ontdek of het iets voor jou is</a>
+                </div>
+            </div>
             <div class="col-12 col-lg-6 h-50 h-lg-100">
                 <img src="~/images/burgerpanel.jpg" 
                      class="img-fluid w-100 h-100" 
                      style="object-fit: cover;" 
                      alt="Inspraak Portaal">
             </div>
-            <!-- Content on the right (or bottom on small screens) -->
+        </div>
+    </div>
+    <div class="card p-0 mt-5 col-11 m-sm-4 m-md-4" style="overflow: hidden;">
+        <div class="row g-0 h-100 flex-column flex-lg-row">
+            <div class="col-12 col-lg-6 h-50 h-lg-100">
+                <img src="~/images/registreren_div.jpg" 
+                     class="img-fluid w-100 h-100" 
+                     style="object-fit: cover;" 
+                     alt="Inspraak Portaal">
+            </div>
             <div class="col-12 col-lg-6 d-flex align-items-start h-50 h-lg-100">
                 <div class="card-body">
-                    <img class="header-image" style="width:40%; margin: 0;" src="~/images/icons/inspraak_portaal_light_mode.svg" alt="inspraak-portaal-logo"/>
-                    <h2>Welkom!</h2>
-                    <p>Het Inspraak Portaal is een platform die het organiseren van burgerpanels vereenvoudigd.</p>
-                    <p>Zelf interesse in een burgerpanel? Meld je dan aan voor jou organisatie!</p>
+                    <h2>Klaar om te starten?</h2>
+                    <p>Het Inspraak Portaal is hét platform om burgerpanels efficiënt te organiseren.</p>
+                    <p>Ben je al overtuigd van de meerwaarde van een burgerpanel? Meld dan vandaag nog jouw organisatie aan!</p>
                     <a href="./Organisation/OrganisationCreation" class="btn btn-primary">Mijn organisatie aanmelden</a>
                 </div>
             </div>
