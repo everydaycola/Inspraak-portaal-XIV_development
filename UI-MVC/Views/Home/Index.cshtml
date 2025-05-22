@@ -17,15 +17,16 @@
         <div class="row flex-row g-0 h-100 flex-column flex-lg-row">
             <!-- Image on the left (or top on small screens) -->
             <div class="col-12 col-lg-6 h-50 h-lg-100">
-                <img src="~/images/burgerpanel.jpg" 
-                     class="img-fluid w-100 h-100" 
-                     style="object-fit: cover;" 
+                <img src="~/images/burgerpanel.jpg"
+                     class="img-fluid w-100 h-100"
+                     style="object-fit: cover;"
                      alt="Inspraak Portaal">
             </div>
             <!-- Content on the right (or bottom on small screens) -->
             <div class="col-12 col-lg-6 d-flex align-items-start h-50 h-lg-100">
                 <div class="card-body">
-                    <img class="header-image" style="width:40%; margin: 0;" src="~/images/icons/inspraak_portaal_light_mode.svg" alt="inspraak-portaal-logo"/>
+                    <img class="header-image" style="width:40%; margin: 0;"
+                         src="~/images/icons/inspraak_portaal_light_mode.svg" alt="inspraak-portaal-logo"/>
                     <h2>Welkom!</h2>
                     <p>Het Inspraak Portaal is een platform die het organiseren van burgerpanels vereenvoudigd.</p>
                     <p>Zelf interesse in een burgerpanel? Meld je dan aan voor jou organisatie!</p>
@@ -39,14 +40,16 @@ else
 {
     <div class="container mt-5">
         <h2>Publieke Panels</h2>
-        @foreach (var panel in Model.Panels)
-        {
-            if (panel.Posts.Any(post => post.IsGloballyVisible))
+        <div class="card p-0 mt-5 m-4">
+            @foreach (var panel in Model.Panels)
             {
-                <a class="card col-5 m-2" href="@Url.Action("Index","PanelProjectPage", new{id = panel.Id})">
-                    <h3 class="card-title p-4">@panel.Name</h3>
-                </a>
+                if (panel.Posts.Any(post => post.IsGloballyVisible))
+                {
+                    <a class="card col-5 m-2" href="@Url.Action("Index", "PanelProjectPage", new { id = panel.Id })">
+                        <h3 class="card-title p-4">@panel.Name</h3>
+                    </a>
+                }
             }
-        }
+        </div>
     </div>
 }

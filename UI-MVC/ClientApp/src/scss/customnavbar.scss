@@ -79,6 +79,7 @@ $open-animation-time: 2s;
   }
   #main{
     width:100%;
+    min-height:90vh;
     max-height:calc(95vh -  #{constants.$gap-size});
     overflow-y:scroll;
   }

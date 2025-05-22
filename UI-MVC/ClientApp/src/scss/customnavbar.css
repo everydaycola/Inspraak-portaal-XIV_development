@@ -70,6 +70,7 @@
   }
   #main {
     width: 100%;
+    min-height: 90vh;
     max-height: calc(95vh - 40px);
     overflow-y: scroll;
   }
