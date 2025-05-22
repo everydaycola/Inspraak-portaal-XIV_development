@@ -9,10 +9,13 @@ namespace UI_MVC.Controllers.api;
 public class ExploreConceptsController : ControllerBase
 {
     private readonly IQuestionManager _questionManager; // Inject the manager
+    private readonly IQuestionWeightTipManager _questionWeightTipManager;
 
-    public ExploreConceptsController(IQuestionManager questionManager)
+    public ExploreConceptsController(IQuestionManager questionManager,
+        IQuestionWeightTipManager questionWeightTipManager)
     {
         _questionManager = questionManager;
+        _questionWeightTipManager = questionWeightTipManager;
     }
 
     [HttpPost("SubmitAnswers")]
@@ -25,7 +28,7 @@ public class ExploreConceptsController : ControllerBase
 
         var totalScore = 0;
         var results = new List<object>();
-          foreach (var submittedAnswer in model.SubmittedAnswers)
+        foreach (var submittedAnswer in model.SubmittedAnswers)
         {
             var question = _questionManager.GetQuestionById(submittedAnswer.QuestionId);
 
@@ -39,37 +42,38 @@ public class ExploreConceptsController : ControllerBase
 
             if (selectedOption == null)
             {
-                // This indicates a submitted SelectedAnswerOptionId that doesn't exist for this question
-                return BadRequest($"Unknown answer option ID '{submittedAnswer.SelectedAnswerOptionId}' for question ID '{submittedAnswer.QuestionId}'");
+                return BadRequest(
+                    $"Unknown answer option ID '{submittedAnswer.SelectedAnswerOptionId}' for question ID '{submittedAnswer.QuestionId}'");
             }
 
-            // 3. Use the weight from the selected answer option
             var score = selectedOption.Weight;
             totalScore += score;
 
             results.Add(new
             {
-                QuestionId = submittedAnswer.QuestionId, // Use QuestionId
+                QuestionId = submittedAnswer.QuestionId,
                 QuestionText = question.QuestionText,
-                SelectedAnswerText = selectedOption.AnswerOptionText, // Use selectedOption.Text
+                SelectedAnswerText = selectedOption.AnswerOptionText,
                 Score = score
             });
         }
 
-        string suitabilityMessage;
-        if (totalScore >= 20)
+        string suitabilityMessage = "Geen geschikte boodschap gevonden.";
+        var allTips = _questionWeightTipManager.GetAllQuestionWeightTips();
+
+        var applicableTip = allTips
+            .OrderByDescending(t => t.MinScore)
+            .FirstOrDefault(t => totalScore >= t.MinScore && totalScore <= t.MaxScore);
+
+
+        if (applicableTip != null)
         {
-            suitabilityMessage = "Een burgerpanel is zeer geschikt voor uw organisatie!";
-        }
-        else if (totalScore >= 10)
-        {
-            suitabilityMessage = "Een burgerpanel kan nuttig zijn, maar vereist mogelijk aanvullende overwegingen.";
+            suitabilityMessage = applicableTip.Message;
         }
         else
         {
-            suitabilityMessage = "Een burgerpanel is mogelijk niet de meest geschikte aanpak voor uw huidige situatie.";
+            suitabilityMessage = "Score is te laag om een passende tip te geven.";
         }
-
 
         return Ok(new
         {

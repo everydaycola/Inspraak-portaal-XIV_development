@@ -6,6 +6,7 @@ using DAL.EF;
 using DAL.Interfaces;
 using DAL.Repositories;
 using Domain;
+using Domain.Interfaces.Question;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using UI_MVC;
@@ -38,6 +39,8 @@ builder.Services.AddScoped<ICommuneManager, CommuneManager>();
 builder.Services.AddScoped<IPanelProjectPageManager, PanelProjectPageManager>();
 builder.Services.AddScoped<IQuestionRepository, QuestionRepository>();
 builder.Services.AddScoped<IQuestionManager, QuestionManager>();
+builder.Services.AddScoped<IQuestionWeightTipsRepository, QuestionWeightTipsRepository>();
+builder.Services.AddScoped<IQuestionWeightTipManager, QuestionWeightTipManager>();
 
 //Tenant specific logic
 builder.Services

@@ -5,6 +5,7 @@ using Domain.CitizenPanel;
 using Domain.Interfaces;
 using Domain.Interfaces.Posts;
 using Domain.Interfaces.Posts.PostItems;
+using Domain.Interfaces.Question;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
@@ -33,6 +34,7 @@ public class CitizenPanelDbContext : IdentityDbContext<ApplicationUser>
     public DbSet<Post> Posts { get; set; }
     public DbSet<Question> Questions { get; set; }
     public DbSet<AnswerOption> AnswerOptions { get; set; }
+    public DbSet<QuestionWeightTips> QuestionWeightTips { get; set; }
 
     public CitizenPanelDbContext(DbContextOptions options, OrganisationContext organisationContext) : base(options)
     {

@@ -2,6 +2,7 @@
 using Domain.CitizenPanel;
 using Domain.Interfaces;
 using Domain.Interfaces.Posts;
+using Domain.Interfaces.Question;
 using Microsoft.AspNetCore.Identity;
 
 namespace DAL.EF;
@@ -211,11 +212,14 @@ public static class DataSeeder
 
         if (!context.Questions.Any())
         {
-            if (!context.Questions.Any(q => q.QuestionText == "Heeft uw organisatie behoefte aan brede burgerbetrokkenheid?"))
+            if (!context.Questions.Any(q =>
+                    q.QuestionText ==
+                    "Beschik je als organisator nog over minstens 6 maanden voordat de input van de\nparticipatie klaar moet zijn voor de politieke besluitvorming?"))
             {
                 var question1 = new Question
                 {
-                    QuestionText = "Heeft uw organisatie behoefte aan brede burgerbetrokkenheid?",
+                    QuestionText =
+                        "Beschik je als organisator nog over minstens 6 maanden voordat de input van de\nparticipatie klaar moet zijn voor de politieke besluitvorming?",
                     AnswerOptions = new List<AnswerOption>
                     {
                         new AnswerOption { AnswerOptionText = "Ja", Weight = 5 },
@@ -225,19 +229,52 @@ public static class DataSeeder
                 context.Questions.Add(question1);
             }
 
-            if (!context.Questions.Any(q => q.QuestionText == "Bent u bereid om de aanbevelingen van burgers serieus te overwegen?"))
+            if (!context.Questions.Any(q =>
+                    q.QuestionText ==
+                    "Is de gemeente bereid om de realisatie van de voorstellen van het burgerpanel\nernstig te overwegen en minstens publiek te motiveren waarom dat niet is gebeurd?"))
             {
                 var question2 = new Question
                 {
-                    QuestionText = "Bent u bereid om de aanbevelingen van burgers serieus te overwegen?",
+                    QuestionText =
+                        "Is de gemeente bereid om de realisatie van de voorstellen van het burgerpanel\nernstig te overwegen en minstens publiek te motiveren waarom dat niet is gebeurd?",
                     AnswerOptions = new List<AnswerOption>
                     {
                         new AnswerOption { AnswerOptionText = "Ja", Weight = 10 },
                         new AnswerOption { AnswerOptionText = "Nee", Weight = -5 },
-                        new AnswerOption { AnswerOptionText = "Misschien", Weight = 0 }
                     }
                 };
                 context.Questions.Add(question2);
+            }
+
+            if (!context.Questions.Any(q =>
+                    q.QuestionText == "Wat is de bedoeling van het participatieproces bij dit vraagstuk?"))
+            {
+                var question3 = new Question
+                {
+                    QuestionText = "Wat is de bedoeling van het participatieproces bij dit vraagstuk?",
+                    AnswerOptions = new List<AnswerOption>
+                    {
+                        new AnswerOption
+                        {
+                            AnswerOptionText =
+                                "We willen de mening horen van al wie vrijwillig wil deelnemen aan het debat. Iedereen moet kunnen deelnemen",
+                            Weight = 10
+                        },
+                        new AnswerOption
+                        {
+                            AnswerOptionText =
+                                "We willen de mening horen van doelgroepen die vaak afwezig blijven bij participatie",
+                            Weight = -5
+                        },
+                        new AnswerOption
+                        {
+                            AnswerOptionText =
+                                "We willen de mening horen een representatief staal van participanten horen",
+                            Weight = 5
+                        },
+                    }
+                };
+                context.Questions.Add(question3);
             }
         }
 

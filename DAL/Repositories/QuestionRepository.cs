@@ -1,5 +1,6 @@
 using DAL.EF;
 using Domain.Interfaces;
+using Domain.Interfaces.Question;
 using Microsoft.EntityFrameworkCore;
 
 namespace DAL.Repositories;

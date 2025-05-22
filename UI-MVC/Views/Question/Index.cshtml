@@ -163,6 +163,69 @@
                 </text>
             }
         });
+        document.addEventListener('DOMContentLoaded', function () {
+            const scoreTipIdInput = document.getElementById('ScoreRangeTipToEdit_Id');
+            const scoreTipMinScoreInput = document.getElementById('ScoreRangeTipToEdit_MinScore');
+            const scoreTipMaxScoreInput = document.getElementById('ScoreRangeTipToEdit_MaxScore');
+            const scoreTipMessageInput = document.getElementById('ScoreRangeTipToEdit_Message');
+            const scoreTipAdminExplanationInput = document.getElementById('ScoreRangeTipToEdit_AdminExplanation');
+            const scoreTipFormTitle = document.getElementById('scoreTipFormTitle');
+            const scoreTipSubmitBtn = document.getElementById('scoreTipSubmitBtn');
+            const newScoreTipBtn = document.getElementById('newScoreTipBtn');
+
+            // Handle edit score tip button click
+            document.querySelectorAll('.edit-score-tip-button').forEach(button => {
+                button.addEventListener('click', function () {
+                    const tipId = this.dataset.tipId;
+                    fetch(`/Question/GetScoreRangeTipData?id=${tipId}`) // Je moet deze methode in de controller maken
+                        .then(response => {
+                            if (!response.ok) {
+                                throw new Error('Tip niet gevonden of serverfout.');
+                            }
+                            return response.json();
+                        })
+                        .then(tip => {
+                            scoreTipIdInput.value = tip.id;
+                            scoreTipMinScoreInput.value = tip.minScore;
+                            scoreTipMaxScoreInput.value = tip.maxScore || ''; // Voor nulls
+                            scoreTipMessageInput.value = tip.message;
+                            scoreTipAdminExplanationInput.value = tip.adminExplanation;
+                            scoreTipFormTitle.textContent = 'Score-tip bewerken';
+                            scoreTipSubmitBtn.textContent = 'Tip bijwerken';
+                            document.getElementById('scoreTipForm').scrollIntoView({ behavior: 'smooth', block: 'start' });
+                        })
+                        .catch(error => {
+                            alert(error.message);
+                            console.error('Error fetching score tip for edit:', error);
+                        });
+                });
+            });
+
+            // Handle new score tip button click (to reset form)
+            newScoreTipBtn.addEventListener('click', function() {
+                scoreTipIdInput.value = 0;
+                scoreTipMinScoreInput.value = '';
+                scoreTipMaxScoreInput.value = '';
+                scoreTipMessageInput.value = '';
+                scoreTipAdminExplanationInput.value = '';
+                scoreTipFormTitle.textContent = 'Nieuwe score-tip toevoegen';
+                scoreTipSubmitBtn.textContent = 'Tip toevoegen';
+                // Optioneel: validationSummary.innerHTML = ''; // Clear validation errors if any
+            });
+
+            // Re-populate ScoreRangeTip form if there was a validation error on POST
+            @if (Model.QuestionWeightTipViewModelToEdit.Id != 0 || !string.IsNullOrEmpty(Model.QuestionWeightTipViewModelToEdit.Message))
+            {
+                <text>
+                    scoreTipIdInput.value = @Model.QuestionWeightTipViewModelToEdit.Id;
+                    scoreTipMinScoreInput.value = @Model.QuestionWeightTipViewModelToEdit.MinScore;
+                    scoreTipMaxScoreInput.value = '@(Model.QuestionWeightTipViewModelToEdit.MaxScore.HasValue ? Model.QuestionWeightTipViewModelToEdit.MaxScore.Value.ToString() : "")';
+                    scoreTipMessageInput.value = `@Html.Raw(Model.QuestionWeightTipViewModelToEdit.Message)`;
+                    scoreTipFormTitle.textContent = '@(Model.QuestionWeightTipViewModelToEdit.Id != 0 ? "Score-tip bewerken" : "Nieuwe score-tip toevoegen")';
+                    scoreTipSubmitBtn.textContent = '@(Model.QuestionWeightTipViewModelToEdit.Id != 0 ? "Tip bijwerken" : "Tip toevoegen")';
+                </text>
+            }
+        });
     </script>
 }
 
@@ -216,12 +279,6 @@
     <hr class="my-5">
 
     <h3 class="mb-4">Overzicht van vragen</h3>
-    <p>
-        <button id="addQuestionFormTrigger" class="btn btn-success mb-3" onclick="document.getElementById('questionForm').scrollIntoView({ behavior: 'smooth', block: 'start' }); document.getElementById('newQuestionBtn').click();">
-            Nieuwe Vraag Toevoegen
-        </button>
-    </p>
-
     @if (@Model.Questions != null && Model.Questions.Any())
     {
         <table class="table table-striped table-hover">
@@ -271,6 +328,85 @@
     else
     {
         <p>Er zijn nog geen vragen om weer te geven.</p>
+    }
+    <h3 class="mb-4">Score-tip Beheer</h3>
+
+    <div class="card shadow-sm border-0 mb-5">
+        <div class="card-header bg-primary text-white">
+            <h3 class="mb-0" id="scoreTipFormTitle">Nieuwe score-tip toevoegen</h3>
+        </div>
+        <div class="card-body">
+            <form id="scoreTipForm" asp-action="AddOrUpdateScoreRangeTip" asp-controller="Question" method="post">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <input type="hidden" asp-for="QuestionWeightTipViewModelToEdit.Id" />
+
+                <div class="mb-3">
+                    <label asp-for="QuestionWeightTipViewModelToEdit.MinScore" class="form-label"></label>
+                    <input type="number" asp-for="QuestionWeightTipViewModelToEdit.MinScore" class="form-control" placeholder="Minimale score" required />
+                    <span asp-validation-for="QuestionWeightTipViewModelToEdit.MinScore" class="text-danger"></span>
+                </div>
+                <div class="mb-3">
+                    <label asp-for="QuestionWeightTipViewModelToEdit.MaxScore" class="form-label"></label>
+                    <input type="number" asp-for="QuestionWeightTipViewModelToEdit.MaxScore" class="form-control" placeholder="Maximale score (optioneel)" />
+                    <span asp-validation-for="QuestionWeightTipViewModelToEdit.MaxScore" class="text-danger"></span>
+                </div>
+                <div class="mb-3">
+                    <label asp-for="QuestionWeightTipViewModelToEdit.Message" class="form-label"></label>
+                    <textarea asp-for="QuestionWeightTipViewModelToEdit.Message" class="form-control" rows="3" placeholder="Voer de boodschap voor de gebruiker in" required></textarea>
+                    <span asp-validation-for="QuestionWeightTipViewModelToEdit.Message" class="text-danger"></span>
+                </div>
+
+                <button type="submit" class="btn btn-success" id="scoreTipSubmitBtn">Tip toevoegen</button>
+                <button type="button" class="btn btn-secondary ms-2" id="newScoreTipBtn">Nieuwe tip</button>
+            </form>
+        </div>
+    </div>
+
+    <h3 class="mb-4">Overzicht van Score-tips</h3>
+    <p>
+        <button id="addScoreTipFormTrigger" class="btn btn-success mb-3" onclick="document.getElementById('scoreTipForm').scrollIntoView({ behavior: 'smooth', block: 'start' }); document.getElementById('newScoreTipBtn').click();">
+            Nieuwe Score-tip Toevoegen
+        </button>
+    </p>
+
+    @if (Model.QuestionWeightTips != null && Model.QuestionWeightTips.Any())
+    {
+        <table class="table table-striped table-hover">
+            <thead>
+            <tr>
+                <th>ID</th>
+                <th>Min. Score</th>
+                <th>Max. Score</th>
+                <th>Boodschap</th>
+                <th>Admin Uitleg</th>
+                <th>Acties</th>
+            </tr>
+            </thead>
+            <tbody>
+            @foreach (var tip in Model.QuestionWeightTips)
+            {
+                <tr>
+                    <td>@tip.Id</td>
+                    <td>@tip.MinScore</td>
+                    <td>@(tip.MaxScore.HasValue ? tip.MaxScore.Value.ToString() : "Geen")</td>
+                    <td>@tip.Message</td>
+                    <td>
+                        <button class="btn btn-sm btn-primary edit-score-tip-button" data-tip-id="@tip.Id">Bewerken</button>
+                        <form asp-action="DeleteScoreRangeTip" asp-controller="Question" asp-route-id="@tip.Id" method="post" class="d-inline">
+                            <button type="submit" class="btn btn-sm btn-danger"
+                                    onclick="return confirm('Weet je zeker dat je deze score-tip wilt verwijderen?');">
+                                Verwijderen
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    }
+    else
+    {
+        <p>Er zijn nog geen score-tips om weer te geven.</p>
     }
 </div>
 
