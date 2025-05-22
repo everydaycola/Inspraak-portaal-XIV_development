@@ -1,5 +1,5 @@
 using DAL;
-using UI_MVC.Models.ViewModels;
+using UI_MVC.Models.ViewModels.ExploreConceptViewModels;
 
 namespace UI_MVC.Models.Dto.OrganisationDtos;
 

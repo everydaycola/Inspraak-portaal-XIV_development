@@ -1,4 +1,4 @@
-namespace UI_MVC.Models.ViewModels;
+namespace UI_MVC.Models.ViewModels.ExploreConceptViewModels;
 
 public class QuestionIndexViewModel
 {

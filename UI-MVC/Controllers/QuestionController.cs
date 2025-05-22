@@ -1,7 +1,7 @@
 using BL.Interfaces;
 using Domain.Interfaces;
 using Microsoft.AspNetCore.Mvc;
-using UI_MVC.Models.ViewModels;
+using UI_MVC.Models.ViewModels.ExploreConceptViewModels;
 
 namespace UI_MVC.Controllers;
 
@@ -43,36 +43,81 @@ public class QuestionController : Controller
     }
 
     [HttpPost]
-    public IActionResult AddOrUpdate(QuestionManagementViewModel model)
+    public IActionResult AddOrUpdate(QuestionIndexViewModel fullViewModel)
     {
-        // This is the problematic part you mentioned, now it should work better
+        QuestionManagementViewModel questionToManage = fullViewModel.QuestionToEdit;
+        questionToManage.AnswerOptions ??= new List<AnswerOptionCrudViewModel>();
+        var allDomainQuestions = _questionManager.GetAllQuestions();
+
+        fullViewModel.Questions = allDomainQuestions.Select(q => new QuestionManagementViewModel
+        {
+            Id = q.Id,
+            Question = q.QuestionText,
+            AnswerOptions = q.AnswerOptions?.Select(ao => new AnswerOptionCrudViewModel
+            {
+                Id = ao.Id,
+                AnswerOptionText = ao.AnswerOptionText,
+                Weight = ao.Weight
+            }).ToList()
+        }).ToList();
+
         if (!ModelState.IsValid)
         {
-            var allDomainQuestions = _questionManager.GetAllQuestions();
-
-            var allQuestionViewModels = allDomainQuestions.Select(q => new QuestionManagementViewModel
-            {
-                Id = q.Id,
-                Question = q.QuestionText,
-                AnswerOptions = q.AnswerOptions.Select(ao => new AnswerOptionCrudViewModel
-                {
-                    Id = ao.Id,
-                    AnswerOptionText = ao.AnswerOptionText,
-                    Weight = ao.Weight
-                }).ToList()
-            }).ToList();
-
-            var indexModel = new QuestionIndexViewModel()
-            {
-                Questions = allQuestionViewModels,
-                QuestionToEdit = model
-            };
-
             _logger.LogInformation("Controleer de ingevoerde gegevens. Er zijn fouten opgetreden.");
-            return View("Index", indexModel);
+            return View("Index", fullViewModel);
         }
 
-        return View("Index");
+        try
+        {
+            List<AnswerOption> domainAnswerOptions = new List<AnswerOption>();
+            foreach (var crudOption in questionToManage.AnswerOptions)
+            {
+                domainAnswerOptions.Add(new AnswerOption
+                {
+                    Id = crudOption.Id,
+                    AnswerOptionText = crudOption.AnswerOptionText,
+                    Weight = crudOption.Weight
+                });
+            }
+
+            if (questionToManage.Id == 0) // New question
+            {
+                var newDomainQuestion = new Question
+                {
+                    QuestionText = questionToManage.Question,
+                    AnswerOptions = domainAnswerOptions
+                };
+                _questionManager.AddQuestion(newDomainQuestion.Id, questionToManage.Question,
+                    newDomainQuestion.AnswerOptions);
+            }
+            else
+            {
+                var existingDomainQuestion = _questionManager.GetQuestionById(questionToManage.Id);
+                if (existingDomainQuestion == null)
+                {
+                    throw new InvalidOperationException(
+                        $"Question with ID {questionToManage.Id} not found for update.");
+                }
+
+                existingDomainQuestion.QuestionText = questionToManage.Question;
+
+                existingDomainQuestion.AnswerOptions.Clear();
+                foreach (var ao in domainAnswerOptions)
+                {
+                    existingDomainQuestion.AnswerOptions.Add(ao);
+                }
+
+                _questionManager.UpdateQuestion(existingDomainQuestion.Id, existingDomainQuestion.QuestionText,
+                    existingDomainQuestion.AnswerOptions);
+            }
+
+            return RedirectToAction("Index");
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Fout bij opslaan van vraag.");
+            return View("Index", fullViewModel);
+        }
     }
 
     [HttpPost]

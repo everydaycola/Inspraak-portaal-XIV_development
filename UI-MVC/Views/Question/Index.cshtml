@@ -1,4 +1,4 @@
-@model UI_MVC.Models.ViewModels.QuestionIndexViewModel
+@model UI_MVC.Models.ViewModels.ExploreConceptViewModels.QuestionIndexViewModel
 
 @{
     ViewData["Title"] = "Vraagbeheer";
@@ -222,7 +222,7 @@
         </button>
     </p>
 
-    @if (Model.Questions != null && Model.Questions.Any())
+    @if (@Model.Questions != null && Model.Questions.Any())
     {
         <table class="table table-striped table-hover">
             <thead>

@@ -1,10 +1,10 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace UI_MVC.Models.ViewModels;
+namespace UI_MVC.Models.ViewModels.ExploreConceptViewModels;
 
 public class AnswerOptionCrudViewModel
 {
     [Key] public int Id { get; set; }
     public string AnswerOptionText { get; set; }
-    public double Weight { get; set; }
+    public int Weight { get; set; }
 }

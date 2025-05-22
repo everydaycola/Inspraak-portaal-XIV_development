@@ -1,6 +1,4 @@
-using Domain.Interfaces;
-
-namespace UI_MVC.Models.ViewModels;
+namespace UI_MVC.Models.ViewModels.ExploreConceptViewModels;
 
 public class QuestionsViewModel
 {

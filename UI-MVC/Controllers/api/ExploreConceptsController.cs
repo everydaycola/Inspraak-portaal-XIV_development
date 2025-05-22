@@ -1,6 +1,6 @@
 using BL.Interfaces;
 using Microsoft.AspNetCore.Mvc;
-using UI_MVC.Models.ViewModels;
+using UI_MVC.Models.ViewModels.ExploreConceptViewModels;
 
 namespace UI_MVC.Controllers.api;
 
