@@ -13,5 +13,5 @@ public class PanelManagementViewModel
     public bool IsRegistrationOpen { get; set; }
     public bool AnyCrossCriteria { get; set; }
     public bool AnyUnknownCriteria { get; set; }
-    public ExtraCriteriaDto ExtraCriteriaDto { get; set; } 
+    public ExtraCriteriaViewModel ExtraCriteriaViewModel { get; set; } 
 }

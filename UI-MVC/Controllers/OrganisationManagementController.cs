@@ -25,7 +25,7 @@ public class OrganisationManagementController : Controller
     [Authorize(Roles = CustomIdentityConstants.AdminRole)]
     public IActionResult AdminIndex()
     {
-        var organisationsDto = new OrganisationManagementDto
+        var organisationsDto = new OrganisationsViewmodel
         {
             Organisations = _organisationManager.GetAllOrganisations(),
             AmountOfOrganisations = _organisationManager.GetAllOrganisations().Count()

@@ -4,7 +4,9 @@ using Domain;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using UI_MVC.Models.Dto.ProjectPage;
+using UI_MVC.Models.Dto.PostDtos;
+using UI_MVC.Models.ViewModels;
+using UI_MVC.Models.ViewModels.PostViewModels;
 
 namespace UI_MVC.Controllers;
 
@@ -43,7 +45,7 @@ public class PanelProjectPageController : Controller
     {
         ViewBag.OpenModal = modalName;
         var user = await _userManager.GetUserAsync(User);
-        return View("Index", new ProjectPageDto
+        return View("Index", new ProjectPageViewModel
         {
             Panel = _projectPageManager.GetPanelWithPostsAndSuggestionsAndVotes(panelId),
             CurrentUser = user
@@ -75,7 +77,7 @@ public class PanelProjectPageController : Controller
             }
         }
 
-        return View(new ProjectPageDto
+        return View(new ProjectPageViewModel
         {
             Panel = _projectPageManager.GetPanelWithPostsAndSuggestionsAndVotes(id.Value),
         });
@@ -107,7 +109,7 @@ public class PanelProjectPageController : Controller
 
     [HttpPost]
     [Authorize(Roles = CustomIdentityConstants.OrganisatieRole)]
-    public async Task<IActionResult> AddDocumentPost(NewDocumentPostDto newDocumentPost)
+    public async Task<IActionResult> AddDocumentPost(NewDocumentPostViewDto newDocumentPost)
     {
         if (!ModelState.IsValid)
         {

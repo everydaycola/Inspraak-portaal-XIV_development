@@ -1,8 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace UI_MVC.Models.Dto;
-
-public class CriteriaAnswerOptionDto
+namespace UI_MVC.Models.ViewModels;
+public class CriteriaAnswerViewModel
 {
     [Required(ErrorMessage = "Antwoord optie moet een naam hebben.")]
     [MinLength(2, ErrorMessage = "Antwoord optie moet minimaal 2 karakters lang zijn.")]

@@ -50,7 +50,7 @@ public class PanelManagementController : Controller
             IsRegistrationOpen = panel.IsRegistrationOpen,
             AnyCrossCriteria = criteriaList.Any(c => c.IsDistributionKnown),
             AnyUnknownCriteria = criteriaList.Any(c => !c.IsDistributionKnown),
-            ExtraCriteriaDto = new ExtraCriteriaDto
+            ExtraCriteriaViewModel = new ExtraCriteriaViewModel
             {
                 CriteriaGroupAbsoluteMemberCount = _manager.CalculateCrossDistributionAbsolute(panel.Id),
                 CriteriaMemberCount = _criteriaManager.GetAllCriteriaCountsGroupedByValue(panel.Id, onlyUnknown: true),
@@ -75,14 +75,14 @@ public class PanelManagementController : Controller
         return View(new PeopleManagementViewModel
         {
             PanelId = panel.Id,
-            UniqueCodesDto = new uniqueCodesDto
+            UniqueCodesViewModel = new UniqueCodesViewModel
             {
                 panelId = panel.Id,
                 panelMembers = _criteriaManager.GetPanelMembersGroupedByResponsesForDefaultCriteriaGroupedByPhase(panel.Id),
                 Phases = panel.LastPhase
             },
             PlanningGroupMembers = _manager.GetAllPlanningGroupMembersWithIdentityUserForPanel(panel.Id),
-            ExtraCriteriaDto = new ExtraCriteriaDto
+            ExtraCriteriaViewModel = new ExtraCriteriaViewModel
             {
                 CriteriaGroupAbsoluteMemberCount = _manager.CalculateCrossDistributionAbsolute(panel.Id),
                 CriteriaMemberCount = _criteriaManager.GetAllCriteriaCountsGroupedByValue(panel.Id, onlyUnknown: true),

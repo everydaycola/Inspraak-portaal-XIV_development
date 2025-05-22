@@ -5,16 +5,16 @@
 <div class="container mt-5">
     <div class="alert alert-warning text-center" role="alert">
         <h4 class="alert-heading">U gaat de inschrijvingsfase afronden</h4>
-        <p> Er zijn <strong>@Model.ExtraCriteriaDto.SuccessfulRegistrationCount</strong> van de <strong>@(Model.PanelSize + Model.AmountOfReserveInvites)</strong>
+        <p> Er zijn <strong>@Model.ExtraCriteriaViewModel.SuccessfulRegistrationCount</strong> van de <strong>@(Model.PanelSize + Model.AmountOfReserveInvites)</strong>
             inschrijvingen gelukt.</p>
-        @if (Model.ExtraCriteriaDto.SuccessfulRegistrationCount > Model.PanelSize + Model.AmountOfReserveInvites)
+        @if (Model.ExtraCriteriaViewModel.SuccessfulRegistrationCount > Model.PanelSize + Model.AmountOfReserveInvites)
         {
-            <p>U heeft <strong>@(Model.ExtraCriteriaDto.SuccessfulRegistrationCount - Model.PanelSize + Model.AmountOfReserveInvites)</strong> reserve inschrijvingen
+            <p>U heeft <strong>@(Model.ExtraCriteriaViewModel.SuccessfulRegistrationCount - Model.PanelSize + Model.AmountOfReserveInvites)</strong> reserve inschrijvingen
             </p>
         }
         else
         {
-            <p>U mist nog <strong>@(Model.PanelSize + Model.AmountOfReserveInvites - Model.ExtraCriteriaDto.SuccessfulRegistrationCount)</strong> inschrijvingen</p>
+            <p>U mist nog <strong>@(Model.PanelSize + Model.AmountOfReserveInvites - Model.ExtraCriteriaViewModel.SuccessfulRegistrationCount)</strong> inschrijvingen</p>
         }
         <button class="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#newphase">
             Toon criteria statistieken
@@ -36,7 +36,7 @@
                         <div id="crossCriteriaCollapse" class="accordion-collapse collapse"
                              aria-labelledby="crossCriteriaHeading" data-bs-parent="#criteriaAccordion">
                             <div class="accordion-body">
-                                @Html.Partial("_extraCriteriaStatsCrossPartial", Model.ExtraCriteriaDto)
+                                @Html.Partial("_extraCriteriaStatsCrossPartial", Model.ExtraCriteriaViewModel)
                             </div>
                         </div>
                     </div>
@@ -55,7 +55,7 @@
                         <div id="singleCriteriaCollapse" class="accordion-collapse collapse"
                              aria-labelledby="singleCriteriaHeading" data-bs-parent="#criteriaAccordion">
                             <div class="accordion-body">
-                                @Html.Partial("_extraCriteriaStatsPartial", Model.ExtraCriteriaDto)
+                                @Html.Partial("_extraCriteriaStatsPartial", Model.ExtraCriteriaViewModel)
                             </div>
                         </div>
                     </div>

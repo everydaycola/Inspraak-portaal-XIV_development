@@ -6,9 +6,9 @@ namespace UI_MVC.Models.ViewModels;
 public class PeopleManagementViewModel
 {
     public Guid PanelId { get; set; }
-    public uniqueCodesDto UniqueCodesDto { get; set; }
+    public UniqueCodesViewModel UniqueCodesViewModel { get; set; }
     public IEnumerable<PlanningGroupMember> PlanningGroupMembers { get; set; }
-    public ExtraCriteriaDto ExtraCriteriaDto { get; set; } 
+    public ExtraCriteriaViewModel ExtraCriteriaViewModel { get; set; } 
     public bool IsRegistrationOpen { get; set; }
     public int PanelSize { get; set; }
     public bool AnyCrossCriteria { get; set; }

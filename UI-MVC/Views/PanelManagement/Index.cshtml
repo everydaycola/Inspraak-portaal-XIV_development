@@ -16,7 +16,7 @@
                 <div class="mb-4">
                     <h5 class="card-title">Aanmeldstatus</h5>
                     <p class="card-text">
-                        @Model.ExtraCriteriaDto.SuccessfulRegistrationCount /
+                        @Model.ExtraCriteriaViewModel.SuccessfulRegistrationCount /
                         @(Model.PanelSize + Model.AmountOfReserveInvites) (waarvan @Model.AmountOfReserveInvites reserve)
                     </p>
                 </div>
@@ -76,7 +76,7 @@
                         <div id="crossCriteriaCollapse" class="accordion-collapse collapse"
                              aria-labelledby="crossCriteriaHeading" data-bs-parent="#criteriaAccordion">
                             <div class="accordion-body">
-                                @Html.Partial("_extraCriteriaStatsCrossPartial", Model.ExtraCriteriaDto)
+                                @Html.Partial("_extraCriteriaStatsCrossPartial", Model.ExtraCriteriaViewModel)
                             </div>
                         </div>
                     </div>
@@ -92,7 +92,7 @@
                         <div id="singleCriteriaCollapse" class="accordion-collapse collapse"
                              aria-labelledby="singleCriteriaHeading" data-bs-parent="#criteriaAccordion">
                             <div class="accordion-body">
-                                @Html.Partial("_extraCriteriaStatsPartial", Model.ExtraCriteriaDto)
+                                @Html.Partial("_extraCriteriaStatsPartial", Model.ExtraCriteriaViewModel)
                             </div>
                         </div>
                     </div>
@@ -100,11 +100,11 @@
             }
             else if (Model.AnyCrossCriteria)
             {
-                @Html.Partial("_extraCriteriaStatsCrossPartial", Model.ExtraCriteriaDto)
+                @Html.Partial("_extraCriteriaStatsCrossPartial", Model.ExtraCriteriaViewModel)
             }
             else if (Model.AnyUnknownCriteria)
             {
-                @Html.Partial("_extraCriteriaStatsPartial", Model.ExtraCriteriaDto)
+                @Html.Partial("_extraCriteriaStatsPartial", Model.ExtraCriteriaViewModel)
             }
             else
             {

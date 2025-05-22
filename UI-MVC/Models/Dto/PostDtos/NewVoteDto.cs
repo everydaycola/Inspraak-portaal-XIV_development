@@ -1,4 +1,4 @@
-﻿namespace UI_MVC.Models.Dto.ProjectPage;
+﻿namespace UI_MVC.Models.Dto.PostDtos;
 
 public class NewVoteDto
 {
