@@ -16,8 +16,8 @@
 </head>
 <body>
 <div class="large-grid-container">
-    <nav class="navbar navbar-expand-sm navbar-toggleable-sm border-bottom box-shadow mb-3" style="background-color:@Organisation.BackgroundColor">
-        <div class="container-fluid">
+    <nav class="navbar navbar-expand-sm navbar-toggleable-sm border-bottom box-shadow mb-4 mb-lg-0" style="background-color:@Organisation.BackgroundColor">
+        <div class="container-fluid mb-2">
             <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">
                 @if (Organisation != null && Organisation.LogoImageName != null)
                 {
@@ -99,7 +99,7 @@
         </div>
     </nav>
     <div id="mainContainer">
-        <main role="main" class="d-flex justify-content-center align-items-start" >
+        <main id="main" role="main">
             @RenderBody()
         </main>
     </div>
