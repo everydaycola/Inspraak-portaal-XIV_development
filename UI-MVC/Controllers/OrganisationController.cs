@@ -30,7 +30,7 @@ public class OrganisationController : Controller
             return View();
         }
 
-        var organisation = _organisationManager.AddOrganisation(name.ToLower(), name, "#FFFFFF", "");
+        var organisation = _organisationManager.AddOrganisation(name.ToLower(), name, "#FFFFFF", "","");
 
         var subdomain = organisation.Name.ToLowerInvariant();
         var currentHost = HttpContext.Request.Host;

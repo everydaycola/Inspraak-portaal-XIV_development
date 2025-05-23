@@ -1,9 +1,9 @@
 ﻿using Domain;
 using Domain.CitizenPanel;
 
-namespace UI_MVC.Models.Dto.ProjectPage;
+namespace UI_MVC.Models.ViewModels;
 
-public class ProjectPageDto
+public class ProjectPageViewModel
 {
     // Panel including all posts including suggestions for suggestionposts including the votes on those suggestions.
     public Panel Panel { get; set; }

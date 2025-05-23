@@ -1,8 +1,9 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using UI_MVC.Models.Dto;
 
-namespace UI_MVC.Models.Dto;
+namespace UI_MVC.Models.ViewModels;
 
-public class CriteriaDto
+public class CriteriaViewModel
 {
     [Required(ErrorMessage = "Criteria moet een naam hebben.")]
     [MinLength(2, ErrorMessage = "Criteria naam moet minimaal 2 karakters lang zijn.")]
@@ -17,5 +18,5 @@ public class CriteriaDto
     [Required(ErrorMessage = "Criteria moet antwoord opties hebben.")]
     [MinLength(2, ErrorMessage = "Criteria vraag moet minimaal 2 opties hebben.")]
     [MaxLength(12, ErrorMessage = "Criteria vraag mag maximaal 12 opties hebben.")]
-    public ICollection<CriteriaAnswerOptionDto> AnswerOptions { get; set; } = new List<CriteriaAnswerOptionDto>();
+    public ICollection<CriteriaAnswerViewModel> AnswerOptions { get; set; } = new List<CriteriaAnswerViewModel>();
 }
