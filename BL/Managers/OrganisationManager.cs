@@ -39,6 +39,7 @@ public class OrganisationManager : IOrganisationManager
                 existingOrganisation.LogoImageName = logoImageName;
             }
             _repo.UpdateOrganisation(existingOrganisation);
+            return existingOrganisation;
         }
 
         throw new InvalidOperationException($"$No organisation found with ID: {organisationId}");
