@@ -35,6 +35,11 @@ public class PanelProjectPageManager : IPanelProjectPageManager
         return _repo.ReadSuggestion(suggestionId);
     }
 
+    public Post GetPost(Guid postId)
+    {
+        return _repo.ReadPost(postId);
+    }
+
     public void ChangeVote(ApplicationUser user, Guid suggestionId, VoteType voteType)
     {
         var vote = _repo.ReadVoteByPanelMemberAndSuggestionOrDefault(user, suggestionId);

@@ -2,6 +2,7 @@
 using Domain;
 using Domain.CitizenPanel;
 using Domain.Enums;
+using Domain.Interfaces;
 using Domain.Interfaces.Posts.PostItems;
 
 namespace BL.Interfaces;
@@ -11,6 +12,7 @@ public interface IPanelProjectPageManager
     // GET
     public Panel GetPanelWithPostsAndSuggestionsAndVotes(Guid panelId);
     public Suggestion GetSuggestion(Guid suggestionId);
+    public Post GetPost(Guid postId);
 
     // CHANGE
     public void ChangeVote(ApplicationUser user, Guid suggestionId, VoteType voteType);

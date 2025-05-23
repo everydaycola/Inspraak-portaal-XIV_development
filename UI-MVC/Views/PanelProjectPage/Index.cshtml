@@ -582,7 +582,7 @@
                                             }
                                             else
                                             {
-                                                /* No User View */
+                                                /* No User/Closed Voting View */
                                                 <div id="votes" class="btn-group" role="group">
                                                     <div class="p-2">
                                                         <i class="bi bi-hand-thumbs-up"></i>
@@ -602,6 +602,11 @@
                                                             @suggestion.Votes.Count(v => v.VoteType == VoteType.Down)
                                                         </span>
                                                     </div>
+                                                </div>
+                                                <div id="percentage" class="">
+                                                    <span>
+                                                        Een getalleke %
+                                                    </span>
                                                 </div>
                                             }
                                         </div>
