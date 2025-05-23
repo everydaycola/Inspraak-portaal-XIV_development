@@ -12,6 +12,18 @@ public class OrganisationController : Controller
     [HttpPost]
     public IActionResult OrganisationCreation(string name)
     {
+        name = name.Trim().Replace(" ", "-");
+        
+        const string subdomainPattern = @"^[a-zA-Z0-9]([a-zA-Z0-9-]*[a-zA-Z0-9])?$";
+        if (!System.Text.RegularExpressions.Regex.IsMatch(name, subdomainPattern))
+        {
+            ModelState.AddModelError("", "De organisatienaam mag alleen letters, cijfers en koppeltekens (-) bevatten, en mag niet beginnen of eindigen met een koppelteken.");
+            return View();
+        }
+    
+        
+        
+        
         if (_organisationManager.GetOrganisationById(name.ToLower()) != null)
         {
             ModelState.AddModelError("", "Deze organisatie bestaat al, kies een andere naam!");
