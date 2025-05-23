@@ -1,4 +1,5 @@
-﻿@using UI_MVC.Models.ViewModels
+﻿@using Domain.CitizenPanel
+@using UI_MVC.Models.ViewModels
 @model UI_MVC.Models.ViewModels.ProjectPageViewModel
 
 @{
@@ -17,7 +18,7 @@
     </div>
 
     <div id="modal-root" class="hidden" data-open-modal="@ViewBag.OpenModal"></div>
-    
+
     <div class="row" style="min-height: 60vh;">
         <!-- Left column: two stacked cards -->
         <div class="col-3 d-flex flex-column gap-3">
@@ -43,15 +44,66 @@
                 </div>
             </div>
         </div>
+        
+        
 
+        
         <div class="col-8 d-flex flex-column">
-            <partial name="_Posts"
-                     model="@(new PostListViewModel
-                            {
-                                CurrentUser = Model.CurrentUser,
-                                PanelId = Model.Panel.Id,
-                                Posts = Model.Panel.Posts
-                            })"/>
+            <div class="col">
+                <div class="h-100">
+                    <button class="btn btn-primary d-flex align-items-center gap-2 w-100" data-bs-toggle="modal"
+                            data-bs-target="#addTimeLineModal">
+                        <i class="bi bi-collection"></i>
+                        Nieuwe tijdlijn aanmaken
+                    </button>
+                </div>
+            </div>
+            
+            @foreach (var timeLine in Model.Panel.Timelines)
+            {
+                <partial name="_Posts"
+                         model="@(new TimeLineViewModel
+                                {
+                                    PanelId = Model.Panel.Id,
+                                    CurrentUser = Model.CurrentUser,
+                                    TimeLineId = timeLine.Id,
+                                    Posts = timeLine.Posts
+                                })"/>
+            }
+        </div>
+    </div>
+</div>
+
+<!-- timeline Modal -->
+<div class="modal fade" id="addTimeLineModal" tabindex="-1" aria-labelledby="addTimeLineModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content shadow">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addTimeLineModalLabel">Suggestie toevoegen</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                        aria-label="Sluiten"></button>
+            </div>
+            <div class="modal-body">
+                <form id="addTimeLineForm" asp-action="addTimeLine" method="post">
+                    @if (ViewBag.OpenModal == "addTimeLineModal")
+                    {
+                        <div asp-validation-summary="All" class="alert alert-danger"></div>
+                    }
+                    <input type="hidden" name="panelId" value="@Model.Panel.Id"/>
+                    <div class="mb-3">
+                        <label for="titleInput" class="form-label">TimeLine Titel</label>
+                        <input type="text" class="form-control" id="titleInput" name="title"
+                               placeholder="Voer een titel in." required/>
+                    </div>
+
+                    <div class="text-end">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuleren
+                        </button>
+                        <button type="submit" class="btn btn-success">Opslaan</button>
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
 </div>

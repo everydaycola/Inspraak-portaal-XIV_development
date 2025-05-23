@@ -25,9 +25,9 @@ public class PanelProjectPageManager : IPanelProjectPageManager
         _repo = repo;
     }
     
-    public Panel GetPanelWithPostsAndSuggestionsAndVotes(Guid panelId)
+    public Panel GetPanelWithTimeLinesAndPostsAndSuggestionsAndVotes(Guid panelId)
     {
-        return _repo.ReadPanelWithPostsAndSuggestionsAndVotes(panelId);
+        return _repo.ReadPanelWithTimeLinesAndPostsAndSuggestionsAndVotes(panelId);
     }
 
     public Suggestion GetSuggestion(Guid suggestionId)
@@ -75,7 +75,7 @@ public class PanelProjectPageManager : IPanelProjectPageManager
     }
     
     // Generic helper method for post validation and creation
-    private void AddPost<T>(Guid panelId, T post) where T : Post
+    private void AddPost<T>(Guid timeLineId, T post) where T : Post
     {
         var validationResults = new List<ValidationResult>();
         if (!Validator.TryValidateObject(post, new ValidationContext(post), validationResults, true))
@@ -83,84 +83,95 @@ public class PanelProjectPageManager : IPanelProjectPageManager
             throw new ValidationException(string.Join("\n", validationResults.Select(x => x.ErrorMessage)));
         }
 
-        _repo.CreatePost(panelId, post);
+        _repo.CreatePost(timeLineId, post);
     }
 
 // Simplified post methods
-    public void AddTextPost(Guid panelId, string title, string content, bool isVisibleForPanelMembers, bool isGloballyVisible, Guid? groupId = null)
+    public void AddTextPost(Guid timeLineId, string title, string content, bool isVisibleForPanelMembers, bool isGloballyVisible)
     {
-        AddPost(panelId, new TextPost
+        AddPost(timeLineId, new TextPost
         {
             Title = title,
             Content = content,
             CreatedAt = DateTime.UtcNow,
             IsVisibleForPanelMembers = isVisibleForPanelMembers,
             IsGloballyVisible = isGloballyVisible,
-            Parent = _repo.ReadPost(groupId.GetValueOrDefault()) as PostGroup
         });
     }
 
-    public void AddDocumentPost(Guid panelId, string title, string documentUrl, bool isVisibleForPanelMembers, bool isGloballyVisible, Guid? groupId = null)
+    public void AddDocumentPost(Guid timeLineId, string title, string documentUrl, bool isVisibleForPanelMembers, bool isGloballyVisible)
     {
-        AddPost(panelId, new DocumentPost
+        AddPost(timeLineId, new DocumentPost
         {
             Title = title,
             DocumentName = documentUrl,
             CreatedAt = DateTime.UtcNow,
             IsVisibleForPanelMembers = isVisibleForPanelMembers,
             IsGloballyVisible = isGloballyVisible,
-            Parent = _repo.ReadPost(groupId.GetValueOrDefault()) as PostGroup
         });
     }
 
-    public void AddMeetingPost(Guid panelId, string title, DateTime meetingDateTime, bool isVisibleForPanelMembers, Guid? groupId = null)
+    public void AddMeetingPost(Guid timeLineId, string title, DateTime meetingDateTime, bool isVisibleForPanelMembers)
     {
-        AddPost(panelId, new MeetingPost
+        AddPost(timeLineId, new MeetingPost
         {
             Title = title,
             DocumentNames = new List<string>(),
             CreatedAt = meetingDateTime,
             IsVisibleForPanelMembers = isVisibleForPanelMembers,
-            Parent = _repo.ReadPost(groupId.GetValueOrDefault()) as PostGroup
         });
     }
 
-    public void AddEmbedVideoPost(Guid panelId, string title, string videoUrl, bool visibleForPanelMember, bool isGloballyVisible, Guid? groupId = null)
+    public void AddEmbedVideoPost(Guid timeLineId, string title, string videoUrl, bool visibleForPanelMember, bool isGloballyVisible)
     {
-        AddPost(panelId, new EmbeddedVideoPost
+        AddPost(timeLineId, new EmbeddedVideoPost
         {
             Title = title,
             CreatedAt = DateTime.UtcNow,
             IsVisibleForPanelMembers = visibleForPanelMember,
             VideoUrl = videoUrl,
             IsGloballyVisible = isGloballyVisible,
-            Parent = _repo.ReadPost(groupId.GetValueOrDefault()) as PostGroup
         });
     }
 
-    public void AddYoutubeVideoPost(Guid panelId, string title, string videoId, bool visibleForPanelMember, bool isGloballyVisible, Guid? groupId = null)
+    public void AddYoutubeVideoPost(Guid timeLineId, string title, string videoId, bool visibleForPanelMember, bool isGloballyVisible)
     {
-        AddPost(panelId, new YoutubeVideoPost
+        AddPost(timeLineId, new YoutubeVideoPost
         {
             Title = title,
             CreatedAt = DateTime.UtcNow,
             IsVisibleForPanelMembers = visibleForPanelMember,
             VideoId = videoId,
-            IsGloballyVisible = isGloballyVisible,
-            Parent = _repo.ReadPost(groupId.GetValueOrDefault()) as PostGroup
+            IsGloballyVisible = isGloballyVisible
         });
     }
 
-    public void AddSuggestionPost(Guid panelId, string title, bool visibleForPanelMember, Guid? groupId = null)
+    public void AddSuggestionPost(Guid timeLineId, string title, bool visibleForPanelMember)
     {
-        AddPost(panelId, new SuggestionPost
+        AddPost(timeLineId, new SuggestionPost
         {
             Title = title,
             CreatedAt = DateTime.UtcNow,
             IsVisibleForPanelMembers = visibleForPanelMember,
             Suggestions = [],
-            Parent = _repo.ReadPost(groupId.GetValueOrDefault()) as PostGroup
         });
+    }
+    
+    public void AddTimeLine(Guid panelId, string title)
+    {
+        var timeLine = new TimeLine
+        {
+            Title = title,
+            CreatedAt = DateTime.UtcNow,
+        };
+        
+        var validationResults = new List<ValidationResult>();
+        if (!Validator.TryValidateObject(timeLine, new ValidationContext(timeLine), validationResults, true))
+        {
+            throw new ValidationException(string.Join("\n", validationResults.Select(x => x.ErrorMessage)));
+        }
+        
+        _repo.CreateTimeLine(panelId, timeLine);
     }
 
     public void AddSuggestionToPost(Guid PostId, string suggestionTitle, string owner)

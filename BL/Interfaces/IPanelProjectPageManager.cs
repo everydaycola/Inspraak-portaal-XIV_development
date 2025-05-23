@@ -9,20 +9,23 @@ namespace BL.Interfaces;
 public interface IPanelProjectPageManager
 {
     // GET
-    public Panel GetPanelWithPostsAndSuggestionsAndVotes(Guid panelId);
+    public Panel GetPanelWithTimeLinesAndPostsAndSuggestionsAndVotes(Guid panelId);
     public Suggestion GetSuggestion(Guid suggestionId);
 
     // CHANGE
     public void ChangeVote(ApplicationUser user, Guid suggestionId, VoteType voteType);
     public void ChangeSuggestionVisibility(Guid suggesionId);
+    
     // ADD
-    public void AddTextPost(Guid panelId,string title, string content, bool isVisibleForPanelMembers, bool isGloballyVisible, Guid? groupId = null);
-    public void AddDocumentPost(Guid panelId, string title, string documentUrl, bool isVisibleForPanelMembers, bool isGloballyVisible, Guid? groupId = null);
-    public void AddMeetingPost(Guid panelId, string title, DateTime meetingDateTime, bool visibleForPanelMember, Guid? groupId = null);
-    public void AddEmbedVideoPost(Guid panelId, string title, string videoUrl, bool visibleForPanelMember, bool isGloballyVisible, Guid? groupId = null);
-    public void AddYoutubeVideoPost(Guid panelId, string title, string videoId, bool visibleForPanelMember, bool isGloballyVisible, Guid? groupId = null);
-    public void AddSuggestionPost(Guid panelId, string title, bool visibleForPanelMember, Guid? groupId = null);
-    public void AddSuggestionToPost(Guid PostId, string suggestion, string owner);
+    public void AddTextPost(Guid timeLineId,string title, string content, bool isVisibleForPanelMembers, bool isGloballyVisible );
+    public void AddDocumentPost(Guid timeLineId, string title, string documentUrl, bool isVisibleForPanelMembers, bool isGloballyVisible );
+    public void AddMeetingPost(Guid timeLineId, string title, DateTime meetingDateTime, bool visibleForPanelMember );
+    public void AddEmbedVideoPost(Guid timeLineId, string title, string videoUrl, bool visibleForPanelMember, bool isGloballyVisible );
+    public void AddYoutubeVideoPost(Guid timeLineId, string title, string videoId, bool visibleForPanelMember, bool isGloballyVisible );
+    public void AddSuggestionPost(Guid timeLineId, string title, bool visibleForPanelMember );
+    public void AddTimeLine(Guid panelId, string title);
+    public void AddSuggestionToPost(Guid postId, string suggestion, string owner);
     public void AddSummaryToMeetingPost(Guid meetingId, string uniqueFileName);
+    
     // REMOVE
 }

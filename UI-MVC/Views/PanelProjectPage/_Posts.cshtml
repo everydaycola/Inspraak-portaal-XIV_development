@@ -1,429 +1,385 @@
 ﻿@using Domain.Enums
 @using Domain.Interfaces.Posts
-@model UI_MVC.Models.ViewModels.PostListViewModel
+@using UI_MVC.Models.ViewModels
+@model UI_MVC.Models.ViewModels.TimeLineViewModel
 
 @if (User.IsInRole(CustomIdentityConstants.OrganisatieRole))
+{
+    @if (User.IsInRole(CustomIdentityConstants.OrganisatieRole))
     {
-        @if (User.IsInRole(CustomIdentityConstants.OrganisatieRole))
-        {
-            <!-- Text Modal -->
-            <div class="modal fade" id="addTextModal" tabindex="-1" aria-labelledby="addTextModalLabel"
-                 aria-hidden="true">
-                <div class="modal-dialog modal-lg">
-                    <div class="modal-content shadow">
-                        <div class="modal-header">
-                            <h5 class="modal-title" id="addTextModalLabel">Informatie toevoegen aan de
-                                projectpagina</h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                    aria-label="Sluiten"></button>
-                        </div>
-                        <div class="modal-body">
-                            <form id="addTextForm" asp-action="AddTextPost" method="post">
-                                @if (ViewBag.OpenModal == "addTextModal")
-                                {
-                                    <div asp-validation-summary="All" class="alert alert-danger"></div>
-                                }
-                                <input type="hidden" name="panelId" value="@Model.PanelId"/>
-                                <div class="mb-3">
-                                    <label for="textTitleInput" class="form-label">Titel (*)</label>
-                                    <input type="text" class="form-control" id="textTitleInput" name="title"
-                                           placeholder="Voer de titel in" required/>
-                                </div>
+        <!-- Text Modal -->
+        <div class="modal fade" id="addTextModal" tabindex="-1" aria-labelledby="addTextModalLabel"
+             aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content shadow">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="addTextModalLabel">Informatie toevoegen aan de
+                            projectpagina</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                aria-label="Sluiten"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="addTextForm" asp-action="AddTextPost" method="post">
+                            @if (ViewBag.OpenModal == "addTextModal")
+                            {
+                                <div asp-validation-summary="All" class="alert alert-danger"></div>
+                            }
+                            <input type="hidden" name="panelId" value="@Model.PanelId"/>
+                            <input type="hidden" name="timeLineId" value="@Model.TimeLineId"/>
+                             
+                            <div class="mb-3">
+                                <label for="textTitleInput" class="form-label">Titel (*)</label>
+                                <input type="text" class="form-control" id="textTitleInput" name="title"
+                                       placeholder="Voer de titel in" required/>
+                            </div>
 
-                                <div class="mb-3">
-                                    <label for="projectTextInput" class="form-label">Voer je tekst in (*)</label>
-                                    <textarea class="form-control" id="projectTextInput" name="content" rows="6"
-                                              placeholder="Voeg hier je projecttekst toe..." required></textarea>
-                                </div>
+                            <div class="mb-3">
+                                <label for="projectTextInput" class="form-label">Voer je tekst in (*)</label>
+                                <textarea class="form-control" id="projectTextInput" name="content" rows="6"
+                                          placeholder="Voeg hier je projecttekst toe..." required></textarea>
+                            </div>
 
-                                <div class="form-check mb-3">
-                                    <input class="form-check-input" type="checkbox" id="PLvisibleCheckbox" value="true"
-                                           name="visibleForPanelMember" checked/>
-                                    <label class="form-check-label" for="PLvisibleCheckbox"
-                                           title="Niet aangevinkt zorgt ervoor dat enkel organisatiebeheer + projectgroep deze post kan bekijken.">
-                                        Zichtbaar voor panelleden?
-                                    </label>
-                                </div>
-                                <div class="form-check mb-3">
-                                    <input class="form-check-input" type="checkbox" id="GlobalvisibleCheckbox"
-                                           value="true"
-                                           name="IsGloballyVisible"/>
-                                    <label class="form-check-label" for="GlobalvisibleCheckbox"
-                                           title="Aangevinkt zorgt ervoor dat iedereen die op de project pagina komt deze post kan bekijken.">
-                                        Zichtbaar voor mensen buiten het Panel?
-                                    </label>
-                                </div>
+                            <div class="form-check mb-3">
+                                <input class="form-check-input" type="checkbox" id="PLvisibleCheckbox" value="true"
+                                       name="visibleForPanelMember" checked/>
+                                <label class="form-check-label" for="PLvisibleCheckbox"
+                                       title="Niet aangevinkt zorgt ervoor dat enkel organisatiebeheer + projectgroep deze post kan bekijken.">
+                                    Zichtbaar voor panelleden?
+                                </label>
+                            </div>
+                            <div class="form-check mb-3">
+                                <input class="form-check-input" type="checkbox" id="GlobalvisibleCheckbox"
+                                       value="true"
+                                       name="IsGloballyVisible"/>
+                                <label class="form-check-label" for="GlobalvisibleCheckbox"
+                                       title="Aangevinkt zorgt ervoor dat iedereen die op de project pagina komt deze post kan bekijken.">
+                                    Zichtbaar voor mensen buiten het Panel?
+                                </label>
+                            </div>
 
-                                <h3>Panelleden op de hoogte brengen?</h3>
-                                <div class="form-check mb-3">
-                                    <input class="form-check-input" type="checkbox" id="informPeopleViaMail"
-                                           value="true"
-                                           name="informPeopleViaMail" checked/>
-                                    <label class="form-check-label" for="informPeopleViaMail"
-                                           title="Wanneer dit vakje is aangevinkt worden de betreffende personen op de hoogte gebracht.">
-                                        Iedereen op de hoogte brengen via mail?
-                                    </label>
-                                </div>
+                            <h3>Panelleden op de hoogte brengen?</h3>
+                            <div class="form-check mb-3">
+                                <input class="form-check-input" type="checkbox" id="informPeopleViaMail"
+                                       value="true"
+                                       name="informPeopleViaMail" checked/>
+                                <label class="form-check-label" for="informPeopleViaMail"
+                                       title="Wanneer dit vakje is aangevinkt worden de betreffende personen op de hoogte gebracht.">
+                                    Iedereen op de hoogte brengen via mail?
+                                </label>
+                            </div>
 
-                                <div class="text-end">
-                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuleren
-                                    </button>
-                                    <button type="submit" class="btn btn-success">Opslaan</button>
-                                </div>
-                            </form>
-                        </div>
+                            <div class="text-end">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuleren
+                                </button>
+                                <button type="submit" class="btn btn-success">Opslaan</button>
+                            </div>
+                        </form>
                     </div>
                 </div>
             </div>
+        </div>
 
-            <!-- File Upload Modal -->
-            <div class="modal fade" id="addBestandModal" tabindex="-1" aria-labelledby="addBestandModalLabel"
-                 aria-hidden="true">
-                <div class="modal-dialog modal-lg">
-                    <div class="modal-content shadow">
-                        <div class="modal-header">
-                            <h5 class="modal-title" id="addBestandModalLabel">Bestand toevoegen aan de
-                                projectpagina</h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                    aria-label="Sluiten"></button>
-                        </div>
-                        <div class="modal-body">
-                            <form id="addImageForm" asp-action="AddDocumentPost" method="post"
-                                  enctype="multipart/form-data">
-                                <input type="hidden" name="panelId" value="@Model.PanelId"/>
-                                @if (ViewBag.OpenModal == "addBestandModal")
-                                {
-                                    <div asp-validation-summary="All" class="alert alert-danger"></div>
-                                }
+        <!-- File Upload Modal -->
+        <div class="modal fade" id="addBestandModal" tabindex="-1" aria-labelledby="addBestandModalLabel"
+             aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content shadow">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="addBestandModalLabel">Bestand toevoegen aan de
+                            projectpagina</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                aria-label="Sluiten"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="addImageForm" asp-action="AddDocumentPost" method="post"
+                              enctype="multipart/form-data">
+                            <input type="hidden" name="panelId" value="@Model.PanelId"/>
+                            <input type="hidden" name="timeLineId" value="@Model.TimeLineId"/>
+                             
+                            @if (ViewBag.OpenModal == "addBestandModal")
+                            {
+                                <div asp-validation-summary="All" class="alert alert-danger"></div>
+                            }
 
-                                <div class="mb-3">
-                                    <label for="docTitleInput" class="form-label">Titel (*)</label>
-                                    <input type="text" class="form-control" id="docTitleInput" name="title"
-                                           placeholder="Voer de titel in" required/>
-                                </div>
+                            <div class="mb-3">
+                                <label for="docTitleInput" class="form-label">Titel (*)</label>
+                                <input type="text" class="form-control" id="docTitleInput" name="title"
+                                       placeholder="Voer de titel in" required/>
+                            </div>
 
-                                <div class="mb-3">
-                                    <label for="imageUpload" class="form-label">Afbeelding of PDF uploaden (*)</label>
-                                    <input type="file" class="form-control" id="imageUpload" name="file"
-                                           accept="image/*, .pdf, .txt, .dockx" required/>
-                                </div>
+                            <div class="mb-3">
+                                <label for="imageUpload" class="form-label">Afbeelding of PDF uploaden (*)</label>
+                                <input type="file" class="form-control" id="imageUpload" name="file"
+                                       accept="image/*, .pdf, .txt, .dockx" required/>
+                            </div>
 
-                                <div class="form-check mb-3">
-                                    <input class="form-check-input" type="checkbox" id="DocPLvisibleCheckbox"
-                                           value="true"
-                                           name="visibleForPanelMember" checked/>
-                                    <label class="form-check-label" for="DocPLvisibleCheckbox"
-                                           title="Niet aangevinkt zorgt ervoor dat enkel organisatiebeheer + projectgroep deze post kan bekijken.">
-                                        Zichtbaar voor panelleden?
-                                    </label>
-                                </div>
+                            <div class="form-check mb-3">
+                                <input class="form-check-input" type="checkbox" id="DocPLvisibleCheckbox"
+                                       value="true"
+                                       name="visibleForPanelMember" checked/>
+                                <label class="form-check-label" for="DocPLvisibleCheckbox"
+                                       title="Niet aangevinkt zorgt ervoor dat enkel organisatiebeheer + projectgroep deze post kan bekijken.">
+                                    Zichtbaar voor panelleden?
+                                </label>
+                            </div>
 
-                                <div class="form-check mb-3">
-                                    <input class="form-check-input" type="checkbox" id="GlobalvisibleCheckbox"
-                                           value="true"
-                                           name="IsGloballyVisible"/>
-                                    <label class="form-check-label" for="GlobalvisibleCheckbox"
-                                           title="Aangevinkt zorgt ervoor dat iedereen die op de project pagina komt deze post kan bekijken.">
-                                        Zichtbaar voor mensen buiten het Panel?
-                                    </label>
-                                </div>
+                            <div class="form-check mb-3">
+                                <input class="form-check-input" type="checkbox" id="GlobalvisibleCheckbox"
+                                       value="true"
+                                       name="IsGloballyVisible"/>
+                                <label class="form-check-label" for="GlobalvisibleCheckbox"
+                                       title="Aangevinkt zorgt ervoor dat iedereen die op de project pagina komt deze post kan bekijken.">
+                                    Zichtbaar voor mensen buiten het Panel?
+                                </label>
+                            </div>
 
-                                <h3>Panelleden op de hoogte brengen?</h3>
-                                <div class="form-check mb-3">
-                                    <input class="form-check-input" type="checkbox" id="informPeopleViaMail"
-                                           value="true"
-                                           name="informPeopleViaMail" checked/>
-                                    <label class="form-check-label" for="informPeopleViaMail"
-                                           title="Wanneer dit vakje is aangevinkt worden de betreffende personen op de hoogte gebracht.">
-                                        Iedereen op de hoogte brengen via mail?
-                                    </label>
-                                </div>
+                            <h3>Panelleden op de hoogte brengen?</h3>
+                            <div class="form-check mb-3">
+                                <input class="form-check-input" type="checkbox" id="informPeopleViaMail"
+                                       value="true"
+                                       name="informPeopleViaMail" checked/>
+                                <label class="form-check-label" for="informPeopleViaMail"
+                                       title="Wanneer dit vakje is aangevinkt worden de betreffende personen op de hoogte gebracht.">
+                                    Iedereen op de hoogte brengen via mail?
+                                </label>
+                            </div>
 
-                                <div class="text-end">
-                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuleren
-                                    </button>
-                                    <button type="submit" class="btn btn-success">Uploaden</button>
-                                </div>
-                            </form>
-                        </div>
+                            <div class="text-end">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuleren
+                                </button>
+                                <button type="submit" class="btn btn-success">Uploaden</button>
+                            </div>
+                        </form>
                     </div>
                 </div>
             </div>
+        </div>
 
-            <!-- Video Upload Modal -->
-            <div class="modal fade" id="addVideoModal" tabindex="-1" aria-labelledby="addVideoModalLabel"
-                 aria-hidden="true">
-                <div class="modal-dialog modal-lg">
-                    <div class="modal-content shadow">
-                        <div class="modal-header">
-                            <h5 class="modal-title" id="addVideoModalLabel">Video toevoegen aan de projectpagina</h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                    aria-label="Sluiten"></button>
-                        </div>
-                        <div class="modal-body">
-                            <form id="addVideoForm" asp-action="AddVideoPost" method="post"
-                                  enctype="multipart/form-data">
-                                <input type="hidden" name="panelId" value="@Model.PanelId"/>
-                                @if (ViewBag.OpenModal == "addVideoModal")
-                                {
-                                    <div asp-validation-summary="All" class="alert alert-danger"></div>
-                                }
+        <!-- Video Upload Modal -->
+        <div class="modal fade" id="addVideoModal" tabindex="-1" aria-labelledby="addVideoModalLabel"
+             aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content shadow">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="addVideoModalLabel">Video toevoegen aan de projectpagina</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                aria-label="Sluiten"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="addVideoForm" asp-action="AddVideoPost" method="post"
+                              enctype="multipart/form-data">
+                            <input type="hidden" name="panelId" value="@Model.PanelId"/>
+                            <input type="hidden" name="timeLineId" value="@Model.TimeLineId"/>
+                             
+                            @if (ViewBag.OpenModal == "addVideoModal")
+                            {
+                                <div asp-validation-summary="All" class="alert alert-danger"></div>
+                            }
 
-                                <div class="mb-3">
-                                    <label for="videoTitleInput" class="form-label">Titel (*)</label>
-                                    <input type="text" class="form-control" id="videoTitleInput" name="title"
-                                           placeholder="Voer de titel in" required/>
-                                </div>
+                            <div class="mb-3">
+                                <label for="videoTitleInput" class="form-label">Titel (*)</label>
+                                <input type="text" class="form-control" id="videoTitleInput" name="title"
+                                       placeholder="Voer de titel in" required/>
+                            </div>
 
-                                <ul class="nav nav-tabs mb-3" id="videoSourceTabs" role="tablist">
-                                    <li class="nav-item" role="presentation">
-                                        <button class="nav-link active" id="youtube-tab" data-bs-toggle="tab"
-                                                data-bs-target="#youtube-content"
-                                                type="button" role="tab" aria-controls="youtube-content"
-                                                aria-selected="true">
-                                            YouTube
-                                        </button>
-                                    </li>
-                                    <li class="nav-item" role="presentation">
-                                        <button class="nav-link" id="url-tab" data-bs-toggle="tab"
-                                                data-bs-target="#url-content"
-                                                type="button" role="tab" aria-controls="url-content"
-                                                aria-selected="false">
-                                            Video URL
-                                        </button>
-                                    </li>
-                                </ul>
+                            <ul class="nav nav-tabs mb-3" id="videoSourceTabs" role="tablist">
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link active" id="youtube-tab" data-bs-toggle="tab"
+                                            data-bs-target="#youtube-content"
+                                            type="button" role="tab" aria-controls="youtube-content"
+                                            aria-selected="true">
+                                        YouTube
+                                    </button>
+                                </li>
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link" id="url-tab" data-bs-toggle="tab"
+                                            data-bs-target="#url-content"
+                                            type="button" role="tab" aria-controls="url-content"
+                                            aria-selected="false">
+                                        Video URL
+                                    </button>
+                                </li>
+                            </ul>
 
-                                <div class="tab-content" id="videoSourceTabContent">
-                                    <div class="tab-pane fade show active" id="youtube-content" role="tabpanel"
-                                         aria-labelledby="youtube-tab">
-                                        <div class="mb-3">
-                                            <label for="youtubeUrlInput" class="form-label">YouTube URL (*)</label>
-                                            <input type="url" class="form-control" id="youtubeUrlInput"
-                                                   name="youtubeUrl"
-                                                   placeholder="Voer de YouTube URL in (bijv. https://www.youtube.com/watch?v=...)"/>
-                                            <small class="form-text text-muted">Plak hier de volledige YouTube
-                                                URL</small>
-                                        </div>
-                                    </div>
-
-                                    <div class="tab-pane fade" id="url-content" role="tabpanel"
-                                         aria-labelledby="url-tab">
-                                        <div class="mb-3">
-                                            <label for="videoUrlInput" class="form-label">Video URL (*)</label>
-                                            <input type="url" class="form-control" id="videoUrlInput" name="videoUrl"
-                                                   placeholder="Voer de video URL in"/>
-                                            <small class="form-text text-muted">Voer een directe link naar een video
-                                                bestand
-                                                in</small>
-                                        </div>
+                            <div class="tab-content" id="videoSourceTabContent">
+                                <div class="tab-pane fade show active" id="youtube-content" role="tabpanel"
+                                     aria-labelledby="youtube-tab">
+                                    <div class="mb-3">
+                                        <label for="youtubeUrlInput" class="form-label">YouTube URL (*)</label>
+                                        <input type="url" class="form-control" id="youtubeUrlInput"
+                                               name="youtubeUrl"
+                                               placeholder="Voer de YouTube URL in (bijv. https://www.youtube.com/watch?v=...)"/>
+                                        <small class="form-text text-muted">Plak hier de volledige YouTube
+                                            URL</small>
                                     </div>
                                 </div>
 
-                                <div class="form-check mb-3">
-                                    <input class="form-check-input" type="checkbox" id="videoPLvisibleCheckbox"
-                                           value="true"
-                                           name="visibleForPanelMember" checked/>
-                                    <label class="form-check-label" for="videoPLvisibleCheckbox"
-                                           title="Niet aangevinkt zorgt ervoor dat enkel organisatiebeheer + projectgroep deze post kan bekijken.">
-                                        Zichtbaar voor panelleden?
-                                    </label>
+                                <div class="tab-pane fade" id="url-content" role="tabpanel"
+                                     aria-labelledby="url-tab">
+                                    <div class="mb-3">
+                                        <label for="videoUrlInput" class="form-label">Video URL (*)</label>
+                                        <input type="url" class="form-control" id="videoUrlInput" name="videoUrl"
+                                               placeholder="Voer de video URL in"/>
+                                        <small class="form-text text-muted">Voer een directe link naar een video
+                                            bestand
+                                            in</small>
+                                    </div>
                                 </div>
+                            </div>
 
-                                <div class="form-check mb-3">
-                                    <input class="form-check-input" type="checkbox" id="GlobalvisibleCheckbox"
-                                           value="true"
-                                           name="IsGloballyVisible"/>
-                                    <label class="form-check-label" for="GlobalvisibleCheckbox"
-                                           title="Aangevinkt zorgt ervoor dat iedereen die op de project pagina komt deze post kan bekijken.">
-                                        Zichtbaar voor mensen buiten het Panel?
-                                    </label>
-                                </div>
+                            <div class="form-check mb-3">
+                                <input class="form-check-input" type="checkbox" id="videoPLvisibleCheckbox"
+                                       value="true"
+                                       name="visibleForPanelMember" checked/>
+                                <label class="form-check-label" for="videoPLvisibleCheckbox"
+                                       title="Niet aangevinkt zorgt ervoor dat enkel organisatiebeheer + projectgroep deze post kan bekijken.">
+                                    Zichtbaar voor panelleden?
+                                </label>
+                            </div>
 
-                                <h3>Panelleden op de hoogte brengen?</h3>
-                                <div class="form-check mb-3">
-                                    <input class="form-check-input" type="checkbox" id="informPeopleViaMail"
-                                           value="true"
-                                           name="informPeopleViaMail" checked/>
-                                    <label class="form-check-label" for="informPeopleViaMail"
-                                           title="Wanneer dit vakje is aangevinkt worden de betreffende personen op de hoogte gebracht.">
-                                        Iedereen op de hoogte brengen via mail?
-                                    </label>
-                                </div>
+                            <div class="form-check mb-3">
+                                <input class="form-check-input" type="checkbox" id="GlobalvisibleCheckbox"
+                                       value="true"
+                                       name="IsGloballyVisible"/>
+                                <label class="form-check-label" for="GlobalvisibleCheckbox"
+                                       title="Aangevinkt zorgt ervoor dat iedereen die op de project pagina komt deze post kan bekijken.">
+                                    Zichtbaar voor mensen buiten het Panel?
+                                </label>
+                            </div>
 
-                                <div class="text-end">
-                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuleren
-                                    </button>
-                                    <button type="submit" class="btn btn-success">Uploaden</button>
-                                </div>
-                            </form>
-                        </div>
+                            <h3>Panelleden op de hoogte brengen?</h3>
+                            <div class="form-check mb-3">
+                                <input class="form-check-input" type="checkbox" id="informPeopleViaMail"
+                                       value="true"
+                                       name="informPeopleViaMail" checked/>
+                                <label class="form-check-label" for="informPeopleViaMail"
+                                       title="Wanneer dit vakje is aangevinkt worden de betreffende personen op de hoogte gebracht.">
+                                    Iedereen op de hoogte brengen via mail?
+                                </label>
+                            </div>
+
+                            <div class="text-end">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuleren
+                                </button>
+                                <button type="submit" class="btn btn-success">Uploaden</button>
+                            </div>
+                        </form>
                     </div>
                 </div>
             </div>
+        </div>
 
-            <!-- Suggestie Modal -->
-            <div class="modal fade" id="addSuggestionModal" tabindex="-1" aria-labelledby="addSuggestionModalLabel"
-                 aria-hidden="true">
-                <div class="modal-dialog modal-lg">
-                    <div class="modal-content shadow">
-                        <div class="modal-header">
-                            <h5 class="modal-title" id="addSuggestionModalLabel">Suggestie toevoegen</h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                    aria-label="Sluiten"></button>
-                        </div>
-                        <div class="modal-body">
-                            <form id="addSuggestionForm" asp-action="AddSuggestionPost" method="post">
-                                @if (ViewBag.OpenModal == "addSuggestionModal")
-                                {
-                                    <div asp-validation-summary="All" class="alert alert-danger"></div>
-                                }
-                                <input type="hidden" name="panelId" value="@Model.PanelId"/>
-                                <div class="mb-3">
-                                    <label for="suggestionTitleInput" class="form-label">Onderwerp (*)</label>
-                                    <input type="text" class="form-control" id="suggestionTitleInput" name="title"
-                                           placeholder="Voer een onderwerp in." required/>
-                                </div>
+        <!-- Suggestie Modal -->
+        <div class="modal fade" id="addSuggestionModal" tabindex="-1" aria-labelledby="addSuggestionModalLabel"
+             aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content shadow">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="addSuggestionModalLabel">Suggestie toevoegen</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                aria-label="Sluiten"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="addSuggestionForm" asp-action="AddSuggestionPost" method="post">
+                            @if (ViewBag.OpenModal == "addSuggestionModal")
+                            {
+                                <div asp-validation-summary="All" class="alert alert-danger"></div>
+                            }
+                            <input type="hidden" name="panelId" value="@Model.PanelId"/>
+                            <input type="hidden" name="timeLineId" value="@Model.TimeLineId"/>
+                             
+                            <div class="mb-3">
+                                <label for="suggestionTitleInput" class="form-label">Onderwerp (*)</label>
+                                <input type="text" class="form-control" id="suggestionTitleInput" name="title"
+                                       placeholder="Voer een onderwerp in." required/>
+                            </div>
 
-                                @* suggestion post is always visible for panelmembers *@
-                                <input type="hidden" name="visibleForPanelMember" value="true"/>
+                            @* suggestion post is always visible for panelmembers *@
+                            <input type="hidden" name="visibleForPanelMember" value="true"/>
 
-                                <h3>Panelleden op de hoogte brengen?</h3>
-                                <div class="form-check mb-3">
-                                    <input class="form-check-input" type="checkbox" id="informPeopleViaMail"
-                                           value="true"
-                                           name="informPeopleViaMail" checked/>
-                                    <label class="form-check-label" for="informPeopleViaMail"
-                                           title="Wanneer dit vakje is aangevinkt worden de betreffende personen op de hoogte gebracht.">
-                                        Iedereen op de hoogte brengen via mail?
-                                    </label>
-                                </div>
+                            <h3>Panelleden op de hoogte brengen?</h3>
+                            <div class="form-check mb-3">
+                                <input class="form-check-input" type="checkbox" id="informPeopleViaMail"
+                                       value="true"
+                                       name="informPeopleViaMail" checked/>
+                                <label class="form-check-label" for="informPeopleViaMail"
+                                       title="Wanneer dit vakje is aangevinkt worden de betreffende personen op de hoogte gebracht.">
+                                    Iedereen op de hoogte brengen via mail?
+                                </label>
+                            </div>
 
-                                <div class="text-end">
-                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuleren
-                                    </button>
-                                    <button type="submit" class="btn btn-success">Opslaan</button>
-                                </div>
-                            </form>
-                        </div>
+                            <div class="text-end">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuleren
+                                </button>
+                                <button type="submit" class="btn btn-success">Opslaan</button>
+                            </div>
+                        </form>
                     </div>
                 </div>
             </div>
+        </div>
 
-            <!-- post group Modal -->
-            <div class="modal fade" id="addPostGroupModal" tabindex="-1" aria-labelledby="addPostGroupModalLabel"
-                 aria-hidden="true">
-                <div class="modal-dialog modal-lg">
-                    <div class="modal-content shadow">
-                        <div class="modal-header">
-                            <h5 class="modal-title" id="addPostGroupModalLabel">Suggestie toevoegen</h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                    aria-label="Sluiten"></button>
-                        </div>
-                        <div class="modal-body">
-                            <form id="addPostGroupForm" asp-action="addPostGroup" method="post">
-                                @if (ViewBag.OpenModal == "addPostGroupModal")
-                                {
-                                    <div asp-validation-summary="All" class="alert alert-danger"></div>
-                                }
-                                <input type="hidden" name="panelId" value="@Model.PanelId"/>
-                                <div class="mb-3">
-                                    <label for="titleInput" class="form-label">Onderwerp (*)</label>
-                                    <input type="text" class="form-control" id="titleInput" name="title"
-                                           placeholder="Voer een onderwerp in." required/>
-                                </div>
-
-                                <div class="form-check mb-3">
-                                    <input class="form-check-input" type="checkbox" id="groupPLvisibleCheckbox"
-                                           value="true"
-                                           name="visibleForPanelMember" checked/>
-                                    <label class="form-check-label" for="groupPLvisibleCheckbox"
-                                           title="Niet aangevinkt zorgt ervoor dat enkel organisatiebeheer + projectgroep deze post kan bekijken.">
-                                        Zichtbaar voor panelleden? (geld voor alle posts binnen de groep.)
-                                    </label>
-                                </div>
-
-                                <h3>Panelleden op de hoogte brengen?</h3>
-                                <div class="form-check mb-3">
-                                    <input class="form-check-input" type="checkbox" id="informPeopleViaMail"
-                                           value="true"
-                                           name="informPeopleViaMail" checked/>
-                                    <label class="form-check-label" for="informPeopleViaMail"
-                                           title="Wanneer dit vakje is aangevinkt worden de betreffende personen op de hoogte gebracht.">
-                                        Iedereen op de hoogte brengen via mail?
-                                    </label>
-                                </div>
-
-                                <div class="text-end">
-                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuleren
-                                    </button>
-                                    <button type="submit" class="btn btn-success">Opslaan</button>
-                                </div>
-                            </form>
-                        </div>
+        /*WERKSESSIE AANMAKEN.*/
+        <div class="modal fade" id="addWerksessieModal" tabindex="-1" aria-labelledby="addWerksessieModalLabel"
+             aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content shadow">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="addWerksessieModalLabel">Werksessie aanmaken </h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                aria-label="Sluiten"></button>
                     </div>
-                </div>
-            </div>
+                    <div class="modal-body">
+                        <form id="addWerksessieForm" asp-action="AddWerksessiePost" method="post">
+                            <input type="hidden" name="panelId" value="@Model.PanelId"/>
+                            <input type="hidden" name="timeLineId" value="@Model.TimeLineId"/>
+                             
+                            @if (ViewBag.OpenModal == "addWerksessieModal")
+                            {
+                                <div asp-validation-summary="All" class="alert alert-danger"></div>
+                            }
+                            <div class="mb-3">
+                                <label for="sessionTitleInput" class="form-label">Titel van de werksessie
+                                    (*)</label>
+                                <input type="text" class="form-control" id="sessionTitleInput" name="title"
+                                       placeholder="Voer de titel in" required/>
+                            </div>
 
-            /*WERKSESSIE AANMAKEN.*/
-            <div class="modal fade" id="addWerksessieModal" tabindex="-1" aria-labelledby="addWerksessieModalLabel"
-                 aria-hidden="true">
-                <div class="modal-dialog modal-lg">
-                    <div class="modal-content shadow">
-                        <div class="modal-header">
-                            <h5 class="modal-title" id="addWerksessieModalLabel">Werksessie aanmaken </h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                    aria-label="Sluiten"></button>
-                        </div>
-                        <div class="modal-body">
-                            <form id="addWerksessieForm" asp-action="AddWerksessiePost" method="post">
-                                <input type="hidden" name="panelId" value="@Model.PanelId"/>
-                                @if (ViewBag.OpenModal == "addWerksessieModal")
-                                {
-                                    <div asp-validation-summary="All" class="alert alert-danger"></div>
-                                }
-                                <div class="mb-3">
-                                    <label for="sessionTitleInput" class="form-label">Titel van de werksessie
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label for="sessionDateInput" class="form-label">Datum van de werksessie
                                         (*)</label>
-                                    <input type="text" class="form-control" id="sessionTitleInput" name="title"
-                                           placeholder="Voer de titel in" required/>
+                                    <input type="date" class="form-control" id="sessionDateInput" name="sessionDate"
+                                           required/>
                                 </div>
-
-                                <div class="row mb-3">
-                                    <div class="col-md-6">
-                                        <label for="sessionDateInput" class="form-label">Datum van de werksessie
-                                            (*)</label>
-                                        <input type="date" class="form-control" id="sessionDateInput" name="sessionDate"
-                                               required/>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <label for="sessionTimeInput" class="form-label">Tijdstip (*)</label>
-                                        <input type="time" class="form-control" id="sessionTimeInput" name="sessionTime"
-                                               required/>
-                                    </div>
+                                <div class="col-md-6">
+                                    <label for="sessionTimeInput" class="form-label">Tijdstip (*)</label>
+                                    <input type="time" class="form-control" id="sessionTimeInput" name="sessionTime"
+                                           required/>
                                 </div>
-                                <h3>Panelleden op de hoogte brengen?</h3>
-                                <div class="form-check mb-3">
-                                    <input class="form-check-input" type="checkbox" id="informPeopleViaMail"
-                                           value="true"
-                                           name="informPeopleViaMail" checked/>
-                                    <label class="form-check-label" for="informPeopleViaMail"
-                                           title="Wanneer dit vakje is aangevinkt worden de betreffende personen op de hoogte gebracht.">
-                                        Iedereen op de hoogte brengen via mail?
-                                    </label>
-                                </div>
-                                <div class="text-end">
-                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuleren
-                                    </button>
-                                    <button type="submit" class="btn btn-primary">Inplannen</button>
-                                </div>
-                            </form>
-                        </div>
+                            </div>
+                            <h3>Panelleden op de hoogte brengen?</h3>
+                            <div class="form-check mb-3">
+                                <input class="form-check-input" type="checkbox" id="informPeopleViaMail"
+                                       value="true"
+                                       name="informPeopleViaMail" checked/>
+                                <label class="form-check-label" for="informPeopleViaMail"
+                                       title="Wanneer dit vakje is aangevinkt worden de betreffende personen op de hoogte gebracht.">
+                                    Iedereen op de hoogte brengen via mail?
+                                </label>
+                            </div>
+                            <div class="text-end">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuleren
+                                </button>
+                                <button type="submit" class="btn btn-primary">Inplannen</button>
+                            </div>
+                        </form>
                     </div>
                 </div>
             </div>
-        }
+        </div>
     }
+}
 
 <div class="m-4 mb-3 row row-cols-1 row-cols-md-3 g-3">
     <div class="col">
@@ -471,19 +427,16 @@
             </button>
         </div>
     </div>
-    <div class="col">
-        <div class="h-100">
-            <button class="btn btn-primary d-flex align-items-center gap-2 w-100" data-bs-toggle="modal"
-                    data-bs-target="#addPostGroupModal">
-                <i class="bi bi-collection"></i>
-                Post groep aanmaken
-            </button>
-        </div>
-    </div>
 </div>
 
 <div class="card shadow-sm border-0 flex-fill h-100">
     <div class="card-body">
+        @if (Model.Posts.Count == 0)
+        {
+            <div class="alert alert-warning" role="alert">
+                Er zijn nog geen berichten geplaats op deze tijdlijn.
+            </div>
+        }
         @foreach (var post in Model.Posts.OrderByDescending(p => p.CreatedAt))
         {
             @if (
@@ -639,7 +592,8 @@
                                         <div class="suggestion-item mb-3">
                                             <div class="d-flex justify-content-between align-items-start">
                                                 <div>
-                                                    <p class="mb-1"><i
+                                                    <p class="mb-1">
+                                                        <i
                                                             class="bi bi-lightbulb me-2"></i>@suggestion.Title</p>
                                                     <small class="text-muted d-block">
                                                         Door: @suggestion.OwnerEmail - @suggestion.CreatedAt.ToString("dd MMM yyyy HH:mm")
@@ -656,8 +610,8 @@
                                                                     style="outline: none !important; box-shadow: none !important;">
                                                                 <i class="bi bi-hand-thumbs-up"></i>
                                                                 <span class="vote-count">
-                                                                            @suggestion.Votes.Count(v => v.VoteType == VoteType.Up)
-                                                                        </span>
+                                                                    @suggestion.Votes.Count(v => v.VoteType == VoteType.Up)
+                                                                </span>
                                                             </button>
                                                             <button type="button"
                                                                     class="btn btn-outline-secondary vote-btn @(suggestion.Votes.Any(v => v.VoteType == VoteType.Neutral && v.Owner == Model.CurrentUser) ? "active" : "")"
@@ -666,8 +620,8 @@
                                                                     style="outline: none !important; box-shadow: none !important;">
                                                                 <i class="bi bi-dash-circle"></i>
                                                                 <span class="vote-count">
-                                                                            @suggestion.Votes.Count(v => v.VoteType == VoteType.Neutral)
-                                                                        </span>
+                                                                    @suggestion.Votes.Count(v => v.VoteType == VoteType.Neutral)
+                                                                </span>
                                                             </button>
                                                             <button type="button"
                                                                     class="btn btn-outline-danger vote-btn @(suggestion.Votes.Any(v => v.VoteType == VoteType.Down && v.Owner == Model.CurrentUser) ? "active" : "")"
@@ -676,8 +630,8 @@
                                                                     style="outline: none !important; box-shadow: none !important;">
                                                                 <i class="bi bi-hand-thumbs-down"></i>
                                                                 <span class="vote-count">
-                                                                            @suggestion.Votes.Count(v => v.VoteType == VoteType.Down)
-                                                                        </span>
+                                                                    @suggestion.Votes.Count(v => v.VoteType == VoteType.Down)
+                                                                </span>
                                                             </button>
                                                         </div>
 
@@ -699,20 +653,20 @@
                                                             <div class="p-2">
                                                                 <i class="bi bi-hand-thumbs-up"></i>
                                                                 <span class="vote-count">
-                                                                            @suggestion.Votes.Count(v => v.VoteType == VoteType.Up)
-                                                                        </span>
+                                                                    @suggestion.Votes.Count(v => v.VoteType == VoteType.Up)
+                                                                </span>
                                                             </div>
                                                             <div class="p-2">
                                                                 <i class="bi bi-dash-circle"></i>
                                                                 <span class="vote-count">
-                                                                            @suggestion.Votes.Count(v => v.VoteType == VoteType.Neutral)
-                                                                        </span>
+                                                                    @suggestion.Votes.Count(v => v.VoteType == VoteType.Neutral)
+                                                                </span>
                                                             </div>
                                                             <div class="p-2">
                                                                 <i class="bi bi-hand-thumbs-down"></i>
                                                                 <span class="vote-count">
-                                                                            @suggestion.Votes.Count(v => v.VoteType == VoteType.Down)
-                                                                        </span>
+                                                                    @suggestion.Votes.Count(v => v.VoteType == VoteType.Down)
+                                                                </span>
                                                             </div>
                                                         </div>
                                                     }

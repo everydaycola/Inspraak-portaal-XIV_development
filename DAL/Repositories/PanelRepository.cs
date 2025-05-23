@@ -40,10 +40,18 @@ public class PanelRepository : IPanelRepository
             .Single(p => p.Id == panelId);
     }
     
-    public Panel ReadPanelWithPostsAndSuggestionsAndVotes(Guid panelId)
+    public Panel ReadPanelWithTimeLines(Guid panelId)
     {
         return _context.Panels
-            .Include(p => p.Posts)
+            .Include(p => p.Timelines)
+            .Single(p => p.Id == panelId);
+    }
+    
+    public Panel ReadPanelWithTimeLinesAndPostsAndSuggestionsAndVotes(Guid panelId)
+    {
+        return _context.Panels
+            .Include(p => p.Timelines)
+            .ThenInclude(t => t.Posts)
             .ThenInclude(p => (p as SuggestionPost).Suggestions)
             .ThenInclude(s => s.Votes)
             .Single(p => p.Id == panelId);
@@ -57,7 +65,8 @@ public class PanelRepository : IPanelRepository
     public IEnumerable<Panel> ReadAllPanelsWithPostsAndSuggestions()
     {
         return _context.Panels
-            .Include(p => p.Posts)
+            .Include(p => p.Timelines)
+            .ThenInclude(t => t.Posts)
             .ThenInclude(post => (post as SuggestionPost).Suggestions)
             .ToList();
     }
@@ -131,7 +140,12 @@ public class PanelRepository : IPanelRepository
     {
         return _context.Suggestions.Find(suggestionId);
     }
-
+    
+    public TimeLine ReadTimelineWithPosts(Guid timeLineId)
+    {
+        return _context.TimeLines.Find(timeLineId);
+    }
+    
     
     // CREATE
     public void CreatePanelMembers(ICollection<PanelMember> panelMembers)
@@ -143,12 +157,21 @@ public class PanelRepository : IPanelRepository
         _context.SaveChanges();
     }
     
-    public void CreatePost<T>(Guid panelId, T post) where T : Post
+    public void CreateTimeLine(Guid panelId,TimeLine timeLine)
     {
-        _context.Posts.Add(post);
-        var panel = ReadPanelWithPostsAndSuggestionsAndVotes(panelId);
+        var panel = ReadPanelWithTimeLines(panelId);
         if (panel == null) return;
-        panel.Posts.Add(post);
+        panel.Timelines.Add(timeLine);
+        _context.TimeLines.Add(timeLine);
+        _context.SaveChanges();
+    }
+    
+    public void CreatePost<T>(Guid timeLineId, T post) where T : Post
+    {
+        var timeLine = ReadTimelineWithPosts(timeLineId);
+        if (timeLine == null) return;
+        timeLine.Posts.Add(post);
+        _context.Posts.Add(post);
         _context.SaveChanges();
     }
     

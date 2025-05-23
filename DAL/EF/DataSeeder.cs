@@ -8,12 +8,12 @@ namespace DAL.EF;
 public static class DataSeeder
 {
     private static CitizenPanelDbContext _context;
-
+    
     public static void Seed(CitizenPanelDbContext context)
     {
         Console.WriteLine("Seeding...");
         _context = context;
-
+        
         //ORGANISATIONS
         var organisation1 = new Organisation
         {
@@ -29,7 +29,7 @@ public static class DataSeeder
             BackgroundColor = "#42daf5",
             BackgroundImage = ""
         };
-
+        
         //REPRESENTATION GROUPS
         //PANELS
         var newPanel = new Panel
@@ -45,29 +45,37 @@ public static class DataSeeder
                 ReservePercentage = 0.2,
                 ResponseRate = 0.1
             },
-            Posts = new List<Post>
+            Timelines = new List<TimeLine>()
             {
-                //PROJECT PAGE POSTS
-                /*new TextPost()
+                new()
                 {
-                    Content = "Test post!",
+                    Title = "Alle Posts",
                     CreatedAt = DateTime.UtcNow,
-                },
-                new DocumentPost()
-                {
-                    DocumentName = "/mydocument",
-                    CreatedAt = DateTime.UtcNow,
-                },
-                new EmbeddedVideoPost()
-                {
-                    VideoUrl = "/myvideo",
-                    CreatedAt = DateTime.UtcNow,
-                },*/
-                new MeetingPost
-                {
-                    CreatedAt = DateTime.UtcNow,
-                    Title = "Bijeenkomst #1 - Gesprekken over duidelijkheid verkeersregels.",
-                    DocumentNames = new List<string> { "Testeken1", "testeken2" }
+                    Posts = new List<Post>
+                    {
+                        //PROJECT PAGE POSTS
+                        /*new TextPost()
+                        {
+                            Content = "Test post!",
+                            CreatedAt = DateTime.UtcNow,
+                        },
+                        new DocumentPost()
+                        {
+                            DocumentName = "/mydocument",
+                            CreatedAt = DateTime.UtcNow,
+                        },
+                        new EmbeddedVideoPost()
+                        {
+                            VideoUrl = "/myvideo",
+                            CreatedAt = DateTime.UtcNow,
+                        },*/
+                        new MeetingPost
+                        {
+                            CreatedAt = DateTime.UtcNow,
+                            Title = "Bijeenkomst #1 - Gesprekken over duidelijkheid verkeersregels.",
+                            DocumentNames = new List<string> { "Testeken1", "testeken2" }
+                        }
+                    }
                 }
             },
             Criteria = new List<Criteria>
