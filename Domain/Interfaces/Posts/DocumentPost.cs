@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Domain.Interfaces;
+namespace Domain.Interfaces.Posts;
 
 public class DocumentPost: Post
 {
