@@ -17,6 +17,13 @@ export function wrapElementWithBootstrapRow(element: HTMLElement): HTMLDivElemen
     return row;
 }
 
+export function wrapMultipleElementsWithBootstrapRow(elements: HTMLElement[]): HTMLDivElement{
+    const row = createElementWithClassNames("div","row");
+    elements.forEach(el => {
+        row.appendChild(el);
+    });
+    return row;
+}
 export function createElementWithClassNames<K extends keyof HTMLElementTagNameMap>(tagName:K, ...classNames: string[]):HTMLElementTagNameMap[K]{
     const element = document.createElement(tagName)
     element.classList.add(...classNames);

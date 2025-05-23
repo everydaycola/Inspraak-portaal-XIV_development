@@ -4,6 +4,6 @@ namespace DAL.Interfaces;
 
 public interface IPinCRepository
 {
-    Task<Dictionary<string, string>> GetCommuneNamesAsync();
-    Task<Dictionary<string, string>> GetDataFromAPI(string filter);
+    public Task<Dictionary<string, string>> GetCommuneNamesAsync();
+    public Task<Dictionary<string, string>> GetDataFromApi(string filter);
 }

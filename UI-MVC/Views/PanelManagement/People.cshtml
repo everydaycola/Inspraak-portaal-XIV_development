@@ -1,0 +1,63 @@
+@model UI_MVC.Models.ViewModels.PeopleManagementViewModel
+
+@{
+    Layout = "_layout";
+}
+
+
+<div class="container mt-5">
+    <h2 class="mb-0">People</h2>
+    <div class="row mt-4">
+
+        <div class="card col-5">
+            <div class="card-body">
+                <h5 class="card-title">Unieke codes per criteria</h5>
+                @Html.Partial("_uniqueCodesPartial", Model.UniqueCodesViewModel)
+            </div>
+        </div>
+
+        <div class="card col-6">
+            <div class="card-body">
+                <h5 class="card-title">Planningsgroep</h5>
+                @Html.Partial("_planningGroupPartial", Model)
+            </div>
+        </div>
+
+    </div>
+
+    <div class="row mt-4">
+        <div class="card col-2">
+            <div class="card-body">
+                <h5 class="card-title">Meer codes aanmaken.</h5>
+                <button class="btn btn-warning"
+                        data-bs-toggle="modal"
+                        data-bs-target="#NewCodesModal"
+                        data-panel-id="@Model.PanelId">
+                   Meer codes aanmaken
+                </button>
+            </div>
+        </div>
+        <div class="card col-2">
+            <div class="card-body">
+                <h5 class="card-title">Lijst aangemelde personen bekijken</h5>
+                <button class="btn btn-danger">NOT IMPLEMENTED YET.</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="NewCodesModal" tabindex="-1" aria-labelledby="NewCodesLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="NewCodesLabel">Meer codes aanmaken</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div id="NewCodesModalContent">
+                    @Html.Partial("_generateMoreCodesPartial.cshtml", Model)
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

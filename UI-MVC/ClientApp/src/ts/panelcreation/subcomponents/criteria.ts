@@ -2,7 +2,7 @@ import {addAnswerOption, reIndexAnswerOptions, resetAnswerCounters, createPercen
 import {setValidationMessages} from "./panelFormValidator"
 import {criteriaInputUpdateHandler} from "../apiAutofill/apiDataFiller";
 import {createRemoveBtn} from "../../components";
-import {createElementWithClassNames} from "../../customhelpers/htmlHelper";
+import {createElementWithClassNames, wrapMultipleElementsWithBootstrapRow} from "../../customhelpers/htmlHelper";
 
 let criteriaCount = 0;
 
@@ -17,9 +17,10 @@ export function addCriteria() {
     const nameError = criteriaElement.querySelector(`#${nameInput.id}-msg`) as HTMLSpanElement;
     const questionInput = criteriaElement.querySelector("input[name^='Distributions'][name$='Question']") as HTMLInputElement;
     const questionError = criteriaElement.querySelector(`#${questionInput.id}-msg`) as HTMLSpanElement;
-    const answerUl = criteriaElement.querySelector("ul.list-group") as HTMLUListElement;
+    const answerUl = criteriaElement.querySelector("ul.answer-list") as HTMLUListElement;
     const isDistributionKnownInput = criteriaElement.querySelector("input[name^='Distributions'][name$='IsDistributionKnown']") as HTMLInputElement;
     
+    //Default add 2 answer options
     addAnswerOption(currentCount, answerUl, true);
     addAnswerOption(currentCount, answerUl, true);
 
@@ -53,7 +54,7 @@ function createCriteriaElement(currentCount: number): HTMLDivElement {
     // Head
     const headDiv = createElementWithClassNames("div","d-flex","flex-row");
     // Name
-    const nameDiv = createElementWithClassNames("div","d-flex","flex-row","col-3");
+    const nameDiv = createElementWithClassNames("div","d-flex", "me-4");
     const nameLabel = createElementWithClassNames("label","card-text","pe-4");
     nameLabel.htmlFor = "criteria-name";
     nameLabel.innerHTML = `<strong>Naam:</strong>`;
@@ -66,7 +67,7 @@ function createCriteriaElement(currentCount: number): HTMLDivElement {
     nameDiv.append(nameLabel, nameInput);
 
     // isDefault
-    const isDefaultDiv = createElementWithClassNames("div","d-flex","flex-row","col-3","form-check","form-switch");
+    const isDefaultDiv = createElementWithClassNames("div","form-check","form-switch","me-4");
     const isDefaultInput = createElementWithClassNames("input","border","border-1","rounded-2","form-check-input");
     isDefaultInput.id = `is-default-${criteriaId}`;
     isDefaultInput.type = "checkbox";
@@ -104,13 +105,11 @@ function createCriteriaElement(currentCount: number): HTMLDivElement {
     questionDiv.append(questionLabel, questionInput, questionValidationSpan);
 
     // Answers
-    const answerHeading = createElementWithClassNames("h6","card-title","pt-2");
+    const answerHeading = createElementWithClassNames("h6","col-2","pt-2");
     answerHeading.innerHTML = `<strong>Mogelijke antwoorden</strong>`;
-
-    const answerUl = createElementWithClassNames("ul","list-group","list-group-flush");
-
+    
     // isDistributionKnown
-    const isDistributionKnownDiv = createElementWithClassNames("div","d-flex","flex-row","col-3","form-check","form-switch");
+    const isDistributionKnownDiv = createElementWithClassNames("div","d-flex","col-3","form-check","form-switch");
     const isDistributionKnownInput = createElementWithClassNames("input","border","border-1","rounded-2","form-check-input");
     isDistributionKnownInput.id = `is-distribution-known-${currentCount}-criteria`;
     isDistributionKnownInput.type = "checkbox";
@@ -125,7 +124,11 @@ function createCriteriaElement(currentCount: number): HTMLDivElement {
     isDistributionKnownLabel.innerText = "Verdeling gekend";
     isDistributionKnownDiv.append(isDistributionKnownLabel, isDistributionKnownInput);
 
-    answerUl.append(isDistributionKnownDiv);
+    const answerHeadingRow = wrapMultipleElementsWithBootstrapRow([answerHeading, isDistributionKnownDiv])
+    
+    //CREATE ANSWER UL
+    const answerUl = document.createElement("ul");
+    answerUl.className="answer-list"
 
     // Add Answer Option Button
     const addAnswerOptionBtn = createElementWithClassNames("button","btn","btn-primary","col-2","ms-3","my-2","add-option-button");
@@ -134,8 +137,9 @@ function createCriteriaElement(currentCount: number): HTMLDivElement {
     addAnswerOptionBtn.addEventListener("click", () => addAnswerOption(currentCount, answerUl, isDistributionKnownInput.checked));
 
     // Final assembly
-    wrapper.append(headDiv, questionDiv, answerHeading, answerUl, addAnswerOptionBtn);
-
+    wrapper.append(headDiv, questionDiv, answerHeadingRow, answerUl, addAnswerOptionBtn);
+    
+    
     return wrapper;
 }
 

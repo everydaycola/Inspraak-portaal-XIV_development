@@ -13,6 +13,8 @@ export function attachEventHandlersToSubregionInput(
         const nameInput = inputs[0];
         const sizeInput = inputs[1];
 
+        console.log(outerDiv);
+        console.log(innerDiv);
        
         const prevSibling = innerDiv.previousElementSibling;
         const alreadyHasSuggestionBox = prevSibling?.classList.contains("suggestion-box-wrapper");

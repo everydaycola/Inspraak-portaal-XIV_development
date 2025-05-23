@@ -1,9 +1,8 @@
 using DAL;
 using UI_MVC.Models.ViewModels.ExploreConceptViewModels;
+namespace UI_MVC.Models.ViewModels;
 
-namespace UI_MVC.Models.Dto.OrganisationDtos;
-
-public class OrganisationManagementDto
+public class OrganisationsViewmodel
 {
     public IEnumerable<Organisation> Organisations { get; set; }
     public int AmountOfOrganisations { get; set; }

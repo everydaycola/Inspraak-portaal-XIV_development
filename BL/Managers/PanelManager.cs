@@ -47,7 +47,7 @@ public class PanelManager : IPanelManager
 
     // public IEnumerable<PanelMember> GetPanelWithPanelMembersAndCriteria(Guid id)
     // {
-    //     return _repo.ReadPanelMembersWithCriteria(id);
+    //     return _repo.ReadPanelMembersWithCriteriaAndResponsesByPanel(id);
     // }
     
     // public Panel GetPanelWithCriteriaAndOptions(Guid id)
@@ -68,12 +68,12 @@ public class PanelManager : IPanelManager
 
     public PanelMember GetPanelMemberWithPanel(Guid id)
     {
-        return _repo.ReadPanelMemberWithPanel(id);
+        return _repo.ReadPanelMemberWithPanelAndCriteriaResponseAndCriteria(id);
     }
 
     public IEnumerable<PanelMember> GetAllPanelMembersForPanel(Guid panelId)
     {
-        return _repo.ReadPanelMembersWithCriteria(panelId);
+        return _repo.ReadPanelMembersWithCriteriaAndResponsesByPanel(panelId);
     }
 
     // public IEnumerable<PanelMember> GetAllPanelMembersWhichAnsweredAllQuestionsWithCriteria(Guid id)
@@ -285,7 +285,7 @@ public class PanelManager : IPanelManager
         var criterialist = _criteriaRepo.ReadAllCriteriaForPanelWithAnswerOptions(panelId, includeUnknown: false).OrderBy(c => c.Name).ToList();
         
         // get all panelmembers
-        var panelMembers = _repo.ReadPanelMembersWithCriteria(panelId).Where(pm => pm.HasRegistered).ToList();
+        var panelMembers = _repo.ReadPanelMembersWithCriteriaAndResponsesByPanel(panelId).Where(pm => pm.HasRegistered).ToList();
         
         if (criterialist.Count == 0)
         {
@@ -436,7 +436,7 @@ public class PanelManager : IPanelManager
         if (planningGroupmember == null)
             throw new NullReferenceException("Planninggroupmember with id " + planningsGroupMemberId +
                                              " was not found");
-        _repo.RemovePlanningGroupMember(planningsGroupMemberId);
+        _repo.DeletePlanningGroupMember(planningGroupmember);
     }
 
     public void NewPanelPhase(Guid panelId, double newResponseRate)
@@ -586,8 +586,12 @@ public class PanelManager : IPanelManager
             }
             // If key doesn't exist, we can skip or handle as needed
         }
-        _repo.UpdatePanelMembersToSelected(selectedMembers);
-        _repo.RemoveAllUnselectedPanelmembers(panelId);
+        foreach (var pm in selectedMembers)
+        {
+            pm.Selected = true;
+        }
+        _repo.UpdatePanelMembers(selectedMembers);
+        _repo.DeletePanelMembers(_repo.ReadAllPanelMembersForPanel(panelId, includeRegistered: false, includeUnselected: false).ToList());
         panel.SuccessfulRegistrationCount = selectedMembers.Count;
         
         //send out invites to slected members for account creation
@@ -615,6 +619,6 @@ public class PanelManager : IPanelManager
 
     public IEnumerable<PlanningGroupMember> GetAllPlanningGroupMembersWithIdentityUserForPanel(Guid panelId)
     {
-        return _repo.ReadAllPlanningGroupMembersWithIdentityUserForPanel(panelId);
+        return _repo.ReadAllPlanningGroupMembersWithIdentityUserByPanel(panelId);
     }
 }

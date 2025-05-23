@@ -16,11 +16,20 @@
 </head>
 <body>
 <div class="large-grid-container">
-    <nav class="navbar navbar-expand-sm navbar-toggleable-sm border-bottom box-shadow mb-3" style="background-color:@Organisation.BackgroundColor">
-        <div class="container-fluid">
-            <button class="btn btn-primary expand-navbar">&gt;</button>
+    <nav class="navbar navbar-expand-sm navbar-toggleable-sm border-bottom box-shadow mb-4 mb-lg-0" style="background-color:@Organisation.BackgroundColor">
+        <div class="container-fluid mb-2">
             <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">
-                <img src="~/images/icons/inspraak_portaal_light_mode.svg" class="navbar-icon-head" alt="Inspraak portaal logo"/>
+                @if (Organisation != null && Organisation.LogoImageName != null)
+                {
+                    <img
+                        src="@Url.Action("GetFile", "Storage", new { fileName = Organisation.LogoImageName })"
+                        class="img-fluid mt-2"/>
+                }
+                else
+                {
+                    <img src="~/images/icons/inspraak_portaal_light_mode.svg" class="navbar-icon-head" alt="Inspraak portaal logo"/>
+
+                }
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse"
                     aria-controls="navbarSupportedContent"
@@ -32,7 +41,7 @@
                     <li class="nav-item">
                         <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Index">
                             <img src="~/images/home_icon.svg" class="navbar-icon" alt="Home"/>
-                            <p class="nav-link-description l-invisible">Home</p>
+                            <p class="nav-link-description">Home</p>
                         </a>
                     </li>
                     @if (User.Identity != null && User.Identity.IsAuthenticated && User.IsInRole(CustomIdentityConstants.OrganisatieRole))
@@ -46,7 +55,13 @@
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="PanelManagement"
                                asp-action="PanelSelection">
-                                Panel beheer
+                                Status
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" asp-controller="PanelManagement"
+                               asp-action="PanelSelection" asp-route-returnAction="People">
+                                Personen
                             </a>
                         </li>
                         <li class="nav-item">
@@ -61,7 +76,7 @@
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="OrganisationManagement" asp-action="AdminIndex">
                                 <img src="~/images/organisation_management.png" class="navbar-icon" alt="User account"/>
-                                <p class="nav-link-description l-invisible">Organisatie beheer</p>
+                                <p class="nav-link-description">Organisatie beheer</p>
                             </a>
                         </li>
                         <li class="nav-item">
@@ -71,7 +86,9 @@
                             </a>
                         </li>
                     }
-                    @if (User.Identity != null && User.Identity.IsAuthenticated && User.IsInRole(CustomIdentityConstants.PanelMemberRole))
+                    @if (User.Identity != null && User.Identity.IsAuthenticated &&
+                         (User.IsInRole(CustomIdentityConstants.PanelMemberRole)
+                          || (User.IsInRole(CustomIdentityConstants.OrganisatieRole))))
                     {
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="PanelProjectPage" asp-action="Index">
@@ -87,11 +104,11 @@
         </div>
     </nav>
     <div id="mainContainer">
-        <main role="main" class="pb-3">
+        <main id="main" role="main">
             @RenderBody()
         </main>
     </div>
-    <footer class="border-top text-muted">
+    <footer class="border-top text-muted mt-3 mt-lg-0">
         <div class="container">
             <i class="bi bi-c-circle"></i> 2025 - Inspraak Portaal - Team 14_
         </div>

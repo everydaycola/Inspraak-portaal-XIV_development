@@ -109,8 +109,8 @@ public class CitizenPanelDbContext : IdentityDbContext<ApplicationUser>
         {
             b.Property(p => p.DocumentNames)
                 .HasConversion(
-                    v => JsonSerializer.Serialize(v, (JsonSerializerOptions?)null),
-                    v => JsonSerializer.Deserialize<List<string>>(v, (JsonSerializerOptions?)null)!);
+                    v => JsonSerializer.Serialize(v, (JsonSerializerOptions)null),
+                    v => JsonSerializer.Deserialize<List<string>>(v, (JsonSerializerOptions)null)!);
         });
 
         modelBuilder.Entity<Vote>()
