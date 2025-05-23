@@ -2,11 +2,13 @@ using BL.Interfaces;
 using DAL.Interfaces;
 using Domain.Interfaces;
 using Domain.Interfaces.Question;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using UI_MVC.Models.ViewModels.ExploreConceptViewModels;
 
 namespace UI_MVC.Controllers;
 
+[Authorize(Roles="Admin")]
 public class QuestionController : Controller
 {
     private readonly IQuestionManager _questionManager;
@@ -26,7 +28,7 @@ public class QuestionController : Controller
     {
         var questionObject = _questionManager.GetAllQuestions();
 
-        var questionViewModels = questionObject.Select(q => new QuestionManagementViewModel()
+        var questionViewModels = questionObject.Select(q => new QuestionsViewModel()
         {
             Id = q.Id,
             Question = q.QuestionText,
@@ -50,7 +52,7 @@ public class QuestionController : Controller
         var model = new QuestionIndexViewModel()
         {
             Questions = questionViewModels,
-            QuestionToEdit = new QuestionManagementViewModel(),
+            QuestionToEdit = new QuestionsViewModel(),
             QuestionWeightTips = allWeightTipViewModels,
             QuestionWeightTipViewModelToEdit = new QuestionWeightTipsViewModel(),
         };
@@ -61,11 +63,11 @@ public class QuestionController : Controller
     [HttpPost]
     public IActionResult AddOrUpdate(QuestionIndexViewModel fullViewModel)
     {
-        QuestionManagementViewModel questionToManage = fullViewModel.QuestionToEdit;
+        QuestionsViewModel questionToManage = fullViewModel.QuestionToEdit;
         questionToManage.AnswerOptions ??= new List<AnswerOptionCrudViewModel>();
         var allDomainQuestions = _questionManager.GetAllQuestions();
 
-        fullViewModel.Questions = allDomainQuestions.Select(q => new QuestionManagementViewModel
+        fullViewModel.Questions = allDomainQuestions.Select(q => new QuestionsViewModel
         {
             Id = q.Id,
             Question = q.QuestionText,
@@ -143,7 +145,7 @@ public class QuestionController : Controller
 
 
         var allDomainQuestions = _questionManager.GetAllQuestions();
-        fullViewModel.Questions = allDomainQuestions.Select(q => new QuestionManagementViewModel
+        fullViewModel.Questions = allDomainQuestions.Select(q => new QuestionsViewModel
         {
             Id = q.Id,
             Question = q.QuestionText,
@@ -233,7 +235,7 @@ public class QuestionController : Controller
             return NotFound();
         }
 
-        var questionViewModel = new QuestionManagementViewModel
+        var questionViewModel = new QuestionsViewModel
         {
             Id = domainQuestion.Id,
             Question = domainQuestion.QuestionText,

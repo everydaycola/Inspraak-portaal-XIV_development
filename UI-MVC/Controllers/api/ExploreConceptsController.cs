@@ -18,54 +18,15 @@ public class ExploreConceptsController : ControllerBase
         _questionWeightTipManager = questionWeightTipManager;
     }
 
-    [HttpPost("SubmitAnswers")]
-    public IActionResult SubmitAnswers([FromForm] ExploreConceptViewModel model)
+    [HttpGet("SubmitAnswers")]
+    public IActionResult SubmitAnswers([FromQuery]int totalWeight)
     {
-        if (!ModelState.IsValid)
-        {
-            return BadRequest();
-        }
-
-        var totalScore = 0;
-        var results = new List<object>();
-        foreach (var submittedAnswer in model.SubmittedAnswers)
-        {
-            var question = _questionManager.GetQuestionById(submittedAnswer.QuestionId);
-
-            if (question == null)
-            {
-                return BadRequest($"Unknown question ID submitted: {submittedAnswer.QuestionId}");
-            }
-
-            var selectedOption = question.AnswerOptions
-                .FirstOrDefault(ao => ao.Id == submittedAnswer.SelectedAnswerOptionId);
-
-            if (selectedOption == null)
-            {
-                return BadRequest(
-                    $"Unknown answer option ID '{submittedAnswer.SelectedAnswerOptionId}' for question ID '{submittedAnswer.QuestionId}'");
-            }
-
-            var score = selectedOption.Weight;
-            totalScore += score;
-
-            results.Add(new
-            {
-                QuestionId = submittedAnswer.QuestionId,
-                QuestionText = question.QuestionText,
-                SelectedAnswerText = selectedOption.AnswerOptionText,
-                Score = score
-            });
-        }
-
         string suitabilityMessage = "Geen geschikte boodschap gevonden.";
         var allTips = _questionWeightTipManager.GetAllQuestionWeightTips();
 
         var applicableTip = allTips
             .OrderByDescending(t => t.MinScore)
-            .FirstOrDefault(t => totalScore >= t.MinScore && totalScore <= t.MaxScore);
-
-
+            .FirstOrDefault(t => totalWeight >= t.MinScore && totalWeight <= t.MaxScore);
         if (applicableTip != null)
         {
             suitabilityMessage = applicableTip.Message;
@@ -74,12 +35,9 @@ public class ExploreConceptsController : ControllerBase
         {
             suitabilityMessage = "Score is te laag om een passende tip te geven.";
         }
-
         return Ok(new
         {
-            TotalScore = totalScore,
-            Suitability = suitabilityMessage,
-            DetailedResults = results
+            Suitability = suitabilityMessage
         });
     }
 }

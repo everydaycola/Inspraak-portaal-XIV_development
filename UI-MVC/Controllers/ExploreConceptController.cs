@@ -22,7 +22,6 @@ public class ExploreConceptController : Controller
         {
             Id = q.Id,
             Question = q.QuestionText,
-            Weight = q.Weight,
             AnswerOptions = q.AnswerOptions.Select(ao => new AnswerOptionCrudViewModel()
             {
                 Id = ao.Id,
