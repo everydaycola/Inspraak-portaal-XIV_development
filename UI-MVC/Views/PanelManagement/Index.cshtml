@@ -47,21 +47,24 @@
                     }
                 </div>
                 <div class="d-flex gap-2 mt-4">
-                    @if (Model.IsRegistrationOpen)
-                    {
-                    }
                     <a class="btn @buttonClass w-50"
                        asp-action="ToggleRegistration"
                        asp-controller="PanelManagement"
                        asp-route-panelId="@Model.PanelId">
                         @(Model.IsRegistrationOpen ? "Inschrijving Sluiten" : "Inschrijving Openen")
                     </a>
+                    <button class="btn btn-danger"
+                            data-bs-toggle="modal"
+                            data-bs-target="#FinnishModal"
+                            data-panel-id="@Model.PanelId">
+                        Inschrijving afronden
+                    </button>
                 </div>
             </div>
         </div>
 
     </div>
-    
+
     <div class="row mt-4 ">
         <div class="card mt-4 shadow-sm border-0 col-11">
             @if (Model.AnyCrossCriteria && Model.AnyUnknownCriteria)
@@ -120,7 +123,6 @@
 </div>
 
 
-
 <div class="modal fade" id="FinnishModal" tabindex="-1" aria-labelledby="FinnishModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
@@ -136,4 +138,3 @@
         </div>
     </div>
 </div>
-

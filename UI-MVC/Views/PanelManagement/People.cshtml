@@ -29,11 +29,11 @@
         <div class="card col-2">
             <div class="card-body">
                 <h5 class="card-title">Meer codes aanmaken.</h5>
-                <button class="btn @(Model.IsRegistrationOpen ? "btn-primary" : "btn-danger")"
+                <button class="btn btn-warning"
                         data-bs-toggle="modal"
-                        data-bs-target="#@(Model.IsRegistrationOpen ? "NewCodesModal" : "FinnishModal")"
+                        data-bs-target="#NewCodesModal"
                         data-panel-id="@Model.PanelId">
-                    @(Model.IsRegistrationOpen ? "Meer codes aanmaken" : "Inschrijving Afronden")
+                   Meer codes aanmaken
                 </button>
             </div>
         </div>

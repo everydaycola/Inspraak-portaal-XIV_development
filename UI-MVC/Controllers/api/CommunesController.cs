@@ -3,7 +3,7 @@ using Domain.CitizenPanel;
 using Microsoft.AspNetCore.Mvc;
 using UI_MVC.Models.Dto.communeDtos;
 
-namespace UI_MVC.Controllers
+namespace UI_MVC.Controllers.api
 {
     [ApiController]
     [Route("api/[controller]")]
