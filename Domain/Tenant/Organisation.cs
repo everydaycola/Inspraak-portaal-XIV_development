@@ -6,4 +6,5 @@ public class Organisation
     public string Name { get; set; }
     public string BackgroundColor { get; set; }
     public string BackgroundImage { get; set; }
+    public string LogoImageName { get; set; }
 }

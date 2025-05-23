@@ -1,8 +1,8 @@
 using Domain.CitizenPanel;
 
-namespace UI_MVC.Models;
+namespace UI_MVC.Models.ViewModels;
 
-public class ExtraCriteriaDto
+public class ExtraCriteriaViewModel
 {
     // contains the exact amount of registrations per criteria group
     // only used in cross partial

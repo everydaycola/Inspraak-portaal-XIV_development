@@ -26,7 +26,7 @@ public static class OrganisationExtensions
     {
         services.AddScoped<OrganisationContext>();
         services.AddTransient<Organisation>(p => p.GetRequiredService<OrganisationContext>().Organisation);
-        services.AddSingleton<IConfigureOptions<AvailableOrganisations>, AvailableOrganisationsSetup>();
+        //REMOVE: services.AddSingleton<IConfigureOptions<AvailableOrganisations>, AvailableOrganisationsSetup>();
         
         services.AddScoped(provider =>
         {

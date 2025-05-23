@@ -1,4 +1,4 @@
-﻿namespace UI_MVC.Models;
+﻿namespace UI_MVC.Models.ViewModels;
 
 public class RegisterViewModel
 {

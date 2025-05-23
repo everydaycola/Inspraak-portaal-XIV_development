@@ -1,0 +1,30 @@
+@model DAL.Organisation
+
+@{
+    Layout = "_Layout";
+}
+
+<div class="container mt-5">
+    <h2 class="mb-0">Nieuwe organisatie aanmaken</h2>
+
+    <div class="row mt-4">
+        <div class="card col-11">
+            <div class="card-body">
+                <h5 class="card-title">Organisatiegegevens</h5>
+                
+                <form id="new-organisation-form" method="post" asp-controller="Organisation" asp-action="OrganisationCreation">
+                    <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                    <div class="mb-3">
+                        <label for="name" class="form-label"><strong>Naam:</strong></label>
+                        <input id="name" asp-for="Name" class="form-control" type="text" placeholder="Organisatienaam" />
+                        <span class="text-danger" asp-validation-for="Name"></span>
+                    </div>
+
+                    <button class="btn btn-primary mt-2" type="submit">Aanmaken</button>
+                </form>
+
+            </div>
+        </div>
+    </div>
+</div>

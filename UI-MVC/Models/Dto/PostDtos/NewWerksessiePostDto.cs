@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace UI_MVC.Models.Dto.ProjectPage;
+namespace UI_MVC.Models.Dto.PostDtos;
 
 public class NewWerksessiePostDto : IValidatableObject
 {

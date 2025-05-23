@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using UI_MVC.Models.Dto;
+using UI_MVC.Models.ViewModels;
 
 namespace UI_MVC.Controllers;
 
@@ -31,17 +32,17 @@ public class PanelController : Controller
 
     [HttpPost]
     [Authorize]
-    public IActionResult AddNewPanel(NewPanelDto newPanelDto)
+    public IActionResult AddNewPanel(NewPanelViewModel newPanelViewModel)
     {
         string userId = _userManager.GetUserId(User);
         
         var createdPanel = _manager.AddPanel(
-            newPanelDto.Name,
-            newPanelDto.SampleRate / 100,
-            CreateDistributionList(newPanelDto.SubRegions, CriteriaDtoCriteriaConverter(newPanelDto.Distributions)),
-            newPanelDto.SubRegions.Sum(subRegion => subRegion.Size),
-            newPanelDto.ReservePercentage / 100,
-            newPanelDto.ResponseRate / 100,
+            newPanelViewModel.Name,
+            newPanelViewModel.SampleRate / 100,
+            CreateDistributionList(newPanelViewModel.SubRegions, CriteriaDtoCriteriaConverter(newPanelViewModel.Distributions)),
+            newPanelViewModel.SubRegions.Sum(subRegion => subRegion.Size),
+            newPanelViewModel.ReservePercentage / 100,
+            newPanelViewModel.ResponseRate / 100,
             userId
         );
 
@@ -85,7 +86,7 @@ public class PanelController : Controller
         return RedirectToAction("Index", "PanelManagement", new { id = createdPanel.Id });
     }
 
-    private ICollection<Criteria> CriteriaDtoCriteriaConverter(ICollection<CriteriaDto> criteriaDtos)
+    private ICollection<Criteria> CriteriaDtoCriteriaConverter(ICollection<CriteriaViewModel> criteriaDtos)
     {
         var distributionList = new List<Criteria>();
 
