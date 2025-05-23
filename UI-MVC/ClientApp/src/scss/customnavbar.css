@@ -12,7 +12,7 @@
 }
 
 .nav-link-description {
-  margin: 0 0 0 10px;
+  margin: 0 0 0 7.5px;
 }
 
 @media (min-width: 992px) {
@@ -27,9 +27,8 @@
     display: grid;
     grid-template-columns: 10fr 90fr;
     grid-template-rows: 18fr 1fr;
-    min-height: 100vh;
-    height: fit-content;
-    grid-gap: 40px;
+    min-height: calc(100vh - 30px);
+    grid-gap: 30px;
     margin-bottom: 0 !important;
     transition: grid-template-columns 0.3s ease-in-out;
   }
@@ -66,12 +65,12 @@
     grid-column: 2/3;
     grid-row: 1/2;
     overflow-x: hidden;
-    max-height: calc(95vh - 40px);
+    max-height: calc(95vh - 30px);
   }
   #main {
     width: 100%;
     min-height: 90vh;
-    max-height: calc(95vh - 40px);
+    max-height: calc(95vh - 30px);
     overflow-y: scroll;
   }
   footer {
