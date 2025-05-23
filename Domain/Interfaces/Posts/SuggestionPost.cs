@@ -6,5 +6,6 @@ namespace Domain.Interfaces.Posts;
 public class SuggestionPost : Post
 {
     public ICollection<Suggestion> Suggestions { get; set; } = [];
+    public bool IsVotingOpen { get; set; }
     
 }

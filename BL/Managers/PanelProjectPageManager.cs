@@ -61,7 +61,14 @@ public class PanelProjectPageManager : IPanelProjectPageManager
         suggestion.IsGloballyVisible = !suggestion.IsGloballyVisible;
         _repo.UpdateSuggestion(suggestion);
     }
-    
+
+    public void ChangeSuggestionPostVotingStatus(Guid postId)
+    {
+        var suggestionPost = (SuggestionPost)_repo.ReadPost(postId);
+        suggestionPost.IsVotingOpen = !suggestionPost.IsVotingOpen;
+        _repo.UpdateSuggestionPost(suggestionPost);
+    }
+
 
     public void AddSummaryToMeetingPost(Guid meetingId, string uniqueFileName)
     {
@@ -140,14 +147,15 @@ public class PanelProjectPageManager : IPanelProjectPageManager
         });
     }
 
-    public void AddSuggestionPost(Guid panelId, string title, bool visibleForPanelMember)
+    public void AddSuggestionPost(Guid panelId, string title, bool visibleForPanelMember, bool isVotingOpen)
     {
         AddPost(panelId, new SuggestionPost
         {
             Title = title,
             CreatedAt = DateTime.UtcNow,
             IsVisibleForPanelMembers = visibleForPanelMember,
-            Suggestions = []
+            Suggestions = [],
+            IsVotingOpen = isVotingOpen
         });
     }
 

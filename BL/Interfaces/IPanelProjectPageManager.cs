@@ -15,13 +15,14 @@ public interface IPanelProjectPageManager
     // CHANGE
     public void ChangeVote(ApplicationUser user, Guid suggestionId, VoteType voteType);
     public void ChangeSuggestionVisibility(Guid suggesionId);
+    public void ChangeSuggestionPostVotingStatus(Guid postId);
     // ADD
     public void AddTextPost(Guid panelId,string title, string content, bool isVisibleForPanelMembers, bool isGloballyVisible);
     public void AddDocumentPost(Guid panelId, string title, string documentUrl, bool isVisibleForPanelMembers, bool isGloballyVisible);
     public void AddMeetingPost(Guid panelId, string title, DateTime meetingDateTime, bool visibleForPanelMember);
     public void AddEmbedVideoPost(Guid panelId, string title, string videoUrl, bool visibleForPanelMember, bool isGloballyVisible);
     public void AddYoutubeVideoPost(Guid panelId, string title, string videoId, bool visibleForPanelMember, bool isGloballyVisible);
-    public void AddSuggestionPost(Guid panelId, string title, bool visibleForPanelMember);
+    public void AddSuggestionPost(Guid panelId, string title, bool visibleForPanelMember, bool isVotingOpen);
     public void AddSummaryToMeetingPost(Guid meetingId, string uniqueFileName);
     public void AddSuggestionToPost(Guid PostId, string suggestion, string owner);
     // REMOVE

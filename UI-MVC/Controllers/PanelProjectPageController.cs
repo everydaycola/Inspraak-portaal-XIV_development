@@ -339,7 +339,7 @@ public class PanelProjectPageController : Controller
         }
 
         _projectPageManager.AddSuggestionPost(suggestionPostDto.PanelId, suggestionPostDto.Title,
-            suggestionPostDto.VisibleForPanelMember);
+            suggestionPostDto.VisibleForPanelMember, true);
 
         _ = HandleMailSending(suggestionPostDto.InformPeopleViaMail, true, suggestionPostDto.PanelId)
             .ContinueWith(task => 
@@ -373,6 +373,12 @@ public class PanelProjectPageController : Controller
         _projectPageManager.AddSuggestionToPost(postId, suggestion, email);
 
         return RedirectToAction("Index", new { panelId });
+    }
 
+    [Authorize]
+    public async Task<IActionResult> EndSuggestionVoting(Guid panelId, Guid postId)
+    {
+        _projectPageManager.ChangeSuggestionPostVotingStatus(postId);
+        return RedirectToAction("Index", new { panelId });
     }
 }
