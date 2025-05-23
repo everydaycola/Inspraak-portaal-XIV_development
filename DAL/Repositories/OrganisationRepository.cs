@@ -12,9 +12,9 @@ public class OrganisationRepository : IOrganisationRepository
         _context = context;
     }
 
-    public Organisation ReadOrganisationById(string id)
+    public Organisation ReadOrganisationById(string organisationId)
     {
-        return _context.Organisations.SingleOrDefault(o => o.Id == id);
+        return _context.Organisations.Find(organisationId);
     }
 
     public IEnumerable<Organisation> ReadAllOrganisations()
@@ -22,20 +22,15 @@ public class OrganisationRepository : IOrganisationRepository
         return _context.Organisations.ToList();
     }
 
-    public Organisation UpdateOrganisation(Organisation existingOrganisation)
+    public void UpdateOrganisation(Organisation existingOrganisation)
     {
         _context.Organisations.Update(existingOrganisation);
         _context.SaveChanges();
-        return ReadOrganisationById(existingOrganisation.Id);
     }
 
-    public void RemoveOrganisation(string organisationId)
+    public void RemoveOrganisation(Organisation organisation)
     {
-        var organisation = ReadOrganisationById(organisationId);
-        if (organisation != null)
-        {
-            _context.Organisations.Remove(organisation);
-            _context.SaveChanges();
-        }
+        _context.Organisations.Remove(organisation);
+        _context.SaveChanges();
     }
 }
