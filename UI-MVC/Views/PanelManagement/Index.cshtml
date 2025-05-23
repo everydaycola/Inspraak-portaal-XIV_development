@@ -9,7 +9,9 @@
 
 
 <div class="container mt-5">
-    <h2 class="mb-0">Status</h2>
+    <div class="row m-2">
+        <h2>Status</h2>
+    </div>
     <div class="row mt-4 row-cols-2">
         <div class="card shadow-sm border-0 col-8 me-4">
             <div class="card-body">
@@ -60,8 +62,8 @@
 
     </div>
     
-    <div class="row mt-4 row-cols-3">
-        <div class="card mt-4 shadow-sm border-0 col-12">
+    <div class="row mt-4 ">
+        <div class="card mt-4 shadow-sm border-0 col-11">
             @if (Model.AnyCrossCriteria && Model.AnyUnknownCriteria)
             {
                 <div class="accordion" id="criteriaAccordion">

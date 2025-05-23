@@ -421,257 +421,258 @@
         </div>
     </div>
 
-    div class="col-8 d-flex flex-column">
-    <div class="card shadow-sm border-0 flex-fill h-100">
-        <div class="card-body">
-            @foreach (var post in Model.Panel.Posts.OrderByDescending(p => p.CreatedAt))
-            {
-                @if (
-                    post.IsGloballyVisible || 
-                    User.IsInRole(CustomIdentityConstants.OrganisatieRole) ||
-                    User.IsInRole(CustomIdentityConstants.AdminRole) || 
-                    (post.IsVisibleForPanelMembers && User.IsInRole(CustomIdentityConstants.PanelMemberRole)) ||
-                    (post.GetType() == typeof(MeetingPost) && User.IsInRole(CustomIdentityConstants.PanelMemberRole)) ||
-                    (post is SuggestionPost suggestionP && suggestionP.Suggestions.Any(sp => sp.IsGloballyVisible))
-                )
+    <div class="col-8 d-flex flex-column">
+        <div class="card shadow-sm border-0 flex-fill h-100">
+            <div class="card-body">
+                @foreach (var post in Model.Panel.Posts.OrderByDescending(p => p.CreatedAt))
                 {
-                    @switch (post)
+                    @if (
+                        post.IsGloballyVisible || 
+                        User.IsInRole(CustomIdentityConstants.OrganisatieRole) ||
+                        User.IsInRole(CustomIdentityConstants.AdminRole) || 
+                        (post.IsVisibleForPanelMembers && User.IsInRole(CustomIdentityConstants.PanelMemberRole)) ||
+                        (post.GetType() == typeof(MeetingPost) && User.IsInRole(CustomIdentityConstants.PanelMemberRole)) ||
+                        (post is SuggestionPost suggestionP && suggestionP.Suggestions.Any(sp => sp.IsGloballyVisible))
+                    )
                     {
-                        case TextPost textPost:
-                            <div class="timeline-item mb-4 p-3 border rounded shadow-sm bg-white">
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <h5 class="mb-1">@textPost.Title</h5>
-                                    <small class="text-muted">@textPost.CreatedAt.ToString("dd MMM yyyy HH:mm")</small>
+                        @switch (post)
+                        {
+                            case TextPost textPost:
+                                <div class="timeline-item mb-4 p-3 border rounded shadow-sm bg-white">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <h5 class="mb-1">@textPost.Title</h5>
+                                        <small class="text-muted">@textPost.CreatedAt.ToString("dd MMM yyyy HH:mm")</small>
+                                    </div>
+                                    <p class="mt-2 mb-0">@textPost.Content</p>
+                                    <div class="mt-2">
+                                        <button class="btn btn-outline-info btn-sm mt-2 copy-link-btn"
+                                                data-clipboard-text="@($"{Context.Request.Scheme}://{Context.Request.Host}{Url.Action("Index","PanelProjectPage", new{panelId = Model.Panel.Id})}")">
+                                            <i class="bi bi-link-45deg"></i> Link kopiëren
+                                        </button>
+                                    </div>
                                 </div>
-                                <p class="mt-2 mb-0">@textPost.Content</p>
-                                <div class="mt-2">
-                                    <button class="btn btn-outline-info btn-sm mt-2 copy-link-btn"
-                                            data-clipboard-text="@($"{Context.Request.Scheme}://{Context.Request.Host}{Url.Action("Index","PanelProjectPage", new{panelId = Model.Panel.Id})}")">
-                                        <i class="bi bi-link-45deg"></i> Link kopiëren
-                                    </button>
-                                </div>
-                            </div>
-                            break;
+                                break;
 
-                        case DocumentPost docPost:
-                            <div class="timeline-item mb-4 p-3 border rounded shadow-sm bg-white">
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <h5 class="mb-1">@docPost.Title</h5>
-                                    <small class="text-muted">@docPost.CreatedAt.ToString("dd MMM yyyy HH:mm")</small>
-                                </div>
-                                @if (
-                                    docPost.DocumentName.Split('.').Last().ToLower() == "pdf" ||
-                                    docPost.DocumentName.Split('.').Last().ToLower() == "txt"
-                                )
-                                {
-                                    <a href="@Url.Action("GetFile", "Storage", new { fileName = docPost.DocumentName })"
-                                       target="_blank"
-                                       class="btn btn-outline-primary mt-2">
-                                        Document bekijken
-                                    </a>
-                                }
-                                else
-                                {
-                                    <img
-                                        src="@Url.Action("GetFile", "Storage", new { fileName = docPost.DocumentName })"
-                                        class="img-fluid mt-2"/>
-                                }
-                                <div class="mt-2">
-                                    <button class="btn btn-outline-info btn-sm mt-2 copy-link-btn"
-                                            data-clipboard-text="@($"{Context.Request.Scheme}://{Context.Request.Host}{Url.Action("Index", "PanelProjectPage", new { id = Model.Panel.Id })}")">
-                                        <i class="bi bi-link-45deg"></i> Link kopiëren
-                                    </button>
-                                </div>
-                            </div>
-                            break;
-
-                        case MeetingPost meetingPost:
-                            <div class="timeline-item mb-4 p-3 border rounded shadow-sm bg-white">
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <h5 class="mb-1">@meetingPost.Title</h5>
-                                    <small class="text-muted">@meetingPost.CreatedAt.ToString("dd MMM yyyy HH:mm")</small>
-                                </div>
-                                <h6 class="text-muted mt-3">Verslagen:</h6>
-                                <div class="d-flex flex-column gap-2">
-                                    @foreach (var documentName in meetingPost.DocumentNames)
+                            case DocumentPost docPost:
+                                <div class="timeline-item mb-4 p-3 border rounded shadow-sm bg-white">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <h5 class="mb-1">@docPost.Title</h5>
+                                        <small class="text-muted">@docPost.CreatedAt.ToString("dd MMM yyyy HH:mm")</small>
+                                    </div>
+                                    @if (
+                                        docPost.DocumentName.Split('.').Last().ToLower() == "pdf" ||
+                                        docPost.DocumentName.Split('.').Last().ToLower() == "txt"
+                                    )
                                     {
-                                        <a href="@Url.Action("GetFile", "Storage", new { fileName = documentName })" target="_blank"
-                                           class="btn btn-outline-primary">
+                                        <a href="@Url.Action("GetFile", "Storage", new { fileName = docPost.DocumentName })"
+                                           target="_blank"
+                                           class="btn btn-outline-primary mt-2">
                                             Document bekijken
                                         </a>
                                     }
-                                </div>
-                                <!-- Dropdown toggle for upload -->
-                                <div class="mt-3">
-                                    @if (User.Identity?.IsAuthenticated ?? false)
+                                    else
                                     {
-                                        <button class="btn btn-secondary" type="button" data-bs-toggle="collapse"
-                                                data-bs-target="#uploadCollapse-@meetingPost.Id" aria-expanded="false"
-                                                aria-controls="uploadCollapse-@meetingPost.Id">
-                                            + Voeg verslag toe
-                                        </button>
+                                        <img
+                                            src="@Url.Action("GetFile", "Storage", new { fileName = docPost.DocumentName })"
+                                            class="img-fluid mt-2"/>
                                     }
-                                    <div class="collapse mt-2" id="uploadCollapse-@meetingPost.Id">
-                                        <form method="post" enctype="multipart/form-data" asp-action="AddSummaryToMeetingPost">
-                                            @if (ViewBag.SummaryCreationFailed != null && ViewBag.SummaryCreationFailed == true)
-                                            {
-                                                <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
-                                            }
-                                            <input type="hidden" name="MeetingId" value="@meetingPost.Id"/>
-                                            <input type="hidden" name="panelId" value="@Model.Panel.Id"/>
-                                            <div class="mb-2">
-                                                <input type="file" class="form-control" name="VerslagFile"
-                                                       accept="image/*, .pdf, .txt, .dockx" required/>
-                                            </div>
-                                            <button type="submit" class="btn btn-primary">Uploaden</button>
-                                        </form>
+                                    <div class="mt-2">
+                                        <button class="btn btn-outline-info btn-sm mt-2 copy-link-btn"
+                                                data-clipboard-text="@($"{Context.Request.Scheme}://{Context.Request.Host}{Url.Action("Index", "PanelProjectPage", new { id = Model.Panel.Id })}")">
+                                            <i class="bi bi-link-45deg"></i> Link kopiëren
+                                        </button>
                                     </div>
                                 </div>
-                            </div>
-                            break;
+                                break;
 
-                        case YoutubeVideoPost youtubePost:
-                            <div class="timeline-item mb-4 p-3 border rounded shadow-sm bg-white">
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <h5 class="mb-1">@youtubePost.Title</h5>
-                                    <small class="text-muted">@youtubePost.CreatedAt.ToString("dd MMM yyyy HH:mm")</small>
-                                </div>
-                                <div class="mt-3 ratio ratio-16x9" style="max-height: 500px;">
-                                    <iframe
-                                        src="https://www.youtube.com/embed/@youtubePost.VideoId"
-                                        title="@youtubePost.Title"
-                                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                                        allowfullscreen>
-                                    </iframe>
-                                </div>
-                            </div>
-                            break;
-
-                        case EmbeddedVideoPost videoPost:
-                            <div class="timeline-item mb-4 p-3 border rounded shadow-sm bg-white">
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <h5 class="mb-1">@videoPost.Title</h5>
-                                    <small class="text-muted">@videoPost.CreatedAt.ToString("dd MMM yyyy HH:mm")</small>
-                                </div>
-                                <div class="mt-3">
-                                    <video class="w-100" style="max-height: 500px; object-fit: contain;" controls>
-                                        <source src="@videoPost.VideoUrl" type="video/mp4">
-                                        Uw browser ondersteunt de video-tag niet.
-                                    </video>
-                                </div>
-                            </div>
-                            break;
-
-                        case SuggestionPost suggestionPost:
-                            <div class="timeline-item mb-4 p-3 border rounded shadow-sm bg-white">
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <h5 class="mb-1">@suggestionPost.Title</h5>
-                                    <small class="text-muted">@suggestionPost.CreatedAt.ToString("dd MMM yyyy HH:mm")</small>
-                                </div>
-                                <div class="mt-2 p-3 bg-light rounded">
-                                    @foreach (var suggestion in suggestionPost.Suggestions.OrderBy(s => s.CreatedAt))
-                                    {
-                                        if (suggestion.IsGloballyVisible || (User.Identity?.IsAuthenticated ?? false))
+                            case MeetingPost meetingPost:
+                                <div class="timeline-item mb-4 p-3 border rounded shadow-sm bg-white">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <h5 class="mb-1">@meetingPost.Title</h5>
+                                        <small class="text-muted">@meetingPost.CreatedAt.ToString("dd MMM yyyy HH:mm")</small>
+                                    </div>
+                                    <h6 class="text-muted mt-3">Verslagen:</h6>
+                                    <div class="d-flex flex-column gap-2">
+                                        @foreach (var documentName in meetingPost.DocumentNames)
                                         {
-                                            <div class="suggestion-item mb-3">
-                                                <div class="d-flex justify-content-between align-items-start">
-                                                    <div>
-                                                        <p class="mb-1"><i class="bi bi-lightbulb me-2"></i>@suggestion.Title</p>
-                                                        <small class="text-muted d-block">
-                                                            Door: @suggestion.OwnerEmail - @suggestion.CreatedAt.ToString("dd MMM yyyy HH:mm")
-                                                        </small>
-                                                    </div>
-                                                    <div>
-                                                        @if (User.Identity?.IsAuthenticated ?? false)
-                                                        {
-                                                            <div id="votes" class="btn-group" role="group">
-                                                                <button type="button"
-                                                                        class="btn btn-outline-success vote-btn @(suggestion.Votes.Any(v => v.VoteType == VoteType.Up && v.Owner == Model.CurrentUser) ? "active" : "")"
-                                                                        data-vote-type="Up" data-suggestion-id="@suggestion.Id"
-                                                                        style="outline: none !important; box-shadow: none !important;">
-                                                                    <i class="bi bi-hand-thumbs-up"></i>
-                                                                    <span class="vote-count">
-                                                                        @suggestion.Votes.Count(v => v.VoteType == VoteType.Up)
-                                                                    </span>
-                                                                </button>
-                                                                <button type="button"
-                                                                        class="btn btn-outline-secondary vote-btn @(suggestion.Votes.Any(v => v.VoteType == VoteType.Neutral && v.Owner == Model.CurrentUser) ? "active" : "")"
-                                                                        data-vote-type="Neutral" data-suggestion-id="@suggestion.Id"
-                                                                        style="outline: none !important; box-shadow: none !important;">
-                                                                    <i class="bi bi-dash-circle"></i>
-                                                                    <span class="vote-count">
-                                                                        @suggestion.Votes.Count(v => v.VoteType == VoteType.Neutral)
-                                                                    </span>
-                                                                </button>
-                                                                <button type="button"
-                                                                        class="btn btn-outline-danger vote-btn @(suggestion.Votes.Any(v => v.VoteType == VoteType.Down && v.Owner == Model.CurrentUser) ? "active" : "")"
-                                                                        data-vote-type="Down" data-suggestion-id="@suggestion.Id"
-                                                                        style="outline: none !important; box-shadow: none !important;">
-                                                                    <i class="bi bi-hand-thumbs-down"></i>
-                                                                    <span class="vote-count">
-                                                                        @suggestion.Votes.Count(v => v.VoteType == VoteType.Down)
-                                                                    </span>
-                                                                </button>
-                                                            </div>
+                                            <a href="@Url.Action("GetFile", "Storage", new { fileName = documentName })" target="_blank"
+                                               class="btn btn-outline-primary">
+                                                Document bekijken
+                                            </a>
+                                        }
+                                    </div>
+                                    <!-- Dropdown toggle for upload -->
+                                    <div class="mt-3">
+                                        @if (User.Identity?.IsAuthenticated ?? false)
+                                        {
+                                            <button class="btn btn-secondary" type="button" data-bs-toggle="collapse"
+                                                    data-bs-target="#uploadCollapse-@meetingPost.Id" aria-expanded="false"
+                                                    aria-controls="uploadCollapse-@meetingPost.Id">
+                                                + Voeg verslag toe
+                                            </button>
+                                        }
+                                        <div class="collapse mt-2" id="uploadCollapse-@meetingPost.Id">
+                                            <form method="post" enctype="multipart/form-data" asp-action="AddSummaryToMeetingPost">
+                                                @if (ViewBag.SummaryCreationFailed != null && ViewBag.SummaryCreationFailed == true)
+                                                {
+                                                    <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+                                                }
+                                                <input type="hidden" name="MeetingId" value="@meetingPost.Id"/>
+                                                <input type="hidden" name="panelId" value="@Model.Panel.Id"/>
+                                                <div class="mb-2">
+                                                    <input type="file" class="form-control" name="VerslagFile"
+                                                           accept="image/*, .pdf, .txt, .dockx" required/>
+                                                </div>
+                                                <button type="submit" class="btn btn-primary">Uploaden</button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                                break;
 
-                                                            if (User.IsInRole(CustomIdentityConstants.OrganisatieRole) || User.Identity.Name == suggestion.OwnerEmail)
+                            case YoutubeVideoPost youtubePost:
+                                <div class="timeline-item mb-4 p-3 border rounded shadow-sm bg-white">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <h5 class="mb-1">@youtubePost.Title</h5>
+                                        <small class="text-muted">@youtubePost.CreatedAt.ToString("dd MMM yyyy HH:mm")</small>
+                                    </div>
+                                    <div class="mt-3 ratio ratio-16x9" style="max-height: 500px;">
+                                        <iframe
+                                            src="https://www.youtube.com/embed/@youtubePost.VideoId"
+                                            title="@youtubePost.Title"
+                                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                                            allowfullscreen>
+                                        </iframe>
+                                    </div>
+                                </div>
+                                break;
+
+                            case EmbeddedVideoPost videoPost:
+                                <div class="timeline-item mb-4 p-3 border rounded shadow-sm bg-white">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <h5 class="mb-1">@videoPost.Title</h5>
+                                        <small class="text-muted">@videoPost.CreatedAt.ToString("dd MMM yyyy HH:mm")</small>
+                                    </div>
+                                    <div class="mt-3">
+                                        <video class="w-100" style="max-height: 500px; object-fit: contain;" controls>
+                                            <source src="@videoPost.VideoUrl" type="video/mp4">
+                                            Uw browser ondersteunt de video-tag niet.
+                                        </video>
+                                    </div>
+                                </div>
+                                break;
+
+                            case SuggestionPost suggestionPost:
+                                <div class="timeline-item mb-4 p-3 border rounded shadow-sm bg-white">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <h5 class="mb-1">@suggestionPost.Title</h5>
+                                        <small class="text-muted">@suggestionPost.CreatedAt.ToString("dd MMM yyyy HH:mm")</small>
+                                    </div>
+                                    <div class="mt-2 p-3 bg-light rounded">
+                                        @foreach (var suggestion in suggestionPost.Suggestions.OrderBy(s => s.CreatedAt))
+                                        {
+                                            if (suggestion.IsGloballyVisible || (User.Identity?.IsAuthenticated ?? false))
+                                            {
+                                                <div class="suggestion-item mb-3">
+                                                    <div class="d-flex justify-content-between align-items-start">
+                                                        <div>
+                                                            <p class="mb-1"><i class="bi bi-lightbulb me-2"></i>@suggestion.Title</p>
+                                                            <small class="text-muted d-block">
+                                                                Door: @suggestion.OwnerEmail - @suggestion.CreatedAt.ToString("dd MMM yyyy HH:mm")
+                                                            </small>
+                                                        </div>
+                                                        <div>
+                                                            @if (User.Identity?.IsAuthenticated ?? false)
                                                             {
-                                                                <div id="publish-toggle">
+                                                                <div id="votes" class="btn-group" role="group">
                                                                     <button type="button"
-                                                                            class="btn btn-primary suggestion-visibility-toggle-btn" data-suggestion-id="@suggestion.Id">
-                                                                        @(suggestion.IsGloballyVisible ? "Maak privé" : "Maak publiek")
+                                                                            class="btn btn-outline-success vote-btn @(suggestion.Votes.Any(v => v.VoteType == VoteType.Up && v.Owner == Model.CurrentUser) ? "active" : "")"
+                                                                            data-vote-type="Up" data-suggestion-id="@suggestion.Id"
+                                                                            style="outline: none !important; box-shadow: none !important;">
+                                                                        <i class="bi bi-hand-thumbs-up"></i>
+                                                                        <span class="vote-count">
+                                                                            @suggestion.Votes.Count(v => v.VoteType == VoteType.Up)
+                                                                        </span>
+                                                                    </button>
+                                                                    <button type="button"
+                                                                            class="btn btn-outline-secondary vote-btn @(suggestion.Votes.Any(v => v.VoteType == VoteType.Neutral && v.Owner == Model.CurrentUser) ? "active" : "")"
+                                                                            data-vote-type="Neutral" data-suggestion-id="@suggestion.Id"
+                                                                            style="outline: none !important; box-shadow: none !important;">
+                                                                        <i class="bi bi-dash-circle"></i>
+                                                                        <span class="vote-count">
+                                                                            @suggestion.Votes.Count(v => v.VoteType == VoteType.Neutral)
+                                                                        </span>
+                                                                    </button>
+                                                                    <button type="button"
+                                                                            class="btn btn-outline-danger vote-btn @(suggestion.Votes.Any(v => v.VoteType == VoteType.Down && v.Owner == Model.CurrentUser) ? "active" : "")"
+                                                                            data-vote-type="Down" data-suggestion-id="@suggestion.Id"
+                                                                            style="outline: none !important; box-shadow: none !important;">
+                                                                        <i class="bi bi-hand-thumbs-down"></i>
+                                                                        <span class="vote-count">
+                                                                            @suggestion.Votes.Count(v => v.VoteType == VoteType.Down)
+                                                                        </span>
                                                                     </button>
                                                                 </div>
+
+                                                                if (User.IsInRole(CustomIdentityConstants.OrganisatieRole) || User.Identity.Name == suggestion.OwnerEmail)
+                                                                {
+                                                                    <div id="publish-toggle">
+                                                                        <button type="button"
+                                                                                class="btn btn-primary suggestion-visibility-toggle-btn" data-suggestion-id="@suggestion.Id">
+                                                                            @(suggestion.IsGloballyVisible ? "Maak privé" : "Maak publiek")
+                                                                        </button>
+                                                                    </div>
+                                                                }
                                                             }
-                                                        }
-                                                        else
-                                                        {
-                                                            /* No User View */
-                                                            <div id="votes" class="btn-group" role="group">
-                                                                <div class="p-2">
-                                                                    <i class="bi bi-hand-thumbs-up"></i>
-                                                                    <span class="vote-count">
-                                                                        @suggestion.Votes.Count(v => v.VoteType == VoteType.Up)
-                                                                    </span>
+                                                            else
+                                                            {
+                                                                /* No User View */
+                                                                <div id="votes" class="btn-group" role="group">
+                                                                    <div class="p-2">
+                                                                        <i class="bi bi-hand-thumbs-up"></i>
+                                                                        <span class="vote-count">
+                                                                            @suggestion.Votes.Count(v => v.VoteType == VoteType.Up)
+                                                                        </span>
+                                                                    </div>
+                                                                    <div class="p-2">
+                                                                        <i class="bi bi-dash-circle"></i>
+                                                                        <span class="vote-count">
+                                                                            @suggestion.Votes.Count(v => v.VoteType == VoteType.Neutral)
+                                                                        </span>
+                                                                    </div>
+                                                                    <div class="p-2">
+                                                                        <i class="bi bi-hand-thumbs-down"></i>
+                                                                        <span class="vote-count">
+                                                                            @suggestion.Votes.Count(v => v.VoteType == VoteType.Down)
+                                                                        </span>
+                                                                    </div>
                                                                 </div>
-                                                                <div class="p-2">
-                                                                    <i class="bi bi-dash-circle"></i>
-                                                                    <span class="vote-count">
-                                                                        @suggestion.Votes.Count(v => v.VoteType == VoteType.Neutral)
-                                                                    </span>
-                                                                </div>
-                                                                <div class="p-2">
-                                                                    <i class="bi bi-hand-thumbs-down"></i>
-                                                                    <span class="vote-count">
-                                                                        @suggestion.Votes.Count(v => v.VoteType == VoteType.Down)
-                                                                    </span>
-                                                                </div>
-                                                            </div>
-                                                        }
+                                                            }
+                                                        </div>
                                                     </div>
                                                 </div>
-                                            </div>
+                                            }
                                         }
-                                    }
 
-                                    @if (User.Identity?.IsAuthenticated ?? false)
-                                    {
-                                        <form asp-action="AddSuggestion" method="post" class="mt-3">
-                                            <input type="hidden" name="panelId" value="@Model.Panel.Id"/>
-                                            <input type="hidden" name="postId" value="@suggestionPost.Id"/>
-                                            <div class="input-group">
-                                                <input type="text" name="suggestion" class="form-control"
-                                                       placeholder="Voeg een aanbeveling toe..." required/>
-                                                <button type="submit" class="btn btn-primary">Toevoegen</button>
-                                            </div>
-                                        </form>
-                                    }
+                                        @if (User.Identity?.IsAuthenticated ?? false)
+                                        {
+                                            <form asp-action="AddSuggestion" method="post" class="mt-3">
+                                                <input type="hidden" name="panelId" value="@Model.Panel.Id"/>
+                                                <input type="hidden" name="postId" value="@suggestionPost.Id"/>
+                                                <div class="input-group">
+                                                    <input type="text" name="suggestion" class="form-control"
+                                                           placeholder="Voeg een aanbeveling toe..." required/>
+                                                    <button type="submit" class="btn btn-primary">Toevoegen</button>
+                                                </div>
+                                            </form>
+                                        }
+                                    </div>
                                 </div>
-                            </div>
-                            break;
+                                break;
+                        }
                     }
                 }
-            }
+            </div>
         </div>
     </div>
 </div>
