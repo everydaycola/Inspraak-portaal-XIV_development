@@ -2,7 +2,6 @@
 using Domain.CitizenPanel;
 using Domain.Interfaces;
 using Domain.Interfaces.Posts;
-using Microsoft.AspNetCore.Identity;
 
 namespace DAL.EF;
 
@@ -64,7 +63,7 @@ public static class DataSeeder
                     VideoUrl = "/myvideo",
                     CreatedAt = DateTime.UtcNow,
                 },*/
-                new MeetingPost()
+                new MeetingPost
                 {
                     CreatedAt = DateTime.UtcNow,
                     Title = "Bijeenkomst #1 - Gesprekken over duidelijkheid verkeersregels.",
@@ -96,7 +95,7 @@ public static class DataSeeder
                 new()
                 {
                     Name = "Vervoermethode",
-                    Question = "Wat is uw voorkeurs vervoersmethode?",
+                    Question = "Wat is uw voorkeursvervoersmethode?",
                     IsDefault = false,
                     IsDistributionKnown = true,
                     AnswerOptions = new List<CriteriaAnswerOption>
