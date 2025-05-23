@@ -13,4 +13,5 @@ public abstract class Post
     [Required(ErrorMessage = "Post moet een zichbaarheids status hebben")]
     public bool IsVisibleForPanelMembers { get; set; } = false;
     public bool IsGloballyVisible { get; set; } = false;
+    public PostGroup Parent { get; set; }
 }

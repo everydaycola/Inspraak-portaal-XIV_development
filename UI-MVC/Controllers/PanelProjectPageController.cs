@@ -391,4 +391,9 @@ public class PanelProjectPageController : Controller
         return RedirectToAction("Index", new { panelId });
 
     }
+
+    public IActionResult AddPostGroup(Guid panelId, Guid postId, string suggestion, bool visibleForPanelMember)
+    {
+        throw new NotImplementedException();
+    }
 }

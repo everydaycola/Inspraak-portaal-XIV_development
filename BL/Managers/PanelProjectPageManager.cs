@@ -19,7 +19,7 @@ public class PanelProjectPageManager : IPanelProjectPageManager
     private readonly ILogger<PanelManager> _logger;
     private readonly IPanelRepository _repo;
 
-    public PanelProjectPageManager(ILogger<PanelManager> logger, IPanelRepository repo, IUserRepository userRepo, UserManager<ApplicationUser> userManager)
+    public PanelProjectPageManager(ILogger<PanelManager> logger, IPanelRepository repo)
     {
         _logger = logger;
         _repo = repo;
@@ -87,7 +87,7 @@ public class PanelProjectPageManager : IPanelProjectPageManager
     }
 
 // Simplified post methods
-    public void AddTextPost(Guid panelId, string title, string content, bool isVisibleForPanelMembers, bool isGloballyVisible)
+    public void AddTextPost(Guid panelId, string title, string content, bool isVisibleForPanelMembers, bool isGloballyVisible, Guid? groupId = null)
     {
         AddPost(panelId, new TextPost
         {
@@ -95,11 +95,12 @@ public class PanelProjectPageManager : IPanelProjectPageManager
             Content = content,
             CreatedAt = DateTime.UtcNow,
             IsVisibleForPanelMembers = isVisibleForPanelMembers,
-            IsGloballyVisible = isGloballyVisible
+            IsGloballyVisible = isGloballyVisible,
+            Parent = _repo.ReadPost(groupId.GetValueOrDefault()) as PostGroup
         });
     }
 
-    public void AddDocumentPost(Guid panelId, string title, string documentUrl, bool isVisibleForPanelMembers, bool isGloballyVisible)
+    public void AddDocumentPost(Guid panelId, string title, string documentUrl, bool isVisibleForPanelMembers, bool isGloballyVisible, Guid? groupId = null)
     {
         AddPost(panelId, new DocumentPost
         {
@@ -107,22 +108,24 @@ public class PanelProjectPageManager : IPanelProjectPageManager
             DocumentName = documentUrl,
             CreatedAt = DateTime.UtcNow,
             IsVisibleForPanelMembers = isVisibleForPanelMembers,
-            IsGloballyVisible = isGloballyVisible
+            IsGloballyVisible = isGloballyVisible,
+            Parent = _repo.ReadPost(groupId.GetValueOrDefault()) as PostGroup
         });
     }
 
-    public void AddMeetingPost(Guid panelId, string title, DateTime meetingDateTime, bool isVisibleForPanelMembers)
+    public void AddMeetingPost(Guid panelId, string title, DateTime meetingDateTime, bool isVisibleForPanelMembers, Guid? groupId = null)
     {
         AddPost(panelId, new MeetingPost
         {
             Title = title,
             DocumentNames = new List<string>(),
             CreatedAt = meetingDateTime,
-            IsVisibleForPanelMembers = isVisibleForPanelMembers
+            IsVisibleForPanelMembers = isVisibleForPanelMembers,
+            Parent = _repo.ReadPost(groupId.GetValueOrDefault()) as PostGroup
         });
     }
 
-    public void AddEmbedVideoPost(Guid panelId, string title, string videoUrl, bool visibleForPanelMember, bool isGloballyVisible)
+    public void AddEmbedVideoPost(Guid panelId, string title, string videoUrl, bool visibleForPanelMember, bool isGloballyVisible, Guid? groupId = null)
     {
         AddPost(panelId, new EmbeddedVideoPost
         {
@@ -130,11 +133,12 @@ public class PanelProjectPageManager : IPanelProjectPageManager
             CreatedAt = DateTime.UtcNow,
             IsVisibleForPanelMembers = visibleForPanelMember,
             VideoUrl = videoUrl,
-            IsGloballyVisible = isGloballyVisible
+            IsGloballyVisible = isGloballyVisible,
+            Parent = _repo.ReadPost(groupId.GetValueOrDefault()) as PostGroup
         });
     }
 
-    public void AddYoutubeVideoPost(Guid panelId, string title, string videoId, bool visibleForPanelMember, bool isGloballyVisible)
+    public void AddYoutubeVideoPost(Guid panelId, string title, string videoId, bool visibleForPanelMember, bool isGloballyVisible, Guid? groupId = null)
     {
         AddPost(panelId, new YoutubeVideoPost
         {
@@ -142,18 +146,20 @@ public class PanelProjectPageManager : IPanelProjectPageManager
             CreatedAt = DateTime.UtcNow,
             IsVisibleForPanelMembers = visibleForPanelMember,
             VideoId = videoId,
-            IsGloballyVisible = isGloballyVisible
+            IsGloballyVisible = isGloballyVisible,
+            Parent = _repo.ReadPost(groupId.GetValueOrDefault()) as PostGroup
         });
     }
 
-    public void AddSuggestionPost(Guid panelId, string title, bool visibleForPanelMember)
+    public void AddSuggestionPost(Guid panelId, string title, bool visibleForPanelMember, Guid? groupId = null)
     {
         AddPost(panelId, new SuggestionPost
         {
             Title = title,
             CreatedAt = DateTime.UtcNow,
             IsVisibleForPanelMembers = visibleForPanelMember,
-            Suggestions = []
+            Suggestions = [],
+            Parent = _repo.ReadPost(groupId.GetValueOrDefault()) as PostGroup
         });
     }
 
