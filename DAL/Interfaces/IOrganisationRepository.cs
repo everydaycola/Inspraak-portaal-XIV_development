@@ -7,6 +7,7 @@ public interface IOrganisationRepository
     public IEnumerable<Organisation> ReadAllOrganisations();
     
     // CREATE
+    Organisation CreateOrganisation(Organisation newOrganisation);
     
     // UPDATE
     public void UpdateOrganisation(Organisation existingOrganisation);
