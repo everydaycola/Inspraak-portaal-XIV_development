@@ -141,12 +141,7 @@ public class CriteriaManager : ICriteriaManager
     // {
     //     return _repo.ReadCriteriaByName(panelId, critName);
     // }
-
-    private Criteria GetCriteriaByNameWithAnswerOptions(Guid panelId, string critName)
-    {
-        return _repo.ReadCriteriaByNameWithAnswerOptions(panelId, critName);
-    }
-
+    
     public IEnumerable<Criteria> GetAllDesiredCriteriaPercentages(Guid panelId,
         bool onlyDefault = false)
     {
@@ -158,7 +153,7 @@ public class CriteriaManager : ICriteriaManager
     {
         foreach (var (criteriaName, selectedOption) in CriteriaAnswers)
         {
-            var criteria = GetCriteriaByNameWithAnswerOptions(panelId, criteriaName);
+            var criteria = _repo.ReadCriteriaByNameWithAnswerOptions(panelId, criteriaName);
             if (criteria != null)
             {
                 var validOptions = criteria.AnswerOptions;

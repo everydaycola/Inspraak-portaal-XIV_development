@@ -30,6 +30,11 @@ public class PanelProjectPageManager : IPanelProjectPageManager
         return _repo.ReadPanelWithPostsAndSuggestionsAndVotes(panelId);
     }
 
+    public Suggestion GetSuggestion(Guid suggestionId)
+    {
+        return _repo.ReadSuggestion(suggestionId);
+    }
+
     public void ChangeVote(ApplicationUser user, Guid suggestionId, VoteType voteType)
     {
         var vote = _repo.ReadVoteByPanelMemberAndSuggestionOrDefault(user, suggestionId);
@@ -50,9 +55,23 @@ public class PanelProjectPageManager : IPanelProjectPageManager
 
     }
 
+    public void ChangeSuggestionVisibility(Guid suggestionId)
+    {
+        var suggestion = _repo.ReadSuggestion(suggestionId);
+        suggestion.IsGloballyVisible = !suggestion.IsGloballyVisible;
+        _repo.UpdateSuggestion(suggestion);
+    }
+    
+
     public void AddSummaryToMeetingPost(Guid meetingId, string uniqueFileName)
     {
-        _repo.CreateSummaryToMeetingPost(meetingId, uniqueFileName);
+        if (_repo.ReadPost(meetingId) is not MeetingPost meetingPost)
+        {
+            _logger.Log(LogLevel.Critical, "Meeting post with id " + meetingId + " does not exist.");
+            return;
+        }
+        meetingPost.DocumentNames.Add(uniqueFileName);
+        _repo.UpdatePost(meetingPost);
     }
     
     // Generic helper method for post validation and creation

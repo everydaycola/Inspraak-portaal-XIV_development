@@ -29,8 +29,9 @@ public class OrganisationManager : IOrganisationManager
         var existingOrganisation = _repo.ReadOrganisationById(organisationId);
         if (existingOrganisation != null)
         {
+            if (existingOrganisation == null)
+                throw new InvalidOperationException($"$No organisation found with ID: {organisationId}");
             existingOrganisation.Name = name;
-            existingOrganisation.BackgroundColor = backgroundColor;
             if(backgroundImage != ""){
                 existingOrganisation.BackgroundImage = backgroundImage;
             }
@@ -45,6 +46,8 @@ public class OrganisationManager : IOrganisationManager
 
     public void DeleteOrganisation(string organisationId)
     {
-        _repo.RemoveOrganisation(organisationId);
+        var organisation = _repo.ReadOrganisationById(organisationId);
+        if (organisation == null) return;
+        _repo.RemoveOrganisation(organisation);
     }
 }
