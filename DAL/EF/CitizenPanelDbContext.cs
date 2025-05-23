@@ -42,13 +42,13 @@ public class CitizenPanelDbContext : IdentityDbContext<ApplicationUser>
         var organisationalModels = modelBuilder.Model.GetEntityTypes()
                 .Where(entity => typeof(IOrganisational).IsAssignableFrom(entity.ClrType)
                 && !typeof(IdentityUser).IsAssignableFrom(entity.ClrType));
-        foreach (var organisationalModel in organisationalModels)
+        foreach (var organisationalModelClrType in organisationalModels.Select(m => m.ClrType))
         {
-            modelBuilder.Entity(organisationalModel.ClrType)
+            modelBuilder.Entity(organisationalModelClrType)
                 .HasQueryFilter<IOrganisational>(e => e.OrganisationId == OrganisationId )
                 .HasIndex(nameof(IOrganisational.OrganisationId));
             
-            modelBuilder.Entity(organisationalModel.ClrType)
+            modelBuilder.Entity(organisationalModelClrType)
                 .Property(nameof(IOrganisational.OrganisationId))
                 .IsRequired()
                 .HasValueGenerator<TenantIdValueGenerator>();
@@ -104,8 +104,8 @@ public class CitizenPanelDbContext : IdentityDbContext<ApplicationUser>
         {
             b.Property(p => p.DocumentNames)
                 .HasConversion(
-                    v => JsonSerializer.Serialize(v, (JsonSerializerOptions?)null),
-                    v => JsonSerializer.Deserialize<List<string>>(v, (JsonSerializerOptions?)null)!);
+                    v => JsonSerializer.Serialize(v, (JsonSerializerOptions)null),
+                    v => JsonSerializer.Deserialize<List<string>>(v, (JsonSerializerOptions)null)!);
         });
         
         modelBuilder.Entity<SuggestionPost>(b =>
@@ -157,6 +157,5 @@ public class TenantIdValueGenerator : ValueGenerator<string>
 
         throw new InvalidOperationException("Could not generate a new TenantId");
     }
-    public override bool GeneratesTemporaryValues { get; }
-        = false;
+    public override bool GeneratesTemporaryValues => false;
 }

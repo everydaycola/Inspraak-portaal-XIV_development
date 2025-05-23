@@ -2,8 +2,15 @@ namespace DAL.Interfaces;
 
 public interface IOrganisationRepository
 {
-    public Organisation ReadOrganisationById(string id);
-    IEnumerable<Organisation> ReadAllOrganisations();
-    Organisation UpdateOrganisation(Organisation existingOrganisation);
-    void RemoveOrganisation(string organisationId);
+    // READ
+    public Organisation ReadOrganisationById(string organisationId);
+    public IEnumerable<Organisation> ReadAllOrganisations();
+    
+    // CREATE
+    
+    // UPDATE
+    public void UpdateOrganisation(Organisation existingOrganisation);
+    
+    // DELETE
+    public void RemoveOrganisation(Organisation organisation);
 }

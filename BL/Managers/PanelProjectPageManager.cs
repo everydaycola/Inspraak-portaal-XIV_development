@@ -80,7 +80,6 @@ public class PanelProjectPageManager : IPanelProjectPageManager
                 throw new Exception("Post with document support not found");
         }
     }
-
     
     // Generic helper method for post validation and creation
     private void AddPost<T>(Guid panelId, T post) where T : Post

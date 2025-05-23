@@ -19,43 +19,101 @@ public class PanelRepository : IPanelRepository
         _context = context;
     }
 
-    public Panel ReadPanel(Guid id)
+    // READ
+    public Panel ReadPanel(Guid panelId)
     {
-        return _context.Panels.Find(id);
+        return _context.Panels.Find(panelId);
+    }
+    
+    public Panel ReadPanelWithRepresentationGroup(Guid panelId)
+    {
+        return _context.Panels
+            .Include(p => p.RepresentationGroup)
+            .Single(p => p.Id == panelId);
+    }
+    
+    public Panel ReadPanelWithCriteriaAndAnswerOptions(Guid panelId)
+    {
+        return _context.Panels
+            .Include(p => p.Criteria)
+            .ThenInclude(p => p.AnswerOptions)
+            .Single(p => p.Id == panelId);
+    }
+    
+    public Panel ReadPanelWithPostsAndSuggestionsAndVotes(Guid panelId)
+    {
+        return _context.Panels
+            .Include(p => p.Posts)
+            .ThenInclude(p => (p as SuggestionPost).Suggestions)
+            .ThenInclude(s => s.Votes)
+            .Single(p => p.Id == panelId);
     }
 
     public IEnumerable<Panel> ReadAllPanels()
     {
         return _context.Panels.ToList();
     }
-
-
-    public PanelMember ReadPanelMemberWithCriteriaResponses(Guid id)
+    
+    public IEnumerable<Panel> ReadAllPanelsWithPostsAndSuggestions()
+    {
+        return _context.Panels
+            .Include(p => p.Posts)
+            .ThenInclude(post => (post as SuggestionPost).Suggestions)
+            .ToList();
+    }
+    
+    public PanelMember ReadPanelMemberWithCriteriaResponses(Guid panelMemberId)
     {
         return _context.PanelMembers
             .Include(pm => pm.Responses)
-            .Single(p => p.PanelMemberId == id);
+            .Single(p => p.PanelMemberId == panelMemberId);
     }
 
-    public PanelMember ReadPanelMemberWithPanel(Guid id)
+    public PanelMember ReadPanelMemberWithPanelAndCriteriaResponseAndCriteria(Guid panelMemberId)
     {
         return _context.PanelMembers
             .Include(pm => pm.Panel)
             .Include(pm => pm.Responses)
             .ThenInclude(pm => pm.Criteria)
-            .Single(p => p.PanelMemberId == id);
+            .Single(p => p.PanelMemberId == panelMemberId);
     }
 
-    public Post ReadPost(Guid id)
+    public IEnumerable<PanelMember> ReadPanelMembersWithCriteriaAndResponsesByPanel(Guid panelId)
     {
-        return _context.Posts.Find(id);
+        return _context.PanelMembers
+            .Include(pm => pm.Panel)
+            .ThenInclude(p => p.Criteria)
+            .ThenInclude(c => c.AnswerOptions)
+            .Include(pm => pm.Responses)
+            .Where(pm => pm.Panel.Id == panelId)
+            .ToList();
     }
-
-    public IEnumerable<Panel> ReadAllPanelsWithPostsAndSuggestions()
+    
+    public IEnumerable<PanelMember> ReadAllPanelMembersForPanel(Guid panelId, bool includeUnselected = true, bool includeRegistered = true)
     {
-        return _context.Panels
-            .Include(p => p.Posts)
-            .ThenInclude(post => (post as SuggestionPost).Suggestions);
+        return _context.PanelMembers.Include(pm => pm.Panel)
+            .Where(pm => pm.Panel.Id == panelId)
+            .Where(pm => includeRegistered || pm.HasRegistered)
+            .Where(pm => includeRegistered || pm.Selected)
+            .ToList();
+    }
+    
+    public PlanningGroupMember ReadPlanningGroupMember(Guid planningsGroupMemberId)
+    {
+        return _context.PlanningGroupMembers.Find(planningsGroupMemberId);
+    }
+    
+    public IEnumerable<PlanningGroupMember> ReadAllPlanningGroupMembersWithIdentityUserByPanel(Guid panelId)
+    {
+        return _context.PlanningGroupMembers
+            .Include(pgm => pgm.User)
+            .Where(pgm => pgm.Panel.Id == panelId)
+            .ToList();
+    }
+    
+    public Post ReadPost(Guid postId)
+    {
+        return _context.Posts.Find(postId);
     }
     
     public Vote ReadVoteByPanelMemberAndSuggestionOrDefault(ApplicationUser user, Guid suggestionId)
@@ -68,12 +126,32 @@ public class PanelRepository : IPanelRepository
                 v.Suggestion.Id == suggestionId);
 
     }
-
+    
     public Suggestion ReadSuggestion(Guid suggestionId)
     {
         return _context.Suggestions.Find(suggestionId);
     }
 
+    
+    // CREATE
+    public void CreatePanelMembers(ICollection<PanelMember> panelMembers)
+    {
+        foreach (var panelMember in panelMembers)
+        {
+            _context.PanelMembers.Add(panelMember);
+        }
+        _context.SaveChanges();
+    }
+    
+    public void CreatePost<T>(Guid panelId, T post) where T : Post
+    {
+        _context.Posts.Add(post);
+        var panel = ReadPanelWithPostsAndSuggestionsAndVotes(panelId);
+        if (panel == null) return;
+        panel.Posts.Add(post);
+        _context.SaveChanges();
+    }
+    
     public void CreatePlanningsGroupMember(PlanningGroupMember member)
     {
         _context.PlanningGroupMembers.Add(member);
@@ -85,29 +163,39 @@ public class PanelRepository : IPanelRepository
         _context.Votes.Add(vote);
         _context.SaveChanges();
     }
-
-    public void RemoveAllUnselectedPanelmembers(Guid panelId)
+    
+    
+    // UPDATE
+    public void UpdatePanel(Panel panel)
     {
-        var unselectedMembers = _context.PanelMembers
-            .Include(pm => pm.Panel)
-            .Where(pm => pm.Panel.Id == panelId && !pm.Selected && pm.HasRegistered)
-            .ToList();
-
-        if (!unselectedMembers.Any()) return;
-        _context.PanelMembers.RemoveRange(unselectedMembers);
+        _context.Panels.Update(panel);
         _context.SaveChanges();
     }
-
-    public void RemovePlanningGroupMember(Guid planningsGroupMemberId)
+    
+    public void UpdatePanelMember(PanelMember panelMember)
     {
-        var member = _context.PlanningGroupMembers.Find(planningsGroupMemberId);
-        _context.PlanningGroupMembers.Remove(member);
+        _context.PanelMembers.Update(panelMember);
         _context.SaveChanges();
     }
-
-    public void RemoveVote(Vote vote)
+    
+    public void UpdatePanelMembers(ICollection<PanelMember> panelMembers)
     {
-        _context.Votes.Remove(vote);
+        foreach (var panelMember in panelMembers)
+        {
+            _context.PanelMembers.Update(panelMember);
+        }
+        _context.SaveChanges();
+    }
+    
+    public void UpdateSuggestionPost(SuggestionPost suggestionPost)
+    {
+        _context.Posts.Update(suggestionPost);
+        _context.SaveChanges();
+    }
+    
+    public void UpdateSuggestion(Suggestion suggestion)
+    {
+        _context.Suggestions.Update(suggestion);
         _context.SaveChanges();
     }
     
@@ -117,139 +205,28 @@ public class PanelRepository : IPanelRepository
         _context.SaveChanges();
     }
 
-    // public Panel ReadPanelWithCriteriaAndAnsweroptions(Guid id)
-    // {
-    //     return _context.Panels
-    //         .Include(p => p.Criteria)
-    //         .ThenInclude(p => p.AnswerOptions)
-    //         .Single(p => p.Id == id);
-    // }
-
-    public Panel ReadPanelWithRepresentationGroup(Guid id)
-    {
-        return _context.Panels
-            .Include(p => p.RepresentationGroup)
-            .Single(p => p.Id == id);
-    }
-
-    public IEnumerable<PanelMember> ReadPanelMembersWithCriteria(Guid id)
-    {
-        return _context.PanelMembers
-            .Include(pm => pm.Panel)
-            .ThenInclude(p => p.Criteria)
-            .ThenInclude(c => c.AnswerOptions)
-            .Include(pm => pm.Responses)
-            .Where(pm => pm.Panel.Id == id)
-            .ToList();
-    }
-
-    public IEnumerable<PanelMember> ReadPanelMembersWithResponses(Guid id)
-    {
-        return _context.PanelMembers
-            .Include(pm => pm.Panel)
-            .Include(pm => pm.Responses)
-            .Where(pm => pm.Panel.Id == id)
-            .ToList();
-    }
-
-    public void UpdateSuggestionPost(SuggestionPost suggestionPost)
-    {
-        _context.Posts.Update(suggestionPost);
-        _context.SaveChanges();
-    }
-
     public void UpdateVote(Vote vote)
     {
         _context.Votes.Update(vote);
         _context.SaveChanges();
     }
-
-    public void UpdateSuggestion(Suggestion suggestion)
+    
+    
+    // DELETE
+    public void DeletePanelMembers(ICollection<PanelMember> panelMembers)
     {
-        _context.Suggestions.Update(suggestion);
-        _context.SaveChanges();
-    }
-
-    public void UpdatePanelMember(PanelMember member)
-    {
-        _context.PanelMembers.Update(member);
-        _context.SaveChanges();
-    }
-
-    public void UpdatePanelMembersToSelected(ICollection<PanelMember> selectedMembers)
-    {
-        foreach (var member in selectedMembers)
+        foreach (var panelMember in panelMembers)
         {
-            member.Selected = true;
-            _context.PanelMembers.Update(member);
+            _context.PanelMembers.Remove(panelMember);
         }
-
         _context.SaveChanges();
-    }
-
-    public void CreatePanelMember(PanelMember panelMember)
-    {
-        _context.PanelMembers.Add(panelMember);
-        _context.SaveChanges();
-    }
-
-    public void CreatePanelMembers(List<PanelMember> panelMembers)
-    {
-        panelMembers.ForEach(pm => _context.PanelMembers.Add(pm));
-        _context.SaveChanges();
-    }
-
-    public IEnumerable<PlanningGroupMember> ReadAllPlanningGroupMembersWithIdentityUserForPanel(Guid panelId)
-    {
-        return _context.PlanningGroupMembers
-            .Include(pgm => pgm.User)
-            .Where(pgm => pgm.Panel.Id == panelId)
-            .ToList();
     }
     
-    // Generic method to handle any type of post
-    public void CreatePost<T>(Guid panelId, T post) where T : Post
+    public void DeletePlanningGroupMember(PlanningGroupMember planningsGroupMember)
     {
-        _context.Posts.Add(post);
-        var panel = ReadPanelWithPostsAndSuggestionsAndVotes(panelId);
-        if (panel == null) return;
-        panel.Posts.Add(post);
+        _context.PlanningGroupMembers.Remove(planningsGroupMember);
         _context.SaveChanges();
     }
-
-    public ICollection<PanelMember> ReadPanelMembersAndRepresentationGroup(Guid id)
-    {
-        return _context.PanelMembers.Include(pm => pm.Panel)
-            .ThenInclude(pm => pm.RepresentationGroup)
-            .Where(pm => pm.Panel.Id == id)
-            .ToList();
-    }
-
-    public Panel ReadPanelWithCriteriaAndAnswerOptions(Guid panelId)
-    {
-        return _context.Panels
-            .Include(p => p.Criteria)
-            .ThenInclude(p => p.AnswerOptions)
-            .Single(p => p.Id == panelId);
-    }
-
-    public Panel ReadPanelWithPostsAndSuggestionsAndVotes(Guid panelId)
-    {
-        return _context.Panels
-            .Include(p => p.Posts)
-            .ThenInclude(p => (p as SuggestionPost).Suggestions)
-            .ThenInclude(s => s.Votes)
-            .Single(p => p.Id == panelId);
-    }
-
-    public PlanningGroupMember ReadPlanningGroupMember(Guid planningsGroupMemberId)
-    {
-        return _context.PlanningGroupMembers.Find(planningsGroupMemberId);
-    }
-
-    public void UpdatePanel(Panel panel)
-    {
-        _context.Panels.Update(panel);
-        _context.SaveChanges();
-    }
+    
+   
 }

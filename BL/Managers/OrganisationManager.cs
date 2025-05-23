@@ -27,19 +27,19 @@ public class OrganisationManager : IOrganisationManager
     public Organisation UpdateOrganisation(string organisationId, string name, string backgroundColor, string backgroundImage)
     {
         var existingOrganisation = _repo.ReadOrganisationById(organisationId);
-        if (existingOrganisation != null)
-        {
-            existingOrganisation.Name = name;
-            existingOrganisation.BackgroundColor = backgroundColor;
-            existingOrganisation.BackgroundImage = backgroundImage;
-            return _repo.UpdateOrganisation(existingOrganisation);
-        }
-
-        throw new InvalidOperationException($"$No organisation found with ID: {organisationId}");
+        if (existingOrganisation == null)
+            throw new InvalidOperationException($"$No organisation found with ID: {organisationId}");
+        existingOrganisation.Name = name;
+        existingOrganisation.BackgroundColor = backgroundColor;
+        existingOrganisation.BackgroundImage = backgroundImage;
+        _repo.UpdateOrganisation(existingOrganisation);
+        return existingOrganisation;
     }
 
     public void DeleteOrganisation(string organisationId)
     {
-        _repo.RemoveOrganisation(organisationId);
+        var organisation = _repo.ReadOrganisationById(organisationId);
+        if (organisation == null) return;
+        _repo.RemoveOrganisation(organisation);
     }
 }
