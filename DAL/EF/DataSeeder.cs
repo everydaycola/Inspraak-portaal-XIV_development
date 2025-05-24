@@ -151,7 +151,7 @@ public static class DataSeeder
             {
                 Email = "oscar.vermeulen@antwerpen.be",
                 NormalizedEmail = "OSCAR.VERMEULEN@ANTWERPEN.BE",
-                UserName = "oscarv",
+                UserName = "Oscar Vermeulen",
                 NormalizedUserName = "OSCARV"
             },
             Functie = "Boekhouder"
@@ -163,7 +163,7 @@ public static class DataSeeder
             {
                 Email = "marco.machtels@antwerpen.be",
                 NormalizedEmail = "MARCO.MACHTELS@ANTWERPEN.BE",
-                UserName = "Marcom",
+                UserName = "Marco Machtels",
                 NormalizedUserName = "MARCOM"
             },
             Functie = "CEO"
