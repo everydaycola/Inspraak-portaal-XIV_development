@@ -11,4 +11,5 @@ public interface IQuestionManager
     void AddQuestion(int id, string question, List<AnswerOption> answerOption);
     void UpdateQuestion(int id, string question, List<AnswerOption> answerOption);
     void RemoveQuestion(int id);
+    public void RemoveParticipationMethod(Guid id);
 }

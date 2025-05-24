@@ -82,4 +82,14 @@ public class QuestionRepository : IQuestionRepository
             _context.SaveChanges();
         }
     }
+
+    public void DeleteParticipationMethod(Guid id)
+    {
+        var participationMethodToDelete = _context.ParticipationMethods.Find(id);
+        if (participationMethodToDelete != null)
+        {
+            _context.ParticipationMethods.Remove(participationMethodToDelete);
+            _context.SaveChanges();
+        }
+    }
 }

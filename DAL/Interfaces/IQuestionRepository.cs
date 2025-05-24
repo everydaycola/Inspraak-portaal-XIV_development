@@ -12,4 +12,5 @@ public interface IQuestionRepository
     void CreateQuestion(Question question);
     void UpdateQuestion(Question question);
     void DeleteQuestion(int id);
+    void DeleteParticipationMethod(Guid id);
 }

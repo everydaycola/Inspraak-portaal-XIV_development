@@ -337,12 +337,6 @@
                         </td>
                         <td>
                             <button class="btn btn-sm btn-primary edit-question-button" data-question-id="@question.Id">Bewerken</button>
-                            <form asp-action="Delete" asp-controller="Question" asp-route-id="@question.Id" method="post" class="d-inline">
-                                <button type="submit" class="btn btn-sm btn-danger"
-                                        onclick="return confirm('Weet je zeker dat je deze vraag wilt verwijderen?');">
-                                    Verwijderen
-                                </button>
-                            </form>
                         </td>
                     </tr>
                 }
@@ -371,14 +365,18 @@
                 <tr>
                     <td>@method.Name</td>
                     <td>@method.Description</td>
+                    <td>
+                        <form asp-action="DeleteParticipationMethod" asp-controller="Question" asp-route-id="@method.Id" method="post" class="d-inline">
+                            <button type="submit" class="btn btn-sm btn-danger"
+                                    onclick="return confirm('Weet je zeker dat je deze vraag wilt verwijderen?');">
+                                Verwijderen
+                            </button>
+                        </form>
+                    </td>
                 </tr>
             }
             </tbody>
         </table>
-    }
-    else
-    {
-        <p>Er zijn nog geen vragen om weer te geven.</p>
     }
 </div>
 

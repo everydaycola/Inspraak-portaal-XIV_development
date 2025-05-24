@@ -59,6 +59,7 @@ public class QuestionController : Controller
         var allParticipationMethods = _questionWeightTipManager.GetAllParticipationMethods()
             .Select(p => new ParticipationViewModel()
             {
+                Id = p.Id,
                 Name = p.Name,
                 Description = p.Description,
             });
@@ -239,6 +240,15 @@ public class QuestionController : Controller
         _logger.LogInformation("Vraag succesvol verwijderd!");
         return RedirectToAction("Index");
     }
+    
+    [HttpPost]
+    public IActionResult DeleteParticipationMethod(Guid id)
+    {
+        _questionManager.RemoveParticipationMethod(id);
+        _logger.LogInformation("Participationmethod succesvol verwijderd!");
+        return RedirectToAction("Index");
+    }
+    
 
     [HttpPost]
     public IActionResult DeleteQuestionWeightTip(int id)

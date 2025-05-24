@@ -58,4 +58,9 @@ public class QuestionManager : IQuestionManager
     {
         _questionRepository.DeleteQuestion(id);
     }
+
+    public void RemoveParticipationMethod(Guid id)
+    {
+        _questionRepository.DeleteParticipationMethod(id);
+    }
 }
