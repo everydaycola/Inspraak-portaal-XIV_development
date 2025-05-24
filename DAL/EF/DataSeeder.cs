@@ -144,31 +144,31 @@ public static class DataSeeder
         newPanel.RepresentationGroup.Panel = newPanel;
 
         //PlanningGroupMembers
-        var pgm1 = new PlanningGroupMember
+        var oscarv = new PlanningGroupMember
         {
             Panel = newPanel,
             User = new ApplicationUser
             {
-                Email = "pgm@antwerpen.be",
-                NormalizedEmail = "PGM@ANTWERPEN.BE",
-                UserName = "PGM",
-                NormalizedUserName = "PGM"
+                Email = "oscar.vermeulen@antwerpen.be",
+                NormalizedEmail = "OSCAR.VERMEULEN@ANTWERPEN.BE",
+                UserName = "oscarv",
+                NormalizedUserName = "OSCARV"
             },
             Functie = "Boekhouder"
         };
-        var pgm2 = new PlanningGroupMember
+        var marcom = new PlanningGroupMember
         {
             Panel = newPanel,
             User = new ApplicationUser
             {
-                Email = "owner@antwerpen.be",
-                NormalizedEmail = "OWNER@ANTWERPEN.BE",
-                UserName = "Owner",
-                NormalizedUserName = "Owner"
+                Email = "marco.machtels@antwerpen.be",
+                NormalizedEmail = "MARCO.MACHTELS@ANTWERPEN.BE",
+                UserName = "Marcom",
+                NormalizedUserName = "MARCOM"
             },
             Functie = "CEO"
         };
-        var pgm3 = new PlanningGroupMember
+        var jand = new PlanningGroupMember
         {
             Panel = newPanel,
             User = new ApplicationUser
@@ -397,7 +397,7 @@ public static class DataSeeder
         AddMultipleEntities(panelMembersMen);
         AddMultipleEntities(panelMembersWomen);
         AddMultipleEntities(panelMembersToSeed);
-        AddMultipleEntities([pgm1, pgm2, pgm3]);
+        AddMultipleEntities([oscarv, marcom, jand]);
         AddMultipleEntities([organisation1, organisation2]);
         context.SaveChanges();
         context.ChangeTracker.Clear();
