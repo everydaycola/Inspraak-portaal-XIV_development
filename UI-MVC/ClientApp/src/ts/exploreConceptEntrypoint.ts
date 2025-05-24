@@ -1,5 +1,6 @@
 ﻿import {fetchFromAPI} from "./customhelpers/apihelper";
 import {getCurrentBaseUrl} from "./customhelpers/locationHelper";
+import {initQuestionCreationFormController} from "./exploreConcept/questionCreationFormController";
 
 console.log("Explor concept");
 
@@ -31,3 +32,4 @@ async function handleSelectedValues(){
         conclusiefield.innerText = data.suitability;
     }
 }
+initQuestionCreationFormController();

@@ -5,228 +5,7 @@
 }
 
 @section Scripts {
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            const addAnswerOptionBtn = document.getElementById('addAnswerOption');
-            const answerOptionsContainer = document.getElementById('answerOptionsContainer');
-            const questionForm = document.getElementById('questionForm');
-            const questionIdInput = document.getElementById('QuestionToEdit_Id');
-            const questionTextInput = document.getElementById('QuestionToEdit_Question');
-            const questionFormTitle = document.getElementById('questionFormTitle');
-            const questionSubmitBtn = document.getElementById('questionSubmitBtn');
-            const newQuestionBtn = document.getElementById('newQuestionBtn');
-            const validationSummary = document.querySelector('[data-valmsg-summary="true"]');
-
-            function getNextAnswerOptionIndex() {
-                let maxIndex = -1;
-                document.querySelectorAll('[name^="QuestionToEdit.AnswerOptions["]').forEach(input => {
-                    const match = input.name.match(/\[(\d+)\]/);
-                    if (match && parseInt(match[1]) > maxIndex) {
-                        maxIndex = parseInt(match[1]);
-                    }
-                });
-                return maxIndex + 1;
-            }
-
-            function addAnswerOptionRow(id = 0, text = '', weight = 0) {
-                const currentIndex = getNextAnswerOptionIndex();
-                const newRow = document.createElement('div');
-                newRow.classList.add('d-flex', 'align-items-center', 'mb-2', 'answer-option-row');
-                newRow.innerHTML = `
-                    <input type="hidden" name="QuestionToEdit.AnswerOptions[${currentIndex}].Id" value="${id}" />
-                    <input type="text" name="QuestionToEdit.AnswerOptions[${currentIndex}].AnswerOptionText" class="form-control me-2" placeholder="Antwoordtekst" value="${text}" required />
-                    <input type="number" name="QuestionToEdit.AnswerOptions[${currentIndex}].Weight" class="form-control me-2" placeholder="Gewicht" value="${weight}" required />
-                    <button type="button" class="btn btn-sm btn-outline-danger remove-answer-option">X</button>
-                `;
-                answerOptionsContainer.appendChild(newRow);
-
-                newRow.querySelector('.remove-answer-option').addEventListener('click', function() {
-                    newRow.remove();
-                });
-            }
-
-            // Populate options if QuestionToEdit already has data (e.g., after a validation error)
-            @if (Model.QuestionToEdit.AnswerOptions != null && Model.QuestionToEdit.AnswerOptions.Any())
-            {
-                <text>
-                    // Only populate if there are already options in the model (e.g., re-displaying after validation failure)
-                    // The server-side rendering in the form below also handles this.
-                    // This JavaScript section ensures the "add" buttons are available if the form was pre-populated.
-                </text>
-            }
-            else
-            {
-                <text>
-                    // For a fresh form, add at least two answer options
-                    addAnswerOptionRow();
-                    addAnswerOptionRow();
-                </text>
-            }
-
-
-            addAnswerOptionBtn.addEventListener('click', function () {
-                addAnswerOptionRow();
-            });
-
-            // Handle remove buttons for initially rendered options
-            document.querySelectorAll('.remove-answer-option').forEach(button => {
-                button.addEventListener('click', function() {
-                    this.closest('.answer-option-row').remove();
-                });
-            });
-
-
-            // Handle edit question button click
-            document.querySelectorAll('.edit-question-button').forEach(button => {
-                button.addEventListener('click', function () {
-                    const questionId = this.dataset.questionId;
-                    fetch(`/Question/GetQuestionData?id=${questionId}`)
-                        .then(response => {
-                            if (!response.ok) {
-                                throw new Error('Vraag niet gevonden of serverfout.');
-                            }
-                            return response.json();
-                        })
-                        .then(question => {
-                            questionIdInput.value = question.id;
-                            questionTextInput.value = question.question; // Matches ViewModel.Question
-                            questionFormTitle.textContent = 'Vraag bewerken';
-                            questionSubmitBtn.textContent = 'Vraag bijwerken';
-                            answerOptionsContainer.innerHTML = ''; // Clear existing options
-
-                            question.answerOptions.forEach(option => {
-                                addAnswerOptionRow(option.id, option.answerOptionText, option.weight); // Matches ViewModel.AnswerOptionText
-                            });
-
-                            questionForm.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                        })
-                        .catch(error => {
-                            alert(error.message);
-                            console.error('Error fetching question for edit:', error);
-                        });
-                });
-            });
-
-            // Handle new question button click (to reset form)
-            newQuestionBtn.addEventListener('click', function() {
-                questionIdInput.value = 0; // Reset ID for new question
-                questionTextInput.value = '';
-                answerOptionsContainer.innerHTML = '';
-                addAnswerOptionRow(); // Add minimum two options
-                addAnswerOptionRow();
-                questionFormTitle.textContent = 'Nieuwe vraag toevoegen';
-                questionSubmitBtn.textContent = 'Vraag toevoegen';
-
-                if (validationSummary) {
-                    validationSummary.innerHTML = ''; // Clear validation errors
-                }
-            });
-
-            // Toon TempData berichten als toasts
-            const successToastEl = document.getElementById('liveToast');
-            const errorToastEl = document.getElementById('errorToast');
-            const successToastBody = document.getElementById('toastMessage');
-            const errorToastBody = document.getElementById('errorToastMessage');
-
-            @if (TempData["SuccessMessage"] != null)
-            {
-                <text>
-                    successToastBody.textContent = "@Html.Raw(TempData["SuccessMessage"])";
-                    const successToast = new bootstrap.Toast(successToastEl);
-                    successToast.show();
-                </text>
-            }
-            @if (TempData["ErrorMessage"] != null)
-            {
-                <text>
-                    errorToastBody.textContent = "@Html.Raw(TempData["ErrorMessage"])";
-                    const errorToast = new bootstrap.Toast(errorToastEl);
-                    errorToast.show();
-                </text>
-            }
-
-            // This block handles re-populating the form if there was a validation error on POST
-            @if (Model.QuestionToEdit.Id != 0 || !string.IsNullOrEmpty(Model.QuestionToEdit.Question))
-            {
-                <text>
-                    questionIdInput.value = @Model.QuestionToEdit.Id;
-                    questionTextInput.value = `@Html.Raw(Model.QuestionToEdit.Question)`;
-                    questionFormTitle.textContent = '@(Model.QuestionToEdit.Id != 0 ? "Vraag bewerken" : "Nieuwe vraag toevoegen")';
-                    questionSubmitBtn.textContent = '@(Model.QuestionToEdit.Id != 0 ? "Vraag bijwerken" : "Vraag toevoegen")';
-                    answerOptionsContainer.innerHTML = '';
-                    @foreach (var option in Model.QuestionToEdit.AnswerOptions)
-                    {
-                        <text>
-                            addAnswerOptionRow(@option.Id, `@Html.Raw(option.AnswerOptionText)`, @option.Weight);
-                        </text>
-                    }
-                </text>
-            }
-        });
-        document.addEventListener('DOMContentLoaded', function () {
-            const scoreTipIdInput = document.getElementById('ScoreRangeTipToEdit_Id');
-            const scoreTipMinScoreInput = document.getElementById('ScoreRangeTipToEdit_MinScore');
-            const scoreTipMaxScoreInput = document.getElementById('ScoreRangeTipToEdit_MaxScore');
-            const scoreTipMessageInput = document.getElementById('ScoreRangeTipToEdit_Message');
-            const scoreTipAdminExplanationInput = document.getElementById('ScoreRangeTipToEdit_AdminExplanation');
-            const scoreTipFormTitle = document.getElementById('scoreTipFormTitle');
-            const scoreTipSubmitBtn = document.getElementById('scoreTipSubmitBtn');
-            const newScoreTipBtn = document.getElementById('newScoreTipBtn');
-
-            // Handle edit score tip button click
-            document.querySelectorAll('.edit-score-tip-button').forEach(button => {
-                button.addEventListener('click', function () {
-                    const tipId = this.dataset.tipId;
-                    fetch(`/Question/GetScoreRangeTipData?id=${tipId}`) // Je moet deze methode in de controller maken
-                        .then(response => {
-                            if (!response.ok) {
-                                throw new Error('Tip niet gevonden of serverfout.');
-                            }
-                            return response.json();
-                        })
-                        .then(tip => {
-                            scoreTipIdInput.value = tip.id;
-                            scoreTipMinScoreInput.value = tip.minScore;
-                            scoreTipMaxScoreInput.value = tip.maxScore || ''; // Voor nulls
-                            scoreTipMessageInput.value = tip.message;
-                            scoreTipAdminExplanationInput.value = tip.adminExplanation;
-                            scoreTipFormTitle.textContent = 'Score-tip bewerken';
-                            scoreTipSubmitBtn.textContent = 'Tip bijwerken';
-                            document.getElementById('scoreTipForm').scrollIntoView({ behavior: 'smooth', block: 'start' });
-                        })
-                        .catch(error => {
-                            alert(error.message);
-                            console.error('Error fetching score tip for edit:', error);
-                        });
-                });
-            });
-
-            // Handle new score tip button click (to reset form)
-            newScoreTipBtn.addEventListener('click', function() {
-                scoreTipIdInput.value = 0;
-                scoreTipMinScoreInput.value = '';
-                scoreTipMaxScoreInput.value = '';
-                scoreTipMessageInput.value = '';
-                scoreTipAdminExplanationInput.value = '';
-                scoreTipFormTitle.textContent = 'Nieuwe score-tip toevoegen';
-                scoreTipSubmitBtn.textContent = 'Tip toevoegen';
-                // Optioneel: validationSummary.innerHTML = ''; // Clear validation errors if any
-            });
-
-            // Re-populate ScoreRangeTip form if there was a validation error on POST
-            @if (Model.QuestionWeightTipViewModelToEdit.Id != 0 || !string.IsNullOrEmpty(Model.QuestionWeightTipViewModelToEdit.Message))
-            {
-                <text>
-                    scoreTipIdInput.value = @Model.QuestionWeightTipViewModelToEdit.Id;
-                    scoreTipMinScoreInput.value = @Model.QuestionWeightTipViewModelToEdit.MinScore;
-                    scoreTipMaxScoreInput.value = '@(Model.QuestionWeightTipViewModelToEdit.MaxScore.HasValue ? Model.QuestionWeightTipViewModelToEdit.MaxScore.Value.ToString() : "")';
-                    scoreTipMessageInput.value = `@Html.Raw(Model.QuestionWeightTipViewModelToEdit.Message)`;
-                    scoreTipFormTitle.textContent = '@(Model.QuestionWeightTipViewModelToEdit.Id != 0 ? "Score-tip bewerken" : "Nieuwe score-tip toevoegen")';
-                    scoreTipSubmitBtn.textContent = '@(Model.QuestionWeightTipViewModelToEdit.Id != 0 ? "Tip bijwerken" : "Tip toevoegen")';
-                </text>
-            }
-        });
-    </script>
+    <script src="~/dist/exploreConcept.entry.js" type="module"></script>
 }
 
 <div class="container mt-5">
@@ -242,10 +21,46 @@
                         <input type="text" asp-for="QuestionToEdit.Question" class="form-control" placeholder="Voer de vraagtekst in" required/>
                         <span asp-validation-for="QuestionToEdit.Question" class="text-danger"></span>
                     </div>
-
+                    <button type="button" class="btn btn-info"
+                            data-bs-toggle="modal"
+                            data-bs-target="#explanationModal">
+                        <i class="bi bi-question-lg"></i>
+                    </button>
+                    <table id="answerWeightTable">
+                        <input type="hidden" id="amountOfParticipationMethods" value="@Model.ParticipationMethods.Count()"/>
+                        <tr>
+                            <th>Antwoorden</th>
+                            @foreach (var partMethod in Model.ParticipationMethods)
+                            {
+                                <th>@partMethod.Name</th>
+                            }
+                        </tr>
+                        <tr>
+                            <td>
+                                <input type="text" name="QuestionToEdit.AnswerOptions.AnswerOptionText" class="form-control me-2" placeholder="Antwoordtekst" value="" required/>
+                            </td>
+                            @foreach (var partMethod in Model.ParticipationMethods)
+                            {
+                                <td>
+                                    <input type="number" name="QuestionToEdit.AnswerOptions.Weight" class="form-control me-2" placeholder="Gewicht" value="" required/>
+                                </td>
+                            }
+                        </tr>
+                        <tr>
+                            <td>
+                                <input type="text" name="QuestionToEdit.AnswerOptions.AnswerOptionText" class="form-control me-2" placeholder="Antwoordtekst" value="" required/>
+                            </td>
+                            @foreach (var partMethod in Model.ParticipationMethods)
+                            {
+                                <td>
+                                    <input type="number" name="QuestionToEdit.AnswerOptions.Weight" class="form-control me-2" placeholder="Gewicht" value="" required/>
+                                </td>
+                            }
+                        </tr>
+                    </table>
                     <div class="mb-3">
                         <label class="form-label">Antwoordopties</label>
-                        <div id="answerOptionsContainer">
+                        <!--<div id="answerOptionsContainer">
                             @* Render existing options if model has them (e.g., after validation error) *@
                             @if (Model.QuestionToEdit.AnswerOptions != null)
                             {
@@ -259,7 +74,7 @@
                                     </div>
                                 }
                             }
-                        </div>
+                        </div>-->
                         <button type="button" class="btn btn-outline-secondary btn-sm" id="addAnswerOption">
                             <i class="bi bi-plus-circle"></i> Optie toevoegen
                         </button>
@@ -273,7 +88,6 @@
             </div>
         </div>
         <div class="row">
-            <!--TODO: Make this form actualy submit the correct new item into DB-->
             <h2 class="mb-4">Participatie methode</h2>
             <div class="card shadow-sm border-0 mb-5">
                 <div class="card-body">
@@ -391,6 +205,135 @@
         <div class="d-flex">
             <div class="toast-body" id="errorToastMessage"></div>
             <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+    </div>
+</div>
+
+<!-- Explanation Modal -->
+<div class="modal fade" id="explanationModal" tabindex="-1" aria-labelledby="explanationModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title" id="explanationModalLabel">Hoe werkt het vraaggewichtensysteem?</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Sluiten"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <!-- Form Section -->
+                    <div class="col-md-7">
+                        <form id="modalQuestionForm">
+                            <div class="mb-3">
+                                <label class="form-label">Vraagtekst</label>
+                                <input type="text" class="form-control" 
+                                       name="QuestionToEdit.Question" 
+                                       value="Over hoeveel maanden beschik je nog voordat de input van de participatie klaar moet
+zijn voor de politieke besluitvorming?" required>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label class="form-label">Antwoordopties en gewichten</label>
+                                <table class="table table-bordered">
+                                    <thead>
+                                        <tr>
+                                            <th>Antwoord</th>
+                                            <th>Burgerpanel <i class="bi bi-info-circle" data-bs-toggle="tooltip" title="Bijv. Online enquête"></i></th>
+                                            <th>Enquéte <i class="bi bi-info-circle" data-bs-toggle="tooltip" title="Bijv. Workshop"></i></th>
+                                            <th>Informatieve campagne <i class="bi bi-info-circle" data-bs-toggle="tooltip" title="Bijv. Expertreview"></i></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                    <tr>
+                                        <td>
+                                            <input type="text" 
+                                                   name="QuestionToEdit.AnswerOptions[0].AnswerOptionText" 
+                                                   class="form-control" 
+                                                   placeholder="Meer dan 6 maanden" required>
+                                        </td>
+                                        <td><input type="number" name="QuestionToEdit.AnswerOptions[0].WeightsPerMethod[1].Weight" class="form-control" value="10"></td>
+                                        <td><input type="number" name="QuestionToEdit.AnswerOptions[0].WeightsPerMethod[2].Weight" class="form-control" value="0"></td>
+                                        <td><input type="number" name="QuestionToEdit.AnswerOptions[0].WeightsPerMethod[3].Weight" class="form-control" value="0"></td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <input type="text" 
+                                                   name="QuestionToEdit.AnswerOptions[0].AnswerOptionText" 
+                                                   class="form-control" 
+                                                   placeholder="Tussen 3 en 6 maanden" required>
+                                        </td>
+                                        <td><input type="number" name="QuestionToEdit.AnswerOptions[0].WeightsPerMethod[1].Weight" class="form-control" value="0"></td>
+                                        <td><input type="number" name="QuestionToEdit.AnswerOptions[0].WeightsPerMethod[2].Weight" class="form-control" value="10"></td>
+                                        <td><input type="number" name="QuestionToEdit.AnswerOptions[0].WeightsPerMethod[3].Weight" class="form-control" value="0"></td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <input type="text" 
+                                                   name="QuestionToEdit.AnswerOptions[0].AnswerOptionText" 
+                                                   class="form-control" 
+                                                   placeholder="1 tot 3 maanden" required>
+                                        </td>
+                                        <td><input type="number" name="QuestionToEdit.AnswerOptions[0].WeightsPerMethod[1].Weight" class="form-control" value="0"></td>
+                                        <td><input type="number" name="QuestionToEdit.AnswerOptions[0].WeightsPerMethod[2].Weight" class="form-control" value="0"></td>
+                                        <td><input type="number" name="QuestionToEdit.AnswerOptions[0].WeightsPerMethod[3].Weight" class="form-control" value="10"></td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <input type="text" 
+                                                   name="QuestionToEdit.AnswerOptions[0].AnswerOptionText" 
+                                                   class="form-control" 
+                                                   placeholder="Minder dan 1 maand" required>
+                                        </td>
+                                        <td><input type="number" name="QuestionToEdit.AnswerOptions[0].WeightsPerMethod[1].Weight" class="form-control" value="0"></td>
+                                        <td><input type="number" name="QuestionToEdit.AnswerOptions[0].WeightsPerMethod[2].Weight" class="form-control" value="0"></td>
+                                        <td><input type="number" name="QuestionToEdit.AnswerOptions[0].WeightsPerMethod[3].Weight" class="form-control" value="100"></td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </form>
+                    </div>
+                    
+                    <!-- Explanation Section -->
+                    <div class="col-md-5 border-start">
+                        <div class="p-3">
+                            <h5><i class="bi bi-lightbulb"></i> Werking in 4 stappen:</h5>
+                            <ol class="list-group list-group-numbered">
+                                <li class="list-group-item d-flex align-items-start">
+                                    <div class="ms-2 me-auto">
+                                        <div class="fw-bold">Vraag formuleren</div>
+                                        Gebruik duidelijke, neutrale vraagstelling
+                                    </div>
+                                </li>
+                                <li class="list-group-item d-flex align-items-start">
+                                    <div class="ms-2 me-auto">
+                                        <div class="fw-bold">Antwoordopties definiëren</div>
+                                        Minimaal 2 opties, maximaal 5
+                                    </div>
+                                </li>
+                                <li class="list-group-item d-flex align-items-start">
+                                    <div class="ms-2 me-auto">
+                                        <div class="fw-bold">Gewichten toekennen</div>
+                                        Gebruik positieve/negatieve waarden (-10 tot +10)
+                                    </div>
+                                </li>
+                                <li class="list-group-item d-flex align-items-start">
+                                    <div class="ms-2 me-auto">
+                                        <div class="fw-bold">Impact analyseren</div>
+                                        Real-time scoreoverzicht per methode
+                                    </div>
+                                </li>
+                            </ol>
+                            
+                            <div class="alert alert-info mt-3">
+                                <i class="bi bi-exclamation-circle"></i>
+                                <strong>Tip:</strong> Houd de som van gewichten per vraag rond 0 voor neutrale impact
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Sluiten</button>
+            </div>
         </div>
     </div>
 </div>
