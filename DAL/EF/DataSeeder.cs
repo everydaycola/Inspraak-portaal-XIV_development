@@ -1,4 +1,5 @@
 ﻿using Domain;
+using Domain.Admin;
 using Domain.CitizenPanel;
 using Domain.Interfaces;
 using Domain.Interfaces.Posts;
@@ -210,6 +211,77 @@ public static class DataSeeder
             }
         }).ToList();
 
+        var participationMethod = new ParticipationMethod
+        {
+            Name = "Burgerpanel",
+            Description =
+                "Op basis van je gegeven antwoorden lijkt een burgerpanel het meest geschikte instrument. "
+        };
+        var participationMethod2 = new ParticipationMethod
+        {
+            Name = "Enquête",
+            Description =
+                "Je werkt best niet met een burgerpanel maar met een online enquête die je breed uitstuurt. "
+        };
+        var participationMethod3 = new ParticipationMethod
+        {
+            Name = "Informatieve campagne",
+            Description =
+                "Je werkt best niet met een burgerpanel maar zet een informatieve campagne op."
+        };
+
+        AddMultipleEntities([participationMethod, participationMethod2, participationMethod3]);
+        var answerOptionsQuestion1 = new List<AnswerOption>
+        {
+            new AnswerOption
+            {
+                AnswerOptionText = "Ja",
+                Weight = 5,
+                Impacts = new List<AnswerOptionImpact>
+                {
+                    new AnswerOptionImpact
+                    {
+                        ParticipationMethod = participationMethod,
+                        ImpactWeight = 10
+                    },
+                    new AnswerOptionImpact
+                    {
+                        ParticipationMethod = participationMethod2,
+                        ImpactWeight = 1
+                    },
+                    new AnswerOptionImpact()
+                    {
+                        ParticipationMethod = participationMethod3,
+                        ImpactWeight = 5
+                    }
+                }
+            },
+            new AnswerOption
+            {
+                AnswerOptionText = "Nee",
+                Weight = 0,
+                Impacts = new List<AnswerOptionImpact>
+                {
+                    new AnswerOptionImpact
+                    {
+                        ParticipationMethod = participationMethod,
+                        ImpactWeight = 1
+                    },
+                    new AnswerOptionImpact
+                    {
+                        ParticipationMethod = participationMethod2,
+                        ImpactWeight = 5
+                    },
+                    new AnswerOptionImpact()
+                    {
+                        ParticipationMethod = participationMethod3,
+                        ImpactWeight = 10
+                    }
+                }
+            }
+        };
+
+
         if (!context.Questions.Any())
         {
             if (!context.Questions.Any(q =>
@@ -220,15 +292,62 @@ public static class DataSeeder
                 {
                     QuestionText =
                         "Beschik je als organisator nog over minstens 6 maanden voordat de input van de\nparticipatie klaar moet zijn voor de politieke besluitvorming?",
-                    AnswerOptions = new List<AnswerOption>
-                    {
-                        new AnswerOption { AnswerOptionText = "Ja", Weight = 5 },
-                        new AnswerOption { AnswerOptionText = "Nee", Weight = 0 }
-                    }
+                    AnswerOptions = answerOptionsQuestion1
                 };
                 context.Questions.Add(question1);
             }
 
+
+            var answerOptionsQuestion2 = new List<AnswerOption>
+            {
+                new AnswerOption
+                {
+                    AnswerOptionText = "Ja",
+                    Weight = 5,
+                    Impacts = new List<AnswerOptionImpact>
+                    {
+                        new AnswerOptionImpact
+                        {
+                            ParticipationMethod = participationMethod,
+                            ImpactWeight = 5
+                        },
+                        new AnswerOptionImpact
+                        {
+                            ParticipationMethod = participationMethod2,
+                            ImpactWeight = 1
+                        },
+                        new AnswerOptionImpact()
+                        {
+                            ParticipationMethod = participationMethod3,
+                            ImpactWeight = 2
+                        }
+                    }
+                },
+                new AnswerOption
+                {
+                    AnswerOptionText = "Nee",
+                    Weight = 0,
+                    Impacts = new List<AnswerOptionImpact>
+                    {
+                        new AnswerOptionImpact
+                        {
+                            ParticipationMethod = participationMethod,
+                            ImpactWeight = 1
+                        },
+                        new AnswerOptionImpact
+                        {
+                            ParticipationMethod = participationMethod2,
+                            ImpactWeight = 2
+                        },
+                        new AnswerOptionImpact()
+                        {
+                            ParticipationMethod = participationMethod3,
+                            ImpactWeight = 5
+                        }
+                    }
+                }
+            };
+            
             if (!context.Questions.Any(q =>
                     q.QuestionText ==
                     "Is de gemeente bereid om de realisatie van de voorstellen van het burgerpanel\nernstig te overwegen en minstens publiek te motiveren waarom dat niet is gebeurd?"))
@@ -237,42 +356,91 @@ public static class DataSeeder
                 {
                     QuestionText =
                         "Is de gemeente bereid om de realisatie van de voorstellen van het burgerpanel\nernstig te overwegen en minstens publiek te motiveren waarom dat niet is gebeurd?",
-                    AnswerOptions = new List<AnswerOption>
-                    {
-                        new AnswerOption { AnswerOptionText = "Ja", Weight = 10 },
-                        new AnswerOption { AnswerOptionText = "Nee", Weight = -5 },
-                    }
+                    AnswerOptions = answerOptionsQuestion2
                 };
                 context.Questions.Add(question2);
             }
 
+            var answerOptionsQuestion3 = new List<AnswerOption>
+            {
+                new AnswerOption
+                {
+                    AnswerOptionText = "We willen de mening horen van al wie vrijwillig wil deelnemen aan het debat. Iedereen moet kunnen deelnemen",
+                    Weight = 5,
+                    Impacts = new List<AnswerOptionImpact>
+                    {
+                        new AnswerOptionImpact
+                        {
+                            ParticipationMethod = participationMethod,
+                            ImpactWeight = 10
+                        },
+                        new AnswerOptionImpact
+                        {
+                            ParticipationMethod = participationMethod2,
+                            ImpactWeight = 1
+                        },
+                        new AnswerOptionImpact()
+                        {
+                            ParticipationMethod = participationMethod3,
+                            ImpactWeight = 5
+                        }
+                    }
+                },
+                new AnswerOption
+                {
+                    AnswerOptionText = "We willen de mening horen van doelgroepen die vaak afwezig blijven bij participatie",
+                    Weight = 0,
+                    Impacts = new List<AnswerOptionImpact>
+                    {
+                        new AnswerOptionImpact
+                        {
+                            ParticipationMethod = participationMethod,
+                            ImpactWeight = -5
+                        },
+                        new AnswerOptionImpact
+                        {
+                            ParticipationMethod = participationMethod2,
+                            ImpactWeight = 10
+                        },
+                        new AnswerOptionImpact()
+                        {
+                            ParticipationMethod = participationMethod3,
+                            ImpactWeight = 2
+                        }
+                    }
+                },
+                new AnswerOption
+                {
+                    AnswerOptionText =  "We willen de mening horen een representatief staal van participanten horen",
+                    Weight = 0,
+                    Impacts = new List<AnswerOptionImpact>
+                    {
+                        new AnswerOptionImpact
+                        {
+                            ParticipationMethod = participationMethod,
+                            ImpactWeight = 5
+                        },
+                        new AnswerOptionImpact
+                        {
+                            ParticipationMethod = participationMethod2,
+                            ImpactWeight = 2
+                        },
+                        new AnswerOptionImpact()
+                        {
+                            ParticipationMethod = participationMethod3,
+                            ImpactWeight = 2
+                        }
+                    }
+                }
+            };
+            
             if (!context.Questions.Any(q =>
                     q.QuestionText == "Wat is de bedoeling van het participatieproces bij dit vraagstuk?"))
             {
                 var question3 = new Question
                 {
                     QuestionText = "Wat is de bedoeling van het participatieproces bij dit vraagstuk?",
-                    AnswerOptions = new List<AnswerOption>
-                    {
-                        new AnswerOption
-                        {
-                            AnswerOptionText =
-                                "We willen de mening horen van al wie vrijwillig wil deelnemen aan het debat. Iedereen moet kunnen deelnemen",
-                            Weight = 10
-                        },
-                        new AnswerOption
-                        {
-                            AnswerOptionText =
-                                "We willen de mening horen van doelgroepen die vaak afwezig blijven bij participatie",
-                            Weight = -5
-                        },
-                        new AnswerOption
-                        {
-                            AnswerOptionText =
-                                "We willen de mening horen een representatief staal van participanten horen",
-                            Weight = 5
-                        },
-                    }
+                    AnswerOptions = answerOptionsQuestion3
                 };
                 context.Questions.Add(question3);
             }

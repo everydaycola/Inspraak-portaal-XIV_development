@@ -4,6 +4,7 @@ using Domain.Interfaces;
 using Domain.Interfaces.Question;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using UI_MVC.Models.Dto;
 using UI_MVC.Models.ViewModels.ExploreConceptViewModels;
 
 namespace UI_MVC.Controllers;
@@ -26,7 +27,7 @@ public class QuestionController : Controller
     [HttpGet]
     public IActionResult Index()
     {
-        var questionObject = _questionManager.GetAllQuestions();
+        var questionObject = _questionManager.GetAllQuestionsWithAnswerOptionsAndImpactsAndParticipationMethod();
 
         var questionViewModels = questionObject.Select(q => new QuestionsViewModel()
         {
@@ -36,7 +37,12 @@ public class QuestionController : Controller
             {
                 Id = ao.Id,
                 AnswerOptionText = ao.AnswerOptionText,
-                Weight = ao.Weight
+                Weight = ao.Weight,
+                AnswerOptionImpacts = ao.Impacts.Select(aoi => new AnswerOptionImpactDto()
+                {
+                    ParticipationMethodName = aoi.ParticipationMethod.Name,
+                    ContributingWeight = aoi.ImpactWeight
+                }).ToList()
             }).ToList()
         }).ToList();
 

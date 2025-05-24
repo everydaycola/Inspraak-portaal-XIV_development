@@ -19,6 +19,14 @@ public class QuestionRepository : IQuestionRepository
         return _context.Questions.Include(q => q.AnswerOptions).ToList();
     }
 
+    public IEnumerable<Question> ReadAllQuestionsWIthAnswerOptionsAndIMpactsAndParticipationMethod()
+    {
+        return _context.Questions
+            .Include(q => q.AnswerOptions)
+            .ThenInclude(ao => ao.Impacts)
+            .ThenInclude(aoi => aoi.ParticipationMethod).ToList();
+    }
+
     public Question ReadQuestionById(int id)
     {
         return _context.Questions.Include(q => q.AnswerOptions).FirstOrDefault(q => q.Id == id);

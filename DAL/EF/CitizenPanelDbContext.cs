@@ -1,6 +1,7 @@
 ﻿using System.Linq.Expressions;
 using System.Text.Json;
 using Domain;
+using Domain.Admin;
 using Domain.CitizenPanel;
 using Domain.Interfaces;
 using Domain.Interfaces.Posts;
@@ -32,6 +33,7 @@ public class CitizenPanelDbContext : IdentityDbContext<ApplicationUser>
     public DbSet<Suggestion> Suggestions { get; set; }
     public DbSet<Vote> Votes { get; set; }
     public DbSet<Post> Posts { get; set; }
+    //Verkenning van het concept.
     public DbSet<Question> Questions { get; set; }
     public DbSet<AnswerOption> AnswerOptions { get; set; }
     public DbSet<QuestionWeightTips> QuestionWeightTips { get; set; }
@@ -121,8 +123,9 @@ public class CitizenPanelDbContext : IdentityDbContext<ApplicationUser>
             .HasKey("SuggestionId", "OwnerId");
         modelBuilder.Entity<Question>()
             .HasMany(q => q.AnswerOptions)
-            .WithOne(ao => ao.Question)
-            .HasForeignKey(ao => ao.QuestionId);
+            .WithOne(ao => ao.Question);
+        modelBuilder.Entity<AnswerOption>()
+            .HasMany(a => a.Impacts);
     }
 
     public bool CreateDatabase(bool dropDatabase)

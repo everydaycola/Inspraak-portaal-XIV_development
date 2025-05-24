@@ -230,67 +230,84 @@
 }
 
 <div class="container mt-5">
-    <h2 class="mb-4">Vraagbeheer</h2>
-
-    <div class="card shadow-sm border-0 mb-5">
-        <div class="card-header bg-primary text-white">
-            <h3 class="mb-0" id="questionFormTitle">Nieuwe vraag toevoegen</h3>
-        </div>
-        <div class="card-body">
-            <form id="questionForm" asp-action="AddOrUpdate" asp-controller="Question" method="post">
-                <div asp-validation-summary="ModelOnly" class="text-danger" data-valmsg-summary="true"></div>
-                <input type="hidden" asp-for="QuestionToEdit.Id" />
-                <div class="mb-3">
-                    <label asp-for="QuestionToEdit.Question" class="form-label">Vraagtekst</label>
-                    <input type="text" asp-for="QuestionToEdit.Question" class="form-control" placeholder="Voer de vraagtekst in" required />
-                    <span asp-validation-for="QuestionToEdit.Question" class="text-danger"></span>
-                </div>
-
-                <div class="mb-3">
-                    <label class="form-label">Antwoordopties</label>
-                    <div id="answerOptionsContainer">
-                        @* Render existing options if model has them (e.g., after validation error) *@
-                        @if (Model.QuestionToEdit.AnswerOptions != null)
-                        {
-                            @for (int i = 0; i < Model.QuestionToEdit.AnswerOptions.Count; i++)
-                            {
-                                <div class="d-flex align-items-center mb-2 answer-option-row">
-                                    <input type="hidden" name="QuestionToEdit.AnswerOptions[@i].Id" value="@Model.QuestionToEdit.AnswerOptions[i].Id" />
-                                    <input type="text" name="QuestionToEdit.AnswerOptions[@i].AnswerOptionText" class="form-control me-2" placeholder="Antwoordtekst" value="@Model.QuestionToEdit.AnswerOptions[i].AnswerOptionText" required />
-                                    <input type="number" name="QuestionToEdit.AnswerOptions[@i].Weight" class="form-control me-2" placeholder="Gewicht" value="@Model.QuestionToEdit.AnswerOptions[i].Weight" required />
-                                    <button type="button" class="btn btn-sm btn-outline-danger remove-answer-option">X</button>
-                                </div>
-                            }
-                        }
+    <div class="row">
+        <h2 class="mb-4">Vraagbeheer</h2>
+        <div class="card shadow-sm border-0 mb-5">
+            <div class="card-body">
+                <form id="questionForm" asp-action="AddOrUpdate" asp-controller="Question" method="post">
+                    <div asp-validation-summary="ModelOnly" class="text-danger" data-valmsg-summary="true"></div>
+                    <input type="hidden" asp-for="QuestionToEdit.Id"/>
+                    <div class="mb-3">
+                        <label asp-for="QuestionToEdit.Question" class="form-label">Vraagtekst</label>
+                        <input type="text" asp-for="QuestionToEdit.Question" class="form-control" placeholder="Voer de vraagtekst in" required/>
+                        <span asp-validation-for="QuestionToEdit.Question" class="text-danger"></span>
                     </div>
-                    <button type="button" class="btn btn-outline-secondary btn-sm" id="addAnswerOption">
-                        <i class="bi bi-plus-circle"></i> Optie toevoegen
-                    </button>
-                    @* This span will display validation errors for the AnswerOptions collection itself (e.g., MinLength) *@
-                    <span asp-validation-for="QuestionToEdit.AnswerOptions" class="text-danger"></span>
-                </div>
 
-                <button type="submit" class="btn btn-success" id="questionSubmitBtn">Vraag toevoegen</button>
-                <button type="button" class="btn btn-secondary ms-2" id="newQuestionBtn">Nieuwe vraag</button>
-            </form>
+                    <div class="mb-3">
+                        <label class="form-label">Antwoordopties</label>
+                        <div id="answerOptionsContainer">
+                            @* Render existing options if model has them (e.g., after validation error) *@
+                            @if (Model.QuestionToEdit.AnswerOptions != null)
+                            {
+                                @for (int i = 0; i < Model.QuestionToEdit.AnswerOptions.Count; i++)
+                                {
+                                    <div class="d-flex align-items-center mb-2 answer-option-row">
+                                        <input type="hidden" name="QuestionToEdit.AnswerOptions[@i].Id" value="@Model.QuestionToEdit.AnswerOptions[i].Id"/>
+                                        <input type="text" name="QuestionToEdit.AnswerOptions[@i].AnswerOptionText" class="form-control me-2" placeholder="Antwoordtekst" value="@Model.QuestionToEdit.AnswerOptions[i].AnswerOptionText" required/>
+                                        <input type="number" name="QuestionToEdit.AnswerOptions[@i].Weight" class="form-control me-2" placeholder="Gewicht" value="@Model.QuestionToEdit.AnswerOptions[i].Weight" required/>
+                                        <button type="button" class="btn btn-sm btn-outline-danger remove-answer-option">X</button>
+                                    </div>
+                                }
+                            }
+                        </div>
+                        <button type="button" class="btn btn-outline-secondary btn-sm" id="addAnswerOption">
+                            <i class="bi bi-plus-circle"></i> Optie toevoegen
+                        </button>
+                        @* This span will display validation errors for the AnswerOptions collection itself (e.g., MinLength) *@
+                        <span asp-validation-for="QuestionToEdit.AnswerOptions" class="text-danger"></span>
+                    </div>
+
+                    <button type="submit" class="btn btn-success" id="questionSubmitBtn">Vraag toevoegen</button>
+                    <button type="button" class="btn btn-secondary ms-2" id="newQuestionBtn">Nieuwe vraag</button>
+                </form>
+            </div>
         </div>
-    </div>
+        <div class="row">
+            <!--TODO: Make this form actualy submit the correct new item into DB-->
+            <h2 class="mb-4">Participatie methode</h2>
+            <div class="card shadow-sm border-0 mb-5">
+                <div class="card-body">
+                    <form>
+                        <div class="mb-3">
+                            <label for="name" class="form-label">Naam</label>
+                            <input type="text" class="form-control" id="name" name="name" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="description" class="form-label">Beschrijving</label>
+                            <textarea class="form-control" id="description" name="description" rows="3" required></textarea>
+                        </div>
+                        <span asp-validation-for="QuestionToEdit.AnswerOptions" class="text-danger"></span>
+                        <button type="submit" class="btn btn-primary">Toevoegen</button>
+                    </form>
+                </div>
+            </div>
+        </div>
 
-    <hr class="my-5">
+        <hr class="my-5">
 
-    <h3 class="mb-4">Overzicht van vragen</h3>
-    @if (@Model.Questions != null && Model.Questions.Any())
-    {
-        <table class="table table-striped table-hover">
-            <thead>
+        <h3 class="mb-4">Overzicht van vragen</h3>
+        @if (@Model.Questions != null && Model.Questions.Any())
+        {
+            <table class="table table-striped table-hover">
+                <thead>
                 <tr>
                     <th>ID</th>
                     <th>Vraagtekst</th>
                     <th>Antwoordopties</th>
                     <th>Acties</th>
                 </tr>
-            </thead>
-            <tbody>
+                </thead>
+                <tbody>
                 @foreach (var question in Model.Questions)
                 {
                     <tr>
@@ -302,7 +319,14 @@
                                 <ul class="list-unstyled mb-0">
                                     @foreach (var option in question.AnswerOptions)
                                     {
-                                        <li>@option.AnswerOptionText (Gewicht: @option.Weight)</li>
+                                        <li>
+                                            @option.AnswerOptionText |
+                                            @foreach (var optionImpact in option.AnswerOptionImpacts)
+                                            {
+                                                @optionImpact.ParticipationMethodName
+                                                @optionImpact.ContributingWeight
+                                            }
+                                        </li>
                                     }
                                 </ul>
                             }
@@ -322,105 +346,27 @@
                         </td>
                     </tr>
                 }
-            </tbody>
-        </table>
-    }
-    else
-    {
-        <p>Er zijn nog geen vragen om weer te geven.</p>
-    }
-    <h3 class="mb-4">Score-tip Beheer</h3>
-
-    <div class="card shadow-sm border-0 mb-5">
-        <div class="card-header bg-primary text-white">
-            <h3 class="mb-0" id="scoreTipFormTitle">Nieuwe score-tip toevoegen</h3>
-        </div>
-        <div class="card-body">
-            <form id="scoreTipForm" asp-action="AddOrUpdateScoreRangeTip" asp-controller="Question" method="post">
-                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-                <input type="hidden" asp-for="QuestionWeightTipViewModelToEdit.Id" />
-
-                <div class="mb-3">
-                    <label asp-for="QuestionWeightTipViewModelToEdit.MinScore" class="form-label"></label>
-                    <input type="number" asp-for="QuestionWeightTipViewModelToEdit.MinScore" class="form-control" placeholder="Minimale score" required />
-                    <span asp-validation-for="QuestionWeightTipViewModelToEdit.MinScore" class="text-danger"></span>
-                </div>
-                <div class="mb-3">
-                    <label asp-for="QuestionWeightTipViewModelToEdit.MaxScore" class="form-label"></label>
-                    <input type="number" asp-for="QuestionWeightTipViewModelToEdit.MaxScore" class="form-control" placeholder="Maximale score (optioneel)" />
-                    <span asp-validation-for="QuestionWeightTipViewModelToEdit.MaxScore" class="text-danger"></span>
-                </div>
-                <div class="mb-3">
-                    <label asp-for="QuestionWeightTipViewModelToEdit.Message" class="form-label"></label>
-                    <textarea asp-for="QuestionWeightTipViewModelToEdit.Message" class="form-control" rows="3" placeholder="Voer de boodschap voor de gebruiker in" required></textarea>
-                    <span asp-validation-for="QuestionWeightTipViewModelToEdit.Message" class="text-danger"></span>
-                </div>
-
-                <button type="submit" class="btn btn-success" id="scoreTipSubmitBtn">Tip toevoegen</button>
-                <button type="button" class="btn btn-secondary ms-2" id="newScoreTipBtn">Nieuwe tip</button>
-            </form>
-        </div>
+                </tbody>
+            </table>
+        }
+        else
+        {
+            <p>Er zijn nog geen vragen om weer te geven.</p>
+        }
     </div>
 
-    <h3 class="mb-4">Overzicht van Score-tips</h3>
-    <p>
-        <button id="addScoreTipFormTrigger" class="btn btn-success mb-3" onclick="document.getElementById('scoreTipForm').scrollIntoView({ behavior: 'smooth', block: 'start' }); document.getElementById('newScoreTipBtn').click();">
-            Nieuwe Score-tip Toevoegen
-        </button>
-    </p>
-
-    @if (Model.QuestionWeightTips != null && Model.QuestionWeightTips.Any())
-    {
-        <table class="table table-striped table-hover">
-            <thead>
-            <tr>
-                <th>ID</th>
-                <th>Min. Score</th>
-                <th>Max. Score</th>
-                <th>Boodschap</th>
-                <th>Admin Uitleg</th>
-                <th>Acties</th>
-            </tr>
-            </thead>
-            <tbody>
-            @foreach (var tip in Model.QuestionWeightTips)
-            {
-                <tr>
-                    <td>@tip.Id</td>
-                    <td>@tip.MinScore</td>
-                    <td>@(tip.MaxScore.HasValue ? tip.MaxScore.Value.ToString() : "Geen")</td>
-                    <td>@tip.Message</td>
-                    <td>
-                        <button class="btn btn-sm btn-primary edit-score-tip-button" data-tip-id="@tip.Id">Bewerken</button>
-                        <form asp-action="DeleteScoreRangeTip" asp-controller="Question" asp-route-id="@tip.Id" method="post" class="d-inline">
-                            <button type="submit" class="btn btn-sm btn-danger"
-                                    onclick="return confirm('Weet je zeker dat je deze score-tip wilt verwijderen?');">
-                                Verwijderen
-                            </button>
-                        </form>
-                    </td>
-                </tr>
-            }
-            </tbody>
-        </table>
-    }
-    else
-    {
-        <p>Er zijn nog geen score-tips om weer te geven.</p>
-    }
-</div>
-
-<div class="toast-container position-fixed bottom-0 end-0 p-3">
-    <div id="liveToast" class="toast align-items-center text-white bg-success border-0" role="alert" aria-live="assertive" aria-atomic="true">
-        <div class="d-flex">
-            <div class="toast-body" id="toastMessage"></div>
-            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+    <div class="toast-container position-fixed bottom-0 end-0 p-3">
+        <div id="liveToast" class="toast align-items-center text-white bg-success border-0" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="d-flex">
+                <div class="toast-body" id="toastMessage"></div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
         </div>
-    </div>
-    <div id="errorToast" class="toast align-items-center text-white bg-danger border-0" role="alert" aria-live="assertive" aria-atomic="true">
-        <div class="d-flex">
-            <div class="toast-body" id="errorToastMessage"></div>
-            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+        <div id="errorToast" class="toast align-items-center text-white bg-danger border-0" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="d-flex">
+                <div class="toast-body" id="errorToastMessage"></div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
         </div>
     </div>
 </div>

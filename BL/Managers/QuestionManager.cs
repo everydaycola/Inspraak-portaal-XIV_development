@@ -22,6 +22,11 @@ public class QuestionManager : IQuestionManager
         return _questionRepository.ReadAllQuestions();
     }
 
+    public IEnumerable<Question> GetAllQuestionsWithAnswerOptionsAndImpactsAndParticipationMethod()
+    {
+        return _questionRepository.ReadAllQuestionsWIthAnswerOptionsAndIMpactsAndParticipationMethod();
+    }
+
     public Question GetQuestionById(int id)
     {
         return _questionRepository.ReadQuestionById(id);
