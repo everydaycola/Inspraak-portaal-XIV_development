@@ -37,6 +37,7 @@ public class CitizenPanelDbContext : IdentityDbContext<ApplicationUser>
     public DbSet<Question> Questions { get; set; }
     public DbSet<AnswerOption> AnswerOptions { get; set; }
     public DbSet<QuestionWeightTips> QuestionWeightTips { get; set; }
+    public DbSet<ParticipationMethod> ParticipationMethods { get; set; }
 
     public CitizenPanelDbContext(DbContextOptions options, OrganisationContext organisationContext) : base(options)
     {

@@ -1,5 +1,6 @@
 using DAL.EF;
 using DAL.Interfaces;
+using Domain.Admin;
 using Domain.Interfaces.Question;
 
 namespace DAL.Repositories;
@@ -23,9 +24,20 @@ public class QuestionWeightTipsRepository : IQuestionWeightTipsRepository
         return _context.QuestionWeightTips.Find(id);
     }
 
+    public IEnumerable<ParticipationMethod> ReadAllParticipationMethods()
+    {
+        return _context.ParticipationMethods.ToList();
+    }
+
     public void CreateQuestionWeightTip(QuestionWeightTips questionWeightTips)
     {
         _context.QuestionWeightTips.Add(questionWeightTips);
+        _context.SaveChanges();
+    }
+
+    public void CreateParticipationMethod(ParticipationMethod method)
+    {
+        _context.ParticipationMethods.Add(method);
         _context.SaveChanges();
     }
 

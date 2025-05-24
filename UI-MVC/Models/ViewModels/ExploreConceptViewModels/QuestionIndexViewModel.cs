@@ -1,3 +1,5 @@
+using System.Collections;
+
 namespace UI_MVC.Models.ViewModels.ExploreConceptViewModels;
 
 public class QuestionIndexViewModel
@@ -7,4 +9,5 @@ public class QuestionIndexViewModel
 
     public List<QuestionWeightTipsViewModel> QuestionWeightTips { get; set; } = new List<QuestionWeightTipsViewModel>();
     public QuestionWeightTipsViewModel QuestionWeightTipViewModelToEdit { get; set; } = new QuestionWeightTipsViewModel();
+    public IEnumerable<ParticipationViewModel> ParticipationMethods { get; set; }
 }

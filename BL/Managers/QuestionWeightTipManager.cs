@@ -1,6 +1,7 @@
 using BL.Interfaces;
 using DAL.Interfaces;
 using DAL.Repositories;
+using Domain.Admin;
 using Domain.Interfaces.Question;
 using Microsoft.Extensions.Logging;
 
@@ -23,6 +24,11 @@ public class QuestionWeightTipManager : IQuestionWeightTipManager
         return _questionWeightTipsRepository.ReadAllQuestionWeightTips();
     }
 
+    public IEnumerable<ParticipationMethod> GetAllParticipationMethods()
+    {
+        return _questionWeightTipsRepository.ReadAllParticipationMethods();
+    }
+
     public QuestionWeightTips GetQuestionWeightTip(int id)
     {
         return _questionWeightTipsRepository.ReadQuestionWeightTip(id);
@@ -38,6 +44,16 @@ public class QuestionWeightTipManager : IQuestionWeightTipManager
             Message = messqge
         };
         _questionWeightTipsRepository.CreateQuestionWeightTip(questionWeightTips);
+    }
+
+    public void AddParticipationMethod(string viewModelName, string viewModelDescription)
+    {
+        var method = new ParticipationMethod()
+        {
+            Name = viewModelName,
+            Description = viewModelDescription
+        };
+        _questionWeightTipsRepository.CreateParticipationMethod(method);
     }
 
     public void UpdateQuestionWeightTip(int id, int minScore, int maxScore, string messqge)

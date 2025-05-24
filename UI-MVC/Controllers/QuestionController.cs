@@ -5,11 +5,12 @@ using Domain.Interfaces.Question;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using UI_MVC.Models.Dto;
+using UI_MVC.Models.ViewModels;
 using UI_MVC.Models.ViewModels.ExploreConceptViewModels;
 
 namespace UI_MVC.Controllers;
 
-[Authorize(Roles="Admin")]
+[Authorize(Roles = "Admin")]
 public class QuestionController : Controller
 {
     private readonly IQuestionManager _questionManager;
@@ -28,7 +29,7 @@ public class QuestionController : Controller
     public IActionResult Index()
     {
         var questionObject = _questionManager.GetAllQuestionsWithAnswerOptionsAndImpactsAndParticipationMethod();
-
+    
         var questionViewModels = questionObject.Select(q => new QuestionsViewModel()
         {
             Id = q.Id,
@@ -55,12 +56,20 @@ public class QuestionController : Controller
             Message = t.Message,
         }).ToList();
 
+        var allParticipationMethods = _questionWeightTipManager.GetAllParticipationMethods()
+            .Select(p => new ParticipationViewModel()
+            {
+                Name = p.Name,
+                Description = p.Description,
+            });
+        
         var model = new QuestionIndexViewModel()
         {
             Questions = questionViewModels,
             QuestionToEdit = new QuestionsViewModel(),
             QuestionWeightTips = allWeightTipViewModels,
             QuestionWeightTipViewModelToEdit = new QuestionWeightTipsViewModel(),
+            ParticipationMethods = allParticipationMethods
         };
 
         return View(model);
@@ -208,6 +217,20 @@ public class QuestionController : Controller
             return View("Index", fullViewModel);
         }
     }
+
+    [HttpPost]
+    public IActionResult AddParticipationMethod(ParticipationViewModel viewModel)
+    {
+        if (!ModelState.IsValid)
+        {
+            _logger.LogInformation("Controleer de ingevoerde gegevens voor de score-tip. Er zijn fouten opgetreden.");
+            return View("Index");
+        }
+
+        _questionWeightTipManager.AddParticipationMethod(viewModel.Name, viewModel.Description);
+        return RedirectToAction("Index");
+    }
+
 
     [HttpPost]
     public IActionResult Delete(int id)
