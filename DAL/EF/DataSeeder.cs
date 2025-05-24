@@ -207,20 +207,221 @@ public static class DataSeeder
                 }
             }
         }).ToList();
-        
+
+        var rijbewijsCriteria = newPanel.Criteria.FirstOrDefault(c => c.Name == "Rijbewijs");
+        var vervoermethodeCriteria = newPanel.Criteria.FirstOrDefault(c => c.Name == "Vervoermethode");
+        var geslachtCriteria = newPanel.Criteria.FirstOrDefault(c => c.Name == "Geslacht");
+
+        List<PanelMember> panelMembersToSeed = new List<PanelMember>();
+        int memberCount = 1; // Counter for unique emails
+
+        panelMembersToSeed.AddRange(Enumerable.Range(1, 10).Select(i => new PanelMember
+        {
+            Panel = newPanel, // Use the reference to the previously saved panel
+            Responses = new List<CriteriaResponse>
+            {
+                new() { Criteria = rijbewijsCriteria, SelectedOption = "Ja" },
+                new() { Criteria = vervoermethodeCriteria, SelectedOption = "Fiets" },
+                new() { Criteria = geslachtCriteria, SelectedOption = "Man" },
+            },
+            HasRegistered = true,
+            Email = $"member{memberCount++}@example.com",
+            User = AddOrUpdateUser(context, $"member{memberCount - 1}@example.com"),
+            Selected = false
+        }));
+
+        panelMembersToSeed.AddRange(Enumerable.Range(1, 10).Select(i => new PanelMember
+        {
+            Panel = newPanel,
+            Responses = new List<CriteriaResponse>
+            {
+                new() { Criteria = rijbewijsCriteria, SelectedOption = "Nee" },
+                new() { Criteria = vervoermethodeCriteria, SelectedOption = "Fiets" },
+                new() { Criteria = geslachtCriteria, SelectedOption = "Man" },
+            },
+            HasRegistered = true,
+            Email = $"member{memberCount++}@example.com",
+            User = AddOrUpdateUser(context, $"member{memberCount - 1}@example.com"),
+            Selected = false
+        }));
+
+        panelMembersToSeed.AddRange(Enumerable.Range(1, 8).Select(i => new PanelMember
+        {
+            Panel = newPanel,
+            Responses = new List<CriteriaResponse>
+            {
+                new() { Criteria = rijbewijsCriteria, SelectedOption = "Ja" },
+                new() { Criteria = vervoermethodeCriteria, SelectedOption = "Te voet" },
+                new() { Criteria = geslachtCriteria, SelectedOption = "Vrouw" },
+            },
+            HasRegistered = true,
+            Email = $"member{memberCount++}@example.com",
+            User = AddOrUpdateUser(context, $"member{memberCount - 1}@example.com"),
+            Selected = false
+        }));
+
+        panelMembersToSeed.AddRange(Enumerable.Range(1, 12).Select(i => new PanelMember
+        {
+            Panel = newPanel,
+            Responses = new List<CriteriaResponse>
+            {
+                new() { Criteria = rijbewijsCriteria, SelectedOption = "Ja" },
+                new() { Criteria = vervoermethodeCriteria, SelectedOption = "Auto" },
+                new() { Criteria = geslachtCriteria, SelectedOption = "Man" },
+            },
+            HasRegistered = true,
+            Email = $"member{memberCount++}@example.com",
+            User = AddOrUpdateUser(context, $"member{memberCount - 1}@example.com"),
+            Selected = false
+        }));
+
+        panelMembersToSeed.AddRange(Enumerable.Range(1, 11).Select(i => new PanelMember
+        {
+            Panel = newPanel,
+            Responses = new List<CriteriaResponse>
+            {
+                new() { Criteria = rijbewijsCriteria, SelectedOption = "Nee" },
+                new() { Criteria = vervoermethodeCriteria, SelectedOption = "Te voet" },
+                new() { Criteria = geslachtCriteria, SelectedOption = "Vrouw" },
+            },
+            HasRegistered = true,
+            Email = $"member{memberCount++}@example.com",
+            User = AddOrUpdateUser(context, $"member{memberCount - 1}@example.com"),
+            Selected = false
+        }));
+        panelMembersToSeed.AddRange(Enumerable.Range(1, 5).Select(i => new PanelMember
+        {
+            Panel = newPanel,
+            Responses = new List<CriteriaResponse>
+            {
+                new() { Criteria = rijbewijsCriteria, SelectedOption = "Nee" },
+                new() { Criteria = vervoermethodeCriteria, SelectedOption = "Te voet" },
+                new() { Criteria = geslachtCriteria, SelectedOption = "Man" },
+            },
+            HasRegistered = true,
+            Email = $"member{memberCount++}@example.com",
+            User = AddOrUpdateUser(context, $"member{memberCount - 1}@example.com"),
+            Selected = false
+        }));
+        panelMembersToSeed.AddRange(Enumerable.Range(1, 2).Select(i => new PanelMember
+        {
+            Panel = newPanel,
+            Responses = new List<CriteriaResponse>
+            {
+                new() { Criteria = rijbewijsCriteria, SelectedOption = "Nee" },
+                new() { Criteria = vervoermethodeCriteria, SelectedOption = "Auto" },
+                new() { Criteria = geslachtCriteria, SelectedOption = "Vrouw" },
+            },
+            HasRegistered = true,
+            Email = $"member{memberCount++}@example.com",
+            User = AddOrUpdateUser(context, $"member{memberCount - 1}@example.com"),
+            Selected = false
+        }));
+        panelMembersToSeed.AddRange(Enumerable.Range(1, 8).Select(i => new PanelMember
+        {
+            Panel = newPanel,
+            Responses = new List<CriteriaResponse>
+            {
+                new() { Criteria = rijbewijsCriteria, SelectedOption = "Ja" },
+                new() { Criteria = vervoermethodeCriteria, SelectedOption = "Fiets" },
+                new() { Criteria = geslachtCriteria, SelectedOption = "Vrouw" },
+            },
+            HasRegistered = true,
+            Email = $"member{memberCount++}@example.com",
+            User = AddOrUpdateUser(context, $"member{memberCount - 1}@example.com"),
+            Selected = false
+        }));
+        panelMembersToSeed.AddRange(Enumerable.Range(1, 15).Select(i => new PanelMember
+        {
+            Panel = newPanel,
+            Responses = new List<CriteriaResponse>
+            {
+                new() { Criteria = rijbewijsCriteria, SelectedOption = "Ja" },
+                new() { Criteria = vervoermethodeCriteria, SelectedOption = "Auto" },
+                new() { Criteria = geslachtCriteria, SelectedOption = "Vrouw" },
+            },
+            HasRegistered = true,
+            Email = $"member{memberCount++}@example.com",
+            User = AddOrUpdateUser(context, $"member{memberCount - 1}@example.com"),
+            Selected = false
+        }));
+        panelMembersToSeed.AddRange(Enumerable.Range(1, 5).Select(i => new PanelMember
+        {
+            Panel = newPanel,
+            Responses = new List<CriteriaResponse>
+            {
+                new() { Criteria = rijbewijsCriteria, SelectedOption = "Ja" },
+                new() { Criteria = vervoermethodeCriteria, SelectedOption = "Te voet" },
+                new() { Criteria = geslachtCriteria, SelectedOption = "Man" },
+            },
+            HasRegistered = true,
+            Email = $"member{memberCount++}@example.com",
+            User = AddOrUpdateUser(context, $"member{memberCount - 1}@example.com"),
+            Selected = false
+        }));
+        panelMembersToSeed.AddRange(Enumerable.Range(1, 2).Select(i => new PanelMember
+        {
+            Panel = newPanel,
+            Responses = new List<CriteriaResponse>
+            {
+                new() { Criteria = rijbewijsCriteria, SelectedOption = "Nee" },
+                new() { Criteria = vervoermethodeCriteria, SelectedOption = "Auto" },
+                new() { Criteria = geslachtCriteria, SelectedOption = "Man" },
+            },
+            HasRegistered = true,
+            Email = $"member{memberCount++}@example.com",
+            User = AddOrUpdateUser(context, $"member{memberCount - 1}@example.com"),
+            Selected = false
+        }));
+        panelMembersToSeed.AddRange(Enumerable.Range(1, 7).Select(i => new PanelMember
+        {
+            Panel = newPanel,
+            Responses = new List<CriteriaResponse>
+            {
+                new() { Criteria = rijbewijsCriteria, SelectedOption = "Nee" },
+                new() { Criteria = vervoermethodeCriteria, SelectedOption = "Fiets" },
+                new() { Criteria = geslachtCriteria, SelectedOption = "Vrouw" },
+            },
+            HasRegistered = true,
+            Email = $"member{memberCount++}@example.com",
+            User = AddOrUpdateUser(context, $"member{memberCount - 1}@example.com"),
+            Selected = false
+        }));
         // adding panel members also adds dependant objects
         // so panel member => panel
         //    panel => representation group
         //    panel => criteria
         //    criteria => criteria answer option
         //    plannings group member => identityUser
-        
+
         AddMultipleEntities(panelMembersMen);
         AddMultipleEntities(panelMembersWomen);
+        AddMultipleEntities(panelMembersToSeed);
         AddMultipleEntities([pgm1, pgm2, pgm3]);
         AddMultipleEntities([organisation1, organisation2]);
         context.SaveChanges();
         context.ChangeTracker.Clear();
+    }
+
+    private static ApplicationUser AddOrUpdateUser(CitizenPanelDbContext context, string email)
+    {
+        var user = context.Users.SingleOrDefault(u => u.Email == email);
+        if (user == null)
+        {
+            user = new ApplicationUser
+            {
+                Email = email,
+                NormalizedEmail = email.ToUpperInvariant(),
+                UserName = email.Split('@')[0], // Use part of email as username
+                NormalizedUserName = email.Split('@')[0].ToUpperInvariant()
+                // You might need to add a default password hash here if Identity requires it on creation
+                // e.g., PasswordHash = "some_hashed_password"
+            };
+            context.Users.Add(user);
+            // Don't call SaveChanges here, let the main SaveChanges handle it for performance
+        }
+
+        return user;
     }
 
     private static void AddMultipleEntities<T>(List<T> entities) where T : class
