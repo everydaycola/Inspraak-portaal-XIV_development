@@ -1,8 +1,8 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 
-namespace UI_MVC.Models.Dto.ProjectPage;
+namespace UI_MVC.Models.Dto.PostDtos;
 
-public class NewSuggestionPostDto
+public class NewTextPostDto
 {
     [Required(ErrorMessage = "Panel ID is required")]
     public Guid PanelId { get; set; }
@@ -11,7 +11,12 @@ public class NewSuggestionPostDto
     [StringLength(300, ErrorMessage = "Titel mag maximaal 300 karakters bevatten")]
     public string Title { get; set; }
     
+    [Required(ErrorMessage = "Inhoud is verplicht")]
+    [StringLength(10000, ErrorMessage = "Inhoud mag maximaal 10000 karakters bevatten")]
+    public string Content { get; set; }
+    
     public bool VisibleForPanelMember { get; set; }
     
     public bool InformPeopleViaMail { get; set; }
+    public bool IsGloballyVisible { get; set; }
 }

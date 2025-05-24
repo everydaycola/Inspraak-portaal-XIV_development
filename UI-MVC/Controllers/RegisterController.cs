@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using UI_MVC.Models;
 using UI_MVC.Models.Dto;
 using UI_MVC.Models.Dto.Register;
+using UI_MVC.Models.ViewModels;
 
 namespace UI_MVC.Controllers;
 
@@ -42,7 +43,7 @@ public class RegisterController : Controller
         IEnumerable<Criteria> nonDefaultCriteriaWithoutResponse = panel.Criteria
             .Where(c => !c.IsDefault);
         
-        return View(new NewPanelMemberDto
+        return View(new NewPanelMemberViewModel
         {
             PanelId = member.Panel.Id.ToString(),
             UserId = userId.ToString(),
@@ -67,7 +68,7 @@ public class RegisterController : Controller
             _critManager.SavePanelMemberCriteriaResponses(formData.PanelId, formData.CriteriaAnswers,member);
             PanelMember updatedMember = _manager.UpdatePanelMember(member);
             
-            return View("Index", new NewPanelMemberDto
+            return View("Index", new NewPanelMemberViewModel
             {
                 PanelId = updatedMember.Panel.Id.ToString(),
                 UserId = updatedMember.PanelMemberId.ToString(),
@@ -77,7 +78,7 @@ public class RegisterController : Controller
         }
         
         ModelState.AddModelError("", "Invalid form data.");
-        return View("Index", new NewPanelMemberDto
+        return View("Index", new NewPanelMemberViewModel
         {
             PanelId = formData.PanelId.ToString(),
             UserId = formData.UserId.ToString(),

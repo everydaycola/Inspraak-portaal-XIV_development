@@ -1,8 +1,9 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using UI_MVC.Models.Dto;
 
-namespace UI_MVC.Models.Dto;
+namespace UI_MVC.Models.ViewModels;
 
-public class NewPanelDto
+public class NewPanelViewModel
 {
     [Required(ErrorMessage = "Panel moet een naam hebben.")]
     [MinLength(4, ErrorMessage = "Panel naam moet minimaal 4 karakters lang zijn.")]
@@ -15,7 +16,7 @@ public class NewPanelDto
     [Range(0, 100, ErrorMessage = "Sample rate moet een percentage tussen 0 en 100% zijn.")]
     public double SampleRate { get; set; }
 
-    public ICollection<CriteriaDto> Distributions { get; set; } = new List<CriteriaDto>();
+    public ICollection<CriteriaViewModel> Distributions { get; set; } = new List<CriteriaViewModel>();
     public int CitizenCount { get; set; }
     public ICollection<SubRegionDto> SubRegions { get; set; } = new List<SubRegionDto>();
 
