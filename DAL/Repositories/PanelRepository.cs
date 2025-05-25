@@ -51,6 +51,15 @@ public class PanelRepository : IPanelRepository
         return _context.Posts.Find(id);
     }
 
+    public SuggestionPost ReadSuggestionPostSuggestionsAndWithVotes(Guid id)
+    {
+        return _context.Posts
+            .OfType<SuggestionPost>()
+            .Include(sp => sp.Suggestions)
+            .ThenInclude(s => s.Votes)
+            .Single(sp => sp.Id == id);
+    }
+
     public IEnumerable<Panel> ReadAllPanelsWithPostsAndSuggestions()
     {
         return _context.Panels

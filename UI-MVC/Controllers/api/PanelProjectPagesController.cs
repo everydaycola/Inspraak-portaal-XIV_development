@@ -2,6 +2,7 @@
 using Domain.Enums;
 using Domain.Interfaces.Posts;
 using Domain.Interfaces.Posts.PostItems;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace UI_MVC.Controllers.api;
@@ -33,41 +34,53 @@ public class PanelProjectPagesController : ControllerBase
         var suggestion = _projectPageManager.GetSuggestion(suggestionGuid);
         return Ok(suggestion.IsGloballyVisible);
     }
-
+    
     [HttpGet("votePercentage")]
     public ActionResult<double> GetVotePercentage([FromQuery] string suggestionId, string postId)
     {
-        var suggestionGuid = Guid.Parse(suggestionId);
-        var postGuid = Guid.Parse(postId);
+        if (!Guid.TryParse(suggestionId, out var suggestionGuid) || !Guid.TryParse(postId, out var postGuid))
+        {
+            return BadRequest("Invalid GUID format.");
+        }
 
-        var post =  (SuggestionPost)_projectPageManager.GetPost(postGuid);
+        var post = _projectPageManager.GetSuggestionPostSuggestionsAndWithVotes(postGuid);
+        if (post == null)
+        {
+            return NotFound($"Post with ID {postId} not found.");
+        }
+
         var suggestion = _projectPageManager.GetSuggestion(suggestionGuid);
+        if (suggestion == null)
+        {
+            return NotFound($"Suggestion with ID {suggestionId} not found.");
+        }
 
-        return CalculateVotePercentage(post, suggestion);
+        return Ok(CalculateVotePercentage(post, suggestion));
     }
 
     private double CalculateVotePercentage(SuggestionPost post, Suggestion suggestion)
     {
-        var totalvotes = 0.0;
-        foreach (var s in post.Suggestions)
+        var totalvotes = post.Suggestions?.Sum(s => s.Votes?.Count ?? 0) ?? 0;
+        if (totalvotes == 0)
         {
-            totalvotes += s.Votes.Count;
+            return 0;
         }
 
-        var upvotes = 0;
-        var downvotes = 0;
-        foreach (var vote in suggestion.Votes)
-        {
-            if (vote.VoteType.Equals(VoteType.Up))
-            {
-                upvotes++;
-            }
-            else if (vote.VoteType.Equals(VoteType.Down))
-            {
-                downvotes++;
-            }
-        }
+        var upvotes = suggestion.Votes?.Count(v => v.VoteType == VoteType.Up) ?? 0;
+        var downvotes = suggestion.Votes?.Count(v => v.VoteType == VoteType.Down) ?? 0;
 
-        return (upvotes - downvotes) / totalvotes;
+        return ((double)(upvotes - downvotes) / totalvotes) * 100;
+    }
+    
+    [HttpPost("toggleVoting")]
+    public async Task<IActionResult> EndSuggestionVoting([FromQuery] string postId)
+    {
+        if (!Guid.TryParse(postId, out var postGuid))
+        {
+            return BadRequest("Invalid GUID format.");
+        }
+        
+        _projectPageManager.ChangeSuggestionPostVotingStatus(postGuid);
+        return Ok(new { success = true });
     }
 }
