@@ -4,7 +4,9 @@ using Domain;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using UI_MVC.Models.Dto.ProjectPage;
+using UI_MVC.Models.Dto.PostDtos;
+using UI_MVC.Models.ViewModels;
+using UI_MVC.Models.ViewModels.PostViewModels;
 
 namespace UI_MVC.Controllers;
 
@@ -43,27 +45,41 @@ public class PanelProjectPageController : Controller
     {
         ViewBag.OpenModal = modalName;
         var user = await _userManager.GetUserAsync(User);
-        return View("Index", new ProjectPageDto
+        return View("Index", new ProjectPageViewModel
         {
             Panel = _projectPageManager.GetPanelWithPostsAndSuggestionsAndVotesAndDocuments(panelId),
             CurrentUser = user
         });
     }
 
-    //[Authorize(Roles = "Organisatie,PanelMember")]
-    public async Task<IActionResult> Index(Guid? panelId)
+   public async Task<IActionResult> Index(Guid? id)
     {
-        var user = await _userManager.GetUserAsync(User);
-        
-        if (!panelId.HasValue)
+        if (!id.HasValue)
         {
-            panelId = _customUserManager.getPanelForUser(user.Id).Id;
+            if (HttpContext.User.IsInRole(CustomIdentityConstants.OrganisatieRole))
+            {
+                var panels = _panelManager.GetAllPanels().ToList(); 
+                if (panels.Count == 1)
+                {
+                    var returnAction = "Index";
+                    var action = string.IsNullOrEmpty(returnAction) ? "Index" : returnAction;
+                    return RedirectToAction(action, new { id = panels[0].Id});
+                }
+                else
+                {
+                    return RedirectToAction("PanelSelection", "PanelManagement", new { returnAction = "Index", returnController = "PanelProjectPage"});
+                }
+            }
+            else
+            {
+                var user = await _userManager.GetUserAsync(HttpContext.User);
+                id = _customUserManager.getPanelForUser(user.Id).Id;
+            }
         }
 
-        return View(new ProjectPageDto
+        return View(new ProjectPageViewModel
         {
-            Panel = _projectPageManager.GetPanelWithPostsAndSuggestionsAndVotesAndDocuments(panelId.Value),
-            CurrentUser = user
+            Panel = _projectPageManager.GetPanelWithPostsAndSuggestionsAndVotesAndDocuments(id.Value),
         });
     }
 
@@ -93,7 +109,7 @@ public class PanelProjectPageController : Controller
 
     [HttpPost]
     [Authorize(Roles = CustomIdentityConstants.OrganisatieRole)]
-    public async Task<IActionResult> AddDocumentPost(NewDocumentPostDto newDocumentPost)
+    public async Task<IActionResult> AddDocumentPost(NewDocumentPostViewDto newDocumentPost)
     {
         if (!ModelState.IsValid)
         {

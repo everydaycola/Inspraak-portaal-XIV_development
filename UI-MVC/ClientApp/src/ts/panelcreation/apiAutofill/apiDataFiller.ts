@@ -30,4 +30,5 @@ let criteriaInnerDivs = criteriaOuterDiv.querySelectorAll(".criteria") as NodeLi
 export function criteriaInputUpdateHandler() {
     criteriaInnerDivs = criteriaOuterDiv.querySelectorAll(".criteria") as NodeListOf<HTMLDivElement>
     attachEventHandlersToCriteriaInput(criteriaInnerDivs, basicApiData);
+    console.log("criteriaInputChanged");
 }

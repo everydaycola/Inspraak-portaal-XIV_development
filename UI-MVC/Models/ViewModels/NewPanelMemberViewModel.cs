@@ -1,8 +1,7 @@
 ﻿using Domain.CitizenPanel;
 
-namespace UI_MVC.Models.Dto;
-
-public class NewPanelMemberDto
+namespace UI_MVC.Models.ViewModels;
+public class NewPanelMemberViewModel
 {
     public string UserId{ get; set; }
     public string PanelId { get; set; }
