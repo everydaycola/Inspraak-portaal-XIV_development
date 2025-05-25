@@ -25,23 +25,25 @@
         </tr>
         <tr>
             <td>
-                <input type="text" class="form-control me-2" placeholder="Antwoordtekst" value="" required/>
+                <input name="AnswerOptions[0].AnswerText" type="text" class="form-control me-2" placeholder="Antwoordtekst" value="" required/>
             </td>
-            @foreach (var partMethod in Model.ParticipationMethods)
+            @foreach (var partMethod in Model.ParticipationMethods.Select((value, index) => new { value, index }))
             {
                 <td>
-                    <input type="number" class="form-control me-2" placeholder="Gewicht" value="" required/>
+                    <input type="hidden" name="AnswerOptions[0].Impacts[@partMethod.index].ParticipationMethodName" value="@partMethod.value.Name"/>
+                    <input type="number" name="AnswerOptions[0].Impacts[@partMethod.index].Impactweight" class="form-control me-2" placeholder="Gewicht" value="" required/>
                 </td>
             }
         </tr>
         <tr>
             <td>
-                <input type="text" name="QuestionToEdit.AnswerOptions.AnswerOptionText" class="form-control me-2" placeholder="Antwoordtekst" value="" required/>
+                <input type="text"name="AnswerOptions[1].AnswerText" class="form-control me-2" placeholder="Antwoordtekst" value="" required/>
             </td>
-            @foreach (var partMethod in Model.ParticipationMethods)
+            @foreach (var partMethod in Model.ParticipationMethods.Select((value, index) => new { value, index }))
             {
                 <td>
-                    <input type="number" class="form-control me-2" placeholder="Gewicht" value="" required/>
+                    <input type="hidden" name="AnswerOptions[1].Impacts[@partMethod.index].ParticipationMethodName" value="@partMethod.value.Name"/>
+                    <input type="number" name="AnswerOptions[1].Impacts[@partMethod.index].Impactweight" class="form-control me-2" placeholder="Gewicht" value="" required/>
                 </td>
             }
         </tr>

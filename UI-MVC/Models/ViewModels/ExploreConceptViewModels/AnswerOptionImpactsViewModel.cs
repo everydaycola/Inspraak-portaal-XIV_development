@@ -3,5 +3,5 @@
 public class AnswerOptionImpactsViewModel
 {
     public string ParticipationMethodName { get; set; }
-    public string Impactweight { get; set; }
+    public int Impactweight { get; set; }
 }

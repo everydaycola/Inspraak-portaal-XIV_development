@@ -292,6 +292,13 @@ public class QuestionController : Controller
     public IActionResult AddQuestion(QuestionViewModel viewModel)
     {
         var answers = viewModel.AnswerOptions;
+        foreach (var viewModelAnswerOption in viewModel.AnswerOptions)
+        {
+            foreach (var answerOptionImpactsViewModel in viewModelAnswerOption.Impacts)
+            {
+                _questionManager.AddAnswerOptionImpact(answerOptionImpactsViewModel.Impactweight, answerOptionImpactsViewModel.ParticipationMethodName);
+            }
+        }
         _logger.Log(LogLevel.Information,"viewModelParsed");
         return Ok();
     }

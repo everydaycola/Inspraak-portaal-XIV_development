@@ -43,6 +43,11 @@ public class QuestionManager : IQuestionManager
         _questionRepository.CreateQuestion(newQuestion);
     }
 
+    public void AddAnswerOptionImpact(int impactweight, string participationMethodName)
+    {
+        throw new NotImplementedException();
+    }
+
     public void UpdateQuestion(int id, string question, List<AnswerOption> answerOption)
     {
         Question newQuestion = new Question()
