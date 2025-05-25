@@ -1,8 +1,8 @@
 using BL.Interfaces;
-using Mailjet.Client;
-using Mailjet.Client.Resources;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json.Linq;
+using Microsoft.IdentityModel.Tokens;
+using SendGrid;
+using SendGrid.Helpers.Mail;
 
 namespace BL.Managers;
 
@@ -16,38 +16,29 @@ public class SendMailManager : ISendMailManager
         _logger = logger;
         _fileManager = fileManager;
     }
-    public async Task SendSingleQRCodeInMailAsync(string email, string data)
+
+    public async Task SendSingleQrCodeInMailAsync(string email, string data)
     {
         var qrCodeBytes = _fileManager.CreateSingleQrCode(data);
         var base64QrCode = Convert.ToBase64String(qrCodeBytes);
         var imgSrc = $"data:image/png;base64,{base64QrCode}";
-        
-        var client =
-            new MailjetClient(Environment.GetEnvironmentVariable("MJ_APIKEY_PUBLIC"),
-                Environment.GetEnvironmentVariable("MJ_APIKEY_PRIVATE"));
 
-        var request = new MailjetRequest
-            {
-                Resource = Send.Resource,
-            }
-            .Property(Send.FromEmail, "ipveertien@outlook.com")
-            .Property(Send.FromName, "ipveertien")
-            .Property(Send.Subject, "Doe je mee aan ons burgerpanel?")
-            .Property(Send.TextPart, "Wij zoeken mensen zoals jou!")
-            .Property(Send.HtmlPart, $@"
-                <h3>Wil je meedoen aan ons panel?</h3>
-                <p><strong>Scan de QR-code hieronder:</strong></p>
-                <img src='{imgSrc}' alt='QR code' />
-                <p>Of klik hier: <a href='{data}'>{data}</a></p>
-            ").Property(Send.Recipients, new JArray
-            {
-                new JObject
-                {
-                    { "Email", email }
-                }
-            });
+        var apiKey = Environment.GetEnvironmentVariable("SENDGRID_API_KEY");
+        var client = new SendGridClient(apiKey);
 
-        MailjetResponse response = await client.PostAsync(request);
+        var fromMail = new EmailAddress("ipveertien@outlook.com", "ipveertien");
+        var subject = "Doe je mee aan ons burgerpanel?";
+        var toMail = new EmailAddress(email, "Potentieel Panellid");
+
+        var plainTextContent = "Wij zoeken mensen als jij!";
+        var htmlContent = $@"<p>Wil je meedoen aan ons panel?</p>
+                            <p><strong>Scan de QR-code hieronder:</strong></p>
+                            <img src=""{imgSrc}"" alt=""QR code"" />
+                            <p>Of klik hier: <a href=""{data}"">{data}</a></p>";
+
+
+        var msg = MailHelper.CreateSingleEmail(fromMail, toMail, subject, plainTextContent, htmlContent);
+        var response = await client.SendEmailAsync(msg);
         if (response.IsSuccessStatusCode)
         {
             _logger.LogInformation($"Email sent to {email} successfully.");
@@ -56,34 +47,19 @@ public class SendMailManager : ISendMailManager
         {
             Console.WriteLine($"Failed to send email to {email}");
             Console.WriteLine($"StatusCode: {response.StatusCode}");
-            Console.WriteLine($"ErrorInfo: {response.GetErrorInfo()}");
-            Console.WriteLine($"ErrorMessage: {response.GetErrorMessage()}");
         }
     }
-    public async Task SendSingleMailAsync(string email,string mailSubject, string textPart, string HTMLPart)
-    {
-        var client =
-            new MailjetClient(Environment.GetEnvironmentVariable("MJ_APIKEY_PUBLIC"),
-                Environment.GetEnvironmentVariable("MJ_APIKEY_PRIVATE"));
-        
-        var request = new MailjetRequest
-            {
-                Resource = Send.Resource,
-            }
-            .Property(Send.FromEmail, "ipveertien@outlook.com")
-            .Property(Send.FromName, "ipveertien")
-            .Property(Send.Subject, mailSubject)
-            .Property(Send.TextPart, textPart)
-            .Property(Send.HtmlPart, HTMLPart)
-            .Property(Send.Recipients, new JArray
-            {
-                new JObject
-                {
-                    { "Email", email }
-                }
-            });
 
-        MailjetResponse response = await client.PostAsync(request);
+    public async Task SendSingleMailAsync(string email, string mailSubject, string textPart, string htmlPart)
+    {
+        var apiKey = Environment.GetEnvironmentVariable("SENDGRID_API_KEY");
+        var client = new SendGridClient(apiKey);
+
+        var fromMail = new EmailAddress("ipveertien@outlook.com", "ipveertien");
+        var toMail = new EmailAddress(email, "Potentieel Panellid");
+
+        var msg = MailHelper.CreateSingleEmail(fromMail, toMail, mailSubject, textPart, htmlPart);
+        var response = await client.SendEmailAsync(msg);
         if (response.IsSuccessStatusCode)
         {
             _logger.LogInformation($"Email sent to {email} successfully.");
@@ -92,54 +68,41 @@ public class SendMailManager : ISendMailManager
         {
             Console.WriteLine($"Failed to send email to {email}");
             Console.WriteLine($"StatusCode: {response.StatusCode}");
-            Console.WriteLine($"ErrorInfo: {response.GetErrorInfo()}");
-            Console.WriteLine($"ErrorMessage: {response.GetErrorMessage()}");
         }
     }
-    
-    public async Task SendBulkMails(ICollection<string> emails, string mailSubject, string textPart, string HTMLPart)
-    {
-        var client = new MailjetClient(Environment.GetEnvironmentVariable("MJ_APIKEY_PUBLIC"),
-            Environment.GetEnvironmentVariable("MJ_APIKEY_PRIVATE"));
 
-        var messages = new JArray();
+    public async Task SendBulkMails(List<string> emails, string mailSubject, string textPart,
+        string htmlPart)
+    {
+        var apiKey = Environment.GetEnvironmentVariable("SENDGRID_API_KEY");
+        var client = new SendGridClient(apiKey);
+
+        var fromMail = new EmailAddress("ipveertien@outlook.com", "ipveertien");
+        var subject = mailSubject;
+
+        var allEmails = new List<EmailAddress>();
         foreach (var email in emails)
         {
-            if (string.IsNullOrWhiteSpace(email) || !email.Contains("@")) continue;
+            allEmails.Add(new EmailAddress(email));
+        }
 
-            var message = new JObject
+        var plainTextContent = textPart;
+        var htmlContent = htmlPart;
+
+        if (!allEmails.IsNullOrEmpty())
+        {
+            var msg = MailHelper.CreateSingleEmailToMultipleRecipients(fromMail, allEmails, subject, plainTextContent,
+                htmlContent);
+            var response = await client.SendEmailAsync(msg);
+            if (response.IsSuccessStatusCode)
             {
-                { "From", new JObject { { "Email", "ipveertien@outlook.com" }, { "Name", "ipveertien" } } },
-                { "To", new JArray { new JObject { { "Email", email } } } },
-                { "Subject", mailSubject },
-                { "TextPart", textPart },
-                { "HTMLPart", HTMLPart }
-            };
-            messages.Add(message);
-        }
-
-        var request = new MailjetRequest
-        {
-            Resource = Mailjet.Client.Resources.SendV31.Resource,
-        }.Property("Messages", messages);
-
-        MailjetResponse response = await client.PostAsync(request);
-
-        if (response.IsSuccessStatusCode)
-        {
-            _logger.LogInformation("Bulk email sent successfully.");
-        }
-        else
-        {
-            _logger.LogError($"Bulk email failed. StatusCode: {response.StatusCode}, Error: {response.GetErrorMessage()}, Info: {response.GetErrorInfo()}");
-        }
-    }
-    
-    public async Task SendMultipleMails(IDictionary<string, string> emailAndData)
-    {
-        foreach (var pair in emailAndData)
-        {
-            await SendSingleQRCodeInMailAsync(pair.Key, pair.Value);
+                _logger.LogInformation($"All emails have been sent successfully.");
+            }
+            else
+            {
+                Console.WriteLine($"Failed to send emails");
+                Console.WriteLine($"StatusCode: {response.StatusCode}");
+            }
         }
     }
 }
