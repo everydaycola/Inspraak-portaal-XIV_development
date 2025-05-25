@@ -171,7 +171,7 @@ public class PanelRepository : IPanelRepository
         var timeLine = ReadTimelineWithPosts(timeLineId);
         if (timeLine == null) return;
         timeLine.Posts.Add(post);
-        _context.Posts.Add(post);
+        _context.TimeLines.Update(timeLine);
         _context.SaveChanges();
     }
     

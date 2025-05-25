@@ -12,64 +12,77 @@
     <script src="~/dist/suggestionVisibility.entry.js" type="module"></script>
 }
 
-<div class="container mt-5">
-    <div class="row m-2">
-        <h2>Projectpagina</h2>
+<div class="container py-5">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h2 class="display-5 mb-0 fw-bold">Projectpagina</h2>
+            <hr class="mt-2 mb-0">
+        </div>
     </div>
 
     <div id="modal-root" class="hidden" data-open-modal="@ViewBag.OpenModal"></div>
 
-    <div class="row" style="min-height: 60vh;">
+    <div class="row g-4" style="min-height: 60vh;">
         <!-- Left column: two stacked cards -->
-        <div class="col-3 d-flex flex-column gap-3">
-            <div class="card shadow-sm border-0 flex-fill">
-                <div class="card-body">
-                    <h3>Welkom!</h3>
-                    <p>We organiseren een burgerpanel om inzicht te krijgen in de ervaring omtrent
+        <div class="col-12 col-md-4 col-lg-3 d-flex flex-column gap-4">
+            <div class="card shadow-sm border-0 bg-light rounded-3">
+                <div class="card-body p-4">
+                    <h3 class="card-title fw-bold mb-3 text-primary">Welkom!</h3>
+                    <p class="card-text lead">We organiseren een burgerpanel om inzicht te krijgen in de ervaring omtrent
                         verkeersveiligheid?</p>
-                    <h4>De werking?</h4>
-                    <p>Tijdens een werksessie komen we allemaal samen om informatie op te doen over gerelateerde
+                    <h4 class="mt-4 mb-3 fw-bold text-primary">De werking?</h4>
+                    <p class="card-text">Tijdens een werksessie komen we allemaal samen om informatie op te doen over gerelateerde
                         onderwerpen begeleid door professionals. Of om er over te discusieren.</p>
-                    <br/>
-                    <p>Zo'n werksessie wordt vroegtijdig ingepland en kan je zien op deze pagina. ook ontvang je een
+                    <p class="card-text mt-3">Zo'n werksessie wordt vroegtijdig ingepland en kan je zien op deze pagina. Ook ontvang je een
                         e-mail van elke werksessie die ingepland wordt.</p>
-                    <br/>
-                    <p>OOk zul je op deze pagina jouw stem kunnen uitbrengen op aanbevelingen op basis van de discussie
+                    <p class="card-text mt-3">Ook zul je op deze pagina jouw stem kunnen uitbrengen op aanbevelingen op basis van de discussie
                         sessies!</p>
                 </div>
             </div>
-            <div class="card shadow-sm border-0 flex-fill">
-                <div class="card-body">
-                    <h2>Suggestion posts here.</h2>
-                </div>
-            </div>
+            @* <div class="card shadow-sm border-0 rounded-3"> *@
+            @*     <div class="card-header bg-primary text-white py-3 border-0"> *@
+            @*         <h5 class="card-title mb-0 fw-bold">Recente suggesties</h5> *@
+            @*     </div> *@
+            @*     <div class="list-group list-group-flush"> *@
+            @*         <div class="list-group-item p-4 border-bottom"> *@
+            @*             <h6 class="mb-2 fw-semibold">[titel].</h6> *@
+            @*             <small class="text-muted d-block">Toegevoegd op [datum]</small> *@
+            @*         </div> *@
+            @*     </div> *@
+            @* </div> *@
         </div>
         
-        
-
-        
-        <div class="col-8 d-flex flex-column">
-            <div class="col">
-                <div class="h-100">
-                    <button class="btn btn-primary d-flex align-items-center gap-2 w-100" data-bs-toggle="modal"
+        <!-- Right column: timelines -->
+        <div class="col-12 col-md-8 col-lg-9 d-flex flex-column gap-4">
+            <div class="card shadow-sm border-0 rounded-3">
+                <div class="card-header bg-light border-0 py-3">
+                    <h4 class="card-title mb-0 fw-bold">Tijdlijnen</h4>
+                </div>
+                <div class="card-body p-4">
+                    <button class="btn btn-primary d-flex align-items-center justify-content-center gap-2 w-100 py-3" 
+                            data-bs-toggle="modal"
                             data-bs-target="#addTimeLineModal">
-                        <i class="bi bi-collection"></i>
-                        Nieuwe tijdlijn aanmaken
+                        <i class="bi bi-collection fs-5"></i>
+                        <span class="fw-semibold">Nieuwe tijdlijn aanmaken</span>
                     </button>
                 </div>
             </div>
-            
-            @foreach (var timeLine in Model.Panel.Timelines)
-            {
-                <partial name="_Posts"
-                         model="@(new TimeLineViewModel
-                                {
-                                    PanelId = Model.Panel.Id,
-                                    CurrentUser = Model.CurrentUser,
-                                    TimeLineId = timeLine.Id,
-                                    Posts = timeLine.Posts
-                                })"/>
-            }
+    
+            <div class="accordion shadow-sm rounded-3 overflow-hidden" id="timeLineAccordion">
+                @foreach (var timeLine in Model.Panel.Timelines.OrderByDescending(t => t.CreatedAt))
+                {
+                    <partial name="_TimeLine"
+                             model="@(new TimeLineViewModel
+                                    {
+                                        PanelId = Model.Panel.Id,
+                                        CurrentUser = Model.CurrentUser,
+                                        TimeLineId = timeLine.Id,
+                                        Posts = timeLine.Posts,
+                                        Date = timeLine.CreatedAt,
+                                        Name = timeLine.Title
+                                    })" />
+                }
+            </div>
         </div>
     </div>
 </div>
@@ -78,29 +91,33 @@
 <div class="modal fade" id="addTimeLineModal" tabindex="-1" aria-labelledby="addTimeLineModalLabel"
      aria-hidden="true">
     <div class="modal-dialog modal-lg">
-        <div class="modal-content shadow">
-            <div class="modal-header">
-                <h5 class="modal-title" id="addTimeLineModalLabel">Suggestie toevoegen</h5>
+        <div class="modal-content shadow-lg border-0">
+            <div class="modal-header bg-light py-3">
+                <h5 class="modal-title fw-bold" id="addTimeLineModalLabel">Nieuwe tijdlijn aanmaken</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"
                         aria-label="Sluiten"></button>
             </div>
-            <div class="modal-body">
+            <div class="modal-body p-4">
                 <form id="addTimeLineForm" asp-action="addTimeLine" method="post">
                     @if (ViewBag.OpenModal == "addTimeLineModal")
                     {
-                        <div asp-validation-summary="All" class="alert alert-danger"></div>
+                        <div asp-validation-summary="All" class="alert alert-danger mb-4"></div>
                     }
                     <input type="hidden" name="panelId" value="@Model.Panel.Id"/>
-                    <div class="mb-3">
-                        <label for="titleInput" class="form-label">TimeLine Titel</label>
-                        <input type="text" class="form-control" id="titleInput" name="title"
-                               placeholder="Voer een titel in." required/>
+                    <div class="mb-4">
+                        <label for="titleInput" class="form-label fw-semibold">Tijdlijn titel</label>
+                        <input type="text" class="form-control form-control-lg" id="titleInput" name="title"
+                               placeholder="Voer een titel in voor de nieuwe tijdlijn" required/>
+                        <div class="form-text">Geef een duidelijke naam die de inhoud van deze tijdlijn beschrijft.</div>
                     </div>
 
-                    <div class="text-end">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuleren
+                    <div class="d-flex justify-content-end gap-2 mt-4">
+                        <button type="button" class="btn btn-outline-secondary px-4 py-2" data-bs-dismiss="modal">
+                            Annuleren
                         </button>
-                        <button type="submit" class="btn btn-success">Opslaan</button>
+                        <button type="submit" class="btn btn-success px-4 py-2">
+                            <i class="bi bi-plus-circle me-2"></i>Tijdlijn aanmaken
+                        </button>
                     </div>
                 </form>
             </div>

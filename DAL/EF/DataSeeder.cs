@@ -49,7 +49,7 @@ public static class DataSeeder
             {
                 new()
                 {
-                    Title = "Alle Posts",
+                    Title = "Welkom op de project pagina!",
                     CreatedAt = DateTime.UtcNow,
                     Posts = new List<Post>
                     {
