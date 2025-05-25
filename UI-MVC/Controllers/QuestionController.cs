@@ -288,4 +288,11 @@ public class QuestionController : Controller
 
         return Json(questionViewModel);
     }
+
+    public IActionResult AddQuestion(QuestionViewModel viewModel)
+    {
+        var answers = viewModel.AnswerOptions;
+        _logger.Log(LogLevel.Information,"viewModelParsed");
+        return Ok();
+    }
 }

@@ -1,0 +1,57 @@
+﻿@model UI_MVC.Models.ViewModels.ExploreConceptViewModels.QuestionViewModel
+
+
+<form id="questionForm" asp-action="AddQuestion" asp-controller="Question" method="post">
+    <div asp-validation-summary="ModelOnly" class="text-danger" data-valmsg-summary="true"></div>
+    <div class="mb-3">
+        <label class="form-label">Vraagtekst</label>
+        <input asp-for="QuestionText" type="text" class="form-control" placeholder="Voer de vraagtekst in" required/>
+        <span class="text-danger"></span>
+    </div>
+    <button type="button" class="btn btn-info"
+            data-bs-toggle="modal"
+            data-bs-target="#explanationModal">
+        <i class="bi bi-question-lg"></i>
+    </button>
+    <table id="answerWeightTable">
+        <input type="hidden" id="amountOfParticipationMethods" value="@Model.ParticipationMethods.Count()"/>
+        <input type="hidden" asp-for="ParticipationMethods" id="ParticipationMethods" value="@Model.ParticipationMethods"/>
+        <tr>
+            <th>Antwoorden</th>
+            @foreach (var partMethod in Model.ParticipationMethods)
+            {
+                <th>@partMethod.Name</th>
+            }
+        </tr>
+        <tr>
+            <td>
+                <input type="text" class="form-control me-2" placeholder="Antwoordtekst" value="" required/>
+            </td>
+            @foreach (var partMethod in Model.ParticipationMethods)
+            {
+                <td>
+                    <input type="number" class="form-control me-2" placeholder="Gewicht" value="" required/>
+                </td>
+            }
+        </tr>
+        <tr>
+            <td>
+                <input type="text" name="QuestionToEdit.AnswerOptions.AnswerOptionText" class="form-control me-2" placeholder="Antwoordtekst" value="" required/>
+            </td>
+            @foreach (var partMethod in Model.ParticipationMethods)
+            {
+                <td>
+                    <input type="number" class="form-control me-2" placeholder="Gewicht" value="" required/>
+                </td>
+            }
+        </tr>
+    </table>
+    <div class="mb-3">
+        <label class="form-label">Antwoordopties</label>
+        <button type="button" class="btn btn-outline-secondary btn-sm" id="addAnswerOption">
+            <i class="bi bi-plus-circle"></i> Optie toevoegen
+        </button>
+    </div>
+
+    <button type="submit" class="btn btn-success" id="questionSubmitBtn">Vraag toevoegen</button>
+</form>

@@ -1,3 +1,4 @@
+@using UI_MVC.Models.ViewModels.ExploreConceptViewModels
 @model UI_MVC.Models.ViewModels.ExploreConceptViewModels.QuestionIndexViewModel
 
 @{
@@ -13,78 +14,10 @@
         <h2 class="mb-4">Vraagbeheer</h2>
         <div class="card shadow-sm border-0 mb-5">
             <div class="card-body">
-                <form id="questionForm" asp-action="AddOrUpdate" asp-controller="Question" method="post">
-                    <div asp-validation-summary="ModelOnly" class="text-danger" data-valmsg-summary="true"></div>
-                    <input type="hidden" asp-for="QuestionToEdit.Id"/>
-                    <div class="mb-3">
-                        <label asp-for="QuestionToEdit.Question" class="form-label">Vraagtekst</label>
-                        <input type="text" asp-for="QuestionToEdit.Question" class="form-control" placeholder="Voer de vraagtekst in" required/>
-                        <span asp-validation-for="QuestionToEdit.Question" class="text-danger"></span>
-                    </div>
-                    <button type="button" class="btn btn-info"
-                            data-bs-toggle="modal"
-                            data-bs-target="#explanationModal">
-                        <i class="bi bi-question-lg"></i>
-                    </button>
-                    <table id="answerWeightTable">
-                        <input type="hidden" id="amountOfParticipationMethods" value="@Model.ParticipationMethods.Count()"/>
-                        <tr>
-                            <th>Antwoorden</th>
-                            @foreach (var partMethod in Model.ParticipationMethods)
-                            {
-                                <th>@partMethod.Name</th>
-                            }
-                        </tr>
-                        <tr>
-                            <td>
-                                <input type="text" name="QuestionToEdit.AnswerOptions.AnswerOptionText" class="form-control me-2" placeholder="Antwoordtekst" value="" required/>
-                            </td>
-                            @foreach (var partMethod in Model.ParticipationMethods)
-                            {
-                                <td>
-                                    <input type="number" name="QuestionToEdit.AnswerOptions.Weight" class="form-control me-2" placeholder="Gewicht" value="" required/>
-                                </td>
-                            }
-                        </tr>
-                        <tr>
-                            <td>
-                                <input type="text" name="QuestionToEdit.AnswerOptions.AnswerOptionText" class="form-control me-2" placeholder="Antwoordtekst" value="" required/>
-                            </td>
-                            @foreach (var partMethod in Model.ParticipationMethods)
-                            {
-                                <td>
-                                    <input type="number" name="QuestionToEdit.AnswerOptions.Weight" class="form-control me-2" placeholder="Gewicht" value="" required/>
-                                </td>
-                            }
-                        </tr>
-                    </table>
-                    <div class="mb-3">
-                        <label class="form-label">Antwoordopties</label>
-                        <!--<div id="answerOptionsContainer">
-                            @* Render existing options if model has them (e.g., after validation error) *@
-                            @if (Model.QuestionToEdit.AnswerOptions != null)
-                            {
-                                @for (int i = 0; i < Model.QuestionToEdit.AnswerOptions.Count; i++)
-                                {
-                                    <div class="d-flex align-items-center mb-2 answer-option-row">
-                                        <input type="hidden" name="QuestionToEdit.AnswerOptions[@i].Id" value="@Model.QuestionToEdit.AnswerOptions[i].Id"/>
-                                        <input type="text" name="QuestionToEdit.AnswerOptions[@i].AnswerOptionText" class="form-control me-2" placeholder="Antwoordtekst" value="@Model.QuestionToEdit.AnswerOptions[i].AnswerOptionText" required/>
-                                        <input type="number" name="QuestionToEdit.AnswerOptions[@i].Weight" class="form-control me-2" placeholder="Gewicht" value="@Model.QuestionToEdit.AnswerOptions[i].Weight" required/>
-                                        <button type="button" class="btn btn-sm btn-outline-danger remove-answer-option">X</button>
-                                    </div>
-                                }
-                            }
-                        </div>-->
-                        <button type="button" class="btn btn-outline-secondary btn-sm" id="addAnswerOption">
-                            <i class="bi bi-plus-circle"></i> Optie toevoegen
-                        </button>
-                        @* This span will display validation errors for the AnswerOptions collection itself (e.g., MinLength) *@
-                        <span asp-validation-for="QuestionToEdit.AnswerOptions" class="text-danger"></span>
-                    </div>
-
-                    <button type="submit" class="btn btn-success" id="questionSubmitBtn">Vraag toevoegen</button>
-                    <button type="button" class="btn btn-secondary ms-2" id="newQuestionBtn">Nieuwe vraag</button>
-                </form>
+                <partial
+                    name="_questionFormPartial"
+                    model="@(new QuestionViewModel { ParticipationMethods = Model.ParticipationMethods })">
+                </partial>
             </div>
         </div>
         <div class="row">
@@ -224,74 +157,95 @@
                         <form id="modalQuestionForm">
                             <div class="mb-3">
                                 <label class="form-label">Vraagtekst</label>
-                                <input type="text" class="form-control" 
-                                       name="QuestionToEdit.Question" 
+                                <input type="text" class="form-control"
+                                       name="QuestionToEdit.Question"
                                        value="Over hoeveel maanden beschik je nog voordat de input van de participatie klaar moet
 zijn voor de politieke besluitvorming?" required>
                             </div>
-                            
+
                             <div class="mb-3">
                                 <label class="form-label">Antwoordopties en gewichten</label>
                                 <table class="table table-bordered">
                                     <thead>
-                                        <tr>
-                                            <th>Antwoord</th>
-                                            <th>Burgerpanel <i class="bi bi-info-circle" data-bs-toggle="tooltip" title="Bijv. Online enquête"></i></th>
-                                            <th>Enquéte <i class="bi bi-info-circle" data-bs-toggle="tooltip" title="Bijv. Workshop"></i></th>
-                                            <th>Informatieve campagne <i class="bi bi-info-circle" data-bs-toggle="tooltip" title="Bijv. Expertreview"></i></th>
-                                        </tr>
+                                    <tr>
+                                        <th>Antwoorden</th>
+                                        <th>Burgerpanel <i class="bi bi-info-circle" data-bs-toggle="tooltip" title="Bijv. Online enquête"></i></th>
+                                        <th>Enquéte <i class="bi bi-info-circle" data-bs-toggle="tooltip" title="Bijv. Workshop"></i></th>
+                                        <th>Informatieve campagne <i class="bi bi-info-circle" data-bs-toggle="tooltip" title="Bijv. Expertreview"></i></th>
+                                    </tr>
                                     </thead>
                                     <tbody>
                                     <tr>
                                         <td>
-                                            <input type="text" 
-                                                   name="QuestionToEdit.AnswerOptions[0].AnswerOptionText" 
-                                                   class="form-control" 
+                                            <input type="text"
+                                                   class="form-control"
                                                    placeholder="Meer dan 6 maanden" required>
                                         </td>
-                                        <td><input type="number" name="QuestionToEdit.AnswerOptions[0].WeightsPerMethod[1].Weight" class="form-control" value="10"></td>
-                                        <td><input type="number" name="QuestionToEdit.AnswerOptions[0].WeightsPerMethod[2].Weight" class="form-control" value="0"></td>
-                                        <td><input type="number" name="QuestionToEdit.AnswerOptions[0].WeightsPerMethod[3].Weight" class="form-control" value="0"></td>
+                                        <td>
+                                            <input type="number" name="QuestionToEdit.AnswerOptions[0].WeightsPerMethod[1].Weight" class="form-control" value="10">
+                                        </td>
+                                        <td>
+                                            <input type="number" name="QuestionToEdit.AnswerOptions[0].WeightsPerMethod[2].Weight" class="form-control" value="0">
+                                        </td>
+                                        <td>
+                                            <input type="number" name="QuestionToEdit.AnswerOptions[0].WeightsPerMethod[3].Weight" class="form-control" value="0">
+                                        </td>
                                     </tr>
                                     <tr>
                                         <td>
-                                            <input type="text" 
-                                                   name="QuestionToEdit.AnswerOptions[0].AnswerOptionText" 
-                                                   class="form-control" 
+                                            <input type="text"
+                                                   class="form-control"
                                                    placeholder="Tussen 3 en 6 maanden" required>
                                         </td>
-                                        <td><input type="number" name="QuestionToEdit.AnswerOptions[0].WeightsPerMethod[1].Weight" class="form-control" value="0"></td>
-                                        <td><input type="number" name="QuestionToEdit.AnswerOptions[0].WeightsPerMethod[2].Weight" class="form-control" value="10"></td>
-                                        <td><input type="number" name="QuestionToEdit.AnswerOptions[0].WeightsPerMethod[3].Weight" class="form-control" value="0"></td>
+                                        <td>
+                                            <input type="number" name="QuestionToEdit.AnswerOptions[0].WeightsPerMethod[1].Weight" class="form-control" value="0">
+                                        </td>
+                                        <td>
+                                            <input type="number" name="QuestionToEdit.AnswerOptions[0].WeightsPerMethod[2].Weight" class="form-control" value="10">
+                                        </td>
+                                        <td>
+                                            <input type="number" name="QuestionToEdit.AnswerOptions[0].WeightsPerMethod[3].Weight" class="form-control" value="0">
+                                        </td>
                                     </tr>
                                     <tr>
                                         <td>
-                                            <input type="text" 
-                                                   name="QuestionToEdit.AnswerOptions[0].AnswerOptionText" 
-                                                   class="form-control" 
+                                            <input type="text"
+                                                   class="form-control"
                                                    placeholder="1 tot 3 maanden" required>
                                         </td>
-                                        <td><input type="number" name="QuestionToEdit.AnswerOptions[0].WeightsPerMethod[1].Weight" class="form-control" value="0"></td>
-                                        <td><input type="number" name="QuestionToEdit.AnswerOptions[0].WeightsPerMethod[2].Weight" class="form-control" value="0"></td>
-                                        <td><input type="number" name="QuestionToEdit.AnswerOptions[0].WeightsPerMethod[3].Weight" class="form-control" value="10"></td>
+                                        <td>
+                                            <input type="number" name="QuestionToEdit.AnswerOptions[0].WeightsPerMethod[1].Weight" class="form-control" value="0">
+                                        </td>
+                                        <td>
+                                            <input type="number" name="QuestionToEdit.AnswerOptions[0].WeightsPerMethod[2].Weight" class="form-control" value="0">
+                                        </td>
+                                        <td>
+                                            <input type="number" name="QuestionToEdit.AnswerOptions[0].WeightsPerMethod[3].Weight" class="form-control" value="10">
+                                        </td>
                                     </tr>
                                     <tr>
                                         <td>
-                                            <input type="text" 
-                                                   name="QuestionToEdit.AnswerOptions[0].AnswerOptionText" 
-                                                   class="form-control" 
+                                            <input type="text"
+                                                   name="QuestionToEdit.AnswerOptions[0].AnswerOptionText"
+                                                   class="form-control"
                                                    placeholder="Minder dan 1 maand" required>
                                         </td>
-                                        <td><input type="number" name="QuestionToEdit.AnswerOptions[0].WeightsPerMethod[1].Weight" class="form-control" value="0"></td>
-                                        <td><input type="number" name="QuestionToEdit.AnswerOptions[0].WeightsPerMethod[2].Weight" class="form-control" value="0"></td>
-                                        <td><input type="number" name="QuestionToEdit.AnswerOptions[0].WeightsPerMethod[3].Weight" class="form-control" value="100"></td>
+                                        <td>
+                                            <input type="number" name="QuestionToEdit.AnswerOptions[0].WeightsPerMethod[1].Weight" class="form-control" value="0">
+                                        </td>
+                                        <td>
+                                            <input type="number" name="QuestionToEdit.AnswerOptions[0].WeightsPerMethod[2].Weight" class="form-control" value="0">
+                                        </td>
+                                        <td>
+                                            <input type="number" name="QuestionToEdit.AnswerOptions[0].WeightsPerMethod[3].Weight" class="form-control" value="100">
+                                        </td>
                                     </tr>
                                     </tbody>
                                 </table>
                             </div>
                         </form>
                     </div>
-                    
+
                     <!-- Explanation Section -->
                     <div class="col-md-5 border-start">
                         <div class="p-3">
@@ -322,7 +276,7 @@ zijn voor de politieke besluitvorming?" required>
                                     </div>
                                 </li>
                             </ol>
-                            
+
                             <div class="alert alert-info mt-3">
                                 <i class="bi bi-exclamation-circle"></i>
                                 <strong>Tip:</strong> Houd de som van gewichten per vraag rond 0 voor neutrale impact
