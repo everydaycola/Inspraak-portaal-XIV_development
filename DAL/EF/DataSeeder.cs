@@ -1,7 +1,9 @@
 ﻿using Domain;
 using Domain.CitizenPanel;
+using Domain.Enums;
 using Domain.Interfaces;
 using Domain.Interfaces.Posts;
+using Domain.Interfaces.Posts.PostItems;
 
 namespace DAL.EF;
 
@@ -30,6 +32,12 @@ public static class DataSeeder
             BackgroundImage = ""
         };
 
+        var panelMemberHendrick = new ApplicationUser(organisationId: organisation1.Id);
+        var panelMemberAnika = new ApplicationUser(organisationId: organisation1.Id);
+        var panelMemberMartin = new ApplicationUser(organisationId: organisation1.Id);
+        var panelMemberLais = new ApplicationUser(organisationId: organisation1.Id);
+
+
         //REPRESENTATION GROUPS
         //PANELS
         var newPanel = new Panel
@@ -48,26 +56,59 @@ public static class DataSeeder
             Posts = new List<Post>
             {
                 //PROJECT PAGE POSTS
-                /*new TextPost()
+                new TextPost()
                 {
-                    Content = "Test post!",
-                    CreatedAt = DateTime.UtcNow,
+                    Title = "Welkom bij ons panel: Samen voor Verkeersveiligheid!",
+                    Content =
+                        "Hartelijk welkom aan alle panelleden! We zijn verheugd jullie te mogen verwelkomen op dit platform, speciaal opgezet om samen te werken aan een veiliger verkeer in Antwerpen. Jullie mening en inzicht zijn van onschatbare waarde. Dit panel is dé plek om ideeën uit te wisselen, knelpunten te bespreken en concrete voorstellen te doen die direct kunnen bijdragen aan het verbeteren van de verkeersveiligheid voor iedereen. We kijken ernaar uit om jullie actieve deelname en waardevolle bijdragen te zien. Laten we samen bouwen aan een toekomst waarin iedereen zich veilig voelt op de weg! (Meer info volgt spoedig)",
+                    CreatedAt = DateTime.UtcNow.Subtract(TimeSpan.FromHours(3.2)) - TimeSpan.FromDays(7),
                 },
-                new DocumentPost()
+                new TextPost()
                 {
-                    DocumentName = "/mydocument",
-                    CreatedAt = DateTime.UtcNow,
+                    Title = "Onze eerste meating: " + (DateTime.UtcNow - TimeSpan.FromDays(5)).ToShortDateString() +
+                            " " + DateTime.UtcNow.ToShortTimeString(),
+                    Content =
+                        "De eerste werksessie staat op de planning! Om dit panel vlug te kunnen beginnen plannen wij graag al meteen de eerste sessie in . Details rond deze sessie volgen nog. Tijdens deze eerste meeting zullen we kennismaken, de doelstellingen van dit panel verder toelichten en de agenda voor de komende weken bespreken. Wij hopen dat jullie hier in grote aantallen te mogen ontvangen! Tot snel.",
+                    CreatedAt = DateTime.UtcNow - TimeSpan.FromDays(5),
                 },
-                new EmbeddedVideoPost()
-                {
-                    VideoUrl = "/myvideo",
-                    CreatedAt = DateTime.UtcNow,
-                },*/
                 new MeetingPost
                 {
-                    CreatedAt = DateTime.UtcNow,
+                    CreatedAt = DateTime.UtcNow - TimeSpan.FromDays(5),
                     Title = "Bijeenkomst #1 - Gesprekken over duidelijkheid verkeersregels.",
-                    DocumentNames = new List<string> { "Testeken1", "testeken2" }
+                },
+                new SuggestionPost
+                {
+                    Title = "Suggesties na Bijeenkomst #1: Wat zou jij graag meer/beter zien in Antwerpen?",
+                    CreatedAt = DateTime.UtcNow - TimeSpan.FromDays(5) + TimeSpan.FromHours(1),
+                    Suggestions = new List<Suggestion>
+                    {
+                        new()
+                        {
+                            Title = "Meer alcoholcontroles op de Noorderlaan!",
+                            CreatedAt = DateTime.UtcNow - TimeSpan.FromDays(3),
+                            OwnerEmail = "chantal.verbruggen@gmail.com",
+                            Votes = new List<Vote>()
+                            {
+                                new(owner: panelMemberLais, voteType: VoteType.Up),
+                                new(owner: panelMemberAnika, voteType: VoteType.Down),
+                                new(owner: panelMemberHendrick, voteType: VoteType.Up),
+                                new(owner: panelMemberMartin, voteType: VoteType.Down),
+                            }
+                        },
+                        new()
+                        {
+                            Title = "Fietspaden op de paardenmarkt!",
+                            CreatedAt = DateTime.UtcNow - TimeSpan.FromDays(4),
+                            OwnerEmail = "gert.lambrechts@gmail.com",
+                            Votes = new List<Vote>
+                            {
+                                new(owner: panelMemberLais, voteType: VoteType.Up),
+                                new(owner: panelMemberAnika, voteType: VoteType.Up),
+                                new(owner: panelMemberHendrick, voteType: VoteType.Up),
+                                new(owner: panelMemberMartin, voteType: VoteType.Down),
+                            }
+                        }
+                    }
                 }
             },
             Criteria = new List<Criteria>
@@ -168,15 +209,15 @@ public static class DataSeeder
             },
             Functie = "CEO"
         };
-        var jand = new PlanningGroupMember
+        var tomr = new PlanningGroupMember
         {
             Panel = newPanel,
             User = new ApplicationUser
             {
-                Email = "JanDeRijke@antwerpen.be",
-                NormalizedEmail = "JanDeRijke@ANTWERPEN.BE",
-                UserName = "Jan De Rijke",
-                NormalizedUserName = "JANDERIJKE"
+                Email = "tom.riddle@antwerpen.be",
+                NormalizedEmail = "TomRiddle@ANTWERPEN.BE",
+                UserName = "Tom Riddle",
+                NormalizedUserName = "TOMRIDDLE"
             },
             Functie = "Software Architect"
         };
@@ -215,7 +256,7 @@ public static class DataSeeder
         List<PanelMember> panelMembersToSeed = new List<PanelMember>();
         int memberCount = 1; // Counter for unique emails
 
-        panelMembersToSeed.AddRange(Enumerable.Range(1, 10).Select(i => new PanelMember
+        panelMembersToSeed.AddRange(Enumerable.Range(1, 10).Select(_ => new PanelMember
         {
             Panel = newPanel, // Use the reference to the previously saved panel
             Responses = new List<CriteriaResponse>
@@ -230,7 +271,7 @@ public static class DataSeeder
             Selected = false
         }));
 
-        panelMembersToSeed.AddRange(Enumerable.Range(1, 10).Select(i => new PanelMember
+        panelMembersToSeed.AddRange(Enumerable.Range(1, 10).Select(_ => new PanelMember
         {
             Panel = newPanel,
             Responses = new List<CriteriaResponse>
@@ -245,7 +286,7 @@ public static class DataSeeder
             Selected = false
         }));
 
-        panelMembersToSeed.AddRange(Enumerable.Range(1, 8).Select(i => new PanelMember
+        panelMembersToSeed.AddRange(Enumerable.Range(1, 8).Select(_ => new PanelMember
         {
             Panel = newPanel,
             Responses = new List<CriteriaResponse>
@@ -260,7 +301,7 @@ public static class DataSeeder
             Selected = false
         }));
 
-        panelMembersToSeed.AddRange(Enumerable.Range(1, 12).Select(i => new PanelMember
+        panelMembersToSeed.AddRange(Enumerable.Range(1, 12).Select(_ => new PanelMember
         {
             Panel = newPanel,
             Responses = new List<CriteriaResponse>
@@ -275,7 +316,7 @@ public static class DataSeeder
             Selected = false
         }));
 
-        panelMembersToSeed.AddRange(Enumerable.Range(1, 11).Select(i => new PanelMember
+        panelMembersToSeed.AddRange(Enumerable.Range(1, 11).Select(_ => new PanelMember
         {
             Panel = newPanel,
             Responses = new List<CriteriaResponse>
@@ -289,7 +330,7 @@ public static class DataSeeder
             User = AddOrUpdateUser(context, $"member{memberCount - 1}@example.com"),
             Selected = false
         }));
-        panelMembersToSeed.AddRange(Enumerable.Range(1, 5).Select(i => new PanelMember
+        panelMembersToSeed.AddRange(Enumerable.Range(1, 5).Select(_ => new PanelMember
         {
             Panel = newPanel,
             Responses = new List<CriteriaResponse>
@@ -303,7 +344,7 @@ public static class DataSeeder
             User = AddOrUpdateUser(context, $"member{memberCount - 1}@example.com"),
             Selected = false
         }));
-        panelMembersToSeed.AddRange(Enumerable.Range(1, 2).Select(i => new PanelMember
+        panelMembersToSeed.AddRange(Enumerable.Range(1, 2).Select(_ => new PanelMember
         {
             Panel = newPanel,
             Responses = new List<CriteriaResponse>
@@ -317,7 +358,7 @@ public static class DataSeeder
             User = AddOrUpdateUser(context, $"member{memberCount - 1}@example.com"),
             Selected = false
         }));
-        panelMembersToSeed.AddRange(Enumerable.Range(1, 8).Select(i => new PanelMember
+        panelMembersToSeed.AddRange(Enumerable.Range(1, 8).Select(_ => new PanelMember
         {
             Panel = newPanel,
             Responses = new List<CriteriaResponse>
@@ -331,7 +372,7 @@ public static class DataSeeder
             User = AddOrUpdateUser(context, $"member{memberCount - 1}@example.com"),
             Selected = false
         }));
-        panelMembersToSeed.AddRange(Enumerable.Range(1, 15).Select(i => new PanelMember
+        panelMembersToSeed.AddRange(Enumerable.Range(1, 15).Select(_ => new PanelMember
         {
             Panel = newPanel,
             Responses = new List<CriteriaResponse>
@@ -345,7 +386,7 @@ public static class DataSeeder
             User = AddOrUpdateUser(context, $"member{memberCount - 1}@example.com"),
             Selected = false
         }));
-        panelMembersToSeed.AddRange(Enumerable.Range(1, 5).Select(i => new PanelMember
+        panelMembersToSeed.AddRange(Enumerable.Range(1, 5).Select(_ => new PanelMember
         {
             Panel = newPanel,
             Responses = new List<CriteriaResponse>
@@ -359,7 +400,7 @@ public static class DataSeeder
             User = AddOrUpdateUser(context, $"member{memberCount - 1}@example.com"),
             Selected = false
         }));
-        panelMembersToSeed.AddRange(Enumerable.Range(1, 2).Select(i => new PanelMember
+        panelMembersToSeed.AddRange(Enumerable.Range(1, 2).Select(_ => new PanelMember
         {
             Panel = newPanel,
             Responses = new List<CriteriaResponse>
@@ -373,7 +414,7 @@ public static class DataSeeder
             User = AddOrUpdateUser(context, $"member{memberCount - 1}@example.com"),
             Selected = false
         }));
-        panelMembersToSeed.AddRange(Enumerable.Range(1, 7).Select(i => new PanelMember
+        panelMembersToSeed.AddRange(Enumerable.Range(1, 7).Select(_ => new PanelMember
         {
             Panel = newPanel,
             Responses = new List<CriteriaResponse>
@@ -397,7 +438,7 @@ public static class DataSeeder
         AddMultipleEntities(panelMembersMen);
         AddMultipleEntities(panelMembersWomen);
         AddMultipleEntities(panelMembersToSeed);
-        AddMultipleEntities([oscarv, marcom, jand]);
+        AddMultipleEntities([oscarv, marcom, tomr]);
         AddMultipleEntities([organisation1, organisation2]);
         context.SaveChanges();
         context.ChangeTracker.Clear();
