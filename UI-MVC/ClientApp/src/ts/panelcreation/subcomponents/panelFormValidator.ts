@@ -6,6 +6,11 @@
 export function setValidationMessages(ctrlID: string, msgEleID: string,
     messages: ValidationMessages) {
     let element = document.getElementById(ctrlID) as HTMLInputElement
+
+    if (!element) {
+        console.warn(`Element with id '${ctrlID}' not found.`);
+        return;
+    }
     element.addEventListener("focusout", () => {
 
         let flag: boolean = false;

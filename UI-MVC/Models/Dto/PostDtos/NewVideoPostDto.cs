@@ -1,13 +1,13 @@
 using System.ComponentModel.DataAnnotations;
 using System.Text.RegularExpressions;
 
-namespace UI_MVC.Models.Dto.ProjectPage;
+namespace UI_MVC.Models.Dto.PostDtos;
 
 public class NewVideoPostDto: IValidatableObject
 {
     private static readonly Regex Regex = new Regex(
         @"(?:youtube(?:-nocookie)?\.com/(?:[^/]+/.+/|(?:v|e(?:mbed)?)/|.*[?&]v=)|youtu\.be/)([^""&?/\s]{11})", 
-    RegexOptions.IgnoreCase);
+        RegexOptions.IgnoreCase);
     
     [Required(ErrorMessage = "Panel ID is required")]
     public Guid PanelId { get; set; }
@@ -42,12 +42,12 @@ public class NewVideoPostDto: IValidatableObject
                     "U heeft zowel een youtube als video url ingegeven.",
                     [nameof(YoutubeUrl), nameof(VideoUrl)]));
         } else if (!string.IsNullOrWhiteSpace(VideoUrl) && (!Uri.TryCreate(VideoUrl, UriKind.Absolute, out var uriResult) ||
-                (uriResult.Scheme != Uri.UriSchemeHttp && uriResult.Scheme != Uri.UriSchemeHttps)))
-            {
-                validationResults.Add(
-                    new ValidationResult(
-                        "Uw url is geen publieke url, de url moet met http of https beginnen. Uw url begint met " + uriResult.Scheme,
-                        [nameof(VideoUrl)]));
+                                                            (uriResult.Scheme != Uri.UriSchemeHttp && uriResult.Scheme != Uri.UriSchemeHttps)))
+        {
+            validationResults.Add(
+                new ValidationResult(
+                    "Uw url is geen publieke url, de url moet met http of https beginnen. Uw url begint met " + uriResult.Scheme,
+                    [nameof(VideoUrl)]));
         }
         
         return validationResults;

@@ -1,86 +1,63 @@
-@model UI_MVC.Models.Dto.NewPanelMemberDto
+@model UI_MVC.Models.ViewModels.NewPanelMemberViewModel
 
-<div class="modal fade" id="dataModal" tabindex="-1" aria-labelledby="dataModalLabel"
-     data-show-hasAnswered="@Model.HasAnsweredQuestions" aria-hidden="true" data-bs-backdrop="static"
-     data-bs-keyboard="false">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="dataModalLabel">We hebben nog enkele vragen</h5>
-            </div>
-            <div class="modal-body">
-                <form id="multiStepForm" method="post" asp-action="SubmitExtraQuestionForm">
+    <div class="row g-0">
+        <div class="col-md-5 d-flex align-items-center justify-content-center" style="background:#f8f9fa;">
+            <img src="https://media.istockphoto.com/id/1393370540/nl/foto/architecture-in-antwerp-city.jpg?s=612x612&w=0&k=20&c=qsEVkQCLeB2ob-oAMVfIXeex69ZQJqo64L33nSZqqqQ=" alt="Vragen" class="img-fluid w-100 h-100" style="object-fit:cover;">
+        </div>
+        
+        <div class="col-md-7">
+            <div class="card-body">
+                <h2>Fijn dat je deel wilt nemen!</h2>
+                <h3 class="mb-3">We hebben nog enkele vragen</h3>
+                <form id="allQuestionsForm" method="post" asp-action="SubmitExtraQuestionForm">
                     @Html.ValidationSummary(true, "", new { @class = "alert alert-danger" })
-                    
-                    <!-- Step 1 -->
-                    <div class="form-step active">
-                        <div class="mb-3">
-                            <label for="Email" class="form-label">E-mailadres</label>
-                            <input type="email" class="form-control" name="Email" id="Email"
-                                   placeholder="Voer je e-mailadres in" required>
-                        </div>
-                        <input type="hidden" name="UserId" value="@Model.UserId"/>
-                        <input type="hidden" name="PanelId" value="@Model.PanelId"/>
 
-                        @if (Model.NonDefaultCriteria == null || !Model.NonDefaultCriteria.Any())
-                        {
-                            <button type="submit" class="btn btn-success">Verzenden</button>
-                        }
-                        else
-                        {
-                            <button type="button" class="btn btn-primary next-step cstm-btn-anim">Volgende</button>
-                        }
+                    <div class="mb-3">
+                        <label for="Email" class="form-label">Wat is uw email address?</label>
+                        <small class="form-text text-muted"><em>(Dit zal gebruikt worden voor toekomstige communicatie.)</em></small>
+                        <input type="email" class="form-control" name="Email" id="Email"
+                               placeholder="Voer je e-mailadres in" required>
                     </div>
-                    
+                    <input type="hidden" name="UserId" value="@Model.UserId"/>
+                    <input type="hidden" name="PanelId" value="@Model.PanelId"/>
+
                     @if (Model.NonDefaultCriteria != null && Model.NonDefaultCriteria.Any())
                     {
                         foreach (var crit in Model.NonDefaultCriteria)
                         {
-                            <div class="form-step">
-                                <div class="mb-3">
-                                    <label class="form-label">
-                                        @(crit.Question ?? crit.Name) 
-                                    </label>
+                            <div class="mb-3">
+                                <label class="form-label">
+                                    @(crit.Question ?? crit.Name)
+                                </label>
 
-                                    <!-- Render options for the criteria -->
-                                    @if (crit.AnswerOptions != null && crit.AnswerOptions.Any())
-                                    {
-                                        foreach (var option in crit.AnswerOptions)
-                                        {
-                                            <div class="form-check">
-                                                <input class="form-check-input"
-                                                       type="radio"
-                                                       name="CriteriaAnswers[@crit.Name]"
-                                                       id="@($"{crit.Name}-{option.Option}")"
-                                                       value="@option.Option"
-                                                       required />
-                                                <label class="form-check-label"
-                                                       for="@($"{crit.Name}-{option.Option}")">
-                                                    @option.Option
-                                                </label>
-                                            </div>
-                                        }
-                                    }
-                                    else
-                                    {
-                                        <p>Geen opties beschikbaar voor deze vraag.</p>
-                                    }
-                                </div>
-                                
-                                <button type="button" class="btn btn-secondary prev-step">Vorige</button>
-                                @if (crit.Equals(Model.NonDefaultCriteria.Last()))
+                                @if (crit.AnswerOptions != null && crit.AnswerOptions.Any())
                                 {
-                                    <button type="submit" class="btn btn-success">Verzenden</button>
+                                    foreach (var option in crit.AnswerOptions)
+                                    {
+                                        <div class="form-check">
+                                            <input class="form-check-input"
+                                                   type="radio"
+                                                   name="CriteriaAnswers[@crit.Name]"
+                                                   id="@($"{crit.Name}-{option.Option}")"
+                                                   value="@option.Option"
+                                                   required/>
+                                            <label class="form-check-label"
+                                                   for="@($"{crit.Name}-{option.Option}")">
+                                                @option.Option
+                                            </label>
+                                        </div>
+                                    }
                                 }
                                 else
                                 {
-                                    <button type="button" class="btn btn-primary next-step">Volgende</button>
+                                    <p>Geen opties beschikbaar voor deze vraag.</p>
                                 }
                             </div>
                         }
                     }
+
+                    <button type="submit" class="btn btn-success">Mijn deelname bevestigen</button>
                 </form>
             </div>
         </div>
     </div>
-</div>

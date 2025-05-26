@@ -1,10 +1,10 @@
 ﻿using BL.Interfaces;
 using Domain;
 using Domain.Enums;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using UI_MVC.Models.Dto.ProjectPage;
+using UI_MVC.Models.Dto.PostDtos;
+
 
 namespace UI_MVC.Controllers.api;
 

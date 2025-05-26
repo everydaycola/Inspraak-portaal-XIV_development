@@ -23,18 +23,18 @@ function createSubRegionElement(index: number, removeCallback: (id: string) => v
     const subRegionId = `subregion-${index}`;
 
     // Create the wrapper div
-    const wrapper = createElementWithClassNames("div", "mb-2","d-flex","align-items-center","subRegion")
+    const wrapper = createElementWithClassNames("div", "mb-2","row","subRegion")
     wrapper.id = subRegionId;
 
     // Create the Name input
-    const nameInput = createElementWithClassNames("input","form-control", "d-inline", "w-50","me-2");
+    const nameInput = createElementWithClassNames("input","form-control", "col","d-inline", "w-50","me-2");
     nameInput.id = `subregion-${index}-name`;
     nameInput.name = `SubRegions[${index}].Name`;
     nameInput.placeholder = "Naam";
     nameInput.type = "text";
 
     // Create the Size input
-    const sizeInput = createElementWithClassNames("input","form-control","d-inline","w-25","me-2","subregion-size-input");
+    const sizeInput = createElementWithClassNames("input","form-control","d-inline","col","w-25","me-2","subregion-size-input");
     sizeInput.id = `subregion-${index}-size`;
     sizeInput.name = `SubRegions[${index}].Size`;
     sizeInput.placeholder = "Grootte";
@@ -51,11 +51,11 @@ function createSubRegionElement(index: number, removeCallback: (id: string) => v
     removeButton.addEventListener("click", () => removeCallback(subRegionId));
 
     // Error messages
-    const nameError = createElementWithClassNames("span","text-danger","field-validation-valid");
+    const nameError = createElementWithClassNames("span","text-danger","col","field-validation-valid");
     nameError.id = `${nameInput.id}-msg`;
     nameError.className = "text-danger field-validation-valid";
     
-    const sizeError = createElementWithClassNames("span","text-danger","field-validation-valid");
+    const sizeError = createElementWithClassNames("span","text-danger","col","field-validation-valid");
     sizeError.id = `${sizeInput.id}-msg`;
 
     // Append the inputs and button to the wrapper

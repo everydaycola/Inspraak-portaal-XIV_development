@@ -1,6 +1,6 @@
 ﻿@using DAL
 @using Microsoft.AspNetCore.Mvc.TagHelpers
-@model UI_MVC.Models.Dto.PanelManagementDto
+@model UI_MVC.Models.ViewModels.PanelManagementViewModel
 
 @{
     ViewData["Title"] = "Panel beheer";
@@ -9,25 +9,25 @@
 
 
 <div class="container mt-5">
-    <h2 class="mb-0">Beheerpagina voor panel: <strong>@Model.PanelName</strong></h2>
+    <div class="row m-2">
+        <h2>Status</h2>
+    </div>
     <div class="row mt-4 row-cols-2">
         <div class="card shadow-sm border-0 col-8 me-4">
             <div class="card-body">
                 <div class="mb-4">
                     <h5 class="card-title">Aanmeldstatus</h5>
                     <p class="card-text">
-                        <i class="bi bi-person-check-fill text-success"></i>
-                        <strong>Aantal succesvol aangemelde mensen:</strong>
-                        @Model.ExtraCriteriaDto.SuccessfulRegistrationCount /
+                        @Model.ExtraCriteriaViewModel.SuccessfulRegistrationCount /
                         @(Model.PanelSize + Model.AmountOfReserveInvites) (waarvan @Model.AmountOfReserveInvites reserve)
                     </p>
                 </div>
                 <div>
                     <h5 class="card-title">Uitnodigingen</h5>
-                    <p class="card-text">
+                    <p class="card-textPanelSize">
                         <i class="bi bi-envelope-fill text-info"></i>
-                        <strong>Geschat aantal uitnodigingen benodigd voor</strong>
-                        @Model.CitizenCount inwoners: @Model.TotalInvitesNeeded
+                        <strong>Geschat aantal uitnodigingen benodigd voor @Model.CitizenCount inwoners</strong>
+                        @Model.TotalInvitesNeeded
                     </p>
                 </div>
             </div>
@@ -36,7 +36,7 @@
         <div class="card shadow-sm border-0 col-3 me-4">
             <div class="card-body">
                 <div class="mt-4">
-                    <h5 class="card-title">Inschrijving Status</h5>
+                    <h5 class="card-title">Inschrijvingen</h5>
                     @if (Model.IsRegistrationOpen)
                     {
                         <p class="card-text">Inschrijving staat open.</p>
@@ -47,45 +47,26 @@
                     }
                 </div>
                 <div class="d-flex gap-2 mt-4">
-                    @if (Model.IsRegistrationOpen)
-                    {
-                        
-                    }
                     <a class="btn @buttonClass w-50"
                        asp-action="ToggleRegistration"
                        asp-controller="PanelManagement"
                        asp-route-panelId="@Model.PanelId">
                         @(Model.IsRegistrationOpen ? "Inschrijving Sluiten" : "Inschrijving Openen")
                     </a>
-                    <button class="btn w-50 @(Model.IsRegistrationOpen ? "btn-primary" : "btn-danger")" data-bs-toggle="modal"
-                            data-bs-target="#@(Model.IsRegistrationOpen ? "NewCodesModal" : "FinnishModal")" data-panel-id="@Model.PanelId">
-                        @(Model.IsRegistrationOpen ? "Meer codes aanmaken" : "Inschrijving Afronden")
+                    <button class="btn btn-danger"
+                            data-bs-toggle="modal"
+                            data-bs-target="#FinnishModal"
+                            data-panel-id="@Model.PanelId">
+                        Inschrijving afronden
                     </button>
                 </div>
             </div>
         </div>
 
     </div>
-    <div class="row mt-4 row-cols-3">
-        <div class="card shadow-sm border-0 col-3 me-4">
-            <div class="card-body">
-                <div>
-                    <p class="card-text">
-                        <button class="btn btn-primary" id="viewCodesButton" data-bs-toggle="modal"
-                                data-bs-target="#CodesModal" data-panel-id="@Model.PanelId">
-                            Unieke codes per criteria bekijken
-                        </button>
-                        <button class="btn btn-primary mt-4" id="viewPlanningGroupButton" data-bs-toggle="modal"
-                                data-bs-target="#planningGroupModal" data-panel-id="@Model.PanelId">
-                            Planningsgroepsleden beheren
-                        </button>
-                        <a class="btn btn-primary mt-4" asp-area="" asp-controller="PanelProjectPage"
-                           asp-action="Index" asp-route-panelId="@Model.PanelId">Project pagina</a>
-                    </p>
-                </div>
-            </div>
-        </div>
-        <div class="card shadow-sm border-0 col-8 me-4">
+
+    <div class="row mt-4 ">
+        <div class="card mt-4 shadow-sm border-0 col-11">
             @if (Model.AnyCrossCriteria && Model.AnyUnknownCriteria)
             {
                 <div class="accordion" id="criteriaAccordion">
@@ -100,7 +81,7 @@
                         <div id="crossCriteriaCollapse" class="accordion-collapse collapse"
                              aria-labelledby="crossCriteriaHeading" data-bs-parent="#criteriaAccordion">
                             <div class="accordion-body">
-                                @Html.Partial("_extraCriteriaStatsCrossPartial", Model.ExtraCriteriaDto)
+                                @Html.Partial("_extraCriteriaStatsCrossPartial", Model.ExtraCriteriaViewModel)
                             </div>
                         </div>
                     </div>
@@ -116,7 +97,7 @@
                         <div id="singleCriteriaCollapse" class="accordion-collapse collapse"
                              aria-labelledby="singleCriteriaHeading" data-bs-parent="#criteriaAccordion">
                             <div class="accordion-body">
-                                @Html.Partial("_extraCriteriaStatsPartial", Model.ExtraCriteriaDto)
+                                @Html.Partial("_extraCriteriaStatsPartial", Model.ExtraCriteriaViewModel)
                             </div>
                         </div>
                     </div>
@@ -124,11 +105,11 @@
             }
             else if (Model.AnyCrossCriteria)
             {
-                @Html.Partial("_extraCriteriaStatsCrossPartial", Model.ExtraCriteriaDto)
+                @Html.Partial("_extraCriteriaStatsCrossPartial", Model.ExtraCriteriaViewModel)
             }
             else if (Model.AnyUnknownCriteria)
             {
-                @Html.Partial("_extraCriteriaStatsPartial", Model.ExtraCriteriaDto)
+                @Html.Partial("_extraCriteriaStatsPartial", Model.ExtraCriteriaViewModel)
             }
             else
             {
@@ -139,70 +120,21 @@
             }
         </div>
     </div>
+</div>
 
-    <div class="modal fade" id="CodesModal" tabindex="-1" aria-labelledby="CodesModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-lg">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="CodesModalLabel">Unieke codes per criteria</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <div id="modalContent">
-                        @Html.Partial("_uniqueCodesPartial", Model.UniqueCodesDto)
-                    </div>
-                </div>
+
+<div class="modal fade" id="FinnishModal" tabindex="-1" aria-labelledby="FinnishModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="FinnishModalLabel">Bent u zeker?</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-        </div>
-    </div>
-
-    <div class="modal fade" id="planningGroupModal" tabindex="-1" aria-labelledby="planningGroupModalLabel"
-         aria-hidden="true">
-        <div class="modal-dialog modal-lg">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="planningGroupModalLabel">Unieke codes per criteria</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <div id="planningGroupModalContent">
-                        @Html.Partial("_planningGroupPartial", Model)
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="modal fade" id="FinnishModal" tabindex="-1" aria-labelledby="FinnishModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-lg">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="FinnishModalLabel">Bent u zeker?</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <div id="FinnishModalContent">
-                        @Html.Partial("_FinishRegistrationPartial.cshtml", Model)
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="modal fade" id="NewCodesModal" tabindex="-1" aria-labelledby="NewCodesLabel" aria-hidden="true">
-        <div class="modal-dialog modal-lg">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="NewCodesLabel">Meer codes aanmaken</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <div id="NewCodesModalContent">
-                        @Html.Partial("_generateMoreCodesPartial.cshtml", Model)
-                    </div>
+            <div class="modal-body">
+                <div id="FinnishModalContent">
+                    @Html.Partial("_FinishRegistrationPartial.cshtml", Model)
                 </div>
             </div>
         </div>
     </div>
 </div>
-

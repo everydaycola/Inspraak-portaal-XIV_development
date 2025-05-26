@@ -41,9 +41,10 @@ builder.Services.AddScoped<IPanelProjectPageManager, PanelProjectPageManager>();
 builder.Services
     .AddOrganisationContext()
     .AddScoped<OrganisationMiddleware>();
-builder.Services.Configure<AvailableOrganisations>(
-    builder.Configuration.GetSection(AvailableOrganisations.SectionName)
-);
+
+//REMOVE : builder.Services.Configure<AvailableOrganisations>(
+//    builder.Configuration.GetSection(AvailableOrganisations.SectionName)
+//);
 
 builder.Services.Configure<GoogleCloudOptions>(options =>
 {

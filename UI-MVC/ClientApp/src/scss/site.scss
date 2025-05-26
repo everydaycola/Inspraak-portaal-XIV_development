@@ -56,3 +56,6 @@ button.accept-policy {
 .card{
     margin-left:#{constants.$gap-size/2}
 }
+.inset-shadow {
+    box-shadow: 0 0 3px 3px #dbdbdb inset;
+}
