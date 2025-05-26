@@ -62,24 +62,28 @@ public static class DataSeeder
                     Content =
                         "Hartelijk welkom aan alle panelleden! We zijn verheugd jullie te mogen verwelkomen op dit platform, speciaal opgezet om samen te werken aan een veiliger verkeer in Antwerpen. Jullie mening en inzicht zijn van onschatbare waarde. Dit panel is dé plek om ideeën uit te wisselen, knelpunten te bespreken en concrete voorstellen te doen die direct kunnen bijdragen aan het verbeteren van de verkeersveiligheid voor iedereen. We kijken ernaar uit om jullie actieve deelname en waardevolle bijdragen te zien. Laten we samen bouwen aan een toekomst waarin iedereen zich veilig voelt op de weg! (Meer info volgt spoedig)",
                     CreatedAt = DateTime.UtcNow.Subtract(TimeSpan.FromHours(3.2)) - TimeSpan.FromDays(7),
+                    IsVisibleForPanelMembers = true,
                 },
                 new TextPost()
                 {
-                    Title = "Onze eerste meating: " + (DateTime.UtcNow - TimeSpan.FromDays(5)).ToShortDateString() +
+                    Title = "Onze eerste meeting: " + (DateTime.UtcNow - TimeSpan.FromDays(5)).ToShortDateString() +
                             " " + DateTime.UtcNow.ToShortTimeString(),
                     Content =
                         "De eerste werksessie staat op de planning! Om dit panel vlug te kunnen beginnen plannen wij graag al meteen de eerste sessie in . Details rond deze sessie volgen nog. Tijdens deze eerste meeting zullen we kennismaken, de doelstellingen van dit panel verder toelichten en de agenda voor de komende weken bespreken. Wij hopen dat jullie hier in grote aantallen te mogen ontvangen! Tot snel.",
                     CreatedAt = DateTime.UtcNow - TimeSpan.FromDays(5),
+                    IsVisibleForPanelMembers = true,
                 },
                 new MeetingPost
                 {
                     CreatedAt = DateTime.UtcNow - TimeSpan.FromDays(5),
                     Title = "Bijeenkomst #1 - Gesprekken over duidelijkheid verkeersregels.",
+                    IsVisibleForPanelMembers = true,
                 },
                 new SuggestionPost
                 {
                     Title = "Suggesties na Bijeenkomst #1: Wat zou jij graag meer/beter zien in Antwerpen?",
                     CreatedAt = DateTime.UtcNow - TimeSpan.FromDays(5) + TimeSpan.FromHours(1),
+                    IsVisibleForPanelMembers = true,
                     Suggestions = new List<Suggestion>
                     {
                         new()
