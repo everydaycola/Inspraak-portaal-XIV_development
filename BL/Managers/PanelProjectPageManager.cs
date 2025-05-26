@@ -15,16 +15,16 @@ namespace BL.Managers;
 
 public class PanelProjectPageManager : IPanelProjectPageManager
 {
-    
     private readonly ILogger<PanelManager> _logger;
     private readonly IPanelRepository _repo;
 
-    public PanelProjectPageManager(ILogger<PanelManager> logger, IPanelRepository repo, IUserRepository userRepo, UserManager<ApplicationUser> userManager)
+    public PanelProjectPageManager(ILogger<PanelManager> logger, IPanelRepository repo, IUserRepository userRepo,
+        UserManager<ApplicationUser> userManager)
     {
         _logger = logger;
         _repo = repo;
     }
-    
+
     public Panel GetPanelWithPostsAndSuggestionsAndVotes(Guid panelId)
     {
         return _repo.ReadPanelWithPostsAndSuggestionsAndVotes(panelId);
@@ -52,7 +52,6 @@ public class PanelProjectPageManager : IPanelProjectPageManager
             vote.VoteType = voteType;
             _repo.UpdateVote(vote);
         }
-
     }
 
     public void ChangeSuggestionVisibility(Guid suggestionId)
@@ -61,7 +60,14 @@ public class PanelProjectPageManager : IPanelProjectPageManager
         suggestion.IsGloballyVisible = !suggestion.IsGloballyVisible;
         _repo.UpdateSuggestion(suggestion);
     }
-    
+
+    public void ChangeExecutedToggle(Guid suggestionId)
+    {
+        var suggestion = _repo.ReadSuggestion(suggestionId);
+        suggestion.IsExecuted = !suggestion.IsExecuted;
+        _repo.UpdateSuggestion(suggestion);
+    }
+
 
     public void AddSummaryToMeetingPost(Guid meetingId, string uniqueFileName)
     {
@@ -70,10 +76,11 @@ public class PanelProjectPageManager : IPanelProjectPageManager
             _logger.Log(LogLevel.Critical, "Meeting post with id " + meetingId + " does not exist.");
             return;
         }
+
         meetingPost.DocumentNames.Add(uniqueFileName);
         _repo.UpdatePost(meetingPost);
     }
-    
+
     // Generic helper method for post validation and creation
     private void AddPost<T>(Guid panelId, T post) where T : Post
     {
@@ -87,7 +94,8 @@ public class PanelProjectPageManager : IPanelProjectPageManager
     }
 
 // Simplified post methods
-    public void AddTextPost(Guid panelId, string title, string content, bool isVisibleForPanelMembers, bool isGloballyVisible)
+    public void AddTextPost(Guid panelId, string title, string content, bool isVisibleForPanelMembers,
+        bool isGloballyVisible)
     {
         AddPost(panelId, new TextPost
         {
@@ -99,7 +107,8 @@ public class PanelProjectPageManager : IPanelProjectPageManager
         });
     }
 
-    public void AddDocumentPost(Guid panelId, string title, string documentUrl, bool isVisibleForPanelMembers, bool isGloballyVisible)
+    public void AddDocumentPost(Guid panelId, string title, string documentUrl, bool isVisibleForPanelMembers,
+        bool isGloballyVisible)
     {
         AddPost(panelId, new DocumentPost
         {
@@ -122,7 +131,8 @@ public class PanelProjectPageManager : IPanelProjectPageManager
         });
     }
 
-    public void AddEmbedVideoPost(Guid panelId, string title, string videoUrl, bool visibleForPanelMember, bool isGloballyVisible)
+    public void AddEmbedVideoPost(Guid panelId, string title, string videoUrl, bool visibleForPanelMember,
+        bool isGloballyVisible)
     {
         AddPost(panelId, new EmbeddedVideoPost
         {
@@ -134,7 +144,8 @@ public class PanelProjectPageManager : IPanelProjectPageManager
         });
     }
 
-    public void AddYoutubeVideoPost(Guid panelId, string title, string videoId, bool visibleForPanelMember, bool isGloballyVisible)
+    public void AddYoutubeVideoPost(Guid panelId, string title, string videoId, bool visibleForPanelMember,
+        bool isGloballyVisible)
     {
         AddPost(panelId, new YoutubeVideoPost
         {

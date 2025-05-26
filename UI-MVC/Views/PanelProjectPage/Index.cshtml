@@ -11,6 +11,7 @@
     <script src="~/dist/suggestionVoting.entry.js" type="module"></script>
     <script src="~/dist/shareButtonPartial.entry.js" type="module"></script>
     <script src="~/dist/suggestionVisibility.entry.js" type="module"></script>
+    <script src="~/dist/executedToggle.entry.js" type="module"></script>
 }
 
 <div class="container mt-5">
@@ -620,6 +621,12 @@
                                                                         <button type="button"
                                                                                 class="btn btn-primary suggestion-visibility-toggle-btn" data-suggestion-id="@suggestion.Id">
                                                                             @(suggestion.IsGloballyVisible ? "Maak privé" : "Maak publiek")
+                                                                        </button>
+                                                                    </div>
+                                                                    <div id="executed-toggle">
+                                                                        <button type="button"
+                                                                                class="btn btn-primary executed-toggle-btn" data-suggestion-id="@suggestion.Id">
+                                                                            @(suggestion.IsExecuted ? "Zet op uitgevoerd" : "Zet op niet uitgevoerd")
                                                                         </button>
                                                                     </div>
                                                                 }
