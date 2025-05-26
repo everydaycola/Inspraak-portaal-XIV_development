@@ -57,6 +57,7 @@ public class PanelProjectPageController : Controller
 
     public async Task<IActionResult> Index(Guid? id)
     {
+        var user = await _userManager.GetUserAsync(HttpContext.User);
         if (!id.HasValue)
         {
             if (HttpContext.User.IsInRole(CustomIdentityConstants.OrganisatieRole))
@@ -76,13 +77,13 @@ public class PanelProjectPageController : Controller
             }
             else
             {
-                var user = await _userManager.GetUserAsync(HttpContext.User);
                 id = _customUserManager.getPanelForUser(user.Id).Id;
             }
         }
 
         return View(new ProjectPageViewModel
         {
+            CurrentUser = user,
             Panel = _projectPageManager.GetPanelWithPostsAndSuggestionsAndVotesAndDocuments(id.Value),
         });
     }
