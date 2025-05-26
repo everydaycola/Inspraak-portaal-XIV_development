@@ -46,6 +46,7 @@ public class PanelRepository : IPanelRepository
             .Include(p => p.Posts)
             .ThenInclude(p => (p as SuggestionPost).Suggestions)
             .ThenInclude(s => s.Votes)
+            .ThenInclude(v => v.Owner)
             .Single(p => p.Id == panelId);
     }
 
