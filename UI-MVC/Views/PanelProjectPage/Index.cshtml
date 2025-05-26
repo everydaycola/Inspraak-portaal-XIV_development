@@ -18,26 +18,29 @@
     <h2>Projectpagina</h2>
 </div>
 
-<div id="modal-root" class="hidden" data-open-modal="@ViewBag.OpenModal"></div>
-@if (User.IsInRole(CustomIdentityConstants.OrganisatieRole))
-{
-    <div class="m-4 mb-3">
-        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addTextModal">
-            Tekst toevoegen.
-        </button>
-        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addBestandModal">
-            Bestand toevoegen.
-        </button>
-        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addVideoModal">
-            Video toevoegen.
-        </button>
-        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addWerksessieModal">
-            Werksessie inplannen.
-        </button>
-        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addSuggestionModal">
-            Suggestie vraag toevoegen.
-        </button>
-    </div>
+    <div id="modal-root" class="hidden" data-open-modal="@ViewBag.OpenModal"></div>
+    @if (User.IsInRole(CustomIdentityConstants.OrganisatieRole))
+    {
+        <div class="m-4 mb-3">
+            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addTextModal">
+                Tekst toevoegen.
+            </button>
+            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addBestandModal">
+                Bestand toevoegen.
+            </button>
+            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addVideoModal">
+                Video toevoegen.
+            </button>
+            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addWerksessieModal">
+                Werksessie inplannen.
+            </button>
+            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addSuggestionModal">
+                Suggestie vraag toevoegen.
+            </button>
+            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addGoogleFormEmbedModal">
+                Google Form toevoegen.
+            </button>
+        </div>
 
     @if (User.IsInRole(CustomIdentityConstants.OrganisatieRole))
     {
