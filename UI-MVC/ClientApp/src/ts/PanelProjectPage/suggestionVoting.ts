@@ -121,7 +121,6 @@ async function handleVoteToggle(event: Event) {
 
         if (response.success) {
             window.location.reload()
-            await ShowVotePercentages(postId)
         } else {
             console.error("Failed to toggle voting.");
         }
@@ -133,12 +132,14 @@ async function handleVoteToggle(event: Event) {
 }
 
 async function ShowVotePercentages(postId: string) {
-
-
     const suggestionDivs = document.getElementsByClassName("suggestion") as HTMLCollectionOf<HTMLDivElement>;
     const suggestionItems = document.getElementsByClassName("suggestion-item") as HTMLCollectionOf<HTMLDivElement>;
 
     console.log(`Voting on post ${postId} stopped`)
+    
+    let highestPercentage: number = -1;
+    let highestIndex: number = -1;
+    
 
     for (let i = 0; i < suggestionDivs.length; i++) {
         const suggestionId = suggestionDivs.item(i)!!.querySelector("input")!!.value
@@ -146,6 +147,17 @@ async function ShowVotePercentages(postId: string) {
 
         const percentageDiv = suggestionItems.item(i)!!.querySelector("div.vote-percentage") as HTMLDivElement;
         percentageDiv.querySelector("span")!!.innerText = `${percentage.toFixed(2)}%`
+        
+        if (percentage > highestPercentage){
+            highestPercentage = percentage;
+            highestIndex = i;
+        }
+    }
+
+    if (highestIndex !== -1) {
+        const percentageDiv = suggestionItems.item(highestIndex)!!.querySelector("div.vote-percentage") as HTMLDivElement;
+        console.log(percentageDiv)
+        percentageDiv.querySelector("span")!!.classList.add("text-success")
     }
 }
 
