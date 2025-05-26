@@ -1,4 +1,5 @@
 using DAL.EF;
+using Domain.Admin;
 using Domain.Interfaces;
 using Domain.Interfaces.Question;
 using Microsoft.EntityFrameworkCore;
@@ -32,9 +33,21 @@ public class QuestionRepository : IQuestionRepository
         return _context.Questions.Include(q => q.AnswerOptions).FirstOrDefault(q => q.Id == id);
     }
 
-    public void CreateQuestion(Question question)
+    public ParticipationMethod ReadParticipationMethodByName(string name)
+    {
+        return _context.ParticipationMethods.FirstOrDefault(mp => mp.Name == name);
+    }
+
+    public Question CreateQuestion(Question question)
     {
         _context.Questions.Add(question);
+        _context.SaveChanges();
+        return ReadQuestionById(question.Id);
+    }
+
+    public void CreateAnswerOptionsWithImpacts(AnswerOption newAnswerOption)
+    {
+        _context.AnswerOptions.Add(newAnswerOption);
         _context.SaveChanges();
     }
 

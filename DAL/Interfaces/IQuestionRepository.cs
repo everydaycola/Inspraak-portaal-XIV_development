@@ -1,3 +1,4 @@
+using Domain.Admin;
 using Domain.Interfaces;
 using Domain.Interfaces.Question;
 
@@ -9,8 +10,12 @@ public interface IQuestionRepository
     
     IEnumerable<Question> ReadAllQuestionsWIthAnswerOptionsAndIMpactsAndParticipationMethod();
     Question ReadQuestionById(int id);
-    void CreateQuestion(Question question);
+    
+    public ParticipationMethod ReadParticipationMethodByName(string name);
+    public Question CreateQuestion(Question question);
+    public void CreateAnswerOptionsWithImpacts(AnswerOption newAnswerOption);
     void UpdateQuestion(Question question);
     void DeleteQuestion(int id);
     void DeleteParticipationMethod(Guid id);
+
 }

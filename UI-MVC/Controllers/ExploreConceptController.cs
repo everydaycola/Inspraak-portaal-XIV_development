@@ -27,7 +27,6 @@ public class ExploreConceptController : Controller
             {
                 Id = ao.Id,
                 AnswerOptionText = ao.AnswerOptionText,
-                Weight = ao.Weight,
                 AnswerOptionImpacts = ao.Impacts.Select(aoi => new AnswerOptionImpactDto()
                 {
                     ParticipationMethodName = aoi.ParticipationMethod.Name,

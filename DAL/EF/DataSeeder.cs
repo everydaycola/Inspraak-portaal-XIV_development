@@ -236,7 +236,6 @@ public static class DataSeeder
             new AnswerOption
             {
                 AnswerOptionText = "Ja",
-                Weight = 5,
                 Impacts = new List<AnswerOptionImpact>
                 {
                     new AnswerOptionImpact
@@ -259,7 +258,6 @@ public static class DataSeeder
             new AnswerOption
             {
                 AnswerOptionText = "Nee",
-                Weight = 0,
                 Impacts = new List<AnswerOptionImpact>
                 {
                     new AnswerOptionImpact
@@ -303,7 +301,6 @@ public static class DataSeeder
                 new AnswerOption
                 {
                     AnswerOptionText = "Ja",
-                    Weight = 5,
                     Impacts = new List<AnswerOptionImpact>
                     {
                         new AnswerOptionImpact
@@ -326,7 +323,6 @@ public static class DataSeeder
                 new AnswerOption
                 {
                     AnswerOptionText = "Nee",
-                    Weight = 0,
                     Impacts = new List<AnswerOptionImpact>
                     {
                         new AnswerOptionImpact
@@ -366,7 +362,6 @@ public static class DataSeeder
                 new AnswerOption
                 {
                     AnswerOptionText = "We willen de mening horen van al wie vrijwillig wil deelnemen aan het debat. Iedereen moet kunnen deelnemen",
-                    Weight = 5,
                     Impacts = new List<AnswerOptionImpact>
                     {
                         new AnswerOptionImpact
@@ -389,7 +384,6 @@ public static class DataSeeder
                 new AnswerOption
                 {
                     AnswerOptionText = "We willen de mening horen van doelgroepen die vaak afwezig blijven bij participatie",
-                    Weight = 0,
                     Impacts = new List<AnswerOptionImpact>
                     {
                         new AnswerOptionImpact
@@ -412,7 +406,6 @@ public static class DataSeeder
                 new AnswerOption
                 {
                     AnswerOptionText =  "We willen de mening horen een representatief staal van participanten horen",
-                    Weight = 0,
                     Impacts = new List<AnswerOptionImpact>
                     {
                         new AnswerOptionImpact

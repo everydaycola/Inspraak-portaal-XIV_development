@@ -1,5 +1,7 @@
 using BL.Interfaces;
 using DAL.Interfaces;
+using Domain.Admin;
+using Domain.GlobalDtos;
 using Domain.Interfaces;
 using Domain.Interfaces.Question;
 using Microsoft.AspNetCore.Authorization;
@@ -29,7 +31,7 @@ public class QuestionController : Controller
     public IActionResult Index()
     {
         var questionObject = _questionManager.GetAllQuestionsWithAnswerOptionsAndImpactsAndParticipationMethod();
-    
+
         var questionViewModels = questionObject.Select(q => new QuestionsViewModel()
         {
             Id = q.Id,
@@ -38,7 +40,6 @@ public class QuestionController : Controller
             {
                 Id = ao.Id,
                 AnswerOptionText = ao.AnswerOptionText,
-                Weight = ao.Weight,
                 AnswerOptionImpacts = ao.Impacts.Select(aoi => new AnswerOptionImpactDto()
                 {
                     ParticipationMethodName = aoi.ParticipationMethod.Name,
@@ -63,7 +64,7 @@ public class QuestionController : Controller
                 Name = p.Name,
                 Description = p.Description,
             });
-        
+
         var model = new QuestionIndexViewModel()
         {
             Questions = questionViewModels,
@@ -75,150 +76,7 @@ public class QuestionController : Controller
 
         return View(model);
     }
-
-    [HttpPost]
-    public IActionResult AddOrUpdate(QuestionIndexViewModel fullViewModel)
-    {
-        QuestionsViewModel questionToManage = fullViewModel.QuestionToEdit;
-        questionToManage.AnswerOptions ??= new List<AnswerOptionCrudViewModel>();
-        var allDomainQuestions = _questionManager.GetAllQuestions();
-
-        fullViewModel.Questions = allDomainQuestions.Select(q => new QuestionsViewModel
-        {
-            Id = q.Id,
-            Question = q.QuestionText,
-            AnswerOptions = q.AnswerOptions?.Select(ao => new AnswerOptionCrudViewModel
-            {
-                Id = ao.Id,
-                AnswerOptionText = ao.AnswerOptionText,
-                Weight = ao.Weight
-            }).ToList()
-        }).ToList();
-
-        if (!ModelState.IsValid)
-        {
-            _logger.LogInformation("Controleer de ingevoerde gegevens. Er zijn fouten opgetreden.");
-            return View("Index", fullViewModel);
-        }
-
-        try
-        {
-            List<AnswerOption> domainAnswerOptions = new List<AnswerOption>();
-            foreach (var crudOption in questionToManage.AnswerOptions)
-            {
-                domainAnswerOptions.Add(new AnswerOption
-                {
-                    Id = crudOption.Id,
-                    AnswerOptionText = crudOption.AnswerOptionText,
-                    Weight = crudOption.Weight
-                });
-            }
-
-            if (questionToManage.Id == 0) // New question
-            {
-                var newDomainQuestion = new Question
-                {
-                    QuestionText = questionToManage.Question,
-                    AnswerOptions = domainAnswerOptions
-                };
-                _questionManager.AddQuestion(newDomainQuestion.Id, questionToManage.Question,
-                    newDomainQuestion.AnswerOptions);
-            }
-            else
-            {
-                var existingDomainQuestion = _questionManager.GetQuestionById(questionToManage.Id);
-                if (existingDomainQuestion == null)
-                {
-                    throw new InvalidOperationException(
-                        $"Question with ID {questionToManage.Id} not found for update.");
-                }
-
-                existingDomainQuestion.QuestionText = questionToManage.Question;
-
-                existingDomainQuestion.AnswerOptions.Clear();
-                foreach (var ao in domainAnswerOptions)
-                {
-                    existingDomainQuestion.AnswerOptions.Add(ao);
-                }
-
-                _questionManager.UpdateQuestion(existingDomainQuestion.Id, existingDomainQuestion.QuestionText,
-                    existingDomainQuestion.AnswerOptions);
-            }
-
-            return RedirectToAction("Index");
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Fout bij opslaan van vraag.");
-            return View("Index", fullViewModel);
-        }
-    }
-
-    [HttpPost]
-    public IActionResult AddOrUpdateScoreRangeTip(QuestionIndexViewModel fullViewModel)
-    {
-        QuestionWeightTipsViewModel tipToManage = fullViewModel.QuestionWeightTipViewModelToEdit;
-
-
-        var allDomainQuestions = _questionManager.GetAllQuestions();
-        fullViewModel.Questions = allDomainQuestions.Select(q => new QuestionsViewModel
-        {
-            Id = q.Id,
-            Question = q.QuestionText,
-            AnswerOptions = q.AnswerOptions?.Select(ao => new AnswerOptionCrudViewModel
-            {
-                Id = ao.Id,
-                AnswerOptionText = ao.AnswerOptionText,
-                Weight = ao.Weight
-            }).ToList()
-        }).ToList();
-
-        var allDomainTips = _questionWeightTipManager.GetAllQuestionWeightTips();
-        fullViewModel.QuestionWeightTips = allDomainTips.Select(t => new QuestionWeightTipsViewModel
-        {
-            Id = t.Id,
-            MinScore = t.MinScore,
-            MaxScore = t.MaxScore,
-            Message = t.Message
-        }).ToList();
-
-
-        if (!ModelState.IsValid)
-        {
-            _logger.LogInformation("Controleer de ingevoerde gegevens voor de score-tip. Er zijn fouten opgetreden.");
-            return View("Index", fullViewModel);
-        }
-
-        try
-        {
-            var domainTip = new QuestionWeightTips()
-            {
-                Id = tipToManage.Id,
-                MinScore = tipToManage.MinScore,
-                MaxScore = tipToManage.MaxScore ?? int.MaxValue,
-                Message = tipToManage.Message
-            };
-
-            if (domainTip.Id == 0)
-            {
-                _questionWeightTipManager.AddQuestionWeightTip(domainTip.Id, tipToManage.MinScore,
-                    tipToManage.MaxScore ?? 0, tipToManage.Message);
-            }
-            else
-            {
-                _questionWeightTipManager.UpdateQuestionWeightTip(domainTip.Id, tipToManage.MinScore,
-                    tipToManage.MaxScore ?? 0, tipToManage.Message);
-            }
-
-            return RedirectToAction("Index");
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Fout bij opslaan van score-tip.");
-            return View("Index", fullViewModel);
-        }
-    }
-
+    
     [HttpPost]
     public IActionResult AddParticipationMethod(ParticipationViewModel viewModel)
     {
@@ -240,7 +98,7 @@ public class QuestionController : Controller
         _logger.LogInformation("Vraag succesvol verwijderd!");
         return RedirectToAction("Index");
     }
-    
+
     [HttpPost]
     public IActionResult DeleteParticipationMethod(Guid id)
     {
@@ -248,7 +106,7 @@ public class QuestionController : Controller
         _logger.LogInformation("Participationmethod succesvol verwijderd!");
         return RedirectToAction("Index");
     }
-    
+
 
     [HttpPost]
     public IActionResult DeleteQuestionWeightTip(int id)
@@ -281,8 +139,7 @@ public class QuestionController : Controller
             AnswerOptions = domainQuestion.AnswerOptions.Select(ao => new AnswerOptionCrudViewModel
             {
                 Id = ao.Id,
-                AnswerOptionText = ao.AnswerOptionText,
-                Weight = ao.Weight
+                AnswerOptionText = ao.AnswerOptionText
             }).ToList()
         };
 
@@ -292,14 +149,18 @@ public class QuestionController : Controller
     public IActionResult AddQuestion(QuestionViewModel viewModel)
     {
         var answers = viewModel.AnswerOptions;
-        foreach (var viewModelAnswerOption in viewModel.AnswerOptions)
+        var question = _questionManager.AddQuestion(viewModel.QuestionText);
+        foreach (var option in viewModel.AnswerOptions)
         {
-            foreach (var answerOptionImpactsViewModel in viewModelAnswerOption.Impacts)
+            var mappedImpacts = option.Impacts.Select(i => new AnswerOptionImpactsDto
             {
-                _questionManager.AddAnswerOptionImpact(answerOptionImpactsViewModel.Impactweight, answerOptionImpactsViewModel.ParticipationMethodName);
-            }
+                ParticipationMethodName = i.ParticipationMethodName,
+                ImpactWeight = i.Impactweight
+            }).ToList();
+            _questionManager.AddAnswerOptionsWithImpacts(question.Id, option.AnswerText, mappedImpacts);
         }
-        _logger.Log(LogLevel.Information,"viewModelParsed");
+
+        _logger.Log(LogLevel.Information, "viewModelParsed");
         return Ok();
     }
 }

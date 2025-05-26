@@ -2,7 +2,7 @@
 import {getCurrentBaseUrl} from "./customhelpers/locationHelper";
 import {initQuestionCreationFormController} from "./exploreConcept/questionCreationFormController";
 
-console.log("Explor concept");
+console.log("Explore concept entrypoint loaded");
 
 const form: HTMLFormElement | null = document.querySelector("#exploreconcept-form");
 
@@ -17,18 +17,35 @@ if(form){
 async function handleSelectedValues(){
     const checkedRadios = document.querySelectorAll<HTMLInputElement>('input[type="radio"]:checked');
     const conclusiefield: HTMLElement | null = document.querySelector("#conclusiefield");
-    let totalWeight = 0;
+    
+    const totalWeightsByMethod: Record<string, number> = {};
     checkedRadios.forEach(radio => {
-        const weight = parseInt(radio.getAttribute('data-answer-weight') || '0', 10);
-        totalWeight += weight;
+        const dataImpacts = radio.getAttribute("data-impacts");
+        if (!dataImpacts) return;
+        const impacts = JSON.parse(dataImpacts);
+        impacts.forEach((impact: { ParticipationMethodName: string; ContributingWeight: number }) => {
+            const name = impact.ParticipationMethodName;
+            const weight = impact.ContributingWeight;
+
+            if (!totalWeightsByMethod[name]) {
+                totalWeightsByMethod[name] = 0;
+            }
+            totalWeightsByMethod[name] += weight;
+        });
     });
 
     const baseUrl = getCurrentBaseUrl();
-    const data: string = await fetchFromAPI(
-        `${baseUrl}/api/ExploreConcepts/SubmitAnswers?totalWeight=${totalWeight}`
-    );
-    
-    if(conclusiefield){
+
+    const response = await fetch(`${baseUrl}/api/ExploreConcepts/SubmitAnswers`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(totalWeightsByMethod),
+    });
+
+    const data = await response.json();
+    if (conclusiefield) {
         conclusiefield.innerText = data.suitability;
     }
 }

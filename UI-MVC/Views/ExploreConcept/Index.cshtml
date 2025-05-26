@@ -1,3 +1,4 @@
+@using System.Text.Json
 @model UI_MVC.Models.ViewModels.ExploreConceptViewModels.ExploreConceptViewModel
 
 @{
@@ -82,7 +83,7 @@
                                                                id="question-@Model.Questions[i].Id-option-@option.Id"
                                                                name="SubmittedAnswers[@i].SelectedAnswerOptionId"
                                                                value="@option.Id"
-                                                               data-answer-weight="@option.Weight"
+                                                               data-impacts='@Html.Raw(JsonSerializer.Serialize(option.AnswerOptionImpacts))'
                                                                required
                                                                @(Model.SubmittedAnswers.Any(sa => sa.QuestionId == Model.Questions[i].Id && sa.SelectedAnswerOptionId == option.Id) ? "checked" : "")/>
                                                         <label class="form-check-label"

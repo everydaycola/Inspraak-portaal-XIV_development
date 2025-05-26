@@ -18,22 +18,18 @@ public class ExploreConceptsController : ControllerBase
         _questionWeightTipManager = questionWeightTipManager;
     }
 
-    [HttpGet("SubmitAnswers")]
-    public IActionResult SubmitAnswers([FromQuery]int totalWeight)
+    [HttpPost("SubmitAnswers")]
+    public IActionResult SubmitAnswers([FromBody] Dictionary<string, int> totalWeightsByMethod)
     {
-        string suitabilityMessage = "Geen geschikte boodschap gevonden.";
-        var allTips = _questionWeightTipManager.GetAllQuestionWeightTips();
+        var highestWeightEntry = totalWeightsByMethod.Aggregate((l, r) => l.Value > r.Value ? l : r);
+        string highestParticipationMethodName = highestWeightEntry.Key;
+        
+        var applicableParticipationMethod = _questionManager.GetParticipationMethodByName(highestParticipationMethodName);
 
-        var applicableTip = allTips
-            .OrderByDescending(t => t.MinScore)
-            .FirstOrDefault(t => totalWeight >= t.MinScore && totalWeight <= t.MaxScore);
-        if (applicableTip != null)
+        var suitabilityMessage = "Score is te laag om een passende tip te geven.";
+        if (applicableParticipationMethod != null)
         {
-            suitabilityMessage = applicableTip.Message;
-        }
-        else
-        {
-            suitabilityMessage = "Score is te laag om een passende tip te geven.";
+            suitabilityMessage = applicableParticipationMethod.Description;
         }
         return Ok(new
         {
