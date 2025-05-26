@@ -9,7 +9,7 @@ namespace BL.Interfaces;
 public interface IPanelProjectPageManager
 {
     // GET
-    public Panel GetPanelWithPostsAndSuggestionsAndVotes(Guid panelId);
+    public Panel GetPanelWithPostsAndSuggestionsAndVotesAndDocuments(Guid panelId);
     public Suggestion GetSuggestion(Guid suggestionId);
 
     // CHANGE
@@ -22,7 +22,7 @@ public interface IPanelProjectPageManager
     public void AddEmbedVideoPost(Guid panelId, string title, string videoUrl, bool visibleForPanelMember, bool isGloballyVisible);
     public void AddYoutubeVideoPost(Guid panelId, string title, string videoId, bool visibleForPanelMember, bool isGloballyVisible);
     public void AddSuggestionPost(Guid panelId, string title, bool visibleForPanelMember);
-    public void AddSummaryToMeetingPost(Guid meetingId, string uniqueFileName);
+    public void AddDocumentToPost(Guid meetingId, string uniqueFileName);
     public void AddSuggestionToPost(Guid PostId, string suggestion, string owner);
     // REMOVE
 }
