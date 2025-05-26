@@ -58,27 +58,32 @@ public class PanelProjectPageController : Controller
     public async Task<IActionResult> Index(Guid? id)
     {
         var user = await _userManager.GetUserAsync(HttpContext.User);
-        if (!id.HasValue)
-        {
-            if (HttpContext.User.IsInRole(CustomIdentityConstants.OrganisatieRole))
+        if (id.HasValue)
+            return View(new ProjectPageViewModel
             {
-                var panels = _panelManager.GetAllPanels().ToList();
-                if (panels.Count != 1)
-                    return RedirectToAction("PanelSelection", "PanelManagement",
-                        new { returnAction = "Index", returnController = "PanelProjectPage" });
-                var returnAction = "Index";
-                var action = string.IsNullOrEmpty(returnAction) ? "Index" : returnAction;
-                return RedirectToAction(action, new { id = panels[0].Id });
-            }
-        }
+                CurrentUser = user,
+                Panel = _projectPageManager.GetPanelWithTimeLinesAndPostsAndSuggestionsAndVotesAndDocuments(id.Value),
+            });
+        if (HttpContext.User.IsInRole(CustomIdentityConstants.OrganisatieRole))
+        {
+            var panels = _panelManager.GetAllPanels().ToList();
+            if (panels.Count != 1)
+                return RedirectToAction("PanelSelection", "PanelManagement",
+                    new { returnAction = "Index", returnController = "PanelProjectPage" });
+            var returnAction = "Index";
+            var action = string.IsNullOrEmpty(returnAction) ? "Index" : returnAction;
+            return RedirectToAction(action, new { id = panels[0].Id });
 
+        }
         id = _customUserManager.getPanelForUser(user.Id).Id;
+
         return View(new ProjectPageViewModel
         {
             CurrentUser = user,
             Panel = _projectPageManager.GetPanelWithTimeLinesAndPostsAndSuggestionsAndVotesAndDocuments(id.Value),
         });
     }
+
 
     [HttpPost]
     [Authorize(Roles = CustomIdentityConstants.OrganisatieRole)]

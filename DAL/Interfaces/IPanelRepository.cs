@@ -14,7 +14,7 @@ public interface IPanelRepository
     public Panel ReadPanel(Guid panelId);
     public Panel ReadPanelWithRepresentationGroup(Guid panelId);
     public Panel ReadPanelWithCriteriaAndAnswerOptions(Guid panelId);
-    public Panel ReadPanelWithTimeLinesAndPostsAndSuggestionsAndVotes(Guid panelId);
+    public Panel ReadPanelWithTimeLinesAndPostsAndSuggestionsAndVotesAndDocuments(Guid panelId);
     public IEnumerable<Panel> ReadAllPanels();
     public IEnumerable<Panel> ReadAllPanelsWithPostsAndSuggestions();
     public PanelMember ReadPanelMemberWithCriteriaResponses(Guid panelMemberId);

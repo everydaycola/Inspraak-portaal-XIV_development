@@ -47,7 +47,7 @@ public class PanelRepository : IPanelRepository
             .Single(p => p.Id == panelId);
     }
     
-    public Panel ReadPanelWithTimeLinesAndPostsAndSuggestionsAndVotes(Guid panelId)
+    public Panel ReadPanelWithTimeLinesAndPostsAndSuggestionsAndVotesAndDocuments(Guid panelId)
     {
         return _context.Panels
             .Include(p => p.Timelines)
