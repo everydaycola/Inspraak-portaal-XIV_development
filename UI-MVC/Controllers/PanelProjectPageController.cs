@@ -50,7 +50,7 @@ public class PanelProjectPageController : Controller
         var user = await _userManager.GetUserAsync(User);
         return View("Index", new ProjectPageViewModel
         {
-            Panel = _projectPageManager.GetPanelWithPostsAndSuggestionsAndVotes(panelId),
+            Panel = _projectPageManager.GetPanelWithPostsAndSuggestionsAndVotesAndDocuments(panelId),
             CurrentUser = user
         });
     }
@@ -84,7 +84,7 @@ public class PanelProjectPageController : Controller
         return View(new ProjectPageViewModel
         {
             CurrentUser = user,
-            Panel = _projectPageManager.GetPanelWithPostsAndSuggestionsAndVotes(id.Value),
+            Panel = _projectPageManager.GetPanelWithPostsAndSuggestionsAndVotesAndDocuments(id.Value),
         });
     }
 
@@ -359,7 +359,7 @@ public class PanelProjectPageController : Controller
 
         var uniqueFileName = Guid.NewGuid() + Path.GetExtension(verslagFile.FileName);
         await _storageManager.AddFileAsync(uniqueFileName, verslagFile.ContentType, verslagFile.OpenReadStream());
-        _projectPageManager.AddSummaryToMeetingPost(meetingId, uniqueFileName);
+        _projectPageManager.AddDocumentToPost(meetingId, uniqueFileName);
         return RedirectToAction("Index", new { panelId });
     }
 
