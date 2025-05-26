@@ -1,5 +1,6 @@
 import {fetchFromAPI} from "../customhelpers/apihelper";
 import {getCurrentBaseUrl} from "../customhelpers/locationHelper";
+import {round} from "@popperjs/core/lib/utils/math";
 
 interface VoteState {
     [key: string]: {
@@ -141,12 +142,10 @@ async function ShowVotePercentages(postId: string) {
 
     for (let i = 0; i < suggestionDivs.length; i++) {
         const suggestionId = suggestionDivs.item(i)!!.querySelector("input")!!.value
-        const percentage = await CalculateVotePercentage(suggestionId, postId)
-        //debugging
-        console.log(percentage)
+        const percentage:number = await CalculateVotePercentage(suggestionId, postId)
 
         const percentageDiv = suggestionItems.item(i)!!.querySelector("div.vote-percentage") as HTMLDivElement;
-        percentageDiv.querySelector("span")!!.innerText = `${percentage}%`
+        percentageDiv.querySelector("span")!!.innerText = `${percentage.toFixed(2)}%`
     }
 }
 

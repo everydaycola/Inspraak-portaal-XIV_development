@@ -61,13 +61,12 @@ public class PanelProjectPagesController : ControllerBase
     private double CalculateVotePercentage(SuggestionPost post, Suggestion suggestion)
     {
         var totalvotes = post.Suggestions?.Sum(s => s.Votes?.Count ?? 0) ?? 0;
-        if (totalvotes == 0)
+        var upvotes = suggestion.Votes?.Count(v => v.VoteType == VoteType.Up) ?? 0;
+        var downvotes = suggestion.Votes?.Count(v => v.VoteType == VoteType.Down) ?? 0;
+        if (totalvotes == 0 || downvotes > upvotes )
         {
             return 0;
         }
-
-        var upvotes = suggestion.Votes?.Count(v => v.VoteType == VoteType.Up) ?? 0;
-        var downvotes = suggestion.Votes?.Count(v => v.VoteType == VoteType.Down) ?? 0;
 
         return ((double)(upvotes - downvotes) / totalvotes) * 100;
     }
