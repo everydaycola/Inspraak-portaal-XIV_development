@@ -54,6 +54,7 @@ public class PanelRepository : IPanelRepository
             .ThenInclude(t => t.Posts)
             .ThenInclude(p => (p as SuggestionPost).Suggestions)
             .ThenInclude(s => s.Votes)
+            .ThenInclude(v => v.Owner)
             .Single(p => p.Id == panelId);
     }
 
@@ -98,12 +99,11 @@ public class PanelRepository : IPanelRepository
             .ToList();
     }
     
-    public IEnumerable<PanelMember> ReadAllPanelMembersForPanel(Guid panelId, bool includeUnselected = true, bool includeRegistered = true)
+    public IEnumerable<PanelMember> ReadAllPanelMembersForPanel(Guid panelId, bool onlyUnselected = false)
     {
         return _context.PanelMembers.Include(pm => pm.Panel)
             .Where(pm => pm.Panel.Id == panelId)
-            .Where(pm => includeRegistered || pm.HasRegistered)
-            .Where(pm => includeRegistered || pm.Selected)
+            .Where(pm => onlyUnselected && !pm.Selected)
             .ToList();
     }
     
