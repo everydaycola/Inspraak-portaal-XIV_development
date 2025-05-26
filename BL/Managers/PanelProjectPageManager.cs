@@ -1,5 +1,4 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using System.Security.Claims;
 using BL.Interfaces;
 using DAL.Interfaces;
 using Domain;
@@ -25,9 +24,9 @@ public class PanelProjectPageManager : IPanelProjectPageManager
         _repo = repo;
     }
     
-    public Panel GetPanelWithTimeLinesAndPostsAndSuggestionsAndVotes(Guid panelId)
+    public Panel GetPanelWithTimeLinesAndPostsAndSuggestionsAndVotesAndDocuments(Guid panelId)
     {
-        return _repo.ReadPanelWithTimeLinesAndPostsAndSuggestionsAndVotes(panelId);
+        return _repo.ReadPanelWithTimeLinesAndPostsAndSuggestionsAndVotesAndDocuments(panelId);
     }
 
     public Suggestion GetSuggestion(Guid suggestionId)
@@ -54,24 +53,32 @@ public class PanelProjectPageManager : IPanelProjectPageManager
         }
 
     }
-
+    
     public void ChangeSuggestionVisibility(Guid suggestionId)
     {
         var suggestion = _repo.ReadSuggestion(suggestionId);
         suggestion.IsGloballyVisible = !suggestion.IsGloballyVisible;
         _repo.UpdateSuggestion(suggestion);
     }
-    
 
-    public void AddSummaryToMeetingPost(Guid meetingId, string uniqueFileName)
+    public void AddDocumentToPost(Guid meetingId, string uniqueFileName)
     {
-        if (_repo.ReadPost(meetingId) is not MeetingPost meetingPost)
+        var post = _repo.ReadPost(meetingId);
+        
+        switch (post)
         {
-            _logger.Log(LogLevel.Critical, "Meeting post with id " + meetingId + " does not exist.");
-            return;
+            // Add the document to the appropriate post type
+            case MeetingPost mp:
+                mp.DocumentNames.Add(uniqueFileName);
+                _repo.UpdatePost(mp);
+                break;
+            case SuggestionPost sp:
+                sp.DocumentNames.Add(uniqueFileName);
+                _repo.UpdatePost(sp);
+                break;
+            default:
+                throw new Exception("Post with document support not found");
         }
-        meetingPost.DocumentNames.Add(uniqueFileName);
-        _repo.UpdatePost(meetingPost);
     }
     
     // Generic helper method for post validation and creation
@@ -116,7 +123,6 @@ public class PanelProjectPageManager : IPanelProjectPageManager
         AddPost(timeLineId, new MeetingPost
         {
             Title = title,
-            DocumentNames = new List<string>(),
             CreatedAt = meetingDateTime,
             IsVisibleForPanelMembers = isVisibleForPanelMembers,
         });

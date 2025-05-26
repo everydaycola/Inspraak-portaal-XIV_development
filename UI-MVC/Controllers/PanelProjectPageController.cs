@@ -50,36 +50,33 @@ public class PanelProjectPageController : Controller
         var user = await _userManager.GetUserAsync(User);
         return View("Index", new ProjectPageViewModel
         {
-            Panel = _projectPageManager.GetPanelWithTimeLinesAndPostsAndSuggestionsAndVotes(panelId),
-            CurrentUser = user
+            CurrentUser = user,
+            Panel = _projectPageManager.GetPanelWithTimeLinesAndPostsAndSuggestionsAndVotesAndDocuments(panelId),
         });
     }
-
+    
     public async Task<IActionResult> Index(Guid? id)
     {
         var user = await _userManager.GetUserAsync(HttpContext.User);
-        if (id.HasValue)
-            return View(new ProjectPageViewModel
-            {
-                CurrentUser = user,
-                Panel = _projectPageManager.GetPanelWithTimeLinesAndPostsAndSuggestionsAndVotes(id.Value),
-            });
-        if (HttpContext.User.IsInRole(CustomIdentityConstants.OrganisatieRole))
+        if (!id.HasValue)
         {
-            var panels = _panelManager.GetAllPanels().ToList();
-            if (panels.Count != 1)
-                return RedirectToAction("PanelSelection", "PanelManagement",
-                    new { returnAction = "Index", returnController = "PanelProjectPage" });
-            var returnAction = "Index";
-            var action = string.IsNullOrEmpty(returnAction) ? "Index" : returnAction;
-            return RedirectToAction(action, new { id = panels[0].Id});
+            if (HttpContext.User.IsInRole(CustomIdentityConstants.OrganisatieRole))
+            {
+                var panels = _panelManager.GetAllPanels().ToList();
+                if (panels.Count != 1)
+                    return RedirectToAction("PanelSelection", "PanelManagement",
+                        new { returnAction = "Index", returnController = "PanelProjectPage" });
+                var returnAction = "Index";
+                var action = string.IsNullOrEmpty(returnAction) ? "Index" : returnAction;
+                return RedirectToAction(action, new { id = panels[0].Id });
+            }
         }
-        
+
         id = _customUserManager.getPanelForUser(user.Id).Id;
         return View(new ProjectPageViewModel
         {
             CurrentUser = user,
-            Panel = _projectPageManager.GetPanelWithTimeLinesAndPostsAndSuggestionsAndVotes(id.Value),
+            Panel = _projectPageManager.GetPanelWithTimeLinesAndPostsAndSuggestionsAndVotesAndDocuments(id.Value),
         });
     }
 
@@ -351,7 +348,7 @@ public class PanelProjectPageController : Controller
 
         var uniqueFileName = Guid.NewGuid() + Path.GetExtension(verslagFile.FileName);
         await _storageManager.AddFileAsync(uniqueFileName, verslagFile.ContentType, verslagFile.OpenReadStream());
-        _projectPageManager.AddSummaryToMeetingPost(meetingId, uniqueFileName);
+        _projectPageManager.AddDocumentToPost(meetingId, uniqueFileName);
         return RedirectToAction("Index", new { panelId });
     }
 
