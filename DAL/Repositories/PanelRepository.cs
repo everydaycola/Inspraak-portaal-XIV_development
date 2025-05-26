@@ -123,13 +123,6 @@ public class PanelRepository : IPanelRepository
             .ThenInclude(s => s.Votes)
             .Single(sp => sp.Id == id);
     }
-
-    public IEnumerable<Panel> ReadAllPanelsWithPostsAndSuggestions()
-    {
-        return _context.Panels
-            .Include(p => p.Posts)
-            .ThenInclude(post => (post as SuggestionPost).Suggestions);
-    }
     
     public Vote ReadVoteByPanelMemberAndSuggestionOrDefault(ApplicationUser user, Guid suggestionId)
     {

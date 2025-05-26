@@ -137,9 +137,8 @@ async function ShowVotePercentages(postId: string) {
 
     console.log(`Voting on post ${postId} stopped`)
     
-    let highestPercentage: number = -1;
+    let highestPercentage: number = 0;
     let highestIndex: number = -1;
-    
 
     for (let i = 0; i < suggestionDivs.length; i++) {
         const suggestionId = suggestionDivs.item(i)!!.querySelector("input")!!.value
