@@ -123,6 +123,10 @@ public class QuestionRepository : IQuestionRepository
         var participationMethodToDelete = _context.ParticipationMethods.Find(id);
         if (participationMethodToDelete != null)
         {
+            var relatedImpacts = _context.AnswerOptionImpacts
+                .Where(impact => impact.ParticipationMethod == participationMethodToDelete)
+                .ToList();
+            _context.AnswerOptionImpacts.RemoveRange(relatedImpacts);
             _context.ParticipationMethods.Remove(participationMethodToDelete);
             _context.SaveChanges();
         }
