@@ -28,9 +28,15 @@ public class QuestionRepository : IQuestionRepository
             .ThenInclude(aoi => aoi.ParticipationMethod).ToList();
     }
 
-    public Question ReadQuestionById(int id)
+    public Question ReadQuestionWithAnswerOptionsById(int id)
     {
         return _context.Questions.Include(q => q.AnswerOptions).FirstOrDefault(q => q.Id == id);
+    }
+
+    public Question ReadQuestionWithAnswerOptionsAndImpactsById(int id)
+    {
+        return _context.Questions.Include(q => q.AnswerOptions).ThenInclude(ao => ao.Impacts)
+            .FirstOrDefault(q => q.Id == id);
     }
 
     public ParticipationMethod ReadParticipationMethodByName(string name)
@@ -42,12 +48,28 @@ public class QuestionRepository : IQuestionRepository
     {
         _context.Questions.Add(question);
         _context.SaveChanges();
-        return ReadQuestionById(question.Id);
+        return ReadQuestionWithAnswerOptionsById(question.Id);
     }
 
     public void CreateAnswerOptionsWithImpacts(AnswerOption newAnswerOption)
     {
         _context.AnswerOptions.Add(newAnswerOption);
+        _context.SaveChanges();
+    }
+
+    public void DeleteQuestionWithAnswerOptionsAndImpacts(int questionId)
+    {
+        var question = ReadQuestionWithAnswerOptionsAndImpactsById(questionId);
+        foreach (var option in question.AnswerOptions)
+        {
+            foreach (var impact in option.Impacts)
+            {
+                _context.AnswerOptionImpacts.Remove(impact);
+            }
+            _context.AnswerOptions.Remove(option);
+        }
+        _context.Questions.Remove(question);
+
         _context.SaveChanges();
     }
 

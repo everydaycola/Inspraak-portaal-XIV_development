@@ -10,6 +10,7 @@ public interface IQuestionManager
     IEnumerable<Question> GetAllQuestions();
     public ParticipationMethod GetParticipationMethodByName(string name);
     IEnumerable<Question> GetAllQuestionsWithAnswerOptionsAndImpactsAndParticipationMethod();
+    void RemoveQuestionWithAnswerOptionsAndImpacts(int questionId);
     Question GetQuestionById(int id);
     Question AddQuestion(string question);
 

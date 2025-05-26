@@ -92,10 +92,10 @@ public class QuestionController : Controller
 
 
     [HttpPost]
-    public IActionResult Delete(int id)
+    public IActionResult DeleteQuestionWithAnswerOptions(int questionId)
     {
-        _questionManager.RemoveQuestion(id);
-        _logger.LogInformation("Vraag succesvol verwijderd!");
+        _questionManager.RemoveQuestionWithAnswerOptionsAndImpacts(questionId);
+        _logger.LogInformation("Vraag met id " + questionId + " en zijn antwoord opties werden succesvol verwijderd. ");
         return RedirectToAction("Index");
     }
 
@@ -106,61 +106,5 @@ public class QuestionController : Controller
         _logger.LogInformation("Participationmethod succesvol verwijderd!");
         return RedirectToAction("Index");
     }
-
-
-    [HttpPost]
-    public IActionResult DeleteQuestionWeightTip(int id)
-    {
-        try
-        {
-            _questionWeightTipManager.RemoveQuestionWeightTip(id);
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, $"Fout bij verwijderen van score-tip met ID {id}.");
-        }
-
-        return RedirectToAction("Index");
-    }
-
-    [HttpGet]
-    public IActionResult GetQuestionData(int id)
-    {
-        var domainQuestion = _questionManager.GetQuestionById(id);
-        if (domainQuestion == null)
-        {
-            return NotFound();
-        }
-
-        var questionViewModel = new QuestionsViewModel
-        {
-            Id = domainQuestion.Id,
-            Question = domainQuestion.QuestionText,
-            AnswerOptions = domainQuestion.AnswerOptions.Select(ao => new AnswerOptionCrudViewModel
-            {
-                Id = ao.Id,
-                AnswerOptionText = ao.AnswerOptionText
-            }).ToList()
-        };
-
-        return Json(questionViewModel);
-    }
-
-    public IActionResult AddQuestion(QuestionViewModel viewModel)
-    {
-        var answers = viewModel.AnswerOptions;
-        var question = _questionManager.AddQuestion(viewModel.QuestionText);
-        foreach (var option in viewModel.AnswerOptions)
-        {
-            var mappedImpacts = option.Impacts.Select(i => new AnswerOptionImpactsDto
-            {
-                ParticipationMethodName = i.ParticipationMethodName,
-                ImpactWeight = i.Impactweight
-            }).ToList();
-            _questionManager.AddAnswerOptionsWithImpacts(question.Id, option.AnswerText, mappedImpacts);
-        }
-
-        _logger.Log(LogLevel.Information, "viewModelParsed");
-        return Ok();
-    }
+    
 }

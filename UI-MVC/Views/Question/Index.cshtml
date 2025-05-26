@@ -1,3 +1,4 @@
+@using UI_MVC.Models.ViewModels
 @using UI_MVC.Models.ViewModels.ExploreConceptViewModels
 @model UI_MVC.Models.ViewModels.ExploreConceptViewModels.QuestionIndexViewModel
 
@@ -11,44 +12,35 @@
 
 <div class="container mt-5">
     <div class="row">
-        <h2 class="mb-4">Vraagbeheer</h2>
-        <div class="card shadow-sm border-0 mb-5">
-            <div class="card-body">
-                <partial
-                    name="_questionFormPartial"
-                    model="@(new QuestionViewModel { ParticipationMethods = Model.ParticipationMethods })">
-                </partial>
-            </div>
-        </div>
-        <div class="row">
-            <h2 class="mb-4">Participatie methode</h2>
+        <div class="col-8">
+            <h2 class="mb-4">Vraagbeheer</h2>
             <div class="card shadow-sm border-0 mb-5">
                 <div class="card-body">
-                    <form id="participationMethodForm" asp-action="AddParticipationMethod" asp-controller="Question" method="post">
-                        <div class="mb-3">
-                            <label for="name" class="form-label">Naam</label>
-                            <input type="text" class="form-control" id="name" name="name" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="description" class="form-label">Beschrijving</label>
-                            <textarea class="form-control" id="description" name="description" rows="3" required></textarea>
-                        </div>
-                        <span asp-validation-for="QuestionToEdit.AnswerOptions" class="text-danger"></span>
-                        <button type="submit" class="btn btn-primary">Toevoegen</button>
-                    </form>
+                    <partial
+                        name="_questionFormPartial"
+                        model="@(new QuestionViewModel { ParticipationMethods = Model.ParticipationMethods })">
+                    </partial>
                 </div>
             </div>
         </div>
-
-        <hr class="my-5">
-
+        <div class="col-4">
+            <div class="row">
+                <h2 class="mb-4">Participatie methode</h2>
+                <div class="card shadow-sm border-0 mb-5">
+                    <div class="card-body">
+                        <partial name="_participationFormPartial"
+                                 model="@(new ParticipationViewModel())"/>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
         <h3 class="mb-4">Overzicht van vragen</h3>
         @if (@Model.Questions != null && Model.Questions.Any())
         {
             <table class="table table-striped table-hover">
                 <thead>
                 <tr>
-                    <th>ID</th>
                     <th>Vraagtekst</th>
                     <th>Antwoordopties</th>
                     <th>Acties</th>
@@ -58,7 +50,6 @@
                 @foreach (var question in Model.Questions)
                 {
                     <tr>
-                        <td>@question.Id</td>
                         <td>@question.Question</td>
                         <td>
                             @if (question.AnswerOptions != null && question.AnswerOptions.Any())
@@ -83,7 +74,17 @@
                             }
                         </td>
                         <td>
-                            <button class="btn btn-sm btn-primary edit-question-button" data-question-id="@question.Id">Bewerken</button>
+                            <button class="btn btn-sm btn-primary edit-question-button" data-question-id="@question.Id">
+                                Bewerken
+                            </button>
+                            <form asp-action="DeleteQuestionWithAnswerOptions" asp-controller="Question"
+                                  method="post" class="d-inline">
+                                <input type="hidden" name="questionId" value="@question.Id" />
+                                <button type="submit" class="btn btn-sm btn-danger"
+                                        onclick="return confirm('Weet je zeker dat je deze vraag en zijn antwoordopties wilt verwijderen?');">
+                                    Verwijderen
+                                </button>
+                            </form>
                         </td>
                     </tr>
                 }
@@ -113,7 +114,11 @@
                     <td>@method.Name</td>
                     <td>@method.Description</td>
                     <td>
-                        <form asp-action="DeleteParticipationMethod" asp-controller="Question" asp-route-id="@method.Id" method="post" class="d-inline">
+                        <button class="btn btn-sm btn-primary edit-participation-button" data-method-id="@method.Id">
+                            Bewerken
+                        </button>
+                        <form asp-action="DeleteParticipationMethod" asp-controller="Question" asp-route-id="@method.Id"
+                              method="post" class="d-inline">
                             <button type="submit" class="btn btn-sm btn-danger"
                                     onclick="return confirm('Weet je zeker dat je deze vraag wilt verwijderen?');">
                                 Verwijderen
@@ -128,16 +133,20 @@
 </div>
 
 <div class="toast-container position-fixed bottom-0 end-0 p-3">
-    <div id="liveToast" class="toast align-items-center text-white bg-success border-0" role="alert" aria-live="assertive" aria-atomic="true">
+    <div id="liveToast" class="toast align-items-center text-white bg-success border-0" role="alert"
+         aria-live="assertive" aria-atomic="true">
         <div class="d-flex">
             <div class="toast-body" id="toastMessage"></div>
-            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"
+                    aria-label="Close"></button>
         </div>
     </div>
-    <div id="errorToast" class="toast align-items-center text-white bg-danger border-0" role="alert" aria-live="assertive" aria-atomic="true">
+    <div id="errorToast" class="toast align-items-center text-white bg-danger border-0" role="alert"
+         aria-live="assertive" aria-atomic="true">
         <div class="d-flex">
             <div class="toast-body" id="errorToastMessage"></div>
-            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"
+                    aria-label="Close"></button>
         </div>
     </div>
 </div>
@@ -148,7 +157,8 @@
         <div class="modal-content">
             <div class="modal-header bg-primary text-white">
                 <h5 class="modal-title" id="explanationModalLabel">Hoe werkt het vraaggewichtensysteem?</h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Sluiten"></button>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                        aria-label="Sluiten"></button>
             </div>
             <div class="modal-body">
                 <div class="row">
@@ -169,9 +179,12 @@ zijn voor de politieke besluitvorming?" required>
                                     <thead>
                                     <tr>
                                         <th>Antwoorden</th>
-                                        <th>Burgerpanel <i class="bi bi-info-circle" data-bs-toggle="tooltip" title="Bijv. Online enquête"></i></th>
-                                        <th>Enquéte <i class="bi bi-info-circle" data-bs-toggle="tooltip" title="Bijv. Workshop"></i></th>
-                                        <th>Informatieve campagne <i class="bi bi-info-circle" data-bs-toggle="tooltip" title="Bijv. Expertreview"></i></th>
+                                        <th>Burgerpanel <i class="bi bi-info-circle" data-bs-toggle="tooltip"
+                                                           title="Bijv. Online enquête"></i></th>
+                                        <th>Enquéte <i class="bi bi-info-circle" data-bs-toggle="tooltip"
+                                                       title="Bijv. Workshop"></i></th>
+                                        <th>Informatieve campagne <i class="bi bi-info-circle" data-bs-toggle="tooltip"
+                                                                     title="Bijv. Expertreview"></i></th>
                                     </tr>
                                     </thead>
                                     <tbody>
@@ -182,13 +195,19 @@ zijn voor de politieke besluitvorming?" required>
                                                    placeholder="Meer dan 6 maanden" required>
                                         </td>
                                         <td>
-                                            <input type="number" name="QuestionToEdit.AnswerOptions[0].WeightsPerMethod[1].Weight" class="form-control" value="10">
+                                            <input type="number"
+                                                   name="QuestionToEdit.AnswerOptions[0].WeightsPerMethod[1].Weight"
+                                                   class="form-control" value="10">
                                         </td>
                                         <td>
-                                            <input type="number" name="QuestionToEdit.AnswerOptions[0].WeightsPerMethod[2].Weight" class="form-control" value="0">
+                                            <input type="number"
+                                                   name="QuestionToEdit.AnswerOptions[0].WeightsPerMethod[2].Weight"
+                                                   class="form-control" value="0">
                                         </td>
                                         <td>
-                                            <input type="number" name="QuestionToEdit.AnswerOptions[0].WeightsPerMethod[3].Weight" class="form-control" value="0">
+                                            <input type="number"
+                                                   name="QuestionToEdit.AnswerOptions[0].WeightsPerMethod[3].Weight"
+                                                   class="form-control" value="0">
                                         </td>
                                     </tr>
                                     <tr>
@@ -198,13 +217,19 @@ zijn voor de politieke besluitvorming?" required>
                                                    placeholder="Tussen 3 en 6 maanden" required>
                                         </td>
                                         <td>
-                                            <input type="number" name="QuestionToEdit.AnswerOptions[0].WeightsPerMethod[1].Weight" class="form-control" value="0">
+                                            <input type="number"
+                                                   name="QuestionToEdit.AnswerOptions[0].WeightsPerMethod[1].Weight"
+                                                   class="form-control" value="0">
                                         </td>
                                         <td>
-                                            <input type="number" name="QuestionToEdit.AnswerOptions[0].WeightsPerMethod[2].Weight" class="form-control" value="10">
+                                            <input type="number"
+                                                   name="QuestionToEdit.AnswerOptions[0].WeightsPerMethod[2].Weight"
+                                                   class="form-control" value="10">
                                         </td>
                                         <td>
-                                            <input type="number" name="QuestionToEdit.AnswerOptions[0].WeightsPerMethod[3].Weight" class="form-control" value="0">
+                                            <input type="number"
+                                                   name="QuestionToEdit.AnswerOptions[0].WeightsPerMethod[3].Weight"
+                                                   class="form-control" value="0">
                                         </td>
                                     </tr>
                                     <tr>
@@ -214,13 +239,19 @@ zijn voor de politieke besluitvorming?" required>
                                                    placeholder="1 tot 3 maanden" required>
                                         </td>
                                         <td>
-                                            <input type="number" name="QuestionToEdit.AnswerOptions[0].WeightsPerMethod[1].Weight" class="form-control" value="0">
+                                            <input type="number"
+                                                   name="QuestionToEdit.AnswerOptions[0].WeightsPerMethod[1].Weight"
+                                                   class="form-control" value="0">
                                         </td>
                                         <td>
-                                            <input type="number" name="QuestionToEdit.AnswerOptions[0].WeightsPerMethod[2].Weight" class="form-control" value="0">
+                                            <input type="number"
+                                                   name="QuestionToEdit.AnswerOptions[0].WeightsPerMethod[2].Weight"
+                                                   class="form-control" value="0">
                                         </td>
                                         <td>
-                                            <input type="number" name="QuestionToEdit.AnswerOptions[0].WeightsPerMethod[3].Weight" class="form-control" value="10">
+                                            <input type="number"
+                                                   name="QuestionToEdit.AnswerOptions[0].WeightsPerMethod[3].Weight"
+                                                   class="form-control" value="10">
                                         </td>
                                     </tr>
                                     <tr>
@@ -231,13 +262,19 @@ zijn voor de politieke besluitvorming?" required>
                                                    placeholder="Minder dan 1 maand" required>
                                         </td>
                                         <td>
-                                            <input type="number" name="QuestionToEdit.AnswerOptions[0].WeightsPerMethod[1].Weight" class="form-control" value="0">
+                                            <input type="number"
+                                                   name="QuestionToEdit.AnswerOptions[0].WeightsPerMethod[1].Weight"
+                                                   class="form-control" value="0">
                                         </td>
                                         <td>
-                                            <input type="number" name="QuestionToEdit.AnswerOptions[0].WeightsPerMethod[2].Weight" class="form-control" value="0">
+                                            <input type="number"
+                                                   name="QuestionToEdit.AnswerOptions[0].WeightsPerMethod[2].Weight"
+                                                   class="form-control" value="0">
                                         </td>
                                         <td>
-                                            <input type="number" name="QuestionToEdit.AnswerOptions[0].WeightsPerMethod[3].Weight" class="form-control" value="100">
+                                            <input type="number"
+                                                   name="QuestionToEdit.AnswerOptions[0].WeightsPerMethod[3].Weight"
+                                                   class="form-control" value="100">
                                         </td>
                                     </tr>
                                     </tbody>

@@ -29,9 +29,14 @@ public class QuestionManager : IQuestionManager
         return _questionRepository.ReadAllQuestionsWIthAnswerOptionsAndIMpactsAndParticipationMethod();
     }
 
+    public void RemoveQuestionWithAnswerOptionsAndImpacts(int questionId)
+    {
+        _questionRepository.DeleteQuestionWithAnswerOptionsAndImpacts(questionId);
+    }
+
     public Question GetQuestionById(int id)
     {
-        return _questionRepository.ReadQuestionById(id);
+        return _questionRepository.ReadQuestionWithAnswerOptionsById(id);
     }
     
     public ParticipationMethod GetParticipationMethodByName(string name)
