@@ -35,7 +35,7 @@
                         <div id="crossCriteriaCollapse" class="accordion-collapse collapse"
                              aria-labelledby="crossCriteriaHeading" data-bs-parent="#criteriaAccordion">
                             <div class="accordion-body">
-                                @Html.Partial("_extraCriteriaStatsCrossPartial", Model.ExtraCriteriaViewModel)
+                                <partial name="_extraCriteriaStatsPartial" model="Model.ExtraCriteriaViewModel"/>
                             </div>
                         </div>
                     </div>
@@ -54,7 +54,7 @@
                         <div id="singleCriteriaCollapse" class="accordion-collapse collapse"
                              aria-labelledby="singleCriteriaHeading" data-bs-parent="#criteriaAccordion">
                             <div class="accordion-body">
-                                @Html.Partial("_extraCriteriaStatsPartial", Model.ExtraCriteriaViewModel)
+                                <partial name="_extraCriteriaStatsPartial" model="Model.ExtraCriteriaViewModel"/>
                             </div>
                         </div>
                     </div>
