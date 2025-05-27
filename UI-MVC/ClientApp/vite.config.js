@@ -21,7 +21,7 @@ export default defineConfig({
                 shareButtonPartial: resolve(__dirname, 'src/ts/panelProjectPage/share.ts'),
                 suggestionVoting: resolve(__dirname, 'src/ts/PanelProjectPage/suggestionVoting.ts'),
                 suggestionVisibility: resolve(__dirname, 'src/ts/PanelProjectPage/suggestionVisibility.ts'),
-                planningsGroupMemberEdit: resolve(__dirname, 'src/ts/planningsGroupMember/planningsGroupMemberEdit'),
+                people: resolve(__dirname, 'src/ts/peoplePage/peoplePageEntrypoint.ts'),
             },
             output: {
                 entryFileNames: '[name].entry.js',
