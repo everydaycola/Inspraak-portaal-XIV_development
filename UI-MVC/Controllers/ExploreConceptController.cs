@@ -1,7 +1,9 @@
 using BL.Interfaces;
+using Domain.GlobalDtos;
 using Microsoft.AspNetCore.Mvc;
 using UI_MVC.Models.Dto;
 using UI_MVC.Models.ViewModels.ExploreConceptViewModels;
+using UI_MVC.Models.ViewModels.ExploreConceptViewModels.client;
 
 namespace UI_MVC.Controllers;
 
@@ -23,14 +25,14 @@ public class ExploreConceptController : Controller
         {
             Id = q.Id,
             Question = q.QuestionText,
-            AnswerOptions = q.AnswerOptions.Select(ao => new AnswerOptionCrudViewModel()
+            AnswerOptions = q.AnswerOptions.Select(ao => new AnswerOptionDto()
             {
                 Id = ao.Id,
-                AnswerOptionText = ao.AnswerOptionText,
-                AnswerOptionImpacts = ao.Impacts.Select(aoi => new AnswerOptionImpactDto()
+                AnswerText = ao.AnswerOptionText,
+                Impacts = ao.Impacts.Select(aoi => new AnswerOptionImpactsDto()
                 {
                     ParticipationMethodName = aoi.ParticipationMethod.Name,
-                    ContributingWeight = aoi.ImpactWeight
+                    ImpactWeight = aoi.ImpactWeight
                 }).ToList()
             }).ToList()
         }).ToList();

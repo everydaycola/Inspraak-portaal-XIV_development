@@ -39,8 +39,6 @@ builder.Services.AddScoped<ICommuneManager, CommuneManager>();
 builder.Services.AddScoped<IPanelProjectPageManager, PanelProjectPageManager>();
 builder.Services.AddScoped<IQuestionRepository, QuestionRepository>();
 builder.Services.AddScoped<IQuestionManager, QuestionManager>();
-builder.Services.AddScoped<IQuestionWeightTipsRepository, QuestionWeightTipsRepository>();
-builder.Services.AddScoped<IQuestionWeightTipManager, QuestionWeightTipManager>();
 
 //Tenant specific logic
 builder.Services

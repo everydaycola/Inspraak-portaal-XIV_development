@@ -1,4 +1,4 @@
-namespace UI_MVC.Models.ViewModels.ExploreConceptViewModels;
+namespace UI_MVC.Models.ViewModels.ExploreConceptViewModels.client;
 
 public class ExploreConceptViewModel
 {

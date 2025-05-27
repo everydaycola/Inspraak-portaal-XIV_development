@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using UI_MVC.Models.Dto;
 using UI_MVC.Models.ViewModels;
 using UI_MVC.Models.ViewModels.ExploreConceptViewModels;
+using UI_MVC.Models.ViewModels.ExploreConceptViewModels.management;
 using AnswerOptionImpactsDto = Domain.GlobalDtos.AnswerOptionImpactsDto;
 
 
@@ -14,64 +15,47 @@ namespace UI_MVC.Controllers;
 public class QuestionController : Controller
 {
     private readonly IQuestionManager _questionManager;
-    private readonly IQuestionWeightTipManager _questionWeightTipManager;
     private readonly ILogger<QuestionController> _logger;
 
-    public QuestionController(IQuestionManager questionManager, ILogger<QuestionController> logger,
-        IQuestionWeightTipManager questionWeightTipManager)
+    public QuestionController(IQuestionManager questionManager, ILogger<QuestionController> logger)
     {
         _questionManager = questionManager;
         _logger = logger;
-        _questionWeightTipManager = questionWeightTipManager;
     }
 
     [HttpGet]
     public IActionResult Index()
     {
         var questionObject = _questionManager.GetAllQuestionsWithAnswerOptionsAndImpactsAndParticipationMethod();
-
         var questionViewModels = questionObject.Select(q => new QuestionsViewModel()
         {
             Id = q.Id,
             Question = q.QuestionText,
-            AnswerOptions = q.AnswerOptions.Select(ao => new AnswerOptionCrudViewModel
+            AnswerOptions = q.AnswerOptions.Select(ao => new AnswerOptionDto()
             {
                 Id = ao.Id,
-                AnswerOptionText = ao.AnswerOptionText,
-                AnswerOptionImpacts = ao.Impacts.Select(aoi => new AnswerOptionImpactDto()
+                AnswerText = ao.AnswerOptionText,
+                Impacts = ao.Impacts.Select(aoi => new AnswerOptionImpactsDto()
                 {
                     ParticipationMethodName = aoi.ParticipationMethod.Name,
-                    ContributingWeight = aoi.ImpactWeight
+                    ImpactWeight = aoi.ImpactWeight
                 }).ToList()
             }).ToList()
         }).ToList();
 
-        var allQuestionWeightTips = _questionWeightTipManager.GetAllQuestionWeightTips();
-        var allWeightTipViewModels = allQuestionWeightTips.Select(t => new QuestionWeightTipsViewModel()
-        {
-            Id = t.Id,
-            MinScore = t.MinScore,
-            MaxScore = t.MaxScore,
-            Message = t.Message,
-        }).ToList();
-
-        var allParticipationMethods = _questionWeightTipManager.GetAllParticipationMethods()
+       
+        var allParticipationMethods = _questionManager.GetAllParticipationMethods()
             .Select(p => new ParticipationViewModel()
             {
                 Id = p.Id,
                 Name = p.Name,
                 Description = p.Description,
             });
-
         var model = new QuestionIndexViewModel()
         {
             Questions = questionViewModels,
-            QuestionToEdit = new QuestionsViewModel(),
-            QuestionWeightTips = allWeightTipViewModels,
-            QuestionWeightTipViewModelToEdit = new QuestionWeightTipsViewModel(),
             ParticipationMethods = allParticipationMethods
         };
-
         return View(model);
     }
 
@@ -84,13 +68,15 @@ public class QuestionController : Controller
             return View("Index");
         }
 
-        _questionWeightTipManager.AddParticipationMethod(viewModel.Name, viewModel.Description);
+        _questionManager.AddParticipationMethod(viewModel.Name, viewModel.Description);
         return RedirectToAction("Index");
     }
 
     public IActionResult AddQuestion(QuestionViewModel viewModel)
     {
-        var answers = viewModel.AnswerOptions;
+        if (!ModelState.IsValid)
+            return View(viewModel);
+        
         var question = _questionManager.AddQuestion(viewModel.QuestionText);
         foreach (var option in viewModel.AnswerOptions)
         {
@@ -101,16 +87,15 @@ public class QuestionController : Controller
             }).ToList();
             _questionManager.AddAnswerOptionsWithImpacts(question.Id, option.AnswerText, mappedImpacts);
         }
-
-        _logger.Log(LogLevel.Information, "viewModelParsed");
-        return Ok();
+        _logger.Log(LogLevel.Information, "Succesfully added a new question.");
+        return RedirectToAction("Index");
     }
 
 
     [HttpPost]
     public IActionResult DeleteQuestionWithAnswerOptions(int questionId)
     {
-        _questionManager.RemoveQuestionWithAnswerOptionsAndImpacts(questionId);
+        _questionManager.DeleteQuestionWithAnswerOptionsAndImpacts(questionId);
         _logger.LogInformation("Vraag met id " + questionId + " en zijn antwoord opties werden succesvol verwijderd. ");
         return RedirectToAction("Index");
     }
@@ -118,7 +103,7 @@ public class QuestionController : Controller
     [HttpPost]
     public IActionResult DeleteParticipationMethod(Guid id)
     {
-        _questionManager.RemoveParticipationMethod(id);
+        _questionManager.DeleteParticipationMethod(id);
         _logger.LogInformation("Participationmethod succesvol verwijderd!");
         return RedirectToAction("Index");
     }
@@ -126,7 +111,7 @@ public class QuestionController : Controller
     [HttpGet]
     public IActionResult EditParticipationMethod(Guid id)
     {
-        var method = _questionWeightTipManager.GetParticipationMethodById(id);
+        var method = _questionManager.GetParticipationMethodById(id);
         if (method == null)
             return NotFound();
 
@@ -145,7 +130,7 @@ public class QuestionController : Controller
         if (!ModelState.IsValid)
             return View(viewModel);
 
-        _questionWeightTipManager.UpdateParticipationMethod(viewModel.Id, viewModel.Name, viewModel.Description);
+        _questionManager.UpdateParticipationMethod(viewModel.Id, viewModel.Name, viewModel.Description);
         return RedirectToAction("Index");
     }
 
@@ -155,7 +140,7 @@ public class QuestionController : Controller
         var question = _questionManager.GetQuestionWithAnswerOptionsAndImpactsAndParticipationMethod(id);
         if (question == null) return NotFound();
 
-        var allParticipationMethods = _questionWeightTipManager.GetAllParticipationMethods()
+        var allParticipationMethods = _questionManager.GetAllParticipationMethods()
             .Select(pm => new ParticipationViewModel
             {
                 Id = pm.Id,
@@ -174,7 +159,7 @@ public class QuestionController : Controller
                 Impacts = ao.Impacts.Select(i => new AnswerOptionImpactsDto()
                 {
                     ParticipationMethodId = i.ParticipationMethod.Id,
-                    ParticipationMethodName = i.ParticipationMethod.Name, // Assuming you want the name here
+                    ParticipationMethodName = i.ParticipationMethod.Name,
                     ImpactWeight = i.ImpactWeight
                 }).ToList() 
             }).ToList(),
@@ -189,7 +174,7 @@ public class QuestionController : Controller
     {
         if (!ModelState.IsValid)
         {
-            model.ParticipationMethods =_questionWeightTipManager.GetAllParticipationMethods()
+            model.ParticipationMethods =_questionManager.GetAllParticipationMethods()
                 .Select(pm => new ParticipationViewModel
                 {
                     Id = pm.Id,

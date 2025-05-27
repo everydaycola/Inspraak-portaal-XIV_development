@@ -1,5 +1,6 @@
 @using System.Text.Json
-@model UI_MVC.Models.ViewModels.ExploreConceptViewModels.ExploreConceptViewModel
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@model UI_MVC.Models.ViewModels.ExploreConceptViewModels.client.ExploreConceptViewModel
 
 @{
     ViewData["Title"] = "Verkenning Burgerpanel";
@@ -83,12 +84,12 @@
                                                                id="question-@Model.Questions[i].Id-option-@option.Id"
                                                                name="SubmittedAnswers[@i].SelectedAnswerOptionId"
                                                                value="@option.Id"
-                                                               data-impacts='@Html.Raw(JsonSerializer.Serialize(option.AnswerOptionImpacts))'
+                                                               data-impacts='@Html.Raw(JsonSerializer.Serialize(option.Impacts))'
                                                                required
                                                                @(Model.SubmittedAnswers.Any(sa => sa.QuestionId == Model.Questions[i].Id && sa.SelectedAnswerOptionId == option.Id) ? "checked" : "")/>
                                                         <label class="form-check-label"
                                                                for="question-@Model.Questions[i].Id-option-@option.Id">
-                                                            @option.AnswerOptionText
+                                                            @option.AnswerText
                                                         </label>
                                                     </div>
                                                 }

@@ -1,6 +1,5 @@
 using BL.Interfaces;
 using Microsoft.AspNetCore.Mvc;
-using UI_MVC.Models.ViewModels.ExploreConceptViewModels;
 
 namespace UI_MVC.Controllers.api;
 
@@ -9,13 +8,10 @@ namespace UI_MVC.Controllers.api;
 public class ExploreConceptsController : ControllerBase
 {
     private readonly IQuestionManager _questionManager; // Inject the manager
-    private readonly IQuestionWeightTipManager _questionWeightTipManager;
 
-    public ExploreConceptsController(IQuestionManager questionManager,
-        IQuestionWeightTipManager questionWeightTipManager)
+    public ExploreConceptsController(IQuestionManager questionManager)
     {
         _questionManager = questionManager;
-        _questionWeightTipManager = questionWeightTipManager;
     }
 
     [HttpPost("SubmitAnswers")]

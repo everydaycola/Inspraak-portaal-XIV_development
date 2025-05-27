@@ -1,10 +1,10 @@
 using BL.Interfaces;
+using DAL.Interfaces;
 using DAL.Repositories;
 using Domain.Admin;
-using Domain.Interfaces;
+using Domain.GlobalDtos;
 using Domain.Interfaces.Question;
 using Microsoft.Extensions.Logging;
-using UI_MVC.Models.ViewModels.ExploreConceptViewModels;
 using AnswerOptionImpactsDto = Domain.GlobalDtos.AnswerOptionImpactsDto;
 
 namespace BL.Managers;
@@ -19,42 +19,31 @@ public class QuestionManager : IQuestionManager
         _logger = logger;
         _questionRepository = questionRepository;
     }
-
-    public IEnumerable<Question> GetAllQuestions()
+    //GET
+    public ParticipationMethod GetParticipationMethodByName(string name)
     {
-        return _questionRepository.ReadAllQuestions();
+        return _questionRepository.ReadParticipationMethodByName(name);
     }
-
     public IEnumerable<Question> GetAllQuestionsWithAnswerOptionsAndImpactsAndParticipationMethod()
     {
         return _questionRepository.ReadAllQuestionsWithAnswerOptionsAndImpactsAndParticipationMethod();
     }
-
     public Question GetQuestionWithAnswerOptionsAndImpactsAndParticipationMethod(int id)
     {
         return _questionRepository.ReadQuestionWithAnswerOptionsAndImpactsById(id);
     }
 
-    public void RemoveQuestionWithAnswerOptionsAndImpacts(int questionId)
+    public ParticipationMethod GetParticipationMethodById(Guid id)
     {
-        _questionRepository.DeleteQuestionWithAnswerOptionsAndImpacts(questionId);
+        return _questionRepository.ReadParticipationMethodById(id);
     }
 
-    public Question GetQuestionById(int id)
+    public IEnumerable<ParticipationMethod> GetAllParticipationMethods()
     {
-        return _questionRepository.ReadQuestionWithAnswerOptionsById(id);
+        return _questionRepository.ReadAllParticipationMethods();
     }
 
-    public Question GetQuestionWithAnswerOptionsAndImpactsById(int id)
-    {
-        return _questionRepository.ReadQuestionWithAnswerOptionsAndImpactsById(id);
-    }
-
-    public ParticipationMethod GetParticipationMethodByName(string name)
-    {
-        return _questionRepository.ReadParticipationMethodByName(name);
-    }
-
+    //ADD
     public Question AddQuestion(string question)
     {
         Question newQuestion = new Question()
@@ -63,7 +52,6 @@ public class QuestionManager : IQuestionManager
         };
         return _questionRepository.CreateQuestion(newQuestion);
     }
-    
     public void AddAnswerOptionsWithImpacts(int questionId,string answerText, List<AnswerOptionImpactsDto> answerOptionImpacts)
     {
 
@@ -87,20 +75,18 @@ public class QuestionManager : IQuestionManager
         };
         _questionRepository.CreateAnswerOptionsWithImpacts(newAnswerOption);
     }
-    
 
-
-    public void UpdateQuestion(int id, string question, List<AnswerOption> answerOption)
+    public void AddParticipationMethod(string viewModelName, string viewModelDescription)
     {
-        Question newQuestion = new Question()
+        var method = new ParticipationMethod()
         {
-            Id = id,
-            QuestionText = question,
-            AnswerOptions = answerOption
+            Name = viewModelName,
+            Description = viewModelDescription
         };
-        _questionRepository.UpdateQuestion(newQuestion);
+        _questionRepository.CreateParticipationMethod(method);
     }
 
+    //UPDATE
     public void UpdateQuestionWithAnswerOptions(int modelId, string modelQuestionText, List<AnswerOptionDto> toList)
     {
         var updatedQuestion = new Question()
@@ -123,12 +109,33 @@ public class QuestionManager : IQuestionManager
         _questionRepository.UpdateQuestionWithAnswerOptionsAndImpacts(updatedQuestion);
     }
 
-    public void RemoveQuestion(int id)
+    public void UpdateParticipationMethod(Guid viewModelId, string viewModelName, string viewModelDescription)
     {
-        _questionRepository.DeleteQuestion(id);
+        ParticipationMethod updatedParticipationMethod = new ParticipationMethod()
+        {
+            Id = viewModelId,
+            Name = viewModelName,
+            Description = viewModelDescription
+        };
+        _questionRepository.UpdateParticipationMethod(updatedParticipationMethod);
     }
 
-    public void RemoveParticipationMethod(Guid id)
+    //DELETE
+    public void DeleteQuestionWithAnswerOptionsAndImpacts(int questionId)
+    {
+        _questionRepository.DeleteQuestionWithAnswerOptionsAndImpacts(questionId);
+    }
+
+    public Question GetQuestionById(int id)
+    {
+        return _questionRepository.ReadQuestionWithAnswerOptionsById(id);
+    }
+
+    public Question GetQuestionWithAnswerOptionsAndImpactsById(int id)
+    {
+        return _questionRepository.ReadQuestionWithAnswerOptionsAndImpactsById(id);
+    }
+    public void DeleteParticipationMethod(Guid id)
     {
         _questionRepository.DeleteParticipationMethod(id);
     }

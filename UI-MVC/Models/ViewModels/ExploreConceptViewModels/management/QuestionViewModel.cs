@@ -1,6 +1,6 @@
-﻿using System.Collections;
+﻿using Domain.GlobalDtos;
 
-namespace UI_MVC.Models.ViewModels.ExploreConceptViewModels;
+namespace UI_MVC.Models.ViewModels.ExploreConceptViewModels.management;
 
 public class QuestionViewModel
 {

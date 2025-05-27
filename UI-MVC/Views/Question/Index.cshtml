@@ -1,6 +1,7 @@
 @using UI_MVC.Models.ViewModels
 @using UI_MVC.Models.ViewModels.ExploreConceptViewModels
-@model UI_MVC.Models.ViewModels.ExploreConceptViewModels.QuestionIndexViewModel
+@using UI_MVC.Models.ViewModels.ExploreConceptViewModels.management
+@model QuestionIndexViewModel
 
 @{
     ViewData["Title"] = "Vraagbeheer";
@@ -58,11 +59,11 @@
                                     @foreach (var option in question.AnswerOptions)
                                     {
                                         <li>
-                                            @option.AnswerOptionText |
-                                            @foreach (var optionImpact in option.AnswerOptionImpacts)
+                                            @option.AnswerText |
+                                            @foreach (var optionImpact in option.Impacts)
                                             {
                                                 @optionImpact.ParticipationMethodName
-                                                @optionImpact.ContributingWeight
+                                                @optionImpact.ImpactWeight
                                             }
                                         </li>
                                     }
