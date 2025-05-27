@@ -31,4 +31,20 @@ public class PanelProjectPagesController : ControllerBase
         var suggestion = _projectPageManager.GetSuggestion(suggestionGuid);
         return Ok(suggestion.IsGloballyVisible);
     }
+    [HttpPost ("toggleExecuted")]
+    public async Task<IActionResult> ToggleExecuted([FromQuery] string suggestionId)
+    {
+        var suggestionGuid = Guid.Parse(suggestionId);
+        _projectPageManager.ChangeExecutedToggle(suggestionGuid);
+        
+        return Ok(new { success = true});
+    }
+
+    [HttpGet("executedValue")]
+    public ActionResult<bool> GetExecutedValue([FromQuery] string suggestionId)
+    {
+        var suggestionGuid = Guid.Parse(suggestionId);
+        var suggestion = _projectPageManager.GetSuggestion(suggestionGuid);
+        return Ok(suggestion.IsExecuted);
+    }
 }

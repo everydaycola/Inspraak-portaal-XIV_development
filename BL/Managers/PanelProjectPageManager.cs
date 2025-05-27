@@ -14,7 +14,6 @@ namespace BL.Managers;
 
 public class PanelProjectPageManager : IPanelProjectPageManager
 {
-    
     private readonly ILogger<PanelManager> _logger;
     private readonly IPanelRepository _repo;
 
@@ -51,7 +50,6 @@ public class PanelProjectPageManager : IPanelProjectPageManager
             vote.VoteType = voteType;
             _repo.UpdateVote(vote);
         }
-
     }
     
     public void ChangeSuggestionVisibility(Guid suggestionId)
@@ -60,6 +58,14 @@ public class PanelProjectPageManager : IPanelProjectPageManager
         suggestion.IsGloballyVisible = !suggestion.IsGloballyVisible;
         _repo.UpdateSuggestion(suggestion);
     }
+
+    public void ChangeExecutedToggle(Guid suggestionId)
+    {
+        var suggestion = _repo.ReadSuggestion(suggestionId);
+        suggestion.IsExecuted = !suggestion.IsExecuted;
+        _repo.UpdateSuggestion(suggestion);
+    }
+
 
     public void AddDocumentToPost(Guid meetingId, string uniqueFileName)
     {
