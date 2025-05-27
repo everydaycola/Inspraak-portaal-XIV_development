@@ -58,10 +58,11 @@
 
     <!-- Card 3: Form and Conclusion (Single Card Beneath) -->
     <div class="row mt-4">
-        <div class="col-12">
-            <div class="card shadow-sm border-0">
+        <!-- Form Column -->
+        <div class="col-12 mb-4 mb-lg-0" id="explore-concept-form">
+            <div class="card shadow-sm border-0 h-100">
                 <div class="card-body">
-                    <h3 class="mb-0">Ontdek of een burgerpanel iets voor jou is</h3>
+                    <h3 class="mb-0 mb-4">Ontdek of een burgerpanel iets voor jou is</h3>
                     <form id="exploreconcept-form" method="post">
                         <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
 
@@ -110,10 +111,18 @@
                             </div>
                         </div>
                     </form>
-                    <h2 class="text-center mt-4">Onze aanbeveling</h2>
-                    <p id="conclusiefield" class="text-center"></p>
+                </div>
+            </div>
+        </div>
+        <!-- Recommendation Column -->
+        <div class="col-12 col-lg-5 d-flex justify-content-center">
+            <div id="recommendation-card"
+                 class="card shadow-sm border-0 h-100 d-none w-100 w-lg-75 mx-lg-auto">
+                <div class="card-body d-flex flex-column justify-content-center align-items-start">
+                    <h2 class="mt-2">Onze aanbeveling</h2>
+                    <p id="conclusiefield"></p>
                 </div>
             </div>
         </div>
     </div>
-</div>
+    </div>

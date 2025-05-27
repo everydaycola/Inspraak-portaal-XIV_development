@@ -7,17 +7,17 @@ console.log("Explore concept entrypoint loaded");
 const form: HTMLFormElement | null = document.querySelector("#exploreconcept-form");
 
 
-if(form){
+if (form) {
     form.addEventListener("submit", event => {
         event.preventDefault();
         handleSelectedValues();
     })
 }
 
-async function handleSelectedValues(){
+async function handleSelectedValues() {
     const checkedRadios = document.querySelectorAll<HTMLInputElement>('input[type="radio"]:checked');
     const conclusiefield: HTMLElement | null = document.querySelector("#conclusiefield");
-    
+
     const totalWeightsByMethod: Record<string, number> = {};
     checkedRadios.forEach(radio => {
         const dataImpacts = radio.getAttribute("data-impacts");
@@ -47,5 +47,13 @@ async function handleSelectedValues(){
     if (conclusiefield) {
         conclusiefield.innerText = data.suitability;
     }
+    const card = document.getElementById("recommendation-card");
+    const exploreConceptForm = document.getElementById("explore-concept-form");
+    if (card) card.classList.remove("d-none");
+    if (exploreConceptForm) {
+        exploreConceptForm.classList.remove("col-lg-12")
+        exploreConceptForm.classList.add("col-lg-7")
+    };
 }
+
 initQuestionCreationFormController();
