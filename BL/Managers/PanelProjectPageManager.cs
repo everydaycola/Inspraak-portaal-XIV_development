@@ -187,7 +187,7 @@ public class PanelProjectPageManager : IPanelProjectPageManager
         });
     }
 
-    public void AddSuggestionPost(Guid timeLineId, string title, bool visibleForPanelMember)
+    public void AddSuggestionPost(Guid timeLineId, string title, bool visibleForPanelMember, bool isVotingOpen, double votingMajorityFactor )
     {
         AddPost(timeLineId, new SuggestionPost
         {

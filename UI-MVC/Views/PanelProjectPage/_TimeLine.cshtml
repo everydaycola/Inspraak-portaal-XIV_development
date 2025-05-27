@@ -293,7 +293,7 @@
         <div class="modal-dialog modal-lg">
             <div class="modal-content shadow-lg border-0">
                 <div class="modal-header bg-light py-3">
-                    <h5 class="modal-title fw-bold" id="addSuggestionModalLabel@(Model.TimeLineId)">Suggestie
+                    <h5 class="modal-title fw-bold" id="addSuggestionModalLabel@(Model.TimeLineId)">Aanbeveling
                         toevoegen</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"
                             aria-label="Sluiten"></button>
@@ -312,14 +312,14 @@
                             <input type="text" class="form-control form-control-lg" id="suggestionTitleInput"
                                    name="title"
                                    placeholder="Voer een onderwerp in." required/>
-                            <div class="form-text">Voer een duidelijk onderwerp in voor de suggestie</div>
+                            <div class="form-text">Voer een duidelijk onderwerp in voor de aanbeveling</div>
                         </div>
 
                         @* suggestion post is always visible for panelmembers *@
                         <input type="hidden" name="visibleForPanelMember" value="true"/>
 
                         <h5 class="fw-bold mb-3">Panelleden op de hoogte brengen?</h5>
-                        <div class="form-check mb-4">
+                        <div class="form-check mb-3">
                             <input class="form-check-input" type="checkbox" id="informPeopleViaMail"
                                    value="true"
                                    name="informPeopleViaMail" checked/>
@@ -327,6 +327,15 @@
                                    title="Wanneer dit vakje is aangevinkt worden de betreffende personen op de hoogte gebracht.">
                                 Iedereen op de hoogte brengen via mail?
                             </label>
+                        </div>
+                        <div class="mb-4">
+                            <label for="suggestionMajorityFactorInput" class="form-label">Meerderheid Factor</label>
+                            <div class="input-group">
+                                <input type="number" class="form-control" id="suggestionMajorityFactorInput"
+                                       name="VotingMajorityFactor"
+                                       placeholder="0" value="0" required/>
+                                <span class="input-group-text">%</span>
+                            </div>
                         </div>
 
                         <div class="d-flex justify-content-end gap-2 mt-4">
@@ -417,7 +426,8 @@
         <div class="modal-dialog modal-lg">
             <div class="modal-content shadow">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="addGoogleFormEmbedModalLabel@(Model.TimeLineId)">Google Form Invoegen</h5>
+                    <h5 class="modal-title" id="addGoogleFormEmbedModalLabel@(Model.TimeLineId)">Google Form
+                        Invoegen</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"
                             aria-label="Sluiten"></button>
                 </div>
@@ -561,7 +571,7 @@
                                     data-bs-target="#addSuggestionModal@(Model.TimeLineId)">
                                     <i class="bi bi-chat-right-text fs-5"></i>
                                     <span
-                                        class="fw-semibold">Suggestie vraag toevoegen</span>
+                                        class="fw-semibold">Aanbeveling mogelijkheid toevoegen</span>
                                 </button>
                             </div>
                             <div class="col">
@@ -801,10 +811,16 @@
                                     </div>
                                     break;
                                 case SuggestionPost suggestionPost:
-                                    <div class="timeline-item mb-4 p-4 border rounded-3 shadow-sm bg-white">
+                                    <div
+                                        class="suggestion-post timeline-item mb-4 p-3 border rounded shadow-sm bg-white"
+                                        data-post-id="@suggestionPost.Id"
+                                        data-is-voting-open="@suggestionPost.IsVotingOpen"
+                                        data-majority-factor="@suggestionPost.VotingMajorityFactor">
                                         <div
                                             class="d-flex justify-content-between align-items-center border-bottom pb-3 mb-3">
                                             <h5 class="mb-0 fw-bold">@suggestionPost.Title</h5>
+                                            <small
+                                                class="text-muted"> @(User.IsInRole(CustomIdentityConstants.OrganisatieRole) ? "Meerderheid factor: " + suggestionPost.VotingMajorityFactor + "%" : "")</small>
                                             <span
                                                 class="badge bg-light text-dark rounded-pill px-3 py-2">
                                                 <i class="bi bi-clock me-1"></i>
@@ -814,115 +830,120 @@
                                         <div class="mt-2 p-3 bg-light rounded">
                                             @foreach (var suggestion in suggestionPost.Suggestions.OrderBy(s => s.CreatedAt))
                                             {
-                                                if (suggestion.IsGloballyVisible || (User.Identity?.IsAuthenticated ?? false))
                                                 {
                                                     <div class="suggestion-item mb-3">
-                                                        <div
-                                                            class="d-flex justify-content-between align-items-start">
-                                                            <div>
+                                                        <div class="d-flex justify-content-between align-items-start">
+                                                            <div class="suggestion">
+                                                                <input type="hidden" name="suggestionId"
+                                                                       value="@suggestion.Id"/>
                                                                 <p class="mb-1">
                                                                     <i id="suggestion-icon-@suggestion.Id"
                                                                        class="bi @(suggestion.IsExecuted ? "bi-check-circle-fill text-success" : "bi-lightbulb") me-2"></i>
-                                                                    <strong
-                                                                        id="executed-text-@suggestion.Id"
-                                                                        class="@(suggestion.IsExecuted ? "" : "d-none")">UITGEVOERD</strong>
-                                                                    <span
-                                                                        id="executed-spacer-@suggestion.Id"
-                                                                        class="me-2 @(suggestion.IsExecuted ? "" : "d-none")"></span>
+                                                                    <strong id="executed-text-@suggestion.Id"
+                                                                            class="@(suggestion.IsExecuted ? "" : "d-none")">UITGEVOERD</strong>
+                                                                    <span id="executed-spacer-@suggestion.Id"
+                                                                          class="me-2 @(suggestion.IsExecuted ? "" : "d-none")"></span>
                                                                     @suggestion.Title
                                                                 </p>
-                                                                <small
-                                                                    class="text-muted d-block">
+                                                                <small class="text-muted d-block">
                                                                     Door: @suggestion.OwnerEmail - @suggestion.CreatedAt.ToString("dd MMM yyyy HH:mm")
                                                                 </small>
                                                             </div>
                                                             <div>
-                                                                @if (User.Identity?.IsAuthenticated ?? false)
+                                                                @if (User.Identity.IsAuthenticated && suggestionPost.IsVotingOpen)
                                                                 {
-                                                                    <div id="votes"
-                                                                         class="btn-group"
-                                                                         role="group">
-                                                                        <button
-                                                                            type="button"
-                                                                            class="btn btn-outline-success vote-btn @(suggestion.Votes.Any(v => v.VoteType == VoteType.Up && v.Owner == Model.CurrentUser) ? "active" : "")"
-                                                                            data-vote-type="Up"
-                                                                            data-suggestion-id="@suggestion.Id"
-                                                                            style="outline: none !important; box-shadow: none !important;">
+                                                                    <div id="votes" class="btn-group" role="group">
+                                                                        <button type="button"
+                                                                                class="btn btn-outline-success vote-btn @(suggestion.Votes.Any(v => v.VoteType == VoteType.Up && v.Owner == Model.CurrentUser) ? "active" : "")"
+                                                                                data-vote-type="Up"
+                                                                                data-suggestion-id="@suggestion.Id"
+                                                                                style="outline: none !important; box-shadow: none !important;">
                                                                             <i class="bi bi-hand-thumbs-up"></i>
-                                                                            <span
-                                                                                class="vote-count">@suggestion.Votes.Count(v => v.VoteType == VoteType.Up)</span>
+                                                                            <span class="vote-count">
+                                                                            @suggestion.Votes.Count(v => v.VoteType == VoteType.Up)
+                                                                        </span>
                                                                         </button>
-                                                                        <button
-                                                                            type="button"
-                                                                            class="btn btn-outline-secondary vote-btn @(suggestion.Votes.Any(v => v.VoteType == VoteType.Neutral && v.Owner == Model.CurrentUser) ? "active" : "")"
-                                                                            data-vote-type="Neutral"
-                                                                            data-suggestion-id="@suggestion.Id"
-                                                                            style="outline: none !important; box-shadow: none !important;">
+                                                                        <button type="button"
+                                                                                class="btn btn-outline-secondary vote-btn @(suggestion.Votes.Any(v => v.VoteType == VoteType.Neutral && v.Owner == Model.CurrentUser) ? "active" : "")"
+                                                                                data-vote-type="Neutral"
+                                                                                data-suggestion-id="@suggestion.Id"
+                                                                                style="outline: none !important; box-shadow: none !important;">
                                                                             <i class="bi bi-dash-circle"></i>
-                                                                            <span
-                                                                                class="vote-count">@suggestion.Votes.Count(v => v.VoteType == VoteType.Neutral)</span>
+                                                                            <span class="vote-count">
+                                                                            @suggestion.Votes.Count(v => v.VoteType == VoteType.Neutral)
+                                                                        </span>
                                                                         </button>
-                                                                        <button
-                                                                            type="button"
-                                                                            class="btn btn-outline-danger vote-btn @(suggestion.Votes.Any(v => v.VoteType == VoteType.Down && v.Owner == Model.CurrentUser) ? "active" : "")"
-                                                                            data-vote-type="Down"
-                                                                            data-suggestion-id="@suggestion.Id"
-                                                                            style="outline: none !important; box-shadow: none !important;">
+                                                                        <button type="button"
+                                                                                class="btn btn-outline-danger vote-btn @(suggestion.Votes.Any(v => v.VoteType == VoteType.Down && v.Owner == Model.CurrentUser) ? "active" : "")"
+                                                                                data-vote-type="Down"
+                                                                                data-suggestion-id="@suggestion.Id"
+                                                                                style="outline: none !important; box-shadow: none !important;">
                                                                             <i class="bi bi-hand-thumbs-down"></i>
-                                                                            <span
-                                                                                class="vote-count">@suggestion.Votes.Count(v => v.VoteType == VoteType.Down) </span>
+                                                                            <span class="vote-count">
+                                                                            @suggestion.Votes.Count(v => v.VoteType == VoteType.Down)
+                                                                        </span>
                                                                         </button>
                                                                     </div>
+
                                                                     if (User.IsInRole(CustomIdentityConstants.OrganisatieRole) || User.Identity.Name == suggestion.OwnerEmail)
                                                                     {
-                                                                        <div
-                                                                            id="publish-toggle">
-                                                                            <button
-                                                                                type="button"
-                                                                                class="btn btn-primary suggestion-visibility-toggle-btn"
-                                                                                data-suggestion-id="@suggestion.Id">
+                                                                        <div id="publish-toggle">
+                                                                            <button type="button"
+                                                                                    class="btn btn-primary suggestion-visibility-toggle-btn"
+                                                                                    data-suggestion-id="@suggestion.Id">
                                                                                 @(suggestion.IsGloballyVisible ? "Maak privé" : "Maak publiek")
                                                                             </button>
                                                                         </div>
-
-                                                                        <div
-                                                                            id="executed-toggle">
-                                                                            <button
-                                                                                type="button"
-                                                                                class="btn btn-primary executed-toggle-btn"
-                                                                                data-suggestion-id="@suggestion.Id">
-                                                                                @(suggestion.IsExecuted ? "Zet op niet uitgevoerd" : "Zet op uitgevoerd")
-                                                                            </button>
+                                                                        <div class="vote-percentage">
+                                                                            <span></span>
                                                                         </div>
                                                                     }
                                                                 }
                                                                 else
                                                                 {
-                                                                    /* No User View */
-                                                                    <div id="votes"
-                                                                         class="btn-group"
-                                                                         role="group">
+                                                                    /* No User/Closed Voting View */
+                                                                    <div id="votes" class="btn-group" role="group">
                                                                         <div class="p-2">
                                                                             <i class="bi bi-hand-thumbs-up"></i>
-                                                                            <span
-                                                                                class="vote-count">
-                                                                                @suggestion.Votes.Count(v => v.VoteType == VoteType.Up)
-                                                                            </span>
+                                                                            <span class="vote-count">
+                                                                            @suggestion.Votes.Count(v => v.VoteType == VoteType.Up)
+                                                                        </span>
                                                                         </div>
                                                                         <div class="p-2">
                                                                             <i class="bi bi-dash-circle"></i>
-                                                                            <span
-                                                                                class="vote-count">
-                                                                                @suggestion.Votes.Count(v => v.VoteType == VoteType.Neutral)
-                                                                            </span>
+                                                                            <span class="vote-count">
+                                                                            @suggestion.Votes.Count(v => v.VoteType == VoteType.Neutral)
+                                                                        </span>
                                                                         </div>
                                                                         <div class="p-2">
                                                                             <i class="bi bi-hand-thumbs-down"></i>
-                                                                            <span
-                                                                                class="vote-count">
-                                                                                @suggestion.Votes.Count(v => v.VoteType == VoteType.Down)
-                                                                            </span>
+                                                                            <span class="vote-count">
+                                                                            @suggestion.Votes.Count(v => v.VoteType == VoteType.Down)
+                                                                        </span>
                                                                         </div>
+                                                                    </div>
+
+                                                                    if (User.IsInRole(CustomIdentityConstants.OrganisatieRole) || User.Identity.Name == suggestion.OwnerEmail)
+                                                                    {
+                                                                        <div id="publish-toggle">
+                                                                            <button type="button"
+                                                                                    class="btn btn-primary suggestion-visibility-toggle-btn"
+                                                                                    data-suggestion-id="@suggestion.Id">
+                                                                                @(suggestion.IsGloballyVisible ? "Maak privé" : "Maak publiek")
+                                                                            </button>
+                                                                        </div>
+                                                                        <div id="executed-toggle">
+                                                                            <button type="button"
+                                                                                    class="btn btn-primary executed-toggle-btn"
+                                                                                    data-suggestion-id="@suggestion.Id">
+                                                                                @(suggestion.IsExecuted ? "Zet op niet uitgevoerd" : "Zet op uitgevoerd")
+                                                                            </button>
+                                                                        </div>
+                                                                    }
+
+                                                                    <div class="vote-percentage">
+                                                                    <span>
+                                                                    </span>
                                                                     </div>
                                                                 }
                                                             </div>
@@ -931,27 +952,31 @@
                                                 }
                                             }
 
-                                            @if (User.Identity?.IsAuthenticated ?? false)
+                                            @if (User.Identity.IsAuthenticated && suggestionPost.IsVotingOpen)
                                             {
-                                                <form asp-action="AddSuggestion"
-                                                      method="post" class="mt-3">
-                                                    <input type="hidden" name="panelId"
-                                                           value="@Model.PanelId"/>
-                                                    <input type="hidden" name="postId"
-                                                           value="@suggestionPost.Id"/>
+                                                <form asp-action="AddSuggestion" method="post" class="mt-3">
+                                                    <input type="hidden" name="panelId" value="@Model.PanelId"/>
+                                                    <input type="hidden" name="postId" value="@suggestionPost.Id"/>
                                                     <div class="input-group">
-                                                        <input type="text" name="suggestion"
-                                                               class="form-control"
-                                                               placeholder="Voeg een aanbeveling toe..."
-                                                               required/>
-                                                        <button type="submit"
-                                                                class="btn btn-primary">
-                                                            Toevoegen
-                                                        </button>
+                                                        <input type="text" name="suggestion" class="form-control"
+                                                               placeholder="Voeg een aanbeveling toe..." required/>
+                                                        <button type="submit" class="btn btn-primary">Toevoegen</button>
                                                     </div>
                                                 </form>
                                             }
-                                            <div class="d-flex flex-column gap-2 mt-3 mb-3">
+                                            @if (User.IsInRole(CustomIdentityConstants.OrganisatieRole) && suggestionPost.Suggestions.Count > 1)
+                                            {
+                                                <form class="mt-3 end-vote-form">
+                                                    <input type="hidden" name="panelId" value="@Model.PanelId"/>
+                                                    <input type="hidden" name="postId" value="@suggestionPost.Id"/>
+                                                    <button data-post-id="@suggestionPost.Id"
+                                                            type="submit"
+                                                            class="btn end-vote-btn @(suggestionPost.IsVotingOpen ? "btn-warning" : "btn-success")">
+                                                        @(suggestionPost.IsVotingOpen ? "Sluit stemming" : "Open stemming")
+                                                    </button>
+                                                </form>
+                                            }
+                                            <div class="d-flex flex-column gap-2">
                                                 @foreach (var documentName in suggestionPost.DocumentNames)
                                                 {
                                                     <a href="@Url.Action("GetFile", "Storage", new { fileName = documentName })"
@@ -966,64 +991,36 @@
                                             {
                                                 <!-- Dropdown toggle for upload -->
                                                 <div class="mt-3">
-                                                    <button class="btn btn-secondary"
-                                                            type="button"
+                                                    <button class="btn btn-secondary" type="button"
                                                             data-bs-toggle="collapse"
                                                             data-bs-target="#uploadCollapse-@suggestionPost.Id"
                                                             aria-expanded="false"
                                                             aria-controls="uploadCollapse-@suggestionPost.Id">
                                                         + Voeg document toe
                                                     </button>
-                                                    <div class="collapse mt-2"
-                                                         id="uploadCollapse-@suggestionPost.Id">
-                                                        <form method="post"
-                                                              enctype="multipart/form-data"
+                                                    <div class="collapse mt-2" id="uploadCollapse-@suggestionPost.Id">
+                                                        <form method="post" enctype="multipart/form-data"
                                                               asp-action="AddSummaryToMeetingPost">
                                                             @if (ViewBag.SummaryCreationFailed != null && ViewBag.SummaryCreationFailed == true)
                                                             {
-                                                                <div
-                                                                    asp-validation-summary="ModelOnly"
-                                                                    class="alert alert-danger"></div>
+                                                                <div asp-validation-summary="ModelOnly"
+                                                                     class="alert alert-danger"></div>
                                                             }
-                                                            <input type="hidden"
-                                                                   name="MeetingId"
+                                                            <input type="hidden" name="MeetingId"
                                                                    value="@suggestionPost.Id"/>
-                                                            <input type="hidden"
-                                                                   name="panelId"
+                                                            <input type="hidden" name="panelId"
                                                                    value="@Model.PanelId"/>
                                                             <div class="mb-2">
-                                                                <input type="file"
-                                                                       class="form-control"
+                                                                <input type="file" class="form-control"
                                                                        name="VerslagFile"
-                                                                       accept="image/*, .pdf, .txt, .dockx"
-                                                                       required/>
+                                                                       accept="image/*, .pdf, .txt, .dockx" required/>
                                                             </div>
-                                                            <button type="submit"
-                                                                    class="btn btn-primary">
-                                                                Uploaden
+                                                            <button type="submit" class="btn btn-primary">Uploaden
                                                             </button>
                                                         </form>
                                                     </div>
                                                 </div>
                                             }
-                                        </div>
-                                    </div>
-                                    break;
-                                case EmbeddedGoogleFormLink googleFormLink:
-                                    <div class="timeline-item mb-4 p-4 border rounded-3 shadow-sm bg-white">
-                                        <div
-                                            class="d-flex justify-content-between align-items-center border-bottom pb-3 mb-3">
-                                            <h5 class="mb-0 fw-bold">@googleFormLink.Title</h5>
-                                            <span
-                                                class="badge bg-light text-dark rounded-pill px-3 py-2">
-                                                <i class="bi bi-clock me-1"></i>
-                                                @googleFormLink.CreatedAt.ToString("dd MMM yyyy HH:mm")
-                                            </span>
-                                        </div>
-                                        <div class="mt-2 p-3 bg-light rounded">
-                                            <div class="ratio ratio-4x3">
-                                                <iframe src="@googleFormLink.EmbeddedIframeUrl" title="@googleFormLink.Title" allowfullscreen></iframe>
-                                            </div>
                                         </div>
                                     </div>
                                     break;
