@@ -30,5 +30,8 @@ public interface IPanelProjectPageManager
     public void AddSuggestionPost(Guid panelId, string title, bool visibleForPanelMember, bool isVotingOpen, double votingMajorityFactor);
     public void AddSummaryToMeetingPost(Guid meetingId, string uniqueFileName);
     public void AddSuggestionToPost(Guid PostId, string suggestion, string owner);
+
+    public void AddGoogleFormLink(Guid panelId, string title, string embeddedIframeLink, bool visibleForPanelMember,
+        bool isGloballyVisible);
     // REMOVE
 }

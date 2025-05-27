@@ -216,4 +216,16 @@ public class PanelProjectPageManager : IPanelProjectPageManager
         // update the post with the new suggestion
         _repo.UpdateSuggestionPost(suggestionPost);
     }
+
+    public void AddGoogleFormLink(Guid panelId, string title, string embeddedIframeLink, bool visibleForPanelMember, bool isGloballyVisible)
+    {
+        AddPost(panelId, new EmbeddedGoogleFormLink()
+        {
+            Title = title,
+            CreatedAt = DateTime.UtcNow,
+            IsVisibleForPanelMembers = visibleForPanelMember,
+            EmbeddedIframeUrl = embeddedIframeLink,
+            IsGloballyVisible = isGloballyVisible
+        });
+    }
 }

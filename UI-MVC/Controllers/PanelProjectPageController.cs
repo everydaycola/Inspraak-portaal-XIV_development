@@ -409,10 +409,29 @@ public class PanelProjectPageController : Controller
         return RedirectToAction("Index", new { panelId });
     }
 
-    [Authorize]
-    public async Task<IActionResult> EndSuggestionVoting(Guid panelId, Guid postId)
+    [HttpPost]
+    [Authorize(Roles = CustomIdentityConstants.OrganisatieRole)]
+    public Task<IActionResult> AddGoogleFormEmbed(Guid panelId, string title, string embeddedIframeUrl,
+        bool visibleForPanelMember,
+        bool informPeopleViaMail,
+        bool isGloballyVisible)
     {
-        _projectPageManager.ChangeSuggestionPostVotingStatus(postId);
-        return RedirectToAction("Index", new { panelId });
+        _projectPageManager.AddGoogleFormLink(
+            panelId,
+            title,
+            embeddedIframeUrl,
+            visibleForPanelMember,
+            isGloballyVisible
+        );
+        _ = HandleMailSending(informPeopleViaMail, visibleForPanelMember, panelId)
+            .ContinueWith(task =>
+            {
+                if (task.IsFaulted)
+                {
+                    _logger.Log(LogLevel.Error, task.Exception, "Failed to send email notifications");
+                }
+            });
+
+        return Task.FromResult<IActionResult>(RedirectToAction("Index", new { panelId }));
     }
 }
