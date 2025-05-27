@@ -108,6 +108,14 @@ public class CitizenPanelDbContext : IdentityDbContext<ApplicationUser>
                     v => JsonSerializer.Deserialize<List<string>>(v, (JsonSerializerOptions)null)!);
         });
         
+        modelBuilder.Entity<SuggestionPost>(b =>
+        {
+            b.Property(p => p.DocumentNames)
+                .HasConversion(
+                    v => JsonSerializer.Serialize(v, (JsonSerializerOptions?)null),
+                    v => JsonSerializer.Deserialize<List<string>>(v, (JsonSerializerOptions?)null)!);
+        });
+        
         modelBuilder.Entity<Vote>()
             .Property("SuggestionId");
         modelBuilder.Entity<Vote>()
