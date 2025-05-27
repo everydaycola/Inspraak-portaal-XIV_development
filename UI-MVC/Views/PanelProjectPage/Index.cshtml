@@ -763,6 +763,12 @@
                                                                 
                                                                 if (User.IsInRole(CustomIdentityConstants.OrganisatieRole) || User.Identity.Name == suggestion.OwnerEmail)
                                                                 {
+                                                                    <div id="publish-toggle">
+                                                                        <button type="button"
+                                                                                class="btn btn-primary suggestion-visibility-toggle-btn" data-suggestion-id="@suggestion.Id">
+                                                                            @(suggestion.IsGloballyVisible ? "Maak privé" : "Maak publiek")
+                                                                        </button>
+                                                                    </div>
                                                                     <div id="executed-toggle">
                                                                         <button type="button"
                                                                                 class="btn btn-primary executed-toggle-btn"
