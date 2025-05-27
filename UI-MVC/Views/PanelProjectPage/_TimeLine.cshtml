@@ -528,47 +528,54 @@
                                     break;
 
                                 case DocumentPost docPost:
-                                    <div class="timeline-item mb-4 p-3 border rounded shadow-sm bg-white">
-                                        <div class="d-flex justify-content-between align-items-center">
-                                            <h5 class="mb-1">@docPost.Title</h5>
-                                            <small
-                                                class="text-muted">@docPost.CreatedAt.ToString("dd MMM yyyy HH:mm")</small>
+                                    <div class="timeline-item mb-4 p-4 border rounded-3 shadow-sm bg-white">
+                                        <div
+                                            class="d-flex justify-content-between align-items-center border-bottom pb-3 mb-3">
+                                            <h5 class="mb-0 fw-bold">@docPost.Title</h5>
+                                            <span class="badge bg-light text-dark rounded-pill px-3 py-2">
+                                            <i class="bi bi-clock me-1"></i>
+                                                @docPost.CreatedAt.ToString("dd MMM yyyy HH:mm")
+                                            </span>
                                         </div>
-                                        @if (
-                                            docPost.DocumentName.Split('.').Last().ToLower() == "pdf" ||
-                                            docPost.DocumentName.Split('.').Last().ToLower() == "txt"
-                                        )
-                                        {
-                                            <a href="@Url.Action("GetFile", "Storage", new { fileName = docPost.DocumentName })"
-                                               target="_blank"
-                                               class="btn btn-outline-primary mt-2">
-                                                Document bekijken
-                                            </a>
-                                        }
-                                        else
-                                        {
-                                            <img
-                                                src="@Url.Action("GetFile", "Storage", new { fileName = docPost.DocumentName })"
-                                                class="img-fluid mt-2" alt=@docPost.DocumentName/>
-                                        }
-                                        <div class="mt-2">
-                                            <button class="btn btn-outline-info btn-sm mt-2 copy-link-btn"
-                                                    data-clipboard-text="@($"{Context.Request.Scheme}://{Context.Request.Host}{Url.Action("Index", "PanelProjectPage", new { id = Model.PanelId })}")">
+                                        <div class="mb-3">
+                                            @if (
+                                                docPost.DocumentName.Split('.').Last().ToLower() == "pdf" ||
+                                                docPost.DocumentName.Split('.').Last().ToLower() == "txt"
+                                            )
+                                            {
+                                                <a href="@Url.Action("GetFile", "Storage", new { fileName = docPost.DocumentName })"
+                                                   target="_blank"
+                                                   class="btn btn-outline-primary mt-2">
+                                                    Document bekijken
+                                                </a>
+                                            }
+                                            else
+                                            {
+                                                <img
+                                                    src="@Url.Action("GetFile", "Storage", new { fileName = docPost.DocumentName })"
+                                                    class="img-fluid mt-2" alt=@docPost.DocumentName/>
+                                            }
+                                        </div>
+                                        <div class="d-flex justify-content-end">
+                                            <button class="btn btn-outline-primary btn-sm copy-link-btn"
+                                                    data-clipboard-text="@($"{Context.Request.Scheme}://{Context.Request.Host}{Url.Action("Index", "PanelProjectPage", new { panelId = Model.PanelId })}")">
                                                 <i class="bi bi-link-45deg"></i> Link kopiëren
                                             </button>
                                         </div>
                                     </div>
                                     break;
-
                                 case MeetingPost meetingPost:
-                                    <div class="timeline-item mb-4 p-3 border rounded shadow-sm bg-white">
-                                        <div class="d-flex justify-content-between align-items-center">
-                                            <h5 class="mb-1">@meetingPost.Title</h5>
-                                            <small
-                                                class="text-muted">@meetingPost.CreatedAt.ToString("dd MMM yyyy HH:mm")</small>
+                                    <div class="timeline-item mb-4 p-4 border rounded-3 shadow-sm bg-white">
+                                        <div
+                                            class="d-flex justify-content-between align-items-center border-bottom pb-3 mb-3">
+                                            <h5 class="mb-0 fw-bold">@meetingPost.Title</h5>
+                                            <span class="badge bg-light text-dark rounded-pill px-3 py-2">
+                                                <i class="bi bi-clock me-1"></i>
+                                                @meetingPost.CreatedAt.ToString("dd MMM yyyy HH:mm")
+                                            </span>
                                         </div>
                                         <h6 class="text-muted mt-3">Verslagen:</h6>
-                                        <div class="d-flex flex-column gap-2">
+                                        <div class="d-flex flex-column gap-2 mb-3">
                                             @foreach (var documentName in meetingPost.DocumentNames)
                                             {
                                                 <a href="@Url.Action("GetFile", "Storage", new { fileName = documentName })"
@@ -610,15 +617,17 @@
                                         </div>
                                     </div>
                                     break;
-
                                 case YoutubeVideoPost youtubePost:
-                                    <div class="timeline-item mb-4 p-3 border rounded shadow-sm bg-white">
-                                        <div class="d-flex justify-content-between align-items-center">
-                                            <h5 class="mb-1">@youtubePost.Title</h5>
-                                            <small
-                                                class="text-muted">@youtubePost.CreatedAt.ToString("dd MMM yyyy HH:mm")</small>
+                                    <div class="timeline-item mb-4 p-4 border rounded-3 shadow-sm bg-white">
+                                        <div
+                                            class="d-flex justify-content-between align-items-center border-bottom pb-3 mb-3">
+                                            <h5 class="mb-0 fw-bold">@youtubePost.Title</h5>
+                                            <span class="badge bg-light text-dark rounded-pill px-3 py-2">
+                                            <i class="bi bi-clock me-1"></i>
+                                                @youtubePost.CreatedAt.ToString("dd MMM yyyy HH:mm")
+                                            </span>
                                         </div>
-                                        <div class="mt-3 ratio ratio-16x9" style="max-height: 500px;">
+                                        <div class="mt-3 ratio ratio-16x9 mb-3" style="max-height: 500px;">
                                             <iframe
                                                 src="https://www.youtube.com/embed/@youtubePost.VideoId"
                                                 title="@youtubePost.Title"
@@ -626,32 +635,48 @@
                                                 allowfullscreen>
                                             </iframe>
                                         </div>
+                                        <div class="d-flex justify-content-end">
+                                            <button class="btn btn-outline-primary btn-sm copy-link-btn"
+                                                    data-clipboard-text="@($"{Context.Request.Scheme}://{Context.Request.Host}{Url.Action("Index", "PanelProjectPage", new { panelId = Model.PanelId })}")">
+                                                <i class="bi bi-link-45deg"></i> Link kopiëren
+                                            </button>
+                                        </div>
                                     </div>
                                     break;
-
                                 case EmbeddedVideoPost videoPost:
-                                    <div class="timeline-item mb-4 p-3 border rounded shadow-sm bg-white">
-                                        <div class="d-flex justify-content-between align-items-center">
-                                            <h5 class="mb-1">@videoPost.Title</h5>
-                                            <small
-                                                class="text-muted">@videoPost.CreatedAt.ToString("dd MMM yyyy HH:mm")</small>
+                                    <div class="timeline-item mb-4 p-4 border rounded-3 shadow-sm bg-white">
+                                        <div
+                                            class="d-flex justify-content-between align-items-center border-bottom pb-3 mb-3">
+                                            <h5 class="mb-0 fw-bold">@videoPost.Title</h5>
+                                            <span class="badge bg-light text-dark rounded-pill px-3 py-2">
+                                                <i class="bi bi-clock me-1"></i>
+                                                @videoPost.CreatedAt.ToString("dd MMM yyyy HH:mm")
+                                            </span>
                                         </div>
-                                        <div class="mt-3">
+                                        <div class="mt-3 mb-3">
                                             <video class="w-100" style="max-height: 500px; object-fit: contain;"
                                                    controls>
                                                 <source src="@videoPost.VideoUrl" type="video/mp4">
                                                 Uw browser ondersteunt de video-tag niet.
                                             </video>
                                         </div>
+                                        <div class="d-flex justify-content-end">
+                                            <button class="btn btn-outline-primary btn-sm copy-link-btn"
+                                                    data-clipboard-text="@($"{Context.Request.Scheme}://{Context.Request.Host}{Url.Action("Index", "PanelProjectPage", new { panelId = Model.PanelId })}")">
+                                                <i class="bi bi-link-45deg"></i> Link kopiëren
+                                            </button>
+                                        </div>
                                     </div>
                                     break;
-
                                 case SuggestionPost suggestionPost:
-                                    <div class="timeline-item mb-4 p-3 border rounded shadow-sm bg-white">
-                                        <div class="d-flex justify-content-between align-items-center">
-                                            <h5 class="mb-1">@suggestionPost.Title</h5>
-                                            <small
-                                                class="text-muted">@suggestionPost.CreatedAt.ToString("dd MMM yyyy HH:mm")</small>
+                                    <div class="timeline-item mb-4 p-4 border rounded-3 shadow-sm bg-white">
+                                        <div
+                                            class="d-flex justify-content-between align-items-center border-bottom pb-3 mb-3">
+                                            <h5 class="mb-0 fw-bold">@suggestionPost.Title</h5>
+                                            <span class="badge bg-light text-dark rounded-pill px-3 py-2">
+                                                <i class="bi bi-clock me-1"></i>
+                                                @suggestionPost.CreatedAt.ToString("dd MMM yyyy HH:mm")
+                                            </span>
                                         </div>
                                         <div class="mt-2 p-3 bg-light rounded">
                                             @foreach (var suggestion in suggestionPost.Suggestions.OrderBy(s => s.CreatedAt))
@@ -679,9 +704,8 @@
                                                                                 data-suggestion-id="@suggestion.Id"
                                                                                 style="outline: none !important; box-shadow: none !important;">
                                                                             <i class="bi bi-hand-thumbs-up"></i>
-                                                                            <span class="vote-count">
-                                                                        @suggestion.Votes.Count(v => v.VoteType == VoteType.Up)
-                                                                    </span>
+                                                                            <span
+                                                                                class="vote-count">@suggestion.Votes.Count(v => v.VoteType == VoteType.Up)</span>
                                                                         </button>
                                                                         <button type="button"
                                                                                 class="btn btn-outline-secondary vote-btn @(suggestion.Votes.Any(v => v.VoteType == VoteType.Neutral && v.Owner == Model.CurrentUser) ? "active" : "")"
@@ -689,9 +713,8 @@
                                                                                 data-suggestion-id="@suggestion.Id"
                                                                                 style="outline: none !important; box-shadow: none !important;">
                                                                             <i class="bi bi-dash-circle"></i>
-                                                                            <span class="vote-count">
-                                                                        @suggestion.Votes.Count(v => v.VoteType == VoteType.Neutral)
-                                                                    </span>
+                                                                            <span
+                                                                                class="vote-count">@suggestion.Votes.Count(v => v.VoteType == VoteType.Neutral)</span>
                                                                         </button>
                                                                         <button type="button"
                                                                                 class="btn btn-outline-danger vote-btn @(suggestion.Votes.Any(v => v.VoteType == VoteType.Down && v.Owner == Model.CurrentUser) ? "active" : "")"
@@ -699,12 +722,10 @@
                                                                                 data-suggestion-id="@suggestion.Id"
                                                                                 style="outline: none !important; box-shadow: none !important;">
                                                                             <i class="bi bi-hand-thumbs-down"></i>
-                                                                            <span class="vote-count">
-                                                                        @suggestion.Votes.Count(v => v.VoteType == VoteType.Down)
-                                                                    </span>
+                                                                            <span
+                                                                                class="vote-count">@suggestion.Votes.Count(v => v.VoteType == VoteType.Down) </span>
                                                                         </button>
                                                                     </div>
-
                                                                     if (User.IsInRole(CustomIdentityConstants.OrganisatieRole) || User.Identity.Name == suggestion.OwnerEmail)
                                                                     {
                                                                         <div id="publish-toggle">
@@ -758,8 +779,7 @@
                                                     </div>
                                                 </form>
                                             }
-                                            
-                                            <div class="d-flex flex-column gap-2">
+                                            <div class="d-flex flex-column gap-2 mt-3 mb-3">
                                                 @foreach (var documentName in suggestionPost.DocumentNames)
                                                 {
                                                     <a href="@Url.Action("GetFile", "Storage", new { fileName = documentName })"
