@@ -428,58 +428,61 @@
     <div id="TimeLineCollapse@(Model.TimeLineId)" class="accordion-collapse collapse show"
          aria-labelledby="TimeLineHeading@(Model.TimeLineId)">
         <div class="accordion-body p-4">
-            <div class="card mb-4 border-0 bg-light m-0">
-                <div class="card-body p-3">
-                    <h5 class="card-title mb-3 fw-bold">Acties</h5>
-                    <div class="row row-cols-1 row-cols-md-3 g-3">
-                        <div class="col">
-                            <button
-                                class="btn btn-primary d-flex align-items-center justify-content-center gap-2 w-100 h-100"
-                                data-bs-toggle="modal"
-                                data-bs-target="#addTextModal@(Model.TimeLineId)">
-                                <i class="bi bi-file-text fs-5"></i>
-                                <span class="fw-semibold">Tekst toevoegen</span>
-                            </button>
-                        </div>
-                        <div class="col">
-                            <button
-                                class="btn btn-primary d-flex align-items-center justify-content-center gap-2 w-100 h-100"
-                                data-bs-toggle="modal"
-                                data-bs-target="#addBestandModal@(Model.TimeLineId)">
-                                <i class="bi bi-file-earmark fs-5"></i>
-                                <span class="fw-semibold">Bestand toevoegen</span>
-                            </button>
-                        </div>
-                        <div class="col">
-                            <button
-                                class="btn btn-primary d-flex align-items-center justify-content-center gap-2 w-100 h-100"
-                                data-bs-toggle="modal"
-                                data-bs-target="#addVideoModal@(Model.TimeLineId)">
-                                <i class="bi bi-play-circle fs-5"></i>
-                                <span class="fw-semibold">Video toevoegen</span>
-                            </button>
-                        </div>
-                        <div class="col">
-                            <button
-                                class="btn btn-primary d-flex align-items-center justify-content-center gap-2 w-100 h-100"
-                                data-bs-toggle="modal"
-                                data-bs-target="#addWerksessieModal@(Model.TimeLineId)">
-                                <i class="bi bi-calendar-event fs-5"></i>
-                                <span class="fw-semibold">Werksessie inplannen</span>
-                            </button>
-                        </div>
-                        <div class="col">
-                            <button
-                                class="btn btn-primary d-flex align-items-center justify-content-center gap-2 w-100 h-100"
-                                data-bs-toggle="modal"
-                                data-bs-target="#addSuggestionModal@(Model.TimeLineId)">
-                                <i class="bi bi-chat-right-text fs-5"></i>
-                                <span class="fw-semibold">Suggestie vraag toevoegen</span>
-                            </button>
+            @if (User.IsInRole(CustomIdentityConstants.OrganisatieRole))
+            {
+                <div class="card mb-4 border-0 bg-light m-0">
+                    <div class="card-body p-3">
+                        <h5 class="card-title mb-3 fw-bold">Acties</h5>
+                        <div class="row row-cols-1 row-cols-md-3 g-3">
+                            <div class="col">
+                                <button
+                                    class="btn btn-primary d-flex align-items-center justify-content-center gap-2 w-100 h-100"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#addTextModal@(Model.TimeLineId)">
+                                    <i class="bi bi-file-text fs-5"></i>
+                                    <span class="fw-semibold">Tekst toevoegen</span>
+                                </button>
+                            </div>
+                            <div class="col">
+                                <button
+                                    class="btn btn-primary d-flex align-items-center justify-content-center gap-2 w-100 h-100"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#addBestandModal@(Model.TimeLineId)">
+                                    <i class="bi bi-file-earmark fs-5"></i>
+                                    <span class="fw-semibold">Bestand toevoegen</span>
+                                </button>
+                            </div>
+                            <div class="col">
+                                <button
+                                    class="btn btn-primary d-flex align-items-center justify-content-center gap-2 w-100 h-100"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#addVideoModal@(Model.TimeLineId)">
+                                    <i class="bi bi-play-circle fs-5"></i>
+                                    <span class="fw-semibold">Video toevoegen</span>
+                                </button>
+                            </div>
+                            <div class="col">
+                                <button
+                                    class="btn btn-primary d-flex align-items-center justify-content-center gap-2 w-100 h-100"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#addWerksessieModal@(Model.TimeLineId)">
+                                    <i class="bi bi-calendar-event fs-5"></i>
+                                    <span class="fw-semibold">Werksessie inplannen</span>
+                                </button>
+                            </div>
+                            <div class="col">
+                                <button
+                                    class="btn btn-primary d-flex align-items-center justify-content-center gap-2 w-100 h-100"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#addSuggestionModal@(Model.TimeLineId)">
+                                    <i class="bi bi-chat-right-text fs-5"></i>
+                                    <span class="fw-semibold">Suggestie vraag toevoegen</span>
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
+            }
 
             <div class="card shadow-sm border-0 flex-fill h-100 m-0">
                 <div class="card-header bg-white py-3 border-0">
@@ -533,7 +536,7 @@
                                             class="d-flex justify-content-between align-items-center border-bottom pb-3 mb-3">
                                             <h5 class="mb-0 fw-bold">@docPost.Title</h5>
                                             <span class="badge bg-light text-dark rounded-pill px-3 py-2">
-                                            <i class="bi bi-clock me-1"></i>
+                                                <i class="bi bi-clock me-1"></i>
                                                 @docPost.CreatedAt.ToString("dd MMM yyyy HH:mm")
                                             </span>
                                         </div>
@@ -623,7 +626,7 @@
                                             class="d-flex justify-content-between align-items-center border-bottom pb-3 mb-3">
                                             <h5 class="mb-0 fw-bold">@youtubePost.Title</h5>
                                             <span class="badge bg-light text-dark rounded-pill px-3 py-2">
-                                            <i class="bi bi-clock me-1"></i>
+                                                <i class="bi bi-clock me-1"></i>
                                                 @youtubePost.CreatedAt.ToString("dd MMM yyyy HH:mm")
                                             </span>
                                         </div>
@@ -687,8 +690,11 @@
                                                         <div class="d-flex justify-content-between align-items-start">
                                                             <div>
                                                                 <p class="mb-1">
-                                                                    <i
-                                                                        class="bi bi-lightbulb me-2"></i>@suggestion.Title
+                                                                    <i id="suggestion-icon-@suggestion.Id" class="bi @(suggestion.IsExecuted ? "bi-check-circle-fill text-success" : "bi-lightbulb") me-2"></i>
+                                                                    <strong id="executed-text-@suggestion.Id" class="@(suggestion.IsExecuted ? "" : "d-none")">UITGEVOERD</strong>
+                                                                    <span id="executed-spacer-@suggestion.Id" class="me-2 @(suggestion.IsExecuted ? "" : "d-none")"></span>
+                                                                    <i class="bi bi-lightbulb me-2"></i>
+                                                                    @suggestion.Title
                                                                 </p>
                                                                 <small class="text-muted d-block">
                                                                     Door: @suggestion.OwnerEmail - @suggestion.CreatedAt.ToString("dd MMM yyyy HH:mm")
@@ -735,6 +741,14 @@
                                                                                 @(suggestion.IsGloballyVisible ? "Maak privé" : "Maak publiek")
                                                                             </button>
                                                                         </div>
+                                                                        
+                                                                        <div id="executed-toggle">
+                                                                            <button type="button"
+                                                                                    class="btn btn-primary executed-toggle-btn"
+                                                                                    data-suggestion-id="@suggestion.Id">
+                                                                                @(suggestion.IsExecuted ? "Zet op niet uitgevoerd" : "Zet op uitgevoerd")
+                                                                            </button>
+                                                                        </div>
                                                                     }
                                                                 }
                                                                 else
@@ -744,20 +758,20 @@
                                                                         <div class="p-2">
                                                                             <i class="bi bi-hand-thumbs-up"></i>
                                                                             <span class="vote-count">
-                                                                        @suggestion.Votes.Count(v => v.VoteType == VoteType.Up)
-                                                                    </span>
+                                                                                @suggestion.Votes.Count(v => v.VoteType == VoteType.Up)
+                                                                            </span>
                                                                         </div>
                                                                         <div class="p-2">
                                                                             <i class="bi bi-dash-circle"></i>
                                                                             <span class="vote-count">
-                                                                        @suggestion.Votes.Count(v => v.VoteType == VoteType.Neutral)
-                                                                    </span>
+                                                                                @suggestion.Votes.Count(v => v.VoteType == VoteType.Neutral)
+                                                                            </span>
                                                                         </div>
                                                                         <div class="p-2">
                                                                             <i class="bi bi-hand-thumbs-down"></i>
                                                                             <span class="vote-count">
-                                                                        @suggestion.Votes.Count(v => v.VoteType == VoteType.Down)
-                                                                    </span>
+                                                                                @suggestion.Votes.Count(v => v.VoteType == VoteType.Down)
+                                                                            </span>
                                                                         </div>
                                                                     </div>
                                                                 }
