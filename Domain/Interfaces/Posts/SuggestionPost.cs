@@ -7,5 +7,6 @@ public class SuggestionPost : Post
 {
     public ICollection<Suggestion> Suggestions { get; set; } = [];
     public bool IsVotingOpen { get; set; }
+    public double VotingMajorityFactor { get; set; }
     
 }

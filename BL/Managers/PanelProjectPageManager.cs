@@ -163,7 +163,7 @@ public class PanelProjectPageManager : IPanelProjectPageManager
         });
     }
 
-    public void AddSuggestionPost(Guid panelId, string title, bool visibleForPanelMember, bool isVotingOpen)
+    public void AddSuggestionPost(Guid panelId, string title, bool visibleForPanelMember, bool isVotingOpen, double votingMajorityFactor)
     {
         AddPost(panelId, new SuggestionPost
         {
@@ -171,7 +171,8 @@ public class PanelProjectPageManager : IPanelProjectPageManager
             CreatedAt = DateTime.UtcNow,
             IsVisibleForPanelMembers = visibleForPanelMember,
             Suggestions = [],
-            IsVotingOpen = isVotingOpen
+            IsVotingOpen = isVotingOpen,
+            VotingMajorityFactor = votingMajorityFactor
         });
     }
 

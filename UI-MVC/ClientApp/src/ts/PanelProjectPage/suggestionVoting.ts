@@ -1,6 +1,5 @@
 import {fetchFromAPI} from "../customhelpers/apihelper";
 import {getCurrentBaseUrl} from "../customhelpers/locationHelper";
-import {round} from "@popperjs/core/lib/utils/math";
 
 interface VoteState {
     [key: string]: {
@@ -132,9 +131,11 @@ async function handleVoteToggle(event: Event) {
 }
 
 async function ShowVotePercentages(postId: string) {
-    const suggestionDivs = document.getElementsByClassName("suggestion") as HTMLCollectionOf<HTMLDivElement>;
-    const suggestionItems = document.getElementsByClassName("suggestion-item") as HTMLCollectionOf<HTMLDivElement>;
-
+    const post = findSuggestionPost(postId) as HTMLDivElement
+    const suggestionDivs = post.getElementsByClassName("suggestion") as HTMLCollectionOf<HTMLDivElement>;
+    const suggestionItems = post.getElementsByClassName("suggestion-item") as HTMLCollectionOf<HTMLDivElement>;
+    const majorityFactor = parseFloat(post.dataset.majorityFactor as string) 
+    
     console.log(`Voting on post ${postId} stopped`)
     
     let highestPercentage: number = 0;
@@ -154,9 +155,10 @@ async function ShowVotePercentages(postId: string) {
     }
 
     if (highestIndex !== -1) {
-        const percentageDiv = suggestionItems.item(highestIndex)!!.querySelector("div.vote-percentage") as HTMLDivElement;
-        console.log(percentageDiv)
-        percentageDiv.querySelector("span")!!.classList.add("text-success")
+        if (highestPercentage >= majorityFactor) {
+            const percentageDiv = suggestionItems.item(highestIndex)!!.querySelector("div.vote-percentage") as HTMLDivElement;
+            percentageDiv.querySelector("span")!!.classList.add("text-success")
+        }
     }
 }
 
@@ -166,13 +168,26 @@ async function CalculateVotePercentage(suggestionId: string, postId: string) {
     return await response.json();
 }
 
-window.addEventListener("load", () => {
-    const votingOpen = (document.querySelector('button.end-vote-btn') as HTMLButtonElement).dataset.isVotingOpen === "True";
-    console.log(votingOpen)
+function findSuggestionPost(postId: string): HTMLDivElement | null{
+    const suggestionPosts = document.getElementsByClassName("suggestion-post") as HTMLCollectionOf<HTMLDivElement>
+    for (let i = 0; i < suggestionPosts.length; i++) {
+        if (suggestionPosts[i].dataset.postId == postId){
+            return suggestionPosts[i]
+        }
+    }
+    console.error(`Suggestion Post with if ${postId} not fond`)
+    return null;
+}
 
-    if (!votingOpen) {
-        const postIdInput = document.querySelector('input[name="postId"]') as HTMLInputElement;
-        const postId = postIdInput.value;
-        ShowVotePercentages(postId);
+window.addEventListener("load", () => {
+    const suggestionPosts = document.getElementsByClassName("suggestion-post") as HTMLCollectionOf<HTMLDivElement>
+    
+    for (let i = 0; i < suggestionPosts.length; i++) {
+        const votingOpen = suggestionPosts[i].dataset.isVotingOpen === "True";
+        if (!votingOpen) {
+            const postId = suggestionPosts[i].dataset.postId as string;
+            ShowVotePercentages(postId);
+        }
     }
 })
+

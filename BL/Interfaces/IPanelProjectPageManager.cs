@@ -26,7 +26,7 @@ public interface IPanelProjectPageManager
     public void AddMeetingPost(Guid panelId, string title, DateTime meetingDateTime, bool visibleForPanelMember);
     public void AddEmbedVideoPost(Guid panelId, string title, string videoUrl, bool visibleForPanelMember, bool isGloballyVisible);
     public void AddYoutubeVideoPost(Guid panelId, string title, string videoId, bool visibleForPanelMember, bool isGloballyVisible);
-    public void AddSuggestionPost(Guid panelId, string title, bool visibleForPanelMember, bool isVotingOpen);
+    public void AddSuggestionPost(Guid panelId, string title, bool visibleForPanelMember, bool isVotingOpen, double votingMajorityFactor);
     public void AddSummaryToMeetingPost(Guid meetingId, string uniqueFileName);
     public void AddSuggestionToPost(Guid PostId, string suggestion, string owner);
     // REMOVE
