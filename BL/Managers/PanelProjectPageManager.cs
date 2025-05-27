@@ -25,7 +25,7 @@ public class PanelProjectPageManager : IPanelProjectPageManager
         _repo = repo;
     }
     
-    public Panel GetPanelWithPostsAndSuggestionsAndVotes(Guid panelId)
+    public Panel GetPanelWithPostsAndSuggestionsAndVotesAndDocuments(Guid panelId)
     {
         return _repo.ReadPanelWithPostsAndSuggestionsAndVotes(panelId);
     }
@@ -79,7 +79,6 @@ public class PanelProjectPageManager : IPanelProjectPageManager
         _repo.UpdateSuggestionPost(suggestionPost);
     }
 
-
     public void AddSummaryToMeetingPost(Guid meetingId, string uniqueFileName)
     {
         if (_repo.ReadPost(meetingId) is not MeetingPost meetingPost)
@@ -89,6 +88,26 @@ public class PanelProjectPageManager : IPanelProjectPageManager
         }
         meetingPost.DocumentNames.Add(uniqueFileName);
         _repo.UpdatePost(meetingPost);
+    }
+    
+    public void AddDocumentToPost(Guid meetingId, string uniqueFileName)
+    {
+        var post = _repo.ReadPost(meetingId);
+        
+        switch (post)
+        {
+            // Add the document to the appropriate post type
+            case MeetingPost mp:
+                mp.DocumentNames.Add(uniqueFileName);
+                _repo.UpdatePost(mp);
+                break;
+            case SuggestionPost sp:
+                sp.DocumentNames.Add(uniqueFileName);
+                _repo.UpdatePost(sp);
+                break;
+            default:
+                throw new Exception("Post with document support not found");
+        }
     }
     
     // Generic helper method for post validation and creation
@@ -133,7 +152,6 @@ public class PanelProjectPageManager : IPanelProjectPageManager
         AddPost(panelId, new MeetingPost
         {
             Title = title,
-            DocumentNames = new List<string>(),
             CreatedAt = meetingDateTime,
             IsVisibleForPanelMembers = isVisibleForPanelMembers
         });

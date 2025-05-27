@@ -11,7 +11,7 @@ namespace BL.Interfaces;
 public interface IPanelProjectPageManager
 {
     // GET
-    public Panel GetPanelWithPostsAndSuggestionsAndVotes(Guid panelId);
+    public Panel GetPanelWithPostsAndSuggestionsAndVotesAndDocuments(Guid panelId);
     public Suggestion GetSuggestion(Guid suggestionId);
     public Post GetPost(Guid postId);
     public SuggestionPost GetSuggestionPostSuggestionsAndWithVotes(Guid suggestionPostId);

@@ -50,13 +50,14 @@ public class PanelProjectPageController : Controller
         var user = await _userManager.GetUserAsync(User);
         return View("Index", new ProjectPageViewModel
         {
-            Panel = _projectPageManager.GetPanelWithPostsAndSuggestionsAndVotes(panelId),
+            Panel = _projectPageManager.GetPanelWithPostsAndSuggestionsAndVotesAndDocuments(panelId),
             CurrentUser = user
         });
     }
 
     public async Task<IActionResult> Index(Guid? id)
     {
+        var user = await _userManager.GetUserAsync(HttpContext.User);
         if (!id.HasValue)
         {
             if (HttpContext.User.IsInRole(CustomIdentityConstants.OrganisatieRole))
@@ -76,14 +77,14 @@ public class PanelProjectPageController : Controller
             }
             else
             {
-                var user = await _userManager.GetUserAsync(HttpContext.User);
                 id = _customUserManager.getPanelForUser(user.Id).Id;
             }
         }
 
         return View(new ProjectPageViewModel
         {
-            Panel = _projectPageManager.GetPanelWithPostsAndSuggestionsAndVotes(id.Value),
+            CurrentUser = user,
+            Panel = _projectPageManager.GetPanelWithPostsAndSuggestionsAndVotesAndDocuments(id.Value),
         });
     }
 
@@ -358,7 +359,7 @@ public class PanelProjectPageController : Controller
 
         var uniqueFileName = Guid.NewGuid() + Path.GetExtension(verslagFile.FileName);
         await _storageManager.AddFileAsync(uniqueFileName, verslagFile.ContentType, verslagFile.OpenReadStream());
-        _projectPageManager.AddSummaryToMeetingPost(meetingId, uniqueFileName);
+        _projectPageManager.AddDocumentToPost(meetingId, uniqueFileName);
         return RedirectToAction("Index", new { panelId });
     }
 
