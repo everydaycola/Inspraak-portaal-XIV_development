@@ -91,6 +91,7 @@ public class CitizenPanelDbContext : IdentityDbContext<ApplicationUser>
         modelBuilder.Entity<EmbeddedVideoPost>();
         modelBuilder.Entity<YoutubeVideoPost>();
         modelBuilder.Entity<MeetingPost>();
+        modelBuilder.Entity<EmbeddedGoogleFormLink>();
         // suggestionposts also contain suggestions
         modelBuilder.Entity<SuggestionPost>()
             .HasMany(s => s.Suggestions);
