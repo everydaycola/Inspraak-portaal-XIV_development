@@ -123,6 +123,15 @@ public class PanelRepository : IPanelRepository
     {
         return _context.Posts.Find(postId);
     }
+
+    public SuggestionPost ReadSuggestionPostSuggestionsAndWithVotes(Guid id)
+    {
+        return _context.Posts
+            .OfType<SuggestionPost>()
+            .Include(sp => sp.Suggestions)
+            .ThenInclude(s => s.Votes)
+            .Single(sp => sp.Id == id);
+    }
     
     public Vote ReadVoteByPanelMemberAndSuggestionOrDefault(ApplicationUser user, Guid suggestionId)
     {
@@ -134,7 +143,7 @@ public class PanelRepository : IPanelRepository
                 v.Suggestion.Id == suggestionId);
 
     }
-    
+
     public Suggestion ReadSuggestion(Guid suggestionId)
     {
         return _context.Suggestions.Find(suggestionId);

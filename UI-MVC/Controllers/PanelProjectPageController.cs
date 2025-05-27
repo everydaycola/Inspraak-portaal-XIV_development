@@ -359,7 +359,7 @@ public class PanelProjectPageController : Controller
 
         var uniqueFileName = Guid.NewGuid() + Path.GetExtension(verslagFile.FileName);
         await _storageManager.AddFileAsync(uniqueFileName, verslagFile.ContentType, verslagFile.OpenReadStream());
-        _projectPageManager.AddDocumentToPost(meetingId, uniqueFileName);
+        _projectPageManager.AddSummaryToMeetingPost(meetingId, uniqueFileName);
         return RedirectToAction("Index", new { panelId });
     }
 
@@ -373,7 +373,7 @@ public class PanelProjectPageController : Controller
         }
 
         _projectPageManager.AddSuggestionPost(suggestionPostDto.PanelId, suggestionPostDto.Title,
-            suggestionPostDto.VisibleForPanelMember);
+            suggestionPostDto.VisibleForPanelMember, true, suggestionPostDto.VotingMajorityFactor);
 
         _ = HandleMailSending(suggestionPostDto.InformPeopleViaMail, true, suggestionPostDto.PanelId)
             .ContinueWith(task =>

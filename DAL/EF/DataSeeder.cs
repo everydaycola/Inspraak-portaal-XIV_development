@@ -87,6 +87,7 @@ public static class DataSeeder
                     Title = "Suggesties na Bijeenkomst #1: Wat zou jij graag meer/beter zien in Antwerpen?",
                     CreatedAt = DateTime.UtcNow - TimeSpan.FromDays(5) + TimeSpan.FromHours(1),
                     IsVisibleForPanelMembers = true,
+                    VotingMajorityFactor = 80,
                     Suggestions = new List<Suggestion>
                     {
                         new()
