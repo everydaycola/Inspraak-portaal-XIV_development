@@ -25,6 +25,7 @@ public interface IPanelRepository
     public PlanningGroupMember ReadPlanningsGroupMemberWithPanelAndIdentityUser(Guid planningsGroupMemberId);
     public IEnumerable<PlanningGroupMember> ReadAllPlanningGroupMembersWithIdentityUserByPanel(Guid panelId);
     public Post ReadPost(Guid postId);
+    public SuggestionPost ReadSuggestionPostSuggestionsAndWithVotes(Guid id);
     public Vote ReadVoteByPanelMemberAndSuggestionOrDefault(ApplicationUser user, Guid suggestionId);
     public Suggestion ReadSuggestion(Guid suggestionId);
     

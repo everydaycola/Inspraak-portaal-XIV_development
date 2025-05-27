@@ -1,3 +1,6 @@
+import {fetchFromAPI} from "../customhelpers/apihelper";
+import {getCurrentBaseUrl} from "../customhelpers/locationHelper";
+
 interface VoteState {
     [key: string]: {
         currentlyPressedBtn: HTMLButtonElement | null;
@@ -7,7 +10,7 @@ interface VoteState {
 const voteStates: VoteState = {};
 
 document.addEventListener('DOMContentLoaded', () => {
-    
+
     const voteButtons = Array.from(document.querySelectorAll('.vote-btn')) as HTMLButtonElement[];
 
     voteButtons.forEach(button => {
@@ -26,7 +29,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (button.classList.contains('active')) {
             voteStates[suggestionId].currentlyPressedBtn = button;
         }
-        
+
         console.log(suggestionId)
 
         button.addEventListener('click', () => handleVote(button, suggestionId));
@@ -95,3 +98,96 @@ async function handleVote(button: HTMLButtonElement, suggestionId: string) {
         console.error('Failed to send vote:', error);
     }
 }
+
+document.querySelectorAll("form.end-vote-form").forEach((form) => {
+    form.addEventListener("submit", handleVoteToggle);
+});
+
+async function handleVoteToggle(event: Event) {
+    event.preventDefault();
+
+    const form = event.target as HTMLFormElement;
+    const postId = (form.querySelector('input[name="postId"]') as HTMLInputElement).value
+
+    try {
+        const baseUrl = getCurrentBaseUrl()
+        const response = await fetchFromAPI<{
+            success: boolean
+        }>(`${baseUrl}/api/PanelProjectPages/toggleVoting?postId=${postId}`,
+            {method: "POST"})
+
+        console.log(response)
+
+        if (response.success) {
+            window.location.reload()
+        } else {
+            console.error("Failed to toggle voting.");
+        }
+    } catch (err) {
+        console.error("Error:", err);
+    }
+
+    return false; // Prevent default submit
+}
+
+async function ShowVotePercentages(postId: string) {
+    const post = findSuggestionPost(postId) as HTMLDivElement
+    const suggestionDivs = post.getElementsByClassName("suggestion") as HTMLCollectionOf<HTMLDivElement>;
+    const suggestionItems = post.getElementsByClassName("suggestion-item") as HTMLCollectionOf<HTMLDivElement>;
+    const majorityFactor = parseFloat(post.dataset.majorityFactor as string) 
+    
+    console.log(`Voting on post ${postId} stopped`)
+    
+    let highestPercentage: number = 0;
+    let highestIndex: number = -1;
+
+    for (let i = 0; i < suggestionDivs.length; i++) {
+        const suggestionId = suggestionDivs.item(i)!!.querySelector("input")!!.value
+        const percentage:number = await CalculateVotePercentage(suggestionId, postId)
+
+        const percentageDiv = suggestionItems.item(i)!!.querySelector("div.vote-percentage") as HTMLDivElement;
+        percentageDiv.querySelector("span")!!.innerText = `${percentage.toFixed(2)}%`
+        
+        if (percentage > highestPercentage){
+            highestPercentage = percentage;
+            highestIndex = i;
+        }
+    }
+
+    if (highestIndex !== -1) {
+        if (highestPercentage >= majorityFactor) {
+            const percentageDiv = suggestionItems.item(highestIndex)!!.querySelector("div.vote-percentage") as HTMLDivElement;
+            percentageDiv.querySelector("span")!!.classList.add("text-success")
+        }
+    }
+}
+
+async function CalculateVotePercentage(suggestionId: string, postId: string) {
+    const baseUrl = getCurrentBaseUrl();
+    const response = await fetch(`${baseUrl}/api/PanelProjectPages/votePercentage?suggestionId=${suggestionId}&postId=${postId}`);
+    return await response.json();
+}
+
+function findSuggestionPost(postId: string): HTMLDivElement | null{
+    const suggestionPosts = document.getElementsByClassName("suggestion-post") as HTMLCollectionOf<HTMLDivElement>
+    for (let i = 0; i < suggestionPosts.length; i++) {
+        if (suggestionPosts[i].dataset.postId == postId){
+            return suggestionPosts[i]
+        }
+    }
+    console.error(`Suggestion Post with if ${postId} not fond`)
+    return null;
+}
+
+window.addEventListener("load", () => {
+    const suggestionPosts = document.getElementsByClassName("suggestion-post") as HTMLCollectionOf<HTMLDivElement>
+    
+    for (let i = 0; i < suggestionPosts.length; i++) {
+        const votingOpen = suggestionPosts[i].dataset.isVotingOpen === "True";
+        if (!votingOpen) {
+            const postId = suggestionPosts[i].dataset.postId as string;
+            ShowVotePercentages(postId);
+        }
+    }
+})
+

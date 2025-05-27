@@ -2,6 +2,8 @@
 using Domain;
 using Domain.CitizenPanel;
 using Domain.Enums;
+using Domain.Interfaces;
+using Domain.Interfaces.Posts;
 using Domain.Interfaces.Posts.PostItems;
 
 namespace BL.Interfaces;
@@ -11,10 +13,13 @@ public interface IPanelProjectPageManager
     // GET
     public Panel GetPanelWithPostsAndSuggestionsAndVotesAndDocuments(Guid panelId);
     public Suggestion GetSuggestion(Guid suggestionId);
-
+    public Post GetPost(Guid postId);
+    public SuggestionPost GetSuggestionPostSuggestionsAndWithVotes(Guid suggestionPostId);
+    
     // CHANGE
     public void ChangeVote(ApplicationUser user, Guid suggestionId, VoteType voteType);
     public void ChangeSuggestionVisibility(Guid suggesionId);
+    public void ChangeSuggestionPostVotingStatus(Guid postId);
     public void ChangeExecutedToggle(Guid suggestionId);
     // ADD
     public void AddTextPost(Guid panelId,string title, string content, bool isVisibleForPanelMembers, bool isGloballyVisible);
@@ -22,8 +27,8 @@ public interface IPanelProjectPageManager
     public void AddMeetingPost(Guid panelId, string title, DateTime meetingDateTime, bool visibleForPanelMember);
     public void AddEmbedVideoPost(Guid panelId, string title, string videoUrl, bool visibleForPanelMember, bool isGloballyVisible);
     public void AddYoutubeVideoPost(Guid panelId, string title, string videoId, bool visibleForPanelMember, bool isGloballyVisible);
-    public void AddSuggestionPost(Guid panelId, string title, bool visibleForPanelMember);
-    public void AddDocumentToPost(Guid meetingId, string uniqueFileName);
+    public void AddSuggestionPost(Guid panelId, string title, bool visibleForPanelMember, bool isVotingOpen, double votingMajorityFactor);
+    public void AddSummaryToMeetingPost(Guid meetingId, string uniqueFileName);
     public void AddSuggestionToPost(Guid PostId, string suggestion, string owner);
 
     public void AddGoogleFormLink(Guid panelId, string title, string embeddedIframeLink, bool visibleForPanelMember,
