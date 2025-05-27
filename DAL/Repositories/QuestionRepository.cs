@@ -123,14 +123,7 @@ public class QuestionRepository : IQuestionRepository
         existingQuestion.QuestionText = updatedQuestion.QuestionText;
 
         var updatedAnswerOptions = updatedQuestion.AnswerOptions.ToList();
-        foreach (var existingAnswer in existingQuestion.AnswerOptions.ToList())
-        {
-            if (!updatedAnswerOptions.Any(a => a.Id == existingAnswer.Id))
-            {
-                _context.AnswerOptions.Remove(existingAnswer);
-            }
-        }
-
+        
         foreach (var updatedAnswer in updatedAnswerOptions)
         {
             var existingAnswer = existingQuestion.AnswerOptions
@@ -140,16 +133,7 @@ public class QuestionRepository : IQuestionRepository
                 existingAnswer.AnswerOptionText = updatedAnswer.AnswerOptionText;
 
                 var updatedImpacts = updatedAnswer.Impacts.ToList();
-
-                foreach (var existingImpact in existingAnswer.Impacts.ToList())
-                {
-                    if (!updatedImpacts.Any(i =>
-                            i.ParticipationMethod.Id == existingImpact.ParticipationMethod.Id))
-                    {
-                        _context.AnswerOptionImpacts.Remove(existingImpact);
-                    }
-                }
-
+                
                 foreach (var updatedImpact in updatedImpacts)
                 {
                     var existingImpact = existingAnswer.Impacts
@@ -164,7 +148,6 @@ public class QuestionRepository : IQuestionRepository
                     {
                         var participationMethod = _context.ParticipationMethods
                             .Find(updatedImpact.ParticipationMethod.Id);
-
                         existingAnswer.Impacts.Add(new AnswerOptionImpact
                         {
                             ParticipationMethod = participationMethod,
@@ -191,7 +174,7 @@ public class QuestionRepository : IQuestionRepository
                 existingQuestion.AnswerOptions.Add(newAnswer);
             }
         }
-
+        
         _context.SaveChanges();
     }
 

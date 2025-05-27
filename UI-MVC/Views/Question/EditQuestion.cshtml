@@ -27,15 +27,12 @@
                     <input type="hidden" asp-for="AnswerOptions[i].Id" />
                     <input asp-for="AnswerOptions[i].AnswerText" class="form-control" required />
                 </td>
-                @foreach (var method in Model.ParticipationMethods)
+                @for (var j = 0; j < Model.AnswerOptions[i].Impacts.Count; j++)
                 {
-                    var impact = Model.AnswerOptions[i].Impacts.FirstOrDefault(imp => imp.ParticipationMethodId == method.Id);
                     <td>
-                        <input type="number"
-                               name="AnswerOptions[@i].Impacts[@method.Id].ImpactWeight"
-                               value="@(impact?.ImpactWeight)"
-                               class="form-control"
-                               required />
+                        <input asp-for="AnswerOptions[i].Impacts[j].ImpactWeight" class="form-control" required />
+                        <input type="hidden" asp-for="AnswerOptions[i].Impacts[j].ParticipationMethodId" />
+                        <input type="hidden" asp-for="AnswerOptions[i].Impacts[j].ParticipationMethodName" />
                     </td>
                 }
             </tr>

@@ -180,7 +180,6 @@ public class QuestionController : Controller
                 }).ToList();
             return View(model);
         }
-
         _questionManager.UpdateQuestionWithAnswerOptions(
             model.Id,
             model.QuestionText,

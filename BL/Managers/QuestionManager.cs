@@ -118,6 +118,7 @@ public class QuestionManager : IQuestionManager
                 }).ToList()
             }).ToList()
         };
+        Console.WriteLine(updatedQuestion);
 
         _questionRepository.UpdateQuestionWithAnswerOptionsAndImpacts(updatedQuestion);
     }
