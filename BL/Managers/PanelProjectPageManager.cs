@@ -15,11 +15,11 @@ namespace BL.Managers;
 
 public class PanelProjectPageManager : IPanelProjectPageManager
 {
-    
     private readonly ILogger<PanelManager> _logger;
     private readonly IPanelRepository _repo;
 
-    public PanelProjectPageManager(ILogger<PanelManager> logger, IPanelRepository repo, IUserRepository userRepo, UserManager<ApplicationUser> userManager)
+    public PanelProjectPageManager(ILogger<PanelManager> logger, IPanelRepository repo, IUserRepository userRepo,
+        UserManager<ApplicationUser> userManager)
     {
         _logger = logger;
         _repo = repo;
@@ -62,15 +62,22 @@ public class PanelProjectPageManager : IPanelProjectPageManager
             vote.VoteType = voteType;
             _repo.UpdateVote(vote);
         }
-
     }
-
+    
     public void ChangeSuggestionVisibility(Guid suggestionId)
     {
         var suggestion = _repo.ReadSuggestion(suggestionId);
         suggestion.IsGloballyVisible = !suggestion.IsGloballyVisible;
         _repo.UpdateSuggestion(suggestion);
     }
+
+    public void ChangeExecutedToggle(Guid suggestionId)
+    {
+        var suggestion = _repo.ReadSuggestion(suggestionId);
+        suggestion.IsExecuted = !suggestion.IsExecuted;
+        _repo.UpdateSuggestion(suggestion);
+    }
+
 
     public void ChangeSuggestionPostVotingStatus(Guid postId)
     {
@@ -109,7 +116,7 @@ public class PanelProjectPageManager : IPanelProjectPageManager
                 throw new Exception("Post with document support not found");
         }
     }
-    
+
     // Generic helper method for post validation and creation
     private void AddPost<T>(Guid panelId, T post) where T : Post
     {

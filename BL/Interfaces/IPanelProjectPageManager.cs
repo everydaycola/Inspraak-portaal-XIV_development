@@ -20,6 +20,7 @@ public interface IPanelProjectPageManager
     public void ChangeVote(ApplicationUser user, Guid suggestionId, VoteType voteType);
     public void ChangeSuggestionVisibility(Guid suggesionId);
     public void ChangeSuggestionPostVotingStatus(Guid postId);
+    public void ChangeExecutedToggle(Guid suggestionId);
     // ADD
     public void AddTextPost(Guid panelId,string title, string content, bool isVisibleForPanelMembers, bool isGloballyVisible);
     public void AddDocumentPost(Guid panelId, string title, string documentUrl, bool isVisibleForPanelMembers, bool isGloballyVisible);

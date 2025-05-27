@@ -22,6 +22,7 @@ public interface IPanelRepository
     public IEnumerable<PanelMember> ReadAllPanelMembersForPanel(Guid panelId, bool onlyUnselected = false);
     public IEnumerable<PanelMember> ReadPanelMembersWithCriteriaAndResponsesByPanel(Guid panelId);
     public PlanningGroupMember ReadPlanningGroupMember(Guid planningsGroupMemberId);
+    public PlanningGroupMember ReadPlanningsGroupMemberWithPanelAndIdentityUser(Guid planningsGroupMemberId);
     public IEnumerable<PlanningGroupMember> ReadAllPlanningGroupMembersWithIdentityUserByPanel(Guid panelId);
     public Post ReadPost(Guid postId);
     public SuggestionPost ReadSuggestionPostSuggestionsAndWithVotes(Guid id);
@@ -43,6 +44,7 @@ public interface IPanelRepository
     public void UpdateSuggestion(Suggestion suggestion);
     public void UpdatePost(Post post);
     public void UpdateVote(Vote vote);
+    public void UpdatePlanningsGroupMember(PlanningGroupMember member);
     
     // DELETE
     public void DeletePanelMembers(ICollection<PanelMember> panelMembers);

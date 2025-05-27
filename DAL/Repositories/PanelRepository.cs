@@ -102,7 +102,15 @@ public class PanelRepository : IPanelRepository
     {
         return _context.PlanningGroupMembers.Find(planningsGroupMemberId);
     }
-    
+
+    public PlanningGroupMember ReadPlanningsGroupMemberWithPanelAndIdentityUser(Guid planningsGroupMemberId)
+    {
+        return _context.PlanningGroupMembers
+            .Include(p => p.User)
+            .Include(p => p.Panel)
+            .FirstOrDefault(p => p.Id == planningsGroupMemberId);
+    }
+
     public IEnumerable<PlanningGroupMember> ReadAllPlanningGroupMembersWithIdentityUserByPanel(Guid panelId)
     {
         return _context.PlanningGroupMembers
@@ -219,8 +227,14 @@ public class PanelRepository : IPanelRepository
         _context.Votes.Update(vote);
         _context.SaveChanges();
     }
-    
-    
+
+    public void UpdatePlanningsGroupMember(PlanningGroupMember member)
+    {
+        _context.PlanningGroupMembers.Update(member);
+        _context.SaveChanges();
+    }
+
+
     // DELETE
     public void DeletePanelMembers(ICollection<PanelMember> panelMembers)
     {

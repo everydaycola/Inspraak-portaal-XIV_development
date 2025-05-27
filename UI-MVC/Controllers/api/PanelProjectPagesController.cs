@@ -4,6 +4,7 @@ using Domain.Interfaces.Posts;
 using Domain.Interfaces.Posts.PostItems;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.CodeAnalysis.Elfie.Serialization;
 
 namespace UI_MVC.Controllers.api;
 
@@ -81,5 +82,21 @@ public class PanelProjectPagesController : ControllerBase
         
         _projectPageManager.ChangeSuggestionPostVotingStatus(postGuid);
         return Ok(new { success = true });
+    }
+    [HttpPost ("toggleExecuted")]
+    public async Task<IActionResult> ToggleExecuted([FromQuery] string suggestionId)
+    {
+        var suggestionGuid = Guid.Parse(suggestionId);
+        _projectPageManager.ChangeExecutedToggle(suggestionGuid);
+        
+        return Ok(new { success = true});
+    }
+
+    [HttpGet("executedValue")]
+    public ActionResult<bool> GetExecutedValue([FromQuery] string suggestionId)
+    {
+        var suggestionGuid = Guid.Parse(suggestionId);
+        var suggestion = _projectPageManager.GetSuggestion(suggestionGuid);
+        return Ok(suggestion.IsExecuted);
     }
 }
