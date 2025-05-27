@@ -1,4 +1,5 @@
-﻿@model UI_MVC.Models.ViewModels.ExploreConceptViewModels.QuestionViewModel
+﻿@using System.Text.Json
+@model UI_MVC.Models.ViewModels.ExploreConceptViewModels.QuestionViewModel
 
 
 <form id="questionForm" asp-action="AddQuestion" asp-controller="Question" method="post">
@@ -14,8 +15,10 @@
         <i class="bi bi-question-lg"></i>
     </button>
     <table id="answerWeightTable">
+        <thead>
         <input type="hidden" id="amountOfParticipationMethods" value="@Model.ParticipationMethods.Count()"/>
-        <input type="hidden" asp-for="ParticipationMethods" id="ParticipationMethods" value="@Model.ParticipationMethods"/>
+        <input type="hidden" asp-for="ParticipationMethods" id="ParticipationMethods"
+               value='@JsonSerializer.Serialize(Model.ParticipationMethods.Select(pm => pm.Name))'/>
         <tr>
             <th>Antwoorden</th>
             @foreach (var partMethod in Model.ParticipationMethods)
@@ -23,30 +26,39 @@
                 <th>@partMethod.Name</th>
             }
         </tr>
+        </thead>
+        <tbody>
         <tr>
             <td>
-                <input name="AnswerOptions[0].AnswerText" type="text" class="form-control me-2" placeholder="Antwoordtekst" value="" required/>
+                <input name="AnswerOptions[0].AnswerText" type="text" class="form-control me-2"
+                       placeholder="Antwoordtekst" value="" required/>
             </td>
             @foreach (var partMethod in Model.ParticipationMethods.Select((value, index) => new { value, index }))
             {
                 <td>
-                    <input type="hidden" name="AnswerOptions[0].Impacts[@partMethod.index].ParticipationMethodName" value="@partMethod.value.Name"/>
-                    <input type="number" name="AnswerOptions[0].Impacts[@partMethod.index].Impactweight" class="form-control me-2" placeholder="Gewicht" value="" required/>
+                    <input type="hidden" name="AnswerOptions[0].Impacts[@partMethod.index].ParticipationMethodName"
+                           value="@partMethod.value.Name"/>
+                    <input type="number" name="AnswerOptions[0].Impacts[@partMethod.index].Impactweight"
+                           class="form-control me-2" placeholder="Gewicht" value="0" required/>
                 </td>
             }
         </tr>
         <tr>
             <td>
-                <input type="text"name="AnswerOptions[1].AnswerText" class="form-control me-2" placeholder="Antwoordtekst" value="" required/>
+                <input type="text" name="AnswerOptions[1].AnswerText" class="form-control me-2"
+                       placeholder="Antwoordtekst" value="" required/>
             </td>
             @foreach (var partMethod in Model.ParticipationMethods.Select((value, index) => new { value, index }))
             {
                 <td>
-                    <input type="hidden" name="AnswerOptions[1].Impacts[@partMethod.index].ParticipationMethodName" value="@partMethod.value.Name"/>
-                    <input type="number" name="AnswerOptions[1].Impacts[@partMethod.index].Impactweight" class="form-control me-2" placeholder="Gewicht" value="" required/>
+                    <input type="hidden" name="AnswerOptions[1].Impacts[@partMethod.index].ParticipationMethodName"
+                           value="@partMethod.value.Name"/>
+                    <input type="number" name="AnswerOptions[1].Impacts[@partMethod.index].Impactweight"
+                           class="form-control me-2" placeholder="Gewicht" value="0" required/>
                 </td>
             }
         </tr>
+        </tbody>
     </table>
     <div class="mb-3">
         <label class="form-label">Antwoordopties</label>

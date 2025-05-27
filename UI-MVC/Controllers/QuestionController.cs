@@ -88,6 +88,24 @@ public class QuestionController : Controller
         return RedirectToAction("Index");
     }
 
+    public IActionResult AddQuestion(QuestionViewModel viewModel)
+    {
+        var answers = viewModel.AnswerOptions;
+        var question = _questionManager.AddQuestion(viewModel.QuestionText);
+        foreach (var option in viewModel.AnswerOptions)
+        {
+            var mappedImpacts = option.Impacts.Select(i => new AnswerOptionImpactsDto
+            {
+                ParticipationMethodName = i.ParticipationMethodName,
+                ImpactWeight = i.ImpactWeight
+            }).ToList();
+            _questionManager.AddAnswerOptionsWithImpacts(question.Id, option.AnswerText, mappedImpacts);
+        }
+
+        _logger.Log(LogLevel.Information, "viewModelParsed");
+        return Ok();
+    }
+
 
     [HttpPost]
     public IActionResult DeleteQuestionWithAnswerOptions(int questionId)
