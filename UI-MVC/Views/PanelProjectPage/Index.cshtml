@@ -674,6 +674,13 @@
                                             if (suggestion.IsGloballyVisible || (User.Identity?.IsAuthenticated ?? false))
                                             {
                                                 <div class="suggestion-item mb-3">
+                                                    <p class="mb-1">
+                                                        <i id="suggestion-icon-@suggestion.Id" class="bi @(suggestion.IsExecuted ? "bi-check-circle-fill text-success" : "bi-lightbulb") me-2"></i>
+                                                        <strong id="executed-text-@suggestion.Id" class="@(suggestion.IsExecuted ? "" : "d-none")">UITGEVOERD</strong>
+                                                        <span id="executed-spacer-@suggestion.Id" class="me-2 @(suggestion.IsExecuted ? "" : "d-none")"></span>
+                                                        @suggestion.Title
+                                                    </p>
+
                                                     <div class="d-flex justify-content-between align-items-start">
                                                         <div>
                                                             <p class="mb-1"><i class="bi bi-lightbulb me-2"></i>@suggestion.Title</p>
@@ -720,6 +727,13 @@
                                                                         <button type="button"
                                                                                 class="btn btn-primary suggestion-visibility-toggle-btn" data-suggestion-id="@suggestion.Id">
                                                                             @(suggestion.IsGloballyVisible ? "Maak privé" : "Maak publiek")
+                                                                        </button>
+                                                                    </div>
+                                                                    <div id="executed-toggle">
+                                                                        <button type="button"
+                                                                                class="btn btn-primary executed-toggle-btn"
+                                                                                data-suggestion-id="@suggestion.Id">
+                                                                            @(suggestion.IsExecuted ? "Zet op niet uitgevoerd" : "Zet op uitgevoerd")
                                                                         </button>
                                                                     </div>
                                                                 }
