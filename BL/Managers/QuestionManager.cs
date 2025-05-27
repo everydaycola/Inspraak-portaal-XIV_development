@@ -1,10 +1,11 @@
 using BL.Interfaces;
 using DAL.Repositories;
 using Domain.Admin;
-using Domain.GlobalDtos;
 using Domain.Interfaces;
 using Domain.Interfaces.Question;
 using Microsoft.Extensions.Logging;
+using UI_MVC.Models.ViewModels.ExploreConceptViewModels;
+using AnswerOptionImpactsDto = Domain.GlobalDtos.AnswerOptionImpactsDto;
 
 namespace BL.Managers;
 
@@ -26,7 +27,12 @@ public class QuestionManager : IQuestionManager
 
     public IEnumerable<Question> GetAllQuestionsWithAnswerOptionsAndImpactsAndParticipationMethod()
     {
-        return _questionRepository.ReadAllQuestionsWIthAnswerOptionsAndIMpactsAndParticipationMethod();
+        return _questionRepository.ReadAllQuestionsWithAnswerOptionsAndImpactsAndParticipationMethod();
+    }
+
+    public Question GetQuestionWithAnswerOptionsAndImpactsAndParticipationMethod(int id)
+    {
+        return _questionRepository.ReadQuestionWithAnswerOptionsAndImpactsById(id);
     }
 
     public void RemoveQuestionWithAnswerOptionsAndImpacts(int questionId)
@@ -38,7 +44,12 @@ public class QuestionManager : IQuestionManager
     {
         return _questionRepository.ReadQuestionWithAnswerOptionsById(id);
     }
-    
+
+    public Question GetQuestionWithAnswerOptionsAndImpactsById(int id)
+    {
+        return _questionRepository.ReadQuestionWithAnswerOptionsAndImpactsById(id);
+    }
+
     public ParticipationMethod GetParticipationMethodByName(string name)
     {
         return _questionRepository.ReadParticipationMethodByName(name);
@@ -52,7 +63,7 @@ public class QuestionManager : IQuestionManager
         };
         return _questionRepository.CreateQuestion(newQuestion);
     }
-
+    
     public void AddAnswerOptionsWithImpacts(int questionId,string answerText, List<AnswerOptionImpactsDto> answerOptionImpacts)
     {
 
@@ -88,6 +99,27 @@ public class QuestionManager : IQuestionManager
             AnswerOptions = answerOption
         };
         _questionRepository.UpdateQuestion(newQuestion);
+    }
+
+    public void UpdateQuestionWithAnswerOptions(int modelId, string modelQuestionText, List<AnswerOptionDto> toList)
+    {
+        var updatedQuestion = new Question()
+        {
+            Id = modelId,
+            QuestionText = modelQuestionText,
+            AnswerOptions = toList.Select(aodto => new AnswerOption()
+            {
+                Id = aodto.Id,
+                AnswerOptionText = aodto.AnswerText,
+                Impacts = aodto.Impacts.Select(idto => new AnswerOptionImpact()
+                {
+                    ParticipationMethod = GetParticipationMethodByName(idto.ParticipationMethodName),
+                    ImpactWeight = idto.ImpactWeight
+                }).ToList()
+            }).ToList()
+        };
+
+        _questionRepository.UpdateQuestionWithAnswerOptionsAndImpacts(updatedQuestion);
     }
 
     public void RemoveQuestion(int id)

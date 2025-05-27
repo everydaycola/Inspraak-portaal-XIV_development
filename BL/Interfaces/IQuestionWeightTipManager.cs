@@ -5,8 +5,8 @@ namespace BL.Interfaces;
 
 public interface IQuestionWeightTipManager
 {
+    public ParticipationMethod GetParticipationMethodById(Guid id);
     public List<QuestionWeightTips> GetAllQuestionWeightTips();
-    
     public IEnumerable<ParticipationMethod> GetAllParticipationMethods();
     public QuestionWeightTips GetQuestionWeightTip(int id);
     public void AddQuestionWeightTip(int id, int minScore, int maxScore, string messqge);
@@ -14,4 +14,5 @@ public interface IQuestionWeightTipManager
     void AddParticipationMethod(string viewModelName, string viewModelDescription);
     public void UpdateQuestionWeightTip(int id, int minScore, int maxScore, string messqge);
     public void RemoveQuestionWeightTip(int id);
+    public void UpdateParticipationMethod(Guid viewModelId, string viewModelName, string viewModelDescription);
 }

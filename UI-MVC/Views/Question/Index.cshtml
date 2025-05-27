@@ -74,9 +74,10 @@
                             }
                         </td>
                         <td>
-                            <button class="btn btn-sm btn-primary edit-question-button" data-question-id="@question.Id">
+                            <a asp-action="EditQuestion" asp-route-id="@question.Id"
+                               class="btn btn-sm btn-primary">
                                 Bewerken
-                            </button>
+                            </a>
                             <form asp-action="DeleteQuestionWithAnswerOptions" asp-controller="Question"
                                   method="post" class="d-inline">
                                 <input type="hidden" name="questionId" value="@question.Id" />
@@ -114,9 +115,9 @@
                     <td>@method.Name</td>
                     <td>@method.Description</td>
                     <td>
-                        <button class="btn btn-sm btn-primary edit-participation-button" data-method-id="@method.Id">
+                        <a asp-action="EditParticipationMethod" asp-controller="Question" asp-route-id="@method.Id" class="btn btn-sm btn-primary">
                             Bewerken
-                        </button>
+                        </a>
                         <form asp-action="DeleteParticipationMethod" asp-controller="Question" asp-route-id="@method.Id"
                               method="post" class="d-inline">
                             <button type="submit" class="btn btn-sm btn-danger"

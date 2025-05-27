@@ -1,14 +1,12 @@
 using BL.Interfaces;
-using DAL.Interfaces;
-using Domain.Admin;
 using Domain.GlobalDtos;
-using Domain.Interfaces;
-using Domain.Interfaces.Question;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using UI_MVC.Models.Dto;
 using UI_MVC.Models.ViewModels;
 using UI_MVC.Models.ViewModels.ExploreConceptViewModels;
+using AnswerOptionImpactsDto = Domain.GlobalDtos.AnswerOptionImpactsDto;
+
 
 namespace UI_MVC.Controllers;
 
@@ -76,7 +74,7 @@ public class QuestionController : Controller
 
         return View(model);
     }
-    
+
     [HttpPost]
     public IActionResult AddParticipationMethod(ParticipationViewModel viewModel)
     {
@@ -106,5 +104,99 @@ public class QuestionController : Controller
         _logger.LogInformation("Participationmethod succesvol verwijderd!");
         return RedirectToAction("Index");
     }
-    
+
+    [HttpGet]
+    public IActionResult EditParticipationMethod(Guid id)
+    {
+        var method = _questionWeightTipManager.GetParticipationMethodById(id);
+        if (method == null)
+            return NotFound();
+
+        var viewModel = new ParticipationViewModel
+        {
+            Id = method.Id,
+            Name = method.Name,
+            Description = method.Description
+        };
+        return View(viewModel);
+    }
+
+    [HttpPost]
+    public IActionResult EditParticipationMethod(ParticipationViewModel viewModel)
+    {
+        if (!ModelState.IsValid)
+            return View(viewModel);
+
+        _questionWeightTipManager.UpdateParticipationMethod(viewModel.Id, viewModel.Name, viewModel.Description);
+        return RedirectToAction("Index");
+    }
+
+    [HttpGet]
+    public IActionResult EditQuestion(int id)
+    {
+        var question = _questionManager.GetQuestionWithAnswerOptionsAndImpactsAndParticipationMethod(id);
+        if (question == null) return NotFound();
+
+        var allParticipationMethods = _questionWeightTipManager.GetAllParticipationMethods()
+            .Select(pm => new ParticipationViewModel
+            {
+                Id = pm.Id,
+                Name = pm.Name,
+                Description = pm.Description
+            }).ToList();
+
+        var viewModel = new QuestionViewModel
+        {
+            Id = question.Id,
+            QuestionText = question.QuestionText,
+            AnswerOptions = question.AnswerOptions.Select(ao => new AnswerOptionDto
+            {
+                Id = ao.Id,
+                AnswerText = ao.AnswerOptionText,
+                Impacts = ao.Impacts.Select(i => new AnswerOptionImpactsDto()
+                {
+                    ParticipationMethodId = i.ParticipationMethod.Id,
+                    ParticipationMethodName = i.ParticipationMethod.Name, // Assuming you want the name here
+                    ImpactWeight = i.ImpactWeight
+                }).ToList() 
+            }).ToList(),
+            ParticipationMethods = allParticipationMethods
+        };
+
+        return View(viewModel);
+    }
+
+    [HttpPost]
+    public IActionResult EditQuestion(QuestionViewModel model)
+    {
+        if (!ModelState.IsValid)
+        {
+            model.ParticipationMethods =_questionWeightTipManager.GetAllParticipationMethods()
+                .Select(pm => new ParticipationViewModel
+                {
+                    Id = pm.Id,
+                    Name = pm.Name,
+                    Description = pm.Description
+                }).ToList();
+            return View(model);
+        }
+
+        _questionManager.UpdateQuestionWithAnswerOptions(
+            model.Id,
+            model.QuestionText,
+            model.AnswerOptions.Select(ao => new AnswerOptionDto
+            {
+                Id = ao.Id,
+                AnswerText = ao.AnswerText,
+                Impacts = ao.Impacts.Select(i => new AnswerOptionImpactsDto
+                {
+                    ParticipationMethodId = i.ParticipationMethodId,
+                    ParticipationMethodName = i.ParticipationMethodName,
+                    ImpactWeight = i.ImpactWeight
+                }).ToList()
+            }).ToList()
+        );
+
+        return RedirectToAction("Index");
+    }
 }

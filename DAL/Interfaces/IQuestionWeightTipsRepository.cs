@@ -5,6 +5,7 @@ namespace DAL.Interfaces;
 
 public interface IQuestionWeightTipsRepository
 {
+    public ParticipationMethod ReadParticipationMethodById(Guid id);
     public List<QuestionWeightTips> ReadAllQuestionWeightTips();
     public QuestionWeightTips ReadQuestionWeightTip(int id);
     
@@ -13,5 +14,6 @@ public interface IQuestionWeightTipsRepository
     
     public void CreateParticipationMethod(ParticipationMethod method);
     public void UpdateQuestionWeightTip(QuestionWeightTips questionWeightTips);
+    public void UpdateParticipationMethod(ParticipationMethod updatedParticipationMethod);
     public void DeleteQuestionWeightTip(int id);
 }

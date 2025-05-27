@@ -1,0 +1,47 @@
+@model UI_MVC.Models.ViewModels.ExploreConceptViewModels.QuestionViewModel
+
+<form asp-action="EditQuestion" method="post">
+    <input type="hidden" asp-for="Id" />
+
+    <div class="mb-3">
+        <label class="form-label">Vraagtekst</label>
+        <input asp-for="QuestionText" class="form-control" required />
+        <span asp-validation-for="QuestionText" class="text-danger"></span>
+    </div>
+
+    <table class="table">
+        <thead>
+        <tr>
+            <th>Antwoorden</th>
+            @foreach (var method in Model.ParticipationMethods)
+            {
+                <th>@method.Name</th>
+            }
+        </tr>
+        </thead>
+        <tbody>
+        @for (var i = 0; i < Model.AnswerOptions.Count; i++)
+        {
+            <tr>
+                <td>
+                    <input type="hidden" asp-for="AnswerOptions[i].Id" />
+                    <input asp-for="AnswerOptions[i].AnswerText" class="form-control" required />
+                </td>
+                @foreach (var method in Model.ParticipationMethods)
+                {
+                    var impact = Model.AnswerOptions[i].Impacts.FirstOrDefault(imp => imp.ParticipationMethodId == method.Id);
+                    <td>
+                        <input type="number"
+                               name="AnswerOptions[@i].Impacts[@method.Id].ImpactWeight"
+                               value="@(impact?.ImpactWeight)"
+                               class="form-control"
+                               required />
+                    </td>
+                }
+            </tr>
+        }
+        </tbody>
+    </table>
+
+    <button type="submit" class="btn btn-primary">Opslaan</button>
+</form>

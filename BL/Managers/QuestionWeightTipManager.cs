@@ -19,6 +19,11 @@ public class QuestionWeightTipManager : IQuestionWeightTipManager
         _questionWeightTipsRepository = questionWeightTipsRepository;
     }
 
+    public ParticipationMethod GetParticipationMethodById(Guid id)
+    {
+        return _questionWeightTipsRepository.ReadParticipationMethodById(id);
+    }
+
     public List<QuestionWeightTips> GetAllQuestionWeightTips()
     {
         return _questionWeightTipsRepository.ReadAllQuestionWeightTips();
@@ -71,5 +76,16 @@ public class QuestionWeightTipManager : IQuestionWeightTipManager
     public void RemoveQuestionWeightTip(int id)
     {
         _questionWeightTipsRepository.DeleteQuestionWeightTip(id);
+    }
+
+    public void UpdateParticipationMethod(Guid viewModelId, string viewModelName, string viewModelDescription)
+    {
+        ParticipationMethod updatedParticipationMethod = new ParticipationMethod()
+        {
+            Id = viewModelId,
+            Name = viewModelName,
+            Description = viewModelDescription
+        };
+        _questionWeightTipsRepository.UpdateParticipationMethod(updatedParticipationMethod);
     }
 }

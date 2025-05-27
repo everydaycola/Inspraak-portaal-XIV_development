@@ -14,6 +14,11 @@ public class QuestionWeightTipsRepository : IQuestionWeightTipsRepository
         _context = context;
     }
 
+    public ParticipationMethod ReadParticipationMethodById(Guid id)
+    {
+        return _context.ParticipationMethods.Find(id);
+    }
+
     public List<QuestionWeightTips> ReadAllQuestionWeightTips()
     {
         return _context.QuestionWeightTips.ToList();
@@ -51,6 +56,17 @@ public class QuestionWeightTipsRepository : IQuestionWeightTipsRepository
         }
         _context.QuestionWeightTips.Update(questionWeightTips);
         _context.SaveChanges();
+    }
+
+    public void UpdateParticipationMethod(ParticipationMethod updatedParticipationMethod)
+    {
+        var existingMethod = _context.ParticipationMethods.Find(updatedParticipationMethod.Id);
+        if (existingMethod != null)
+        {
+            existingMethod.Name = updatedParticipationMethod.Name;
+            existingMethod.Description = updatedParticipationMethod.Description;
+            _context.SaveChanges();
+        }
     }
 
     public void DeleteQuestionWeightTip(int id)

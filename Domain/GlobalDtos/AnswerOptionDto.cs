@@ -2,6 +2,7 @@
 
 public class AnswerOptionDto
 {
+    public int Id { get; set; }
     public string AnswerText { get; set; }
-    public ICollection<AnswerOptionImpactsViewModel> Impacts { get; set; }
+    public List<Domain.GlobalDtos.AnswerOptionImpactsDto> Impacts { get; set; }
 }
