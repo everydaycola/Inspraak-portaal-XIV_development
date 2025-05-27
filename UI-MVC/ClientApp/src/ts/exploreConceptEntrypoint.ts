@@ -23,9 +23,9 @@ async function handleSelectedValues(){
         const dataImpacts = radio.getAttribute("data-impacts");
         if (!dataImpacts) return;
         const impacts = JSON.parse(dataImpacts);
-        impacts.forEach((impact: { ParticipationMethodName: string; ContributingWeight: number }) => {
+        impacts.forEach((impact: { ParticipationMethodName: string; ImpactWeight: number }) => {
             const name = impact.ParticipationMethodName;
-            const weight = impact.ContributingWeight;
+            const weight = impact.ImpactWeight;
 
             if (!totalWeightsByMethod[name]) {
                 totalWeightsByMethod[name] = 0;
@@ -35,7 +35,6 @@ async function handleSelectedValues(){
     });
 
     const baseUrl = getCurrentBaseUrl();
-
     const response = await fetch(`${baseUrl}/api/ExploreConcepts/SubmitAnswers`, {
         method: 'POST',
         headers: {
