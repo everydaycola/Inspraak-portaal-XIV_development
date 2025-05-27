@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.Security.Claims;
 using BL.Interfaces;
 using DAL.Interfaces;
 using Domain;
@@ -32,6 +33,16 @@ public class PanelProjectPageManager : IPanelProjectPageManager
     public Suggestion GetSuggestion(Guid suggestionId)
     {
         return _repo.ReadSuggestion(suggestionId);
+    }
+
+    public Post GetPost(Guid postId)
+    {
+        return _repo.ReadPost(postId);
+    }
+
+    public SuggestionPost GetSuggestionPostSuggestionsAndWithVotes(Guid suggestionPostId)
+    {
+        return _repo.ReadSuggestionPostSuggestionsAndWithVotes(suggestionPostId);
     }
 
     public void ChangeVote(ApplicationUser user, Guid suggestionId, VoteType voteType)
@@ -68,6 +79,24 @@ public class PanelProjectPageManager : IPanelProjectPageManager
     }
 
 
+    public void ChangeSuggestionPostVotingStatus(Guid postId)
+    {
+        var suggestionPost = (SuggestionPost)_repo.ReadPost(postId);
+        suggestionPost.IsVotingOpen = !suggestionPost.IsVotingOpen;
+        _repo.UpdateSuggestionPost(suggestionPost);
+    }
+
+    public void AddSummaryToMeetingPost(Guid meetingId, string uniqueFileName)
+    {
+        if (_repo.ReadPost(meetingId) is not MeetingPost meetingPost)
+        {
+            _logger.Log(LogLevel.Critical, "Meeting post with id " + meetingId + " does not exist.");
+            return;
+        }
+        meetingPost.DocumentNames.Add(uniqueFileName);
+        _repo.UpdatePost(meetingPost);
+    }
+    
     public void AddDocumentToPost(Guid meetingId, string uniqueFileName)
     {
         var post = _repo.ReadPost(meetingId);
@@ -101,8 +130,7 @@ public class PanelProjectPageManager : IPanelProjectPageManager
     }
 
 // Simplified post methods
-    public void AddTextPost(Guid panelId, string title, string content, bool isVisibleForPanelMembers,
-        bool isGloballyVisible)
+    public void AddTextPost(Guid panelId, string title, string content, bool isVisibleForPanelMembers, bool isGloballyVisible)
     {
         AddPost(panelId, new TextPost
         {
@@ -114,8 +142,7 @@ public class PanelProjectPageManager : IPanelProjectPageManager
         });
     }
 
-    public void AddDocumentPost(Guid panelId, string title, string documentUrl, bool isVisibleForPanelMembers,
-        bool isGloballyVisible)
+    public void AddDocumentPost(Guid panelId, string title, string documentUrl, bool isVisibleForPanelMembers, bool isGloballyVisible)
     {
         AddPost(panelId, new DocumentPost
         {
@@ -137,8 +164,7 @@ public class PanelProjectPageManager : IPanelProjectPageManager
         });
     }
 
-    public void AddEmbedVideoPost(Guid panelId, string title, string videoUrl, bool visibleForPanelMember,
-        bool isGloballyVisible)
+    public void AddEmbedVideoPost(Guid panelId, string title, string videoUrl, bool visibleForPanelMember, bool isGloballyVisible)
     {
         AddPost(panelId, new EmbeddedVideoPost
         {
@@ -150,8 +176,7 @@ public class PanelProjectPageManager : IPanelProjectPageManager
         });
     }
 
-    public void AddYoutubeVideoPost(Guid panelId, string title, string videoId, bool visibleForPanelMember,
-        bool isGloballyVisible)
+    public void AddYoutubeVideoPost(Guid panelId, string title, string videoId, bool visibleForPanelMember, bool isGloballyVisible)
     {
         AddPost(panelId, new YoutubeVideoPost
         {
@@ -163,14 +188,16 @@ public class PanelProjectPageManager : IPanelProjectPageManager
         });
     }
 
-    public void AddSuggestionPost(Guid panelId, string title, bool visibleForPanelMember)
+    public void AddSuggestionPost(Guid panelId, string title, bool visibleForPanelMember, bool isVotingOpen, double votingMajorityFactor)
     {
         AddPost(panelId, new SuggestionPost
         {
             Title = title,
             CreatedAt = DateTime.UtcNow,
             IsVisibleForPanelMembers = visibleForPanelMember,
-            Suggestions = []
+            Suggestions = [],
+            IsVotingOpen = isVotingOpen,
+            VotingMajorityFactor = votingMajorityFactor
         });
     }
 

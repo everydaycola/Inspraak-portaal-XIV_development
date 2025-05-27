@@ -6,6 +6,8 @@ namespace Domain.Interfaces.Posts;
 public class SuggestionPost : Post, IValidatableObject
 {
     public ICollection<Suggestion> Suggestions { get; set; } = [];
+    public bool IsVotingOpen { get; set; }
+    public double VotingMajorityFactor { get; set; }
     
     [Required(ErrorMessage = "Suggestion post moet een lijst van documenten hebben")]
     public ICollection<string> DocumentNames { get; set; } = [];
