@@ -1,0 +1,15 @@
+@model UI_MVC.Models.ViewModels.PotentialPanelMembersViewModel
+
+@{
+    var request = Context.Request;
+    var baseUrl = $"{request.Scheme}://{request.Host}";
+}
+
+<div class="container py-4">
+    <div class="accordion mb-4" id="criteriaAccordion">
+        @foreach (var criteriaGroup in Model.panelMembers)
+        {
+            <div><p>@criteriaGroup.Value</p></div>
+        }
+    </div>
+</div>
