@@ -4,6 +4,6 @@ namespace UI_MVC.Models.ViewModels;
 
 public class PotentialPanelMembersViewModel
 {
-    public Guid panelId { get; set; }
-    public Dictionary<string, Dictionary<int, List<PanelMember>>> panelMembers { get; set; }
+    public Guid PanelId { get; set; }
+    public List<PanelMember> PanelMembers { get; set; }
 }

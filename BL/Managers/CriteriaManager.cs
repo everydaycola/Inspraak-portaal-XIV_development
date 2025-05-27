@@ -135,8 +135,13 @@ public class CriteriaManager : ICriteriaManager
             .ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
 
     }
-    
-    
+
+    public List<PanelMember> GetRegisteredPanelMembersOfPanel(Guid panelId)
+    {
+        return _repo.ReadAllRegisteredPanelMembersOfPanel(panelId);
+    }
+
+
     // public Criteria GetCriteriaByName(Guid panelId,string critName)
     // {
     //     return _repo.ReadCriteriaByName(panelId, critName);

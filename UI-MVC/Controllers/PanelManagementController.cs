@@ -90,6 +90,11 @@ public class PanelManagementController : Controller
                 SuccessfulRegistrationCount = panel.SuccessfulRegistrationCount,
                 DesiredRegistrationCount = panelSize,
             },
+            PotentialPanelMembersViewModel = new PotentialPanelMembersViewModel
+            {
+                PanelId = panel.Id,
+                PanelMembers = _criteriaManager.GetRegisteredPanelMembersOfPanel(panel.Id)
+            },
             IsRegistrationOpen = panel.IsRegistrationOpen,
             PanelSize = panelSize,
             AnyCrossCriteria = criteriaList.Any(c => c.IsDistributionKnown),

@@ -9,6 +9,7 @@ public class PeopleManagementViewModel
     public UniqueCodesViewModel UniqueCodesViewModel { get; set; }
     public IEnumerable<PlanningGroupMember> PlanningGroupMembers { get; set; }
     public ExtraCriteriaViewModel ExtraCriteriaViewModel { get; set; } 
+    public PotentialPanelMembersViewModel PotentialPanelMembersViewModel { get; set; }
     public bool IsRegistrationOpen { get; set; }
     public int PanelSize { get; set; }
     public bool AnyCrossCriteria { get; set; }
