@@ -1,5 +1,4 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using System.Security.Claims;
 using BL.Interfaces;
 using DAL.Interfaces;
 using Domain;
@@ -15,17 +14,17 @@ namespace BL.Managers;
 
 public class PanelProjectPageManager : IPanelProjectPageManager
 {
-    
     private readonly ILogger<PanelManager> _logger;
     private readonly IPanelRepository _repo;
 
-    public PanelProjectPageManager(ILogger<PanelManager> logger, IPanelRepository repo, IUserRepository userRepo, UserManager<ApplicationUser> userManager)
+    public PanelProjectPageManager(ILogger<PanelManager> logger, IPanelRepository repo, IUserRepository userRepo,
+        UserManager<ApplicationUser> userManager)
     {
         _logger = logger;
         _repo = repo;
     }
     
-    public Panel GetPanelWithPostsAndSuggestionsAndVotes(Guid panelId)
+    public Panel GetPanelWithPostsAndSuggestionsAndVotesAndDocuments(Guid panelId)
     {
         return _repo.ReadPanelWithPostsAndSuggestionsAndVotes(panelId);
     }
@@ -52,28 +51,43 @@ public class PanelProjectPageManager : IPanelProjectPageManager
             vote.VoteType = voteType;
             _repo.UpdateVote(vote);
         }
-
     }
-
+    
     public void ChangeSuggestionVisibility(Guid suggestionId)
     {
         var suggestion = _repo.ReadSuggestion(suggestionId);
         suggestion.IsGloballyVisible = !suggestion.IsGloballyVisible;
         _repo.UpdateSuggestion(suggestion);
     }
-    
 
-    public void AddSummaryToMeetingPost(Guid meetingId, string uniqueFileName)
+    public void ChangeExecutedToggle(Guid suggestionId)
     {
-        if (_repo.ReadPost(meetingId) is not MeetingPost meetingPost)
-        {
-            _logger.Log(LogLevel.Critical, "Meeting post with id " + meetingId + " does not exist.");
-            return;
-        }
-        meetingPost.DocumentNames.Add(uniqueFileName);
-        _repo.UpdatePost(meetingPost);
+        var suggestion = _repo.ReadSuggestion(suggestionId);
+        suggestion.IsExecuted = !suggestion.IsExecuted;
+        _repo.UpdateSuggestion(suggestion);
     }
-    
+
+
+    public void AddDocumentToPost(Guid meetingId, string uniqueFileName)
+    {
+        var post = _repo.ReadPost(meetingId);
+        
+        switch (post)
+        {
+            // Add the document to the appropriate post type
+            case MeetingPost mp:
+                mp.DocumentNames.Add(uniqueFileName);
+                _repo.UpdatePost(mp);
+                break;
+            case SuggestionPost sp:
+                sp.DocumentNames.Add(uniqueFileName);
+                _repo.UpdatePost(sp);
+                break;
+            default:
+                throw new Exception("Post with document support not found");
+        }
+    }
+
     // Generic helper method for post validation and creation
     private void AddPost<T>(Guid panelId, T post) where T : Post
     {
@@ -87,7 +101,8 @@ public class PanelProjectPageManager : IPanelProjectPageManager
     }
 
 // Simplified post methods
-    public void AddTextPost(Guid panelId, string title, string content, bool isVisibleForPanelMembers, bool isGloballyVisible)
+    public void AddTextPost(Guid panelId, string title, string content, bool isVisibleForPanelMembers,
+        bool isGloballyVisible)
     {
         AddPost(panelId, new TextPost
         {
@@ -99,7 +114,8 @@ public class PanelProjectPageManager : IPanelProjectPageManager
         });
     }
 
-    public void AddDocumentPost(Guid panelId, string title, string documentUrl, bool isVisibleForPanelMembers, bool isGloballyVisible)
+    public void AddDocumentPost(Guid panelId, string title, string documentUrl, bool isVisibleForPanelMembers,
+        bool isGloballyVisible)
     {
         AddPost(panelId, new DocumentPost
         {
@@ -116,13 +132,13 @@ public class PanelProjectPageManager : IPanelProjectPageManager
         AddPost(panelId, new MeetingPost
         {
             Title = title,
-            DocumentNames = new List<string>(),
             CreatedAt = meetingDateTime,
             IsVisibleForPanelMembers = isVisibleForPanelMembers
         });
     }
 
-    public void AddEmbedVideoPost(Guid panelId, string title, string videoUrl, bool visibleForPanelMember, bool isGloballyVisible)
+    public void AddEmbedVideoPost(Guid panelId, string title, string videoUrl, bool visibleForPanelMember,
+        bool isGloballyVisible)
     {
         AddPost(panelId, new EmbeddedVideoPost
         {
@@ -134,7 +150,8 @@ public class PanelProjectPageManager : IPanelProjectPageManager
         });
     }
 
-    public void AddYoutubeVideoPost(Guid panelId, string title, string videoId, bool visibleForPanelMember, bool isGloballyVisible)
+    public void AddYoutubeVideoPost(Guid panelId, string title, string videoId, bool visibleForPanelMember,
+        bool isGloballyVisible)
     {
         AddPost(panelId, new YoutubeVideoPost
         {
@@ -171,5 +188,17 @@ public class PanelProjectPageManager : IPanelProjectPageManager
         });
         // update the post with the new suggestion
         _repo.UpdateSuggestionPost(suggestionPost);
+    }
+
+    public void AddGoogleFormLink(Guid panelId, string title, string embeddedIframeLink, bool visibleForPanelMember, bool isGloballyVisible)
+    {
+        AddPost(panelId, new EmbeddedGoogleFormLink()
+        {
+            Title = title,
+            CreatedAt = DateTime.UtcNow,
+            IsVisibleForPanelMembers = visibleForPanelMember,
+            EmbeddedIframeUrl = embeddedIframeLink,
+            IsGloballyVisible = isGloballyVisible
+        });
     }
 }

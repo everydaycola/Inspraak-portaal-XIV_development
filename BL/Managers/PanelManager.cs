@@ -430,6 +430,18 @@ public class PanelManager : IPanelManager
         return member;
     }
 
+    public async Task UpdatePlanningsGroupMember(Guid planningsGroupMemberId, string email, string naam, string functie)
+    {
+        var planningsGroupMember = _repo.ReadPlanningsGroupMemberWithPanelAndIdentityUser(planningsGroupMemberId);
+        if (planningsGroupMember != null)
+        {
+            planningsGroupMember.Functie = functie;
+            planningsGroupMember.User.UserName = naam;
+            planningsGroupMember.User.Email = email;
+            _repo.UpdatePlanningsGroupMember(planningsGroupMember);
+        }
+    }
+
     public void DeletePlanningsGroupmember(Guid planningsGroupMemberId)
     {
         var planningGroupmember = _repo.ReadPlanningGroupMember(planningsGroupMemberId);
@@ -577,7 +589,6 @@ public class PanelManager : IPanelManager
             // Check if key exists in the dictionary
             if (optionList.TryGetValue(group.Key, out var count))
             {
-                Console.WriteLine(count);
                 // Add shuffled selection to selected members
                 selectedMembers.AddRange(
                     group.OrderBy(_ => Guid.NewGuid())
@@ -591,7 +602,7 @@ public class PanelManager : IPanelManager
             pm.Selected = true;
         }
         _repo.UpdatePanelMembers(selectedMembers);
-        _repo.DeletePanelMembers(_repo.ReadAllPanelMembersForPanel(panelId, includeRegistered: false, includeUnselected: false).ToList());
+        _repo.DeletePanelMembers(_repo.ReadAllPanelMembersForPanel(panelId, onlyUnselected: true).ToList());
         panel.SuccessfulRegistrationCount = selectedMembers.Count;
         
         //send out invites to slected members for account creation

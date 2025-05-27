@@ -100,6 +100,7 @@ public class CitizenPanelDbContext : IdentityDbContext<ApplicationUser>
         modelBuilder.Entity<EmbeddedVideoPost>();
         modelBuilder.Entity<YoutubeVideoPost>();
         modelBuilder.Entity<MeetingPost>();
+        modelBuilder.Entity<EmbeddedGoogleFormLink>();
         // suggestionposts also contain suggestions
         modelBuilder.Entity<SuggestionPost>()
             .HasMany(s => s.Suggestions);
@@ -117,6 +118,15 @@ public class CitizenPanelDbContext : IdentityDbContext<ApplicationUser>
                     v => JsonSerializer.Deserialize<List<string>>(v, (JsonSerializerOptions)null)!);
         });
 
+        
+        modelBuilder.Entity<SuggestionPost>(b =>
+        {
+            b.Property(p => p.DocumentNames)
+                .HasConversion(
+                    v => JsonSerializer.Serialize(v, (JsonSerializerOptions?)null),
+                    v => JsonSerializer.Deserialize<List<string>>(v, (JsonSerializerOptions?)null)!);
+        });
+        
         modelBuilder.Entity<Vote>()
             .Property("SuggestionId");
         modelBuilder.Entity<Vote>()

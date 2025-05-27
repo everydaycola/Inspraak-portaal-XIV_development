@@ -3,8 +3,10 @@
 @{
     Layout = "_layout";
 }
-
-
+@section Scripts
+{
+    <script src="~/dist/people.entry.js" type="module"></script>
+}
 <div class="container mt-5">
     <h2 class="mb-0">People</h2>
     <div class="row mt-4">
@@ -12,14 +14,14 @@
         <div class="card col-5">
             <div class="card-body">
                 <h5 class="card-title">Unieke codes per criteria</h5>
-                @Html.Partial("_uniqueCodesPartial", Model.UniqueCodesViewModel)
+                <partial name="_uniqueCodesPartial" model="Model.UniqueCodesViewModel"/>
             </div>
         </div>
 
         <div class="card col-6">
             <div class="card-body">
                 <h5 class="card-title">Planningsgroep</h5>
-                @Html.Partial("_planningGroupPartial", Model)
+                <partial name="_planningGroupPartial" model="Model"/>
             </div>
         </div>
 
@@ -33,7 +35,7 @@
                         data-bs-toggle="modal"
                         data-bs-target="#NewCodesModal"
                         data-panel-id="@Model.PanelId">
-                   Meer codes aanmaken
+                    Meer codes aanmaken
                 </button>
             </div>
         </div>
@@ -55,7 +57,7 @@
             </div>
             <div class="modal-body">
                 <div id="NewCodesModalContent">
-                    @Html.Partial("_generateMoreCodesPartial.cshtml", Model)
+                    <partial name="_generateMoreCodesPartial" model="Model"/>
                 </div>
             </div>
         </div>

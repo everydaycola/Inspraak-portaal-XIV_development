@@ -6,31 +6,52 @@
     <table class="table table-striped table-bordered">
         <thead class="thead-dark">
         <tr>
-            <th>ID</th>
             <th>Email</th>
             <th>Naam</th>
             <th>Functie</th>
-            <th></th>
+            <th>Aanpassen</th>
         </tr>
         </thead>
         <tbody>
         @foreach (var member in Model.PlanningGroupMembers)
         {
-            <tr>
-                <td>@member.Id</td>
-                <td>@member.User.Email</td>
-                <td>@member.User.UserName</td>
-                <td>@member.Functie</td>
-                <td><a class="btn btn-danger" asp-action="DeletePlanningsGroupmember" asp-route-panelId="@Model.PanelId" asp-route-planningsGroupMemberId="@member.Id">Delete</a></td>
+            <tr id="member-row-@member.Id">
+                <td>
+                    <span id="email-display-@member.Id">@member.User.Email</span>
+                    <input type="email" id="email-edit-@member.Id" class="form-control d-none"
+                           value="@member.User.Email"/>
+                </td>
+                <td>
+                    <span id="username-display-@member.Id">@member.User.UserName</span>
+                    <input type="text" id="username-edit-@member.Id" class="form-control d-none"
+                           value="@member.User.UserName"/>
+                </td>
+                <td>
+                    <span id="functie-display-@member.Id">@member.Functie</span>
+                    <input type="text" id="functie-edit-@member.Id" class="form-control d-none"
+                           value="@member.Functie"/>
+                </td>
+                <td>
+                    <button class="btn btn-info inline-edit-save-btn" type="button"
+                            data-member-id="@member.Id"
+                            data-panel-id="@Model.PanelId"
+                            data-mode="edit">
+                        Bewerken
+                    </button>
+                    <a class="btn btn-danger" asp-action="DeletePlanningsGroupmember" asp-route-panelId="@Model.PanelId"
+                       asp-route-planningsGroupMemberId="@member.Id">Verwijderen</a>
+                </td>
             </tr>
         }
         </tbody>
     </table>
-    <button class="btn btn-primary mb-3" type="button" data-bs-toggle="collapse" data-bs-target="#createMemberCollapse" aria-expanded="false" aria-controls="createMemberCollapse">
+    <button class="btn btn-primary mb-3" type="button" data-bs-toggle="collapse" data-bs-target="#createMemberCollapse"
+            aria-expanded="false" aria-controls="createMemberCollapse">
         Nieuw plannings groepslid aanmaken
     </button>
-    
+
     <div class="collapse" id="createMemberCollapse">
-        @Html.Partial("_planningGroupMemberCreationPartial", new PlanningGroupMemberViewModel { PanelId = @Model.PanelId })
+        <partial name="_planningGroupMemberCreationPartial"
+                 model="new PlanningGroupMemberViewModel { PanelId = Model.PanelId }"/>
     </div>
 </div>

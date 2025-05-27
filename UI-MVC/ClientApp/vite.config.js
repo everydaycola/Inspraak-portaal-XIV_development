@@ -21,6 +21,8 @@ export default defineConfig({
                 shareButtonPartial: resolve(__dirname, 'src/ts/panelProjectPage/share.ts'),
                 suggestionVoting: resolve(__dirname, 'src/ts/PanelProjectPage/suggestionVoting.ts'),
                 suggestionVisibility: resolve(__dirname, 'src/ts/PanelProjectPage/suggestionVisibility.ts'),
+                people: resolve(__dirname, 'src/ts/peoplePage/peoplePageEntrypoint.ts'),
+                executedToggle: resolve(__dirname, 'src/ts/PanelProjectPage/executedToggle.ts'),
                 exploreConcept: resolve(__dirname, 'src/ts/exploreConceptEntrypoint.ts')
             },
             output: {

@@ -46,6 +46,7 @@ public class PanelRepository : IPanelRepository
             .Include(p => p.Posts)
             .ThenInclude(p => (p as SuggestionPost).Suggestions)
             .ThenInclude(s => s.Votes)
+            .ThenInclude(v => v.Owner)
             .Single(p => p.Id == panelId);
     }
 
@@ -89,12 +90,11 @@ public class PanelRepository : IPanelRepository
             .ToList();
     }
     
-    public IEnumerable<PanelMember> ReadAllPanelMembersForPanel(Guid panelId, bool includeUnselected = true, bool includeRegistered = true)
+    public IEnumerable<PanelMember> ReadAllPanelMembersForPanel(Guid panelId, bool onlyUnselected = false)
     {
         return _context.PanelMembers.Include(pm => pm.Panel)
             .Where(pm => pm.Panel.Id == panelId)
-            .Where(pm => includeRegistered || pm.HasRegistered)
-            .Where(pm => includeRegistered || pm.Selected)
+            .Where(pm => onlyUnselected && !pm.Selected)
             .ToList();
     }
     
@@ -102,7 +102,15 @@ public class PanelRepository : IPanelRepository
     {
         return _context.PlanningGroupMembers.Find(planningsGroupMemberId);
     }
-    
+
+    public PlanningGroupMember ReadPlanningsGroupMemberWithPanelAndIdentityUser(Guid planningsGroupMemberId)
+    {
+        return _context.PlanningGroupMembers
+            .Include(p => p.User)
+            .Include(p => p.Panel)
+            .FirstOrDefault(p => p.Id == planningsGroupMemberId);
+    }
+
     public IEnumerable<PlanningGroupMember> ReadAllPlanningGroupMembersWithIdentityUserByPanel(Guid panelId)
     {
         return _context.PlanningGroupMembers
@@ -210,8 +218,14 @@ public class PanelRepository : IPanelRepository
         _context.Votes.Update(vote);
         _context.SaveChanges();
     }
-    
-    
+
+    public void UpdatePlanningsGroupMember(PlanningGroupMember member)
+    {
+        _context.PlanningGroupMembers.Update(member);
+        _context.SaveChanges();
+    }
+
+
     // DELETE
     public void DeletePanelMembers(ICollection<PanelMember> panelMembers)
     {
