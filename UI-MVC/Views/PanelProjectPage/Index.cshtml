@@ -633,13 +633,6 @@
                                                                             @(suggestion.IsGloballyVisible ? "Maak privé" : "Maak publiek")
                                                                         </button>
                                                                     </div>
-                                                                    <div id="executed-toggle">
-                                                                        <button type="button"
-                                                                                class="btn btn-primary executed-toggle-btn"
-                                                                                data-suggestion-id="@suggestion.Id">
-                                                                            @(suggestion.IsExecuted ? "Zet op niet uitgevoerd" : "Zet op uitgevoerd")
-                                                                        </button>
-                                                                    </div>
                                                                     <div class="vote-percentage">
                                                                         <span></span>
                                                                     </div>
@@ -668,6 +661,18 @@
                                                                         </span>
                                                                     </div>
                                                                 </div>
+                                                                
+                                                                if (User.IsInRole(CustomIdentityConstants.OrganisatieRole) || User.Identity.Name == suggestion.OwnerEmail)
+                                                                {
+                                                                    <div id="executed-toggle">
+                                                                        <button type="button"
+                                                                                class="btn btn-primary executed-toggle-btn"
+                                                                                data-suggestion-id="@suggestion.Id">
+                                                                            @(suggestion.IsExecuted ? "Zet op niet uitgevoerd" : "Zet op uitgevoerd")
+                                                                        </button>
+                                                                    </div>
+                                                                }
+
                                                                 <div class="vote-percentage">
                                                                     <span>
                                                                     </span>
