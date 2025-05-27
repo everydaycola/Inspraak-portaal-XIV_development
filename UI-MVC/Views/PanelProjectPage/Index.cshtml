@@ -593,7 +593,7 @@
                                                             </small>
                                                         </div>
                                                         <div>
-                                                            @if (User.Identity?.IsAuthenticated ?? false)
+                                                            @if (User.Identity.IsAuthenticated && suggestionPost.IsVotingOpen)
                                                             {
                                                                 <div id="votes" class="btn-group" role="group">
                                                                     <button type="button"
