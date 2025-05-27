@@ -163,12 +163,12 @@ public class PanelProjectPageManager : IPanelProjectPageManager
         });
     }
     
-    public void AddTimeLine(Guid panelId, string title)
+    public void AddTimeLine(Guid panelId, string title, DateTime timeLineTime)
     {
         var timeLine = new TimeLine
         {
             Title = title,
-            CreatedAt = DateTime.UtcNow,
+            CreatedAt = timeLineTime,
         };
         
         var validationResults = new List<ValidationResult>();

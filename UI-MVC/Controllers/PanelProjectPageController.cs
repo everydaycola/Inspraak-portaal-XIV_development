@@ -408,10 +408,14 @@ public class PanelProjectPageController : Controller
     {
         if (!ModelState.IsValid)
         {
-            return await SendBack("addSuggestionModal", newTimeLine.PanelId);
+            return await SendBack("addTimeLineModal", newTimeLine.PanelId);
         }
         
-        _projectPageManager.AddTimeLine(newTimeLine.PanelId, newTimeLine.Title);
+        _projectPageManager.AddTimeLine(
+            newTimeLine.PanelId,
+            newTimeLine.Title,
+            TimeZoneInfo.ConvertTimeToUtc(newTimeLine.SessionDate.Date)
+            );
         
         return RedirectToAction("Index", new { newTimeLine.PanelId });
     }

@@ -10,4 +10,7 @@ public class NewTimeLineDto
     [Required(ErrorMessage = "Groep titel is verplicht")]
     [StringLength(300, ErrorMessage = "Groep titel mag maximaal 300 karakters bevatten")]
     public string Title { get; set; }
+    
+    [Required(ErrorMessage = "Datum is verplicht")]
+    public DateTime SessionDate { get; set; }
 }

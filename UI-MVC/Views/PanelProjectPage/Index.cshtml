@@ -1,4 +1,5 @@
 ﻿@using Domain.CitizenPanel
+@using Domain.Interfaces.Posts
 @using UI_MVC.Models.ViewModels
 @model UI_MVC.Models.ViewModels.ProjectPageViewModel
 
@@ -23,19 +24,23 @@
     <div id="modal-root" class="hidden" data-open-modal="@ViewBag.OpenModal"></div>
 
     <div class="row g-4" style="min-height: 60vh;">
-        <!-- Left column: two stacked cards -->
+        <!-- Left column: info -->
         <div class="col-12 col-md-4 col-lg-3 d-flex flex-column gap-4">
             <div class="card shadow-sm border-0 bg-light rounded-3">
                 <div class="card-body p-4">
                     <h3 class="card-title fw-bold mb-3 text-primary">Welkom!</h3>
-                    <p class="card-text lead">We organiseren een burgerpanel om inzicht te krijgen in de ervaring omtrent
+                    <p class="card-text lead">We organiseren een burgerpanel om inzicht te krijgen in de ervaring
+                        omtrent
                         verkeersveiligheid?</p>
                     <h4 class="mt-4 mb-3 fw-bold text-primary">De werking?</h4>
-                    <p class="card-text">Tijdens een werksessie komen we allemaal samen om informatie op te doen over gerelateerde
-                        onderwerpen begeleid door professionals. Of om er over te discusieren.</p>
-                    <p class="card-text mt-3">Zo'n werksessie wordt vroegtijdig ingepland en kan je zien op deze pagina. Ook ontvang je een
+                    <p class="card-text">Tijdens een werksessie komen we allemaal samen om informatie op te doen over
+                        gerelateerde
+                        onderwerpen begeleid door professionals. Of om er over te discuseieren.</p>
+                    <p class="card-text mt-3">Zo'n werksessie wordt vroegtijdig ingepland en kan je zien op deze pagina.
+                        Ook ontvang je een
                         e-mail van elke werksessie die ingepland wordt.</p>
-                    <p class="card-text mt-3">Ook zul je op deze pagina jouw stem kunnen uitbrengen op aanbevelingen op basis van de discussie
+                    <p class="card-text mt-3">Ook zul je op deze pagina jouw stem kunnen uitbrengen op aanbevelingen op
+                        basis van de discussie
                         sessies!</p>
                 </div>
             </div>
@@ -51,36 +56,50 @@
             @*     </div> *@
             @* </div> *@
         </div>
-        
+
         <!-- Right column: timelines -->
         <div class="col-12 col-md-8 col-lg-9 d-flex flex-column gap-4">
-            <div class="card shadow-sm border-0 rounded-3">
-                <div class="card-header bg-light border-0 py-3">
-                    <h4 class="card-title mb-0 fw-bold">Tijdlijnen</h4>
-                </div>
-                <div class="card-body p-4">
-                    <button class="btn btn-primary d-flex align-items-center justify-content-center gap-2 w-100 py-3" 
+            @if (User.IsInRole(CustomIdentityConstants.OrganisatieRole))
+            {
+                <div class="card shadow-sm border-0 rounded-3 m-0">
+                    <div class="card-header bg-light border-0 py-3">
+                        <h4 class="card-title mb-0 fw-bold">Tijdlijnen</h4>
+                    </div>
+                    <div class="card-body p-4">
+                        <button
+                            class="btn btn-primary d-flex align-items-center justify-content-center gap-2 w-100 py-3"
                             data-bs-toggle="modal"
                             data-bs-target="#addTimeLineModal">
-                        <i class="bi bi-collection fs-5"></i>
-                        <span class="fw-semibold">Nieuwe tijdlijn aanmaken</span>
-                    </button>
+                            <i class="bi bi-collection fs-5"></i>
+                            <span class="fw-semibold">Nieuwe tijdlijn aanmaken</span>
+                        </button>
+                    </div>
                 </div>
-            </div>
-    
+            }
+
             <div class="accordion shadow-sm rounded-3 overflow-hidden" id="timeLineAccordion">
                 @foreach (var timeLine in Model.Panel.Timelines.OrderByDescending(t => t.CreatedAt))
                 {
-                    <partial name="_TimeLine"
-                             model="@(new TimeLineViewModel
-                                    {
-                                        PanelId = Model.Panel.Id,
-                                        CurrentUser = Model.CurrentUser,
-                                        TimeLineId = timeLine.Id,
-                                        Posts = timeLine.Posts,
-                                        Date = timeLine.CreatedAt,
-                                        Name = timeLine.Title
-                                    })" />
+                    @if (
+                        User.IsInRole(CustomIdentityConstants.OrganisatieRole) ||
+                        User.IsInRole(CustomIdentityConstants.AdminRole) ||
+                        timeLine.Posts.Any(p => p.IsGloballyVisible ||
+                                                (p.IsVisibleForPanelMembers && User.IsInRole(CustomIdentityConstants.PanelMemberRole)) ||
+                                                (p.GetType() == typeof(MeetingPost) && User.IsInRole(CustomIdentityConstants.PanelMemberRole)) ||
+                                                (p is SuggestionPost suggestionP && suggestionP.Suggestions.Any(sp => sp.IsGloballyVisible))
+                        ))
+                    {
+                        <partial name="_TimeLine"
+                                 model="@(new TimeLineViewModel
+                                        {
+                                            PanelId = Model.Panel.Id,
+                                            CurrentUser = Model.CurrentUser,
+                                            TimeLineId = timeLine.Id,
+                                            Posts = timeLine.Posts,
+                                            Date = timeLine.CreatedAt,
+                                            Name = timeLine.Title
+                                        })"/>
+                    }
                 }
             </div>
         </div>
@@ -110,7 +129,21 @@
                                placeholder="Voer een titel in voor de nieuwe tijdlijn" required/>
                         <div class="form-text">Geef een duidelijke naam die de inhoud van deze tijdlijn beschrijft.</div>
                     </div>
-
+                    
+                    <div class="row mb-4">
+                        <div class="col-md-9">
+                            <label for="sessionDateInput" class="form-label fw-semibold">Datum van de werksessie
+                                (*)</label>
+                            <input type="date" class="form-control form-control-lg" id="sessionDateInput"
+                                   name="sessionDate"
+                                   required/>
+                        </div>
+                    </div>
+                    
+                    <div class="form-text mt-2">De tijdlijn is zichtbaar voor panelleden wanneer er zichtbare berichten
+                        in staan.
+                    </div>
+                    
                     <div class="d-flex justify-content-end gap-2 mt-4">
                         <button type="button" class="btn btn-outline-secondary px-4 py-2" data-bs-dismiss="modal">
                             Annuleren
