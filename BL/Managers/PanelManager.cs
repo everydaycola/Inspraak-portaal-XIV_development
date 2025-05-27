@@ -430,6 +430,18 @@ public class PanelManager : IPanelManager
         return member;
     }
 
+    public async Task UpdatePlanningsGroupMember(Guid planningsGroupMemberId, string email, string naam, string functie)
+    {
+        var planningsGroupMember = _repo.ReadPlanningsGroupMemberWithPanelAndIdentityUser(planningsGroupMemberId);
+        if (planningsGroupMember != null)
+        {
+            planningsGroupMember.Functie = functie;
+            planningsGroupMember.User.UserName = naam;
+            planningsGroupMember.User.Email = email;
+            _repo.UpdatePlanningsGroupMember(planningsGroupMember);
+        }
+    }
+
     public void DeletePlanningsGroupmember(Guid planningsGroupMemberId)
     {
         var planningGroupmember = _repo.ReadPlanningGroupMember(planningsGroupMemberId);

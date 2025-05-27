@@ -123,13 +123,13 @@ public class PanelManagementController : Controller
             return RedirectToAction("Index", model.PanelId);
         }
         _manager.AddPlanningsGroupMember(model.PanelId,model.Email, model.Naam, model.Functie);
-        return RedirectToAction("Index", model.PanelId);
+        return RedirectToAction("People", model.PanelId);
     }
 
     public IActionResult DeletePlanningsGroupmember(Guid panelId, Guid planningsGroupMemberId)
     {
         _manager.DeletePlanningsGroupmember(planningsGroupMemberId);
-        return RedirectToAction("Index", panelId);
+        return RedirectToAction("People", panelId);
     }
     
     [Authorize]
