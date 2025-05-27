@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.Security.Claims;
 using BL.Interfaces;
 using DAL.Interfaces;
 using Domain;
@@ -31,6 +32,16 @@ public class PanelProjectPageManager : IPanelProjectPageManager
     public Suggestion GetSuggestion(Guid suggestionId)
     {
         return _repo.ReadSuggestion(suggestionId);
+    }
+
+    public Post GetPost(Guid postId)
+    {
+        return _repo.ReadPost(postId);
+    }
+
+    public SuggestionPost GetSuggestionPostSuggestionsAndWithVotes(Guid suggestionPostId)
+    {
+        return _repo.ReadSuggestionPostSuggestionsAndWithVotes(suggestionPostId);
     }
 
     public void ChangeVote(ApplicationUser user, Guid suggestionId, VoteType voteType)
@@ -67,6 +78,24 @@ public class PanelProjectPageManager : IPanelProjectPageManager
     }
 
 
+    public void ChangeSuggestionPostVotingStatus(Guid postId)
+    {
+        var suggestionPost = (SuggestionPost)_repo.ReadPost(postId);
+        suggestionPost.IsVotingOpen = !suggestionPost.IsVotingOpen;
+        _repo.UpdateSuggestionPost(suggestionPost);
+    }
+
+    public void AddSummaryToMeetingPost(Guid meetingId, string uniqueFileName)
+    {
+        if (_repo.ReadPost(meetingId) is not MeetingPost meetingPost)
+        {
+            _logger.Log(LogLevel.Critical, "Meeting post with id " + meetingId + " does not exist.");
+            return;
+        }
+        meetingPost.DocumentNames.Add(uniqueFileName);
+        _repo.UpdatePost(meetingPost);
+    }
+    
     public void AddDocumentToPost(Guid meetingId, string uniqueFileName)
     {
         var post = _repo.ReadPost(meetingId);
@@ -166,6 +195,8 @@ public class PanelProjectPageManager : IPanelProjectPageManager
             CreatedAt = DateTime.UtcNow,
             IsVisibleForPanelMembers = visibleForPanelMember,
             Suggestions = [],
+            IsVotingOpen = isVotingOpen,
+            VotingMajorityFactor = votingMajorityFactor
         });
     }
     
