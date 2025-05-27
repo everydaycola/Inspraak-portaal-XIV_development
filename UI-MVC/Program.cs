@@ -48,7 +48,8 @@ builder.Services
 
 builder.Services.Configure<GoogleCloudOptions>(options =>
 {
-    options.BucketName = builder.Configuration.GetValue<string>("GoogleCloud_BucketName");
+    options.BucketName = Environment.GetEnvironmentVariable("GoogleCloud_BucketName") ??
+                         builder.Configuration.GetValue<string>("GoogleCloud_BucketName");
 });
 var redisConfiguration = builder.Configuration.GetValue<string>("Redis_Configuration");
 var redisInstanceName = builder.Configuration.GetValue<string>("Redis_InstanceName");
