@@ -91,7 +91,7 @@ public class PanelProjectPageController : Controller
     {
         if (!ModelState.IsValid)
         {
-            return await SendBack("addTextModal", newTextPost.PanelId);
+            return await SendBack("addTextModal" + newTextPost.TimeLineId, newTextPost.PanelId);
         }
 
         _projectPageManager.AddTextPost(newTextPost.TimeLineId, newTextPost.Title, newTextPost.Content, newTextPost.VisibleForPanelMember, newTextPost.IsGloballyVisible );
@@ -115,7 +115,7 @@ public class PanelProjectPageController : Controller
     {
         if (!ModelState.IsValid)
         {
-            return await SendBack("addBestandModal", newDocumentPost.PanelId);
+            return await SendBack("addBestandModal" + newDocumentPost.TimeLineId, newDocumentPost.PanelId);
         }
 
         //Generate a unique filename
@@ -191,7 +191,7 @@ public class PanelProjectPageController : Controller
     {
         if (!ModelState.IsValid)
         {
-            return await SendBack("addVideoModal", newVideoPost.PanelId);
+            return await SendBack("addVideoModal" + newVideoPost.TimeLineId, newVideoPost.PanelId);
         }
 
         if (!string.IsNullOrWhiteSpace(newVideoPost.YoutubeUrl))
@@ -304,15 +304,16 @@ public class PanelProjectPageController : Controller
     [Authorize(Roles = CustomIdentityConstants.OrganisatieRole)]
     public async Task<IActionResult> AddWerksessiePost(NewWerksessiePostDto werksessiePost)
     {
+        var modalName = "addWerksessieModal" + werksessiePost.TimeLineId;
         if (!ModelState.IsValid)
         {
-            return await SendBack("addWerksessieModal", werksessiePost.PanelId);
+            return await SendBack(modalName, werksessiePost.PanelId);
         }
 
         // Parse the time, throw an error if it fails.
         if (!TimeSpan.TryParse(werksessiePost.SessionTime, out var parsedTime))
         {
-            return await HandleValidationError("Ongeldig tijdstip.", "addWerksessieModal", werksessiePost.PanelId);
+            return await HandleValidationError("Ongeldig tijdstip.", modalName, werksessiePost.PanelId);
         }
 
         // Add the meeting post to the panel
@@ -363,7 +364,7 @@ public class PanelProjectPageController : Controller
     {
         if (!ModelState.IsValid)
         {
-            return await SendBack("addSuggestionModal", suggestionPostDto.PanelId);
+            return await SendBack("addSuggestionModal" + suggestionPostDto.TimeLineId, suggestionPostDto.PanelId);
         }
 
         _projectPageManager.AddSuggestionPost(suggestionPostDto.TimeLineId, suggestionPostDto.Title,
@@ -422,19 +423,21 @@ public class PanelProjectPageController : Controller
 
     [HttpPost]
     [Authorize(Roles = CustomIdentityConstants.OrganisatieRole)]
-    public Task<IActionResult> AddGoogleFormEmbed(Guid panelId, string title, string embeddedIframeUrl,
-        bool visibleForPanelMember,
-        bool informPeopleViaMail,
-        bool isGloballyVisible)
+    public async Task<IActionResult> AddGoogleFormEmbed(NewGoogleFormEmbedDto googleFormEmbedDto)
     {
+        if (!ModelState.IsValid)
+        {
+            return await SendBack("addGoogleFormEmbedModal" + googleFormEmbedDto.TimeLineId, googleFormEmbedDto.PanelId);
+        }
+        
         _projectPageManager.AddGoogleFormLink(
-            panelId,
-            title,
-            embeddedIframeUrl,
-            visibleForPanelMember,
-            isGloballyVisible
+            googleFormEmbedDto.TimeLineId,
+            googleFormEmbedDto.Title,
+            googleFormEmbedDto.EmbeddedIframeUrl,
+            googleFormEmbedDto.VisibleForPanelMember,
+            googleFormEmbedDto.IsGloballyVisible
         );
-        _ = HandleMailSending(informPeopleViaMail, visibleForPanelMember, panelId)
+        _ = HandleMailSending(googleFormEmbedDto.InformPeopleViaMail, googleFormEmbedDto.VisibleForPanelMember, googleFormEmbedDto.PanelId)
             .ContinueWith(task =>
             {
                 if (task.IsFaulted)
@@ -443,6 +446,6 @@ public class PanelProjectPageController : Controller
                 }
             });
 
-        return Task.FromResult<IActionResult>(RedirectToAction("Index", new { panelId }));
+        return RedirectToAction("Index", new { googleFormEmbedDto.PanelId });
     }
 }

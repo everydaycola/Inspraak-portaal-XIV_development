@@ -202,9 +202,9 @@ public class PanelProjectPageManager : IPanelProjectPageManager
         _repo.UpdateSuggestionPost(suggestionPost);
     }
 
-    public void AddGoogleFormLink(Guid panelId, string title, string embeddedIframeLink, bool visibleForPanelMember, bool isGloballyVisible)
+    public void AddGoogleFormLink(Guid timeLineId, string title, string embeddedIframeLink, bool visibleForPanelMember, bool isGloballyVisible)
     {
-        AddPost(panelId, new EmbeddedGoogleFormLink()
+        AddPost(timeLineId, new EmbeddedGoogleFormLink()
         {
             Title = title,
             CreatedAt = DateTime.UtcNow,

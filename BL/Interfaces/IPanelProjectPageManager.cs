@@ -25,7 +25,7 @@ public interface IPanelProjectPageManager
     public void AddEmbedVideoPost(Guid timeLineId, string title, string videoUrl, bool visibleForPanelMember, bool isGloballyVisible );
     public void AddYoutubeVideoPost(Guid timeLineId, string title, string videoId, bool visibleForPanelMember, bool isGloballyVisible );
     public void AddSuggestionPost(Guid timeLineId, string title, bool visibleForPanelMember );
-    public void AddGoogleFormLink(Guid panelId, string title, string embeddedIframeLink, bool visibleForPanelMember, bool isGloballyVisible);
+    public void AddGoogleFormLink(Guid timeLineId, string title, string embeddedIframeLink, bool visibleForPanelMember, bool isGloballyVisible);
     public void AddSuggestionToPost(Guid postId, string suggestion, string owner);
     public void AddDocumentToPost(Guid meetingId, string uniqueFileName);
 

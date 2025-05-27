@@ -57,6 +57,14 @@ public class NewVideoPostDto : IValidatableObject
                     uriResult.Scheme,
                     [nameof(VideoUrl)]));
         }
+
+        if (!string.IsNullOrWhiteSpace(YoutubeUrl) && !regex.IsMatch(YoutubeUrl))
+        {
+            validationResults.Add(
+                new ValidationResult(
+                    "Uw url is geen geldige youtube url. Uw url is: " + VideoUrl,
+                    [nameof(VideoUrl)]));
+        }
         
         return validationResults;
     }
