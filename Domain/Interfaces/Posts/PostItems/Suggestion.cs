@@ -17,4 +17,5 @@ public class Suggestion
     public string OwnerEmail { get; set; }
     public ICollection<Vote> Votes { get; set; } = [];
     public bool IsGloballyVisible { get; set; } = false;
+    public bool IsExecuted { get; set; } = false;
 }
