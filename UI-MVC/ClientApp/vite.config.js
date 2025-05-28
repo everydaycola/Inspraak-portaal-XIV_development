@@ -13,8 +13,8 @@ export default defineConfig({
         emptyOutDir: true,
         rollupOptions: {
             input: {
-                panelCreation: resolve(__dirname, 'src/ts/panelCreation/panelCreationEntrypoint.ts'),
-                organisationManagement: resolve(__dirname, 'src/ts/organisationManagement/organisationManagementEntrypoint.ts'),
+                panelCreation: resolve(__dirname, 'src/ts/panelCreationPage/panelCreationEntrypoint.ts'),
+                organisationManagement: resolve(__dirname, 'src/ts/organisationManagementPage/organisationManagementEntrypoint.ts'),
                 accountSettings: resolve(__dirname, 'src/ts/accountSettings/accountSettingsEntrypoint.ts'),
                 projectPage: resolve(__dirname, 'src/ts/projectPage/projectPageEntrypoint.ts'),
                 people: resolve(__dirname, 'src/ts/peoplePage/peoplePageEntrypoint.ts'),
