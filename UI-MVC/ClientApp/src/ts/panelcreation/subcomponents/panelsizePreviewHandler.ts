@@ -1,5 +1,5 @@
-import {getCurrentBaseUrl} from "../../customhelpers/locationHelper";
-import {fetchFromAPI} from "../../customhelpers/apihelper";
+import {getCurrentBaseUrl} from "../../customHelpers/locationHelper";
+import {fetchFromAPI} from "../../customHelpers/apihelper";
 
 
 export function setupPanelsizePreviewHandlers() {

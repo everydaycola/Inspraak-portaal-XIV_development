@@ -1,5 +1,5 @@
-import {fetchFromAPI} from "../customhelpers/apihelper";
-import {getCurrentBaseUrl} from "../customhelpers/locationHelper";
+import {getCurrentBaseUrl} from "../customHelpers/locationHelper";
+import {fetchFromAPI} from "../customHelpers/apihelper";
 
 interface VoteState {
     [key: string]: {

@@ -1,9 +1,9 @@
-import { addAnswerOption, reIndexAnswerOptions, resetAnswerCounters, createPercentageInput } from "./answersOption";
-import { setValidationMessages } from "./panelFormValidator";
-import { criteriaInputUpdateHandler } from "../apiAutofill/apiDataFiller";
-import { createRemoveBtn } from "../../components";
-import { createElementWithClassNames, wrapMultipleElementsWithBootstrapRow } from "../../customhelpers/htmlHelper";
-import {addSubRegion} from "./subRegion";
+import {addAnswerOption, createPercentageInput, reIndexAnswerOptions, resetAnswerCounters} from "./answersOption";
+import {setValidationMessages} from "./panelFormValidator";
+import {criteriaInputUpdateHandler} from "../apiAutofill/apiDataFiller";
+import {createElementWithClassNames, wrapMultipleElementsWithBootstrapRow} from "../../customHelpers/htmlHelper";
+import {createRemoveBtn} from "../../components";
+
 
 let criteriaCount = 0;
 

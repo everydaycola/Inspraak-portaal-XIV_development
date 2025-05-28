@@ -1,5 +1,4 @@
-﻿import {fetchFromAPI} from "./customhelpers/apihelper";
-import {getCurrentBaseUrl} from "./customhelpers/locationHelper";
+﻿import {getCurrentBaseUrl} from "./customHelpers/locationHelper";
 import {initQuestionCreationFormController} from "./exploreConcept/questionCreationFormController";
 
 console.log("Explore concept entrypoint loaded");

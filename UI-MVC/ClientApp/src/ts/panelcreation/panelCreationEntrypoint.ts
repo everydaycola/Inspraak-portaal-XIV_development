@@ -1,12 +1,9 @@
-import {addEventHandlerToDefaultSubregionInput, addSubRegion, initAddSubRegionHandler} from "./subcomponents/subRegion";
-import {addCriteria, initAddCriteriaHandler} from "./subcomponents/criteria";
-import {
-    addSubregionValidation,
-    handlePanelFormSubmission,
-    validateCriteriaPercentages
-} from "./subcomponents/panelFormValidator";
-import {onSubregionChange, setupPanelsizePreviewHandlers} from "./subcomponents/panelsizePreviewHandler";
+import {addSubregionValidation, handlePanelFormSubmission} from "./subcomponents/panelFormValidator";
+import {addEventHandlerToDefaultSubregionInput, initAddSubRegionHandler} from "./subcomponents/subRegion";
+import {initAddCriteriaHandler} from "./subcomponents/criteria";
+import {setupPanelsizePreviewHandlers} from "./subcomponents/panelsizePreviewHandler";
 import {setupApiAutoFill} from "./apiAutofill/apiDataFiller";
+
 
 document.addEventListener("DOMContentLoaded",() => {
     addSubregionValidation(

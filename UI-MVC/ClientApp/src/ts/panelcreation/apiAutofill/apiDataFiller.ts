@@ -2,6 +2,7 @@
 import {attachEventHandlersToSubregionInput} from "./subRegionHandler";
 import {attachEventHandlersToCriteriaInput} from "./criteriaHandler";
 
+
 let basicApiData: any[] = [];
 const outerDiv = document.querySelector("#subregions-container") as HTMLDivElement;
 let subregionInnerDiv = outerDiv.querySelectorAll(".subRegion") as NodeListOf<HTMLDivElement>;

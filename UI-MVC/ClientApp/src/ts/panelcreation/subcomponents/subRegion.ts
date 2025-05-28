@@ -1,7 +1,7 @@
-﻿import {newSubregionInputAddedHandler} from "../apiAutofill/apiDataFiller";
+﻿import {addSubregionValidation} from "./panelFormValidator";
 import {onSubregionChange} from "./panelsizePreviewHandler";
-import {createElementWithClassNames} from "../../customhelpers/htmlHelper";
-import {addSubregionValidation} from "./panelFormValidator";
+import {newSubregionInputAddedHandler} from "../apiAutofill/apiDataFiller";
+import {createElementWithClassNames} from "../../customHelpers/htmlHelper";
 
 
 let subRegionCount = 1;

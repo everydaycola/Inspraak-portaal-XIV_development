@@ -1,5 +1,5 @@
-import {fetchFromAPI} from "../customhelpers/apihelper";
-import {getCurrentBaseUrl} from "../customhelpers/locationHelper";
+import {fetchFromAPI} from "../customHelpers/apihelper";
+import {getCurrentBaseUrl} from "../customHelpers/locationHelper";
 
 export function initExecuteToggleHandler() {
     const executedBtns = document.getElementsByClassName("executed-toggle-btn")

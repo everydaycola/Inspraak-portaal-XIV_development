@@ -14,10 +14,10 @@ export default defineConfig({
         rollupOptions: {
             input: {
                 site: resolve(__dirname, 'src/ts/siteEntrypoint.ts'),
-                panelCreation: resolve(__dirname, 'src/ts/panelcreation/panelCreationEntrypoint.ts'),
-                organisationManagement: resolve(__dirname, 'src/ts/organisationmanagement/OrganisationManagementEntrypoint.ts'),
+                panelCreation: resolve(__dirname, 'src/ts/panelCreation/panelCreationEntrypoint.ts'),
+                organisationManagement: resolve(__dirname, 'src/ts/organisationManagement/organisationManagementEntrypoint.ts'),
                 accountSettings: resolve(__dirname, 'src/ts/accountSettings/accountSettingsEntrypoint.ts'),
-                projectPage: resolve(__dirname, 'src/ts/panelProjectPage/projectPageEntrypoint.ts'),
+                projectPage: resolve(__dirname, 'src/ts/projectPage/projectPageEntrypoint.ts'),
                 people: resolve(__dirname, 'src/ts/peoplePage/peoplePageEntrypoint.ts')
             },
             output: {
