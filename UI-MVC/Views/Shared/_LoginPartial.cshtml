@@ -1,30 +1,46 @@
 @using Domain
+@using Domain.Tenant
 @using Microsoft.AspNetCore.Identity
 @using Microsoft.AspNetCore.Mvc.TagHelpers
 
 @inject SignInManager<ApplicationUser> SignInManager
 @inject UserManager<ApplicationUser> UserManager
+@inject Organisation Organisation
 
 
 <ul class="navbar-nav">
-@if (SignInManager.IsSignedIn(User))
-{
-    <li class="nav-item">
-        <a id="manage" class="nav-link text-dark" asp-area="Identity" asp-page="/Account/Manage/Index" title="Manage">Hello @UserManager.GetUserName(User)!</a>
-    </li>
-    <li class="nav-item">
-        <form id="logoutForm" class="form-inline" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">
-            <button id="logout" type="submit" class="nav-link btn btn-link text-dark border-0">Logout</button>
-        </form>
-    </li>
-}
-else
-{
-    <li class="nav-item">
-        <a class="nav-link text-dark" id="register" asp-area="Identity" asp-page="/Account/Register">Register</a>
-    </li>
-    <li class="nav-item">
-        <a class="nav-link text-dark" id="login" asp-area="Identity" asp-page="/Account/Login">Login</a>
-    </li>
-}
+    @if (SignInManager.IsSignedIn(User))
+    {
+        <li class="nav-item">
+            <a id="manage" class="nav-link @(Organisation.IsTextColorWhite ? "text-white" : "text-dark")" asp-area="Identity" asp-page="/Account/Manage/Index"
+               title="Manage">
+                <img src="~/images/profile_settings.png" class="navbar-icon" alt="User account" style="@(Organisation.IsTextColorWhite ? "filter: invert(1);" : "")"/>
+                <p class="nav-link-description">Gebruiker instellingen</p>
+            </a>
+        </li>
+        <li class="nav-item">
+            <form id="logoutForm" class="nav-link form-inline @(Organisation.IsTextColorWhite ? "text-white" : "text-dark")" asp-area="Identity" asp-page="/Account/Logout"
+                  asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">
+                <button id="logout" class="nav-link btn btn-link @(Organisation.IsTextColorWhite ? "text-white" : "text-dark") border-0 p-0" type="submit">
+                    <img src="~/images/logout.png" class="navbar-icon" alt="Logout" style="@(Organisation.IsTextColorWhite ? "filter: invert(1);" : "")"/>
+                    <p class="nav-link-description">Uitloggen</p>
+                </button>
+            </form>
+        </li>
+    }
+    else
+    {
+        <li class="nav-item">
+            <a class="nav-link @(Organisation.IsTextColorWhite ? "text-white" : "text-dark")" id="register" asp-area="Identity" asp-page="/Account/Register">
+                <img src="~/images/register.png" class="navbar-icon" alt="Register" style="@(Organisation.IsTextColorWhite ? "filter: invert(1);" : "")"/>
+                <p class="nav-link-description">Registreren</p>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link @(Organisation.IsTextColorWhite ? "text-white" : "text-dark")" id="login" asp-area="Identity" asp-page="/Account/Login">
+                <img src="~/images/login.png" class="navbar-icon" alt="Log in" style="@(Organisation.IsTextColorWhite ? "filter: invert(1);" : "")"/>
+                <p class="nav-link-description">Inloggen</p>
+            </a>
+        </li>
+    }
 </ul>

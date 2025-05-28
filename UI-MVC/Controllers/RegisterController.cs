@@ -9,9 +9,12 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using UI_MVC.Models;
 using UI_MVC.Models.Dto;
 using UI_MVC.Models.Dto.Register;
+using UI_MVC.Models.ViewModels;
+using UI_MVC.Tenant.Attribute;
 
 namespace UI_MVC.Controllers;
 
+[OnlyAccessibleFromTenant]
 public class RegisterController : Controller
 {
     private readonly ILogger<RegisterController> _logger;
@@ -42,7 +45,7 @@ public class RegisterController : Controller
         IEnumerable<Criteria> nonDefaultCriteriaWithoutResponse = panel.Criteria
             .Where(c => !c.IsDefault);
         
-        return View(new NewPanelMemberDto
+        return View(new NewPanelMemberViewModel
         {
             PanelId = member.Panel.Id.ToString(),
             UserId = userId.ToString(),
@@ -59,15 +62,14 @@ public class RegisterController : Controller
     {
         if (ModelState.IsValid)
         {
-            var email = formData.Email;
-            PanelMember member = _manager.GetPanelMemberWithCriteriaResponses(formData.UserId);
-            member.Email = email;
+            var member = _manager.GetPanelMemberWithCriteriaResponses(formData.UserId);
+            member.Email = formData.Email;
             member.HasRegistered = true;
             _manager.UpdatePanelRegistrationCount(formData.PanelId, true);
             _critManager.SavePanelMemberCriteriaResponses(formData.PanelId, formData.CriteriaAnswers,member);
-            PanelMember updatedMember = _manager.UpdatePanelMember(member);
+            var updatedMember = _manager.UpdatePanelMember(member);
             
-            return View("Index", new NewPanelMemberDto
+            return View("Index", new NewPanelMemberViewModel
             {
                 PanelId = updatedMember.Panel.Id.ToString(),
                 UserId = updatedMember.PanelMemberId.ToString(),
@@ -77,7 +79,7 @@ public class RegisterController : Controller
         }
         
         ModelState.AddModelError("", "Invalid form data.");
-        return View("Index", new NewPanelMemberDto
+        return View("Index", new NewPanelMemberViewModel
         {
             PanelId = formData.PanelId.ToString(),
             UserId = formData.UserId.ToString(),

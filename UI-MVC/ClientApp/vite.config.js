@@ -13,14 +13,12 @@ export default defineConfig({
         emptyOutDir: true,
         rollupOptions: {
             input: {
-                index: resolve(__dirname, 'src/ts/index.ts'),
-                site: resolve(__dirname, 'src/ts/site.ts'),
-                validation: resolve(__dirname, 'src/ts/validation.ts'),
-                register: resolve(__dirname, 'src/ts/register/register.ts'),
-                panelCreation: resolve(__dirname, 'src/ts/Panel/panelCreation.ts'),
-                apiDataFiller: resolve(__dirname, 'src/ts/Panel/apiAutofill/apiDataFiller.ts'),
-                adminOrgMan: resolve(__dirname, 'src/ts/organisationmanagement/adminOrgMan.ts'),
-                autoOpenModals: resolve(__dirname, 'src/ts/auto-open-modals.ts'),
+                panelCreation: resolve(__dirname, 'src/ts/panelCreationPage/panelCreationEntrypoint.ts'),
+                organisationManagement: resolve(__dirname, 'src/ts/organisationManagementPage/organisationManagementEntrypoint.ts'),
+                accountSettings: resolve(__dirname, 'src/ts/accountSettings/accountSettingsEntrypoint.ts'),
+                projectPage: resolve(__dirname, 'src/ts/projectPage/projectPageEntrypoint.ts'),
+                people: resolve(__dirname, 'src/ts/peoplePage/peoplePageEntrypoint.ts'),
+                site: resolve(__dirname, 'src/ts/siteEntrypoint.ts'),
             },
             output: {
                 entryFileNames: '[name].entry.js',

@@ -6,7 +6,6 @@ using Domain.CitizenPanel;
 using Domain.Interfaces;
 using Domain.Interfaces.Posts;
 using Microsoft.Extensions.Logging;
-using UI_MVC;
 
 namespace BL.Managers;
 
@@ -45,22 +44,6 @@ public class PanelManager : IPanelManager
         return _repo.ReadPanelWithRepresentationGroup(id);
     }
 
-    // public IEnumerable<PanelMember> GetPanelWithPanelMembersAndCriteria(Guid id)
-    // {
-    //     return _repo.ReadPanelMembersWithCriteria(id);
-    // }
-    
-    // public Panel GetPanelWithCriteriaAndOptions(Guid id)
-    // {
-    //     return _repo.ReadPanelWithCriteriaAndAnsweroptions(id);
-    //
-    // }
-    
-    // public PanelMember GetPanelMemberById(Guid memberId)
-    // {
-    //     return _repo.ReadPanelMember(memberId);
-    // }
-
     public PanelMember GetPanelMemberWithCriteriaResponses(Guid id)
     {
         return _repo.ReadPanelMemberWithCriteriaResponses(id);
@@ -68,12 +51,12 @@ public class PanelManager : IPanelManager
 
     public PanelMember GetPanelMemberWithPanel(Guid id)
     {
-        return _repo.ReadPanelMemberWithPanel(id);
+        return _repo.ReadPanelMemberWithPanelAndCriteriaResponseAndCriteria(id);
     }
 
     public IEnumerable<PanelMember> GetAllPanelMembersForPanel(Guid panelId)
     {
-        return _repo.ReadPanelMembersWithCriteria(panelId);
+        return _repo.ReadPanelMembersWithCriteriaAndResponsesByPanel(panelId);
     }
 
     // public IEnumerable<PanelMember> GetAllPanelMembersWhichAnsweredAllQuestionsWithCriteria(Guid id)
@@ -86,9 +69,9 @@ public class PanelManager : IPanelManager
         return _repo.ReadPanelWithCriteriaAndAnswerOptions(panelId);
     }
 
-    public Panel GetPanelWithPosts(Guid panelId)
+    public IEnumerable<Panel> GetAllPanelsWithPostsAndSuggestions()
     {
-        return _repo.ReadPanelWithPosts(panelId);
+        return _repo.ReadAllPanelsWithPostsAndSuggestions();
     }
 
     //ADD
@@ -200,18 +183,6 @@ public class PanelManager : IPanelManager
         return panel;
     }
 
-    public void AddTextPost(Guid panelId, string title, string content, bool isVisibleForPanelMembers)
-    {
-        var textPost = new TextPost
-        {
-            Title =title,
-            Content = content,
-            CreatedAt = DateTime.UtcNow,
-            isVisibleForPanelMembers = isVisibleForPanelMembers
-        };
-        _repo.CreateTextPost(panelId, textPost);
-    }
-
     public void AddPlanningsGroupMember(Guid panelId, string Email, string Naam, string Functie)
     {
         Panel panel = GetPanel(panelId);
@@ -297,7 +268,7 @@ public class PanelManager : IPanelManager
         var criterialist = _criteriaRepo.ReadAllCriteriaForPanelWithAnswerOptions(panelId, includeUnknown: false).OrderBy(c => c.Name).ToList();
         
         // get all panelmembers
-        var panelMembers = _repo.ReadPanelMembersWithCriteria(panelId).Where(pm => pm.HasRegistered).ToList();
+        var panelMembers = _repo.ReadPanelMembersWithCriteriaAndResponsesByPanel(panelId).Where(pm => pm.HasRegistered).ToList();
         
         if (criterialist.Count == 0)
         {
@@ -340,10 +311,10 @@ public class PanelManager : IPanelManager
             combinations[key] = panelMembers
                 // count how many panelmembers have the same reponses as the key
                 .Count(pm => string.Join('|', pm.Responses
-                        .OrderBy(r => r.Criteria.Name)
                         .Where(r => r.Criteria.IsDistributionKnown)
+                        .OrderBy(r => r.Criteria.Name)
                         .Select(r => r.SelectedOption))
-                        .Equals(key));
+                        == key);
         }
         
         return combinations;
@@ -442,13 +413,25 @@ public class PanelManager : IPanelManager
         return member;
     }
 
+    public async Task UpdatePlanningsGroupMember(Guid planningsGroupMemberId, string email, string naam, string functie)
+    {
+        var planningsGroupMember = _repo.ReadPlanningsGroupMemberWithPanelAndIdentityUser(planningsGroupMemberId);
+        if (planningsGroupMember != null)
+        {
+            planningsGroupMember.Functie = functie;
+            planningsGroupMember.User.UserName = naam;
+            planningsGroupMember.User.Email = email;
+            _repo.UpdatePlanningsGroupMember(planningsGroupMember);
+        }
+    }
+
     public void DeletePlanningsGroupmember(Guid planningsGroupMemberId)
     {
         var planningGroupmember = _repo.ReadPlanningGroupMember(planningsGroupMemberId);
         if (planningGroupmember == null)
             throw new NullReferenceException("Planninggroupmember with id " + planningsGroupMemberId +
                                              " was not found");
-        _repo.RemovePlanningGroupMember(planningsGroupMemberId);
+        _repo.DeletePlanningGroupMember(planningGroupmember);
     }
 
     public void NewPanelPhase(Guid panelId, double newResponseRate)
@@ -589,7 +572,6 @@ public class PanelManager : IPanelManager
             // Check if key exists in the dictionary
             if (optionList.TryGetValue(group.Key, out var count))
             {
-                Console.WriteLine(count);
                 // Add shuffled selection to selected members
                 selectedMembers.AddRange(
                     group.OrderBy(_ => Guid.NewGuid())
@@ -598,8 +580,12 @@ public class PanelManager : IPanelManager
             }
             // If key doesn't exist, we can skip or handle as needed
         }
-        _repo.UpdatePanelMembersToSelected(selectedMembers);
-        _repo.RemoveAllUnselectedPanelmembers(panelId);
+        foreach (var pm in selectedMembers)
+        {
+            pm.Selected = true;
+        }
+        _repo.UpdatePanelMembers(selectedMembers);
+        _repo.DeletePanelMembers(_repo.ReadAllPanelMembersForPanel(panelId, onlyUnselected: true).ToList());
         panel.SuccessfulRegistrationCount = selectedMembers.Count;
         
         //send out invites to slected members for account creation
@@ -625,36 +611,8 @@ public class PanelManager : IPanelManager
         _repo.UpdatePanel(panel);
     }
 
-    public void AddSummaryToMeetingPost(Guid meetingId, string uniqueFileName)
-    {
-        _repo.AddSummaryToMeetingPost(meetingId, uniqueFileName);
-    }
-
     public IEnumerable<PlanningGroupMember> GetAllPlanningGroupMembersWithIdentityUserForPanel(Guid panelId)
     {
-        return _repo.ReadAllPlanningGroupMembersWithIdentityUserForPanel(panelId);
-    }
-
-    public void AddDocumentPost(Guid panelId,string title, string documentUrl, bool isVisibleForPanelMembers)
-    {
-        var docPost = new DocumentPost
-        {
-            Title = title,
-            DocumentName = documentUrl,
-            CreatedAt = DateTime.UtcNow,
-            isVisibleForPanelMembers = isVisibleForPanelMembers
-        };
-        _repo.CreateDocumentPost(panelId, docPost);
-    }
-    public void AddMeetingPost(Guid panelId, string title, DateTime meetingDateTime, bool visibleForPanelMember)
-    {
-        var meetingPost = new MeetingPost()
-        {
-            Title = title,
-            DocumentNames = new List<string>(),
-            CreatedAt = meetingDateTime,
-            isVisibleForPanelMembers = visibleForPanelMember
-        };
-        _repo.CreateMeetingPost(panelId, meetingPost);
+        return _repo.ReadAllPlanningGroupMembersWithIdentityUserByPanel(panelId);
     }
 }

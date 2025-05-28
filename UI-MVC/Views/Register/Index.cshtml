@@ -1,9 +1,11 @@
-﻿@using UI_MVC.TempTenant
-@model UI_MVC.Models.Dto.NewPanelMemberDto
+﻿@using Domain.Tenant
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@model UI_MVC.Models.ViewModels.NewPanelMemberViewModel
 @{
     ViewBag.Title = "Welkom";
     Layout = "_Layout";
 }
+@inject Organisation Organisation
 
 @section Scripts{
     <script src="~/dist/register.entry.js" type="module"></script>
@@ -13,8 +15,6 @@
     @if (Model.IsRegistrationOpen || Model.HasAnsweredQuestions)
     {
         <div class="card shadow-sm border-0">
-            <h2>Welcome to</h2>
-            <p>welcome user @Model.UserId to panel @Model.PanelId</p>
             @if (Model.HasAnsweredQuestions)
             {
                 <div class="card shadow-sm border-0 mb-4">
@@ -38,28 +38,37 @@
                                 @Model.Email
                             </div>
                         </div>
+
+                        <a href="@($"/Register/AccountCreation?UserId={Model.UserId}")" class="btn btn-warning">
+                            Ga naar account aanmaken (DEV BUTTON, REMOVE!!!!)
+                        </a>
+                        
                     </div>
                 </div>
+            }else{
+                <partial name="_signUpFormPartial" model="Model"/>
             }
-            @Html.Partial("_signUpFormPartial",Model)
         </div>
     }
     else
     {
         <div class="card shadow-sm border-0">
             <div class="card-body">
-                <div class="d-flex align-items-center mb-3">
-                    <div class="me-3">
-                        <i class="bi bi-exclamation-circle-fill text-warning fs-1"></i>
+                <div class="row g-0">
+                    <div class="col-md-5 d-flex align-items-center justify-content-center" style="background:#f8f9fa;">
+                        <img
+                            src="~/images/default-detail-image.jpg"
+                            alt="Vragen" class="img-fluid w-100 h-100" style="object-fit:cover;">
                     </div>
-                    <div>
-                        <h4 class="card-title mb-0 text-warning">Helaas...</h4>
-                        <small class="text-muted">De inschrijvingen zijn gesloten</small>
+
+                    <div class="col-md-7">
+                        <div class="card-body">
+                            <h4 class="card-title mb-0 text-warning">Helaas...</h4>
+                            <small class="text-muted">De inschrijvingen zijn gesloten</small>
+                            <p>Op dit moment is het niet meer mogelijk om je aan te melden voor dit panel.</p>
+                        </div>
                     </div>
                 </div>
-                <p class="mb-3">
-                    Op dit moment is het niet meer mogelijk om je aan te melden voor dit panel.
-                </p>
             </div>
         </div>
     }

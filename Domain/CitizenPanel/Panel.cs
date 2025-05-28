@@ -1,7 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using Domain.Interfaces;
-using Microsoft.AspNetCore.Identity;
-using UI_MVC;
+using Domain.Interfaces.Posts;
 
 namespace Domain.CitizenPanel;
 
@@ -30,7 +28,7 @@ public class Panel : IOrganisational,IValidatableObject
     [Required(ErrorMessage = "Panel moet een eigenaar hebben.")]
     public ApplicationUser Owner { get; set; }
     public string OrganisationId { get; set; }
-    public ICollection<Post> Posts { get; set; }
+    public ICollection<TimeLine> Timelines { get; set; }
     [Range(1, int.MaxValue, ErrorMessage = "Fase moet een positief getal zijn.")]
     public int LastPhase { get; set; } = 1;
     

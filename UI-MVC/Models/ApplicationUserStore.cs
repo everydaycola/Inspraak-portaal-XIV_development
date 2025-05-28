@@ -1,6 +1,7 @@
 ﻿using DAL;
 using DAL.EF;
 using Domain;
+using Domain.Tenant;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 

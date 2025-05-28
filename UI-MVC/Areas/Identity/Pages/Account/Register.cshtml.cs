@@ -147,8 +147,12 @@ namespace UI_MVC.Areas.Identity.Pages.Account
                             {
                                 ModelState.AddModelError(string.Empty, error.Description);
                             }
-
-                            return Page();
+                            Input.Roles = _roleManager.Roles.Select(r => new SelectListItem
+                            {
+                                Value = r.Name,
+                                Text = r.Name
+                            }).ToList();
+                            return Page(); 
                         }
                     }
                     _logger.LogInformation("User created a new account with password.");
@@ -181,6 +185,11 @@ namespace UI_MVC.Areas.Identity.Pages.Account
                 }
             }
 
+            Input.Roles = _roleManager.Roles.Select(r => new SelectListItem
+            {
+                Value = r.Name,
+                Text = r.Name
+            }).ToList();
             // If we got this far, something failed, redisplay form
             return Page();
         }
@@ -198,7 +207,7 @@ namespace UI_MVC.Areas.Identity.Pages.Account
                     $"override the register page in /Areas/Identity/Pages/Account/Register.cshtml");
             }
         }
-
+        
         private IUserEmailStore<ApplicationUser> GetEmailStore()
         {
             if (!_userManager.SupportsUserEmail)

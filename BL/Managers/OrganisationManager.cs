@@ -2,6 +2,7 @@ using BL.Interfaces;
 using DAL;
 using DAL.EF;
 using DAL.Interfaces;
+using Domain.Tenant;
 
 namespace BL.Managers;
 
@@ -24,15 +25,40 @@ public class OrganisationManager : IOrganisationManager
         return _repo.ReadAllOrganisations();
     }
 
-    public Organisation UpdateOrganisation(string organisationId, string name, string backgroundColor, string backgroundImage)
+    public Organisation AddOrganisation(string organisationId, string name, string backgroundColor, string backgroundImage,
+        string logoImageName, bool isTextColorWhite)
+    {
+        Organisation newOrganisation = new Organisation()
+        {
+            Id = organisationId,
+            Name = name,
+            BackgroundColor = backgroundColor,
+            BackgroundImage = backgroundImage,
+            LogoImageName = logoImageName,
+            IsTextColorWhite = isTextColorWhite
+        };
+        return _repo.CreateOrganisation(newOrganisation);
+    }
+
+    public Organisation UpdateOrganisation(string organisationId, string name, string backgroundColor, string backgroundImage, string logoImageName,bool isTextColorWhite)
     {
         var existingOrganisation = _repo.ReadOrganisationById(organisationId);
         if (existingOrganisation != null)
         {
+            if (existingOrganisation == null)
+                throw new InvalidOperationException($"$No organisation found with ID: {organisationId}");
             existingOrganisation.Name = name;
+            if(backgroundImage != ""){
+                existingOrganisation.BackgroundImage = backgroundImage;
+            }
+            if(logoImageName != ""){
+                existingOrganisation.LogoImageName = logoImageName;
+            }
+
             existingOrganisation.BackgroundColor = backgroundColor;
-            existingOrganisation.BackgroundImage = backgroundImage;
-            return _repo.UpdateOrganisation(existingOrganisation);
+            existingOrganisation.IsTextColorWhite = isTextColorWhite;
+            _repo.UpdateOrganisation(existingOrganisation);
+            return existingOrganisation;
         }
 
         throw new InvalidOperationException($"$No organisation found with ID: {organisationId}");
@@ -40,6 +66,8 @@ public class OrganisationManager : IOrganisationManager
 
     public void DeleteOrganisation(string organisationId)
     {
-        _repo.RemoveOrganisation(organisationId);
+        var organisation = _repo.ReadOrganisationById(organisationId);
+        if (organisation == null) return;
+        _repo.RemoveOrganisation(organisation);
     }
 }
