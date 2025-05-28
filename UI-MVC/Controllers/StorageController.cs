@@ -6,10 +6,12 @@ namespace UI_MVC.Controllers;
 public class StorageController : Controller
 {
     private readonly IStorageManager _storageManager;
+    private readonly ILogger<StorageController> _logger;
 
-    public StorageController(IStorageManager storageManager)
+    public StorageController(IStorageManager storageManager, ILogger<StorageController> logger)
     {
         _storageManager = storageManager;
+        _logger = logger;
     }
 
     // GET: /Storage/GetFile?fileName=your-file-name.jpg
@@ -24,8 +26,9 @@ public class StorageController : Controller
         {
             return NotFound();
         }
-        catch (NullReferenceException nr)
+        catch (NullReferenceException e)
         {
+            _logger.LogError("Failed to add file to bucket" + e.Message);
             return NotFound();
         }
     }

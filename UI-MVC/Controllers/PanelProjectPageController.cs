@@ -367,7 +367,7 @@ public class PanelProjectPageController : Controller
         }
         catch (NullReferenceException e)
         {
-            Console.WriteLine(e);
+            _logger.LogError("Failed to add to bucket" + e.Message);
         }
         return RedirectToAction("Index", new { panelId });
     }

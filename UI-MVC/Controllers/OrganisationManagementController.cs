@@ -91,8 +91,7 @@ public class OrganisationManagementController : Controller
             }
             catch (NullReferenceException e)
             {
-                _logger.Log(LogLevel.Error, e + "");
-                Console.WriteLine(e);
+                _logger.LogError("Failed to add file to bucket" + e.Message);
             }
         }
 
@@ -107,7 +106,7 @@ public class OrganisationManagementController : Controller
             }
             catch (NullReferenceException e)
             {
-                Console.WriteLine(e);
+                _logger.LogError("Failed to add file to bucket" + e.Message);
             }
         }
 
