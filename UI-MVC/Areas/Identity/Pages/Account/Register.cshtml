@@ -1,5 +1,6 @@
 ﻿@page
 @using DAL
+@using Domain.Tenant
 @model RegisterModel
 @inject Organisation Organisation
 @{
@@ -23,7 +24,7 @@
                     else
                     {
                         <img
-                            src="https://media.istockphoto.com/id/1393370540/nl/foto/architecture-in-antwerp-city.jpg?s=612x612&w=0&k=20&c=qsEVkQCLeB2ob-oAMVfIXeex69ZQJqo64L33nSZqqqQ="
+                            src="~/images/default-detail-image.jpg"
                             alt="Vragen" class="img-fluid w-100 h-100" style="object-fit:cover;">
                     }
                 </div>

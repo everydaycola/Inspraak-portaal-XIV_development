@@ -5,6 +5,7 @@ using Domain.CitizenPanel;
 using Domain.Interfaces;
 using Domain.Interfaces.Posts;
 using Domain.Interfaces.Posts.PostItems;
+using Domain.Tenant;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;

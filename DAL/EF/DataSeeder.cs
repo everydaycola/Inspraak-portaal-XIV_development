@@ -4,6 +4,7 @@ using Domain.Enums;
 using Domain.Interfaces;
 using Domain.Interfaces.Posts;
 using Domain.Interfaces.Posts.PostItems;
+using Domain.Tenant;
 
 namespace DAL.EF;
 
@@ -22,14 +23,16 @@ public static class DataSeeder
             Id = "antwerpen",
             Name = "Antwerpen",
             BackgroundColor = "#cf252b",
-            BackgroundImage = ""
+            BackgroundImage = "",
+            IsTextColorWhite = true
         };
         var organisation2 = new Organisation
         {
             Id = "lwc",
             Name = "Lokale Waterpolo Club",
             BackgroundColor = "#42daf5",
-            BackgroundImage = ""
+            BackgroundImage = "",
+            IsTextColorWhite = false
         };
 
         var panelMemberHendrick = new ApplicationUser(organisationId: organisation1.Id);

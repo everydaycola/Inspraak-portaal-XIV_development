@@ -1,4 +1,5 @@
 using DAL;
+using Domain.Tenant;
 
 namespace UI_MVC.Models.ViewModels;
 
