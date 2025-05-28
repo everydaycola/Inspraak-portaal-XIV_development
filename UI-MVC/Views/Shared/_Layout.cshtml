@@ -23,11 +23,11 @@
             <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">
                 @if (Organisation != null && Organisation.LogoImageName != null)
                 {
-                    <img src="@Url.Action("GetFile", "Storage", new { fileName = Organisation.LogoImageName })" class="img-fluid mt-2"/>
+                    <img src="@Url.Action("GetFile", "Storage", new { fileName = Organisation.LogoImageName })" class="img-fluid mt-2" style="max-width: 100px; height: auto;"/>
                 }
                 else
                 {
-                    <img src="~/images/icons/inspraak_portaal_light_mode.svg" class="navbar-icon-head" alt="Inspraak portaal logo" style="@(Organisation.IsTextColorWhite ? "filter: invert(1);" : "")" />
+                    <img src="~/images/icons/inspraak_portaal_light_mode.svg" class="navbar-icon-head" alt="Inspraak portaal logo" style="@(Organisation.IsTextColorWhite ? "filter: invert(1);" : "") max-width:100px; height: auto;" />
                 }
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse"
