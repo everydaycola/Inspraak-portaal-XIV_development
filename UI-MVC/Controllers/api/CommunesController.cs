@@ -1,7 +1,6 @@
 using BL.Interfaces;
-using Domain.CitizenPanel;
+using Domain.GlobalDtos;
 using Microsoft.AspNetCore.Mvc;
-using UI_MVC.Models.Dto.communeDtos;
 
 namespace UI_MVC.Controllers.api
 {

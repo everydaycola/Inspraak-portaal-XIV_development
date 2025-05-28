@@ -1,4 +1,5 @@
-namespace Domain.CitizenPanel;
+
+namespace Domain.GlobalDtos;
 
 public class Commune
 {

@@ -1,10 +1,13 @@
 ﻿using System.Linq.Expressions;
 using System.Text.Json;
 using Domain;
+using Domain.Admin;
 using Domain.CitizenPanel;
 using Domain.Interfaces;
 using Domain.Interfaces.Posts;
 using Domain.Interfaces.Posts.PostItems;
+using Domain.Interfaces.Question;
+using Domain.Tenant;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
@@ -32,7 +35,13 @@ public class CitizenPanelDbContext : IdentityDbContext<ApplicationUser>
     public DbSet<Vote> Votes { get; set; }
     public DbSet<TimeLine> TimeLines { get; set; }
     public DbSet<Post> Posts { get; set; }
-    
+    //Verkenning van het concept.
+    public DbSet<Question> Questions { get; set; }
+    public DbSet<AnswerOption> AnswerOptions { get; set; }
+    public DbSet<QuestionWeightTips> QuestionWeightTips { get; set; }
+    public DbSet<ParticipationMethod> ParticipationMethods { get; set; }
+    public DbSet<AnswerOptionImpact> AnswerOptionImpacts { get; set; }
+
     public CitizenPanelDbContext(DbContextOptions options, OrganisationContext organisationContext) : base(options)
     {
         _organisationContext = organisationContext;
@@ -41,19 +50,20 @@ public class CitizenPanelDbContext : IdentityDbContext<ApplicationUser>
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         var organisationalModels = modelBuilder.Model.GetEntityTypes()
-                .Where(entity => typeof(IOrganisational).IsAssignableFrom(entity.ClrType)
-                && !typeof(IdentityUser).IsAssignableFrom(entity.ClrType));
-        foreach (var organisationalModelClrType in organisationalModels.Select(m => m.ClrType))
+            .Where(entity => typeof(IOrganisational).IsAssignableFrom(entity.ClrType)
+                             && !typeof(IdentityUser).IsAssignableFrom(entity.ClrType));
+        foreach (var organisationalModel in organisationalModels)
         {
-            modelBuilder.Entity(organisationalModelClrType)
-                .HasQueryFilter<IOrganisational>(e => e.OrganisationId == OrganisationId )
+            modelBuilder.Entity(organisationalModel.ClrType)
+                .HasQueryFilter<IOrganisational>(e => e.OrganisationId == OrganisationId)
                 .HasIndex(nameof(IOrganisational.OrganisationId));
-            
-            modelBuilder.Entity(organisationalModelClrType)
+
+            modelBuilder.Entity(organisationalModel.ClrType)
                 .Property(nameof(IOrganisational.OrganisationId))
                 .IsRequired()
                 .HasValueGenerator<TenantIdValueGenerator>();
         }
+
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(CitizenPanelDbContext).Assembly);
         base.OnModelCreating(modelBuilder);
         // panel 1-1 representationgroup
@@ -61,11 +71,11 @@ public class CitizenPanelDbContext : IdentityDbContext<ApplicationUser>
             .HasOne(p => p.Panel)
             .WithOne(p => p.RepresentationGroup)
             .HasForeignKey<RepresentationGroup>("PanelId");
-        
+
         //Criteria * - 1 panels
         modelBuilder.Entity<Panel>()
             .HasMany(p => p.Criteria);
-        
+
         //Criteria 1 - * Answeroptions.
         modelBuilder.Entity<Criteria>()
             .HasMany(c => c.AnswerOptions)
@@ -74,11 +84,11 @@ public class CitizenPanelDbContext : IdentityDbContext<ApplicationUser>
         // CriteriaResponse 1 - * Criteria
         modelBuilder.Entity<CriteriaResponse>()
             .HasOne(c => c.Criteria);
-        
+
         // Panelmember 1 - * CriteriaResponse
         modelBuilder.Entity<PanelMember>()
             .HasMany(pm => pm.Responses);
-        
+
         //Planningroepmember 1..*-* Panel
         modelBuilder.Entity<PlanningGroupMember>()
             .HasOne(pgm => pgm.Panel);
@@ -111,6 +121,7 @@ public class CitizenPanelDbContext : IdentityDbContext<ApplicationUser>
                     v => JsonSerializer.Serialize(v, (JsonSerializerOptions)null),
                     v => JsonSerializer.Deserialize<List<string>>(v, (JsonSerializerOptions)null)!);
         });
+
         
         modelBuilder.Entity<SuggestionPost>(b =>
         {
@@ -126,16 +137,24 @@ public class CitizenPanelDbContext : IdentityDbContext<ApplicationUser>
             .Property("OwnerId");
         modelBuilder.Entity<Vote>()
             .HasKey("SuggestionId", "OwnerId");
+        modelBuilder.Entity<Question>()
+            .HasMany(q => q.AnswerOptions)
+            .WithOne(ao => ao.Question);
+        modelBuilder.Entity<AnswerOption>()
+            .HasMany(a => a.Impacts);
     }
+
     public bool CreateDatabase(bool dropDatabase)
     {
         if (dropDatabase)
         {
             Database.EnsureDeleted();
         }
+
         return Database.EnsureCreated();
     }
 }
+
 public static class QueryFilterExtensions
 {
     public static EntityTypeBuilder HasQueryFilter<TInterface>(this EntityTypeBuilder entityTypeBuilder,
@@ -150,6 +169,7 @@ public static class QueryFilterExtensions
         return entityTypeBuilder.HasQueryFilter(lambdaExpression);
     }
 }
+
 public class TenantIdValueGenerator : ValueGenerator<string>
 {
     public override string Next(EntityEntry entry)
@@ -161,5 +181,7 @@ public class TenantIdValueGenerator : ValueGenerator<string>
 
         throw new InvalidOperationException("Could not generate a new TenantId");
     }
-    public override bool GeneratesTemporaryValues => false;
+
+    public override bool GeneratesTemporaryValues { get; }
+        = false;
 }

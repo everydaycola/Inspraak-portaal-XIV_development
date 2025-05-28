@@ -1,0 +1,35 @@
+﻿@{
+    if (ViewData.TryGetValue("ParentLayout", out var parentLayout) && parentLayout != null)
+    {
+        Layout = parentLayout.ToString();
+    }
+    else
+    {
+        Layout = "Manage/_Layout";
+    }
+}
+@section Scripts {
+    @RenderSection("Scripts", required: false)
+}
+
+<div class="container mt-5">
+    <h1 class="m-4">Accountbeheer</h1>
+
+    <div class="card p-0 mt-2 m-4">
+        <div class="card-body">
+            <div class="row g-0">
+                <h2>Change your account settings</h2>
+                <hr/>
+                <div class="row">
+                    <div class="col-md-3">
+                        <partial name="_ManageNav"/>
+                    </div>
+                    <div class="col-md-8">
+                        @RenderBody()
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+

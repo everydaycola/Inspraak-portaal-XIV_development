@@ -1,5 +1,6 @@
 ﻿@using BL.Managers
 @using DAL
+@using Domain.Tenant
 @using Microsoft.AspNetCore.Identity
 @using Microsoft.AspNetCore.Mvc.TagHelpers
 @using UI_MVC.TempTenant
@@ -13,6 +14,7 @@
     <script src="~/dist/site.entry.js" type="module"></script>
     @await RenderSectionAsync("Scripts", required: false)
     <link rel="stylesheet" href="~/dist/site.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
 </head>
 <body>
 <div class="large-grid-container">
@@ -21,14 +23,11 @@
             <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">
                 @if (Organisation != null && Organisation.LogoImageName != null)
                 {
-                    <img
-                        src="@Url.Action("GetFile", "Storage", new { fileName = Organisation.LogoImageName })"
-                        class="img-fluid mt-2"/>
+                    <img src="@Url.Action("GetFile", "Storage", new { fileName = Organisation.LogoImageName })" class="img-fluid mt-2" style="max-width: 100px; height: auto;"/>
                 }
                 else
                 {
-                    <img src="~/images/icons/inspraak_portaal_light_mode.svg" class="navbar-icon-head" alt="Inspraak portaal logo"/>
-
+                    <img src="~/images/icons/inspraak_portaal_light_mode.svg" class="navbar-icon-head" alt="Inspraak portaal logo" style="@(Organisation.IsTextColorWhite ? "filter: invert(1);" : "") max-width:100px; height: auto;" />
                 }
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse"
@@ -39,46 +38,51 @@
             <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
                 <ul class="navbar-nav flex-grow-1">
                     <li class="nav-item">
-                        <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Index">
-                            <img src="~/images/home_icon.svg" class="navbar-icon" alt="Home"/>
+                        <a class="nav-link @(Organisation.IsTextColorWhite ? "text-white" : "text-dark")" asp-area="" asp-controller="Home" asp-action="Index">
+                            <img src="~/images/home_icon.svg" class="navbar-icon" alt="Home" style="@(Organisation.IsTextColorWhite ? "filter: invert(1);" : "")"/>
                             <p class="nav-link-description">Home</p>
                         </a>
                     </li>
                     @if (User.Identity != null && User.Identity.IsAuthenticated && User.IsInRole(CustomIdentityConstants.OrganisatieRole))
                     {
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Panel" asp-action="MakeNewPanel">
-                                Nieuw
-                                Panel Aanmaken
+                            <a class="nav-link @(Organisation.IsTextColorWhite ? "text-white" : "text-dark")" asp-area="" asp-controller="Panel" asp-action="MakeNewPanel">
+                                <img src="~/images/panel_create.png" class="navbar-icon" alt="Nieuw panel maken" style="@(Organisation.IsTextColorWhite ? "filter: invert(1);" : "")"/>
+                                <p class="nav-link-description">Nieuw panel aanmaken</p>
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="PanelManagement"
-                               asp-action="PanelSelection">
-                                Status
+                            <a class="nav-link @(Organisation.IsTextColorWhite ? "text-white" : "text-dark")" asp-area="" asp-controller="PanelManagement" asp-action="PanelSelection">
+                                <img src="~/images/clipboard.png" class="navbar-icon" alt="Status" style="@(Organisation.IsTextColorWhite ? "filter: invert(1);" : "")"/>
+                                <p class="nav-link-description">Status</p>
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="PanelManagement"
-                               asp-action="PanelSelection" asp-route-returnAction="People">
-                                Personen
+                            <a class="nav-link @(Organisation.IsTextColorWhite ? "text-white" : "text-dark")" asp-area="" asp-controller="PanelManagement" asp-action="PanelSelection" asp-route-returnAction="People">
+                                <img src="~/images/people.png" class="navbar-icon" alt="Personen" style="@(Organisation.IsTextColorWhite ? "filter: invert(1);" : "")"/>
+                                <p class="nav-link-description">Personen</p>
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="OrganisationManagement"
-                               asp-action="Index" asp-route-organisationId="@Organisation.Id">
-                                Organisatie instellingen
+                            <a class="nav-link @(Organisation.IsTextColorWhite ? "text-white" : "text-dark")" asp-area="" asp-controller="OrganisationManagement" asp-action="Index" asp-route-organisationId="@Organisation.Id">
+                                <img src="~/images/settings.png" class="navbar-icon" alt="Organisatie instellingen" style="@(Organisation.IsTextColorWhite ? "filter: invert(1);" : "")"/>
+                                <p class="nav-link-description">Organisatie instellingen</p>
                             </a>
                         </li>
                     }
                     @if (User.Identity != null && User.Identity.IsAuthenticated && User.IsInRole(CustomIdentityConstants.AdminRole))
                     {
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="OrganisationManagement" asp-action="AdminIndex">
-                                <img src="~/images/organisation_management.png" class="navbar-icon" alt="User account"/>
+                            <a class="nav-link @(Organisation.IsTextColorWhite ? "text-white" : "text-dark")" asp-area="" asp-controller="OrganisationManagement" asp-action="AdminIndex">
+                                <img src="~/images/settings.png" class="navbar-icon" alt="Organisatie beheer" style="@(Organisation.IsTextColorWhite ? "filter: invert(1);" : "")"/>
                                 <p class="nav-link-description">Organisatie beheer</p>
                             </a>
-
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Question" asp-action="Index">
+                                <img src="~/images/question-sign.png" class="navbar-icon" alt="Questionmark"/>
+                                <p class="nav-link-description l-invisible">Vragen Verkenning Concept</p>
+                            </a>
                         </li>
                     }
                     @if (User.Identity != null && User.Identity.IsAuthenticated &&
@@ -86,8 +90,9 @@
                           || (User.IsInRole(CustomIdentityConstants.OrganisatieRole))))
                     {
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="PanelProjectPage" asp-action="Index">
-                                Project pagina
+                            <a class="nav-link @(Organisation.IsTextColorWhite ? "text-white" : "text-dark")" asp-area="" asp-controller="PanelProjectPage" asp-action="Index">
+                                <img src="~/images/chatting.png" class="navbar-icon" alt="Project pagina" style="@(Organisation.IsTextColorWhite ? "filter: invert(1);" : "")"/>
+                                <p class="nav-link-description">Project pagina</p>
                             </a>
                         </li>
                     }

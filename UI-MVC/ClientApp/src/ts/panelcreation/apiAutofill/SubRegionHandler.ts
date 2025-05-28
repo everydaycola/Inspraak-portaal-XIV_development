@@ -28,7 +28,7 @@ export function attachEventHandlersToSubregionInput(
             nameInput.addEventListener("input", () => {
                 const inputValue = nameInput.value;
                 checkForNameKnownByApi(inputValue, sizeInput, basicApiData);
-                updateSuggestions(inputValue, suggestionBox, nameInput, basicApiData);
+                updateSuggestions(inputValue, suggestionBox, nameInput,sizeInput, basicApiData);
             });
 
             document.addEventListener("click", (e) => {
@@ -51,7 +51,7 @@ function checkForNameKnownByApi(searchedValue: string, sizeInput: HTMLInputEleme
         sizeInput.value = '';
     }
 }
-function updateSuggestions(inputValue: string, suggestionBox: HTMLDivElement, nameInput: HTMLInputElement, basicApiData: any[]) {
+function updateSuggestions(inputValue: string, suggestionBox: HTMLDivElement, nameInput: HTMLInputElement, sizeInput:HTMLInputElement, basicApiData: any[]) {
     const value = inputValue.toLowerCase();
     if (!value) {
         suggestionBox.style.display = "none";
@@ -74,7 +74,7 @@ function updateSuggestions(inputValue: string, suggestionBox: HTMLDivElement, na
         item.addEventListener("click", () => {
             nameInput.value = match.communeName;
             suggestionBox.style.display = "none";
-            checkForNameKnownByApi(match.communeName, nameInput.nextElementSibling as HTMLInputElement, basicApiData);
+            checkForNameKnownByApi(match.communeName, sizeInput, basicApiData);
         });
         suggestionBox.appendChild(item);
     });

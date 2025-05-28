@@ -6,6 +6,7 @@ public class OrganisationManagementViewModel
     public string Name { get; set; }
     public string BackgroundColor { get; set; }
     
+    public bool IsTextColorWhite { get; set; }
     public IFormFile File { get; set; }
     public IFormFile LogoFile { get; set; }
 }

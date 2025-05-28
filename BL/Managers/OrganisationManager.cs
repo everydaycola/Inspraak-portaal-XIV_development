@@ -2,6 +2,7 @@ using BL.Interfaces;
 using DAL;
 using DAL.EF;
 using DAL.Interfaces;
+using Domain.Tenant;
 
 namespace BL.Managers;
 
@@ -25,7 +26,7 @@ public class OrganisationManager : IOrganisationManager
     }
 
     public Organisation AddOrganisation(string organisationId, string name, string backgroundColor, string backgroundImage,
-        string logoImageName)
+        string logoImageName, bool isTextColorWhite)
     {
         Organisation newOrganisation = new Organisation()
         {
@@ -33,12 +34,13 @@ public class OrganisationManager : IOrganisationManager
             Name = name,
             BackgroundColor = backgroundColor,
             BackgroundImage = backgroundImage,
-            LogoImageName = logoImageName
+            LogoImageName = logoImageName,
+            IsTextColorWhite = isTextColorWhite
         };
         return _repo.CreateOrganisation(newOrganisation);
     }
 
-    public Organisation UpdateOrganisation(string organisationId, string name, string backgroundColor, string backgroundImage, string logoImageName)
+    public Organisation UpdateOrganisation(string organisationId, string name, string backgroundColor, string backgroundImage, string logoImageName,bool isTextColorWhite)
     {
         var existingOrganisation = _repo.ReadOrganisationById(organisationId);
         if (existingOrganisation != null)
@@ -52,6 +54,9 @@ public class OrganisationManager : IOrganisationManager
             if(logoImageName != ""){
                 existingOrganisation.LogoImageName = logoImageName;
             }
+
+            existingOrganisation.BackgroundColor = backgroundColor;
+            existingOrganisation.IsTextColorWhite = isTextColorWhite;
             _repo.UpdateOrganisation(existingOrganisation);
             return existingOrganisation;
         }

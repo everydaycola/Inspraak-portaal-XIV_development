@@ -1,0 +1,88 @@
+@using System.Text.Json
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@model UI_MVC.Models.ViewModels.ExploreConceptViewModels.management.QuestionViewModel
+
+@{
+    var participationMethodsList = Model.ParticipationMethods.ToList();
+}
+
+@section Scripts {
+    <script src="~/dist/exploreConcept.entry.js" type="module"></script>
+}
+
+<div class="container mt-5">
+    <div class="row g-4 align-items-stretch">
+        <div class="card shadow-sm border-0 mb-4">
+            <div class="card-body">
+                <form asp-action="EditQuestion" method="post">
+                    <input type="hidden" asp-for="Id"/>
+
+                    <div asp-validation-summary="ModelOnly" class="text-danger" data-valmsg-summary="true"></div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Vraagtekst</label>
+                        <input asp-for="QuestionText" type="text" class="form-control"
+                               placeholder="Voer de vraagtekst in" required/>
+                        <span asp-validation-for="QuestionText" class="text-danger"></span>
+                    </div>
+
+                    <table id="answerWeightTable">
+                        <input type="hidden" id="amountOfParticipationMethods"
+                               value="@Model.ParticipationMethods.Count()"/>
+                        <input type="hidden" id="ParticipationMethods"
+                               value='@JsonSerializer.Serialize(Model.ParticipationMethods.Select(pm => pm.Name))'/>
+                        <thead>
+                        <tr>
+                            <th>Antwoorden</th>
+                            @foreach (var method in Model.ParticipationMethods)
+                            {
+                                <th>@method.Name</th>
+                            }
+                        </tr>
+                        </thead>
+                        <tbody>
+                        @for (var i = 0; i < Model.AnswerOptions.Count; i++)
+                        {
+                            <tr>
+                                <td>
+                                    <input type="hidden" asp-for="AnswerOptions[i].Id"/>
+                                    <input asp-for="AnswerOptions[i].AnswerText"
+                                           name="AnswerOptions[@i].AnswerText"
+                                           class="form-control"
+                                           placeholder="Antwoordtekst"
+                                           required/>
+                                </td>
+                                @for (var j = 0; j < participationMethodsList.Count; j++)
+                                {
+                                    var impact = Model.AnswerOptions[i].Impacts
+                                        .FirstOrDefault(imp => imp.ParticipationMethodName == participationMethodsList[j].Name);
+
+                                    <td>
+                                        <input type="hidden"
+                                               name="AnswerOptions[@i].Impacts[@j].ParticipationMethodName"
+                                               value="@participationMethodsList[j].Name"/>
+                                        <input value="@(impact?.ImpactWeight ?? 0)"
+                                               name="AnswerOptions[@i].Impacts[@j].Impactweight"
+                                               class="form-control"
+                                               placeholder="Gewicht"
+                                               required/>
+                                    </td>
+                                }
+                            </tr>
+                        }
+                        </tbody>
+                    </table>
+
+                    <div class="mb-3">
+                        <label class="form-label">Antwoordopties</label>
+                        <button type="button" class="btn btn-outline-secondary btn-sm" id="addAnswerOption">
+                            <i class="bi bi-plus-circle"></i> Optie toevoegen
+                        </button>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary">Opslaan</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

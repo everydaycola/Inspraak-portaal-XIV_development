@@ -18,6 +18,7 @@
 @media (min-width: 992px) {
   body {
     margin-bottom: 0;
+    overflow-y: hidden;
   }
   nav {
     z-index: 10;
@@ -26,7 +27,7 @@
   .large-grid-container {
     display: grid;
     grid-template-columns: 10fr 90fr;
-    grid-template-rows: 18fr 1fr;
+    grid-template-rows: 9fr 1fr;
     min-height: calc(100vh - 30px);
     grid-gap: 30px;
     margin-bottom: 0 !important;

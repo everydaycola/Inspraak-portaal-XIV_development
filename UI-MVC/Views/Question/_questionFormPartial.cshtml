@@ -1,0 +1,72 @@
+﻿@using System.Text.Json
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@model UI_MVC.Models.ViewModels.ExploreConceptViewModels.management.QuestionViewModel
+
+
+<form id="questionForm" asp-action="AddQuestion" asp-controller="Question" method="post">
+    <div asp-validation-summary="All" class="text-danger" data-valmsg-summary="true"></div>
+    <div class="mb-3">
+        <label class="form-label">Vraagtekst</label>
+        <input asp-for="QuestionText" type="text" class="form-control" placeholder="Voer de vraagtekst in" required/>
+        <span class="text-danger"></span>
+    </div>
+    <button type="button" class="btn btn-info mb-2"
+            data-bs-toggle="modal"
+            data-bs-target="#explanationModal">
+        <i class="bi bi-question-lg"></i>
+    </button>
+    <table id="answerWeightTable">
+        <thead>
+        <input type="hidden" id="amountOfParticipationMethods" value="@Model.ParticipationMethods.Count()"/>
+        <input type="hidden" asp-for="ParticipationMethods" id="ParticipationMethods"
+               value='@JsonSerializer.Serialize(Model.ParticipationMethods.Select(pm => pm.Name))'/>
+        <tr>
+            <th>Antwoorden</th>
+            @foreach (var partMethod in Model.ParticipationMethods)
+            {
+                <th>@partMethod.Name</th>
+            }
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td>
+                <input name="AnswerOptions[0].AnswerText" type="text" class="form-control me-2"
+                       placeholder="Antwoordtekst" value="" required/>
+            </td>
+            @foreach (var partMethod in Model.ParticipationMethods.Select((value, index) => new { value, index }))
+            {
+                <td>
+                    <input type="hidden" name="AnswerOptions[0].Impacts[@partMethod.index].ParticipationMethodName"
+                           value="@partMethod.value.Name"/>
+                    <input type="number" name="AnswerOptions[0].Impacts[@partMethod.index].Impactweight"
+                           class="form-control me-2" placeholder="Gewicht" value="0" required/>
+                </td>
+            }
+        </tr>
+        <tr>
+            <td>
+                <input type="text" name="AnswerOptions[1].AnswerText" class="form-control me-2"
+                       placeholder="Antwoordtekst" value="" required/>
+            </td>
+            @foreach (var partMethod in Model.ParticipationMethods.Select((value, index) => new { value, index }))
+            {
+                <td>
+                    <input type="hidden" name="AnswerOptions[1].Impacts[@partMethod.index].ParticipationMethodName"
+                           value="@partMethod.value.Name"/>
+                    <input type="number" name="AnswerOptions[1].Impacts[@partMethod.index].Impactweight"
+                           class="form-control me-2" placeholder="Gewicht" value="0" required/>
+                </td>
+            }
+        </tr>
+        </tbody>
+    </table>
+    <div class="mb-3 mt-2">
+        <label class="form-label">Antwoordopties</label>
+        <button type="button" class="btn btn-outline-secondary btn-sm" id="addAnswerOption">
+            <i class="bi bi-plus-circle"></i> Optie toevoegen
+        </button>
+    </div>
+
+    <button type="submit" class="btn btn-success" id="questionSubmitBtn">Vraag toevoegen</button>
+</form>
