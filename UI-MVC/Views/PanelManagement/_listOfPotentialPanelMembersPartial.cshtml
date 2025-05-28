@@ -1,52 +1,44 @@
 @using Microsoft.IdentityModel.Tokens
 @model UI_MVC.Models.ViewModels.PeopleManagementViewModel
 
-<div class="container mt-4">
-    <div class="accordion mb-4" id="panelMembersAccordion">
-        @if (!Model.PotentialPanelMembersViewModel.PanelMembers.IsNullOrEmpty())
-        {
-            <div class="container mt-4">
-                <p>
-                    <button class="btn btn-primary"
-                            type="button"
-                            data-bs-toggle="collapse"
-                            data-bs-target="#panelMembersCollapse"
-                            aria-expanded="false"
-                            aria-controls="panelMembersCollapse">
-                        Aangemelde panelleden weergeven
-                    </button>
-                </p>
-                <div class="collapse" id="panelMembersCollapse">
-                    <div class="card card-body">
-                        <table class="table table-striped table-bordered">
-                            <thead class="thead-dark">
-                            <tr>
-                                <th>Email</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            @if (!Model.PotentialPanelMembersViewModel.PanelMembers.IsNullOrEmpty())
-                            {
-                                @foreach (var panelMember in Model.PotentialPanelMembersViewModel.PanelMembers)
-                                {
-                                    <tr>
-                                        <td>
-                                            @panelMember.Email
-                                        </td>
-                                    </tr>
-                                }
-                            }
-                            else
-                            {
-                                <tr>
-                                    <td colspan="1">Nog geen panelmembers aangemeld</td>
-                                </tr>
-                            }
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-        }
+@if (!Model.PotentialPanelMembersViewModel.PanelMembers.IsNullOrEmpty())
+{
+    <button class="btn btn-primary mt-3"
+            type="button"
+            data-bs-toggle="collapse"
+            data-bs-target="#panelMembersCollapse"
+            aria-expanded="false"
+            aria-controls="panelMembersCollapse">
+        Aangemelde panelleden weergeven
+    </button>
+    <div class="collapse mt-4" id="panelMembersCollapse">
+        <div class="card card-body">
+            <table class="table table-striped table-bordered">
+                <thead class="thead-dark">
+                <tr>
+                    <th>Email</th>
+                </tr>
+                </thead>
+                <tbody>
+                @if (!Model.PotentialPanelMembersViewModel.PanelMembers.IsNullOrEmpty())
+                {
+                    @foreach (var panelMember in Model.PotentialPanelMembersViewModel.PanelMembers)
+                    {
+                        <tr>
+                            <td>
+                                @panelMember.Email
+                            </td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="1">Nog geen panelmembers aangemeld</td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+        </div>
     </div>
-</div>
+}
