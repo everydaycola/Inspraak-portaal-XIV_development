@@ -1,5 +1,6 @@
 .idea
 /IP1_Infrastructure/citizenpanel
+/IP1_Infrastructure/service-account-credentials.json
 ## This uploads folder is a temp folder to test image uploads.
 /UI-MVC/wwwroot/uploads 
 /UI-MVC/wwwroot/dist/

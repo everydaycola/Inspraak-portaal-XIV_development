@@ -6,7 +6,6 @@ using DAL.EF;
 using DAL.Interfaces;
 using DAL.Repositories;
 using Domain;
-using Domain.Interfaces.Question;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using UI_MVC;
@@ -44,10 +43,6 @@ builder.Services.AddScoped<IQuestionManager, QuestionManager>();
 builder.Services
     .AddOrganisationContext()
     .AddScoped<OrganisationMiddleware>();
-
-//REMOVE : builder.Services.Configure<AvailableOrganisations>(
-//    builder.Configuration.GetSection(AvailableOrganisations.SectionName)
-//);
 
 builder.Services.Configure<GoogleCloudOptions>(options =>
 {

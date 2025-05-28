@@ -4,9 +4,9 @@ using Domain.CitizenPanel;
 using Domain.Enums;
 using Domain.Interfaces;
 using Domain.Interfaces.Posts;
-using Domain.Interfaces.Question;
 using Microsoft.AspNetCore.Identity;
 using Domain.Interfaces.Posts.PostItems;
+using Domain.Question;
 using Domain.Tenant;
 
 namespace DAL.EF;
@@ -106,10 +106,26 @@ public static class DataSeeder
                                     OwnerEmail = "chantal.verbruggen@gmail.com",
                                     Votes = new List<Vote>()
                                     {
-                                        new(owner: panelMemberLais, voteType: VoteType.Up),
-                                        new(owner: panelMemberAnika, voteType: VoteType.Down),
-                                        new(owner: panelMemberHendrick, voteType: VoteType.Up),
-                                        new(owner: panelMemberMartin, voteType: VoteType.Down),
+                                        new()
+                                        {
+                                            Owner = panelMemberLais,
+                                            VoteType = VoteType.Up
+                                        },
+                                        new()
+                                        {
+                                            Owner = panelMemberAnika,
+                                            VoteType = VoteType.Down
+                                        },
+                                        new()
+                                        {
+                                            Owner = panelMemberHendrick,
+                                            VoteType = VoteType.Up
+                                        },
+                                        new()
+                                        {
+                                            Owner = panelMemberMartin,
+                                            VoteType = VoteType.Down
+                                        }
                                     }
                                 },
                                 new()
@@ -119,10 +135,26 @@ public static class DataSeeder
                                     OwnerEmail = "gert.lambrechts@gmail.com",
                                     Votes = new List<Vote>
                                     {
-                                        new(owner: panelMemberLais, voteType: VoteType.Up),
-                                        new(owner: panelMemberAnika, voteType: VoteType.Up),
-                                        new(owner: panelMemberHendrick, voteType: VoteType.Up),
-                                        new(owner: panelMemberMartin, voteType: VoteType.Down),
+                                        new()
+                                        {
+                                            Owner = panelMemberLais,
+                                            VoteType = VoteType.Up
+                                        },
+                                        new()
+                                        {
+                                            Owner = panelMemberAnika,
+                                            VoteType = VoteType.Up
+                                        },
+                                        new()
+                                        {
+                                            Owner = panelMemberHendrick,
+                                            VoteType = VoteType.Up
+                                        },
+                                        new()
+                                        {
+                                            Owner = panelMemberMartin,
+                                            VoteType = VoteType.Down
+                                        },
                                     }
                                 }
                             }

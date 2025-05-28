@@ -6,7 +6,6 @@ using Domain.CitizenPanel;
 using Domain.Interfaces;
 using Domain.Interfaces.Posts;
 using Microsoft.Extensions.Logging;
-using UI_MVC;
 
 namespace BL.Managers;
 
@@ -44,22 +43,6 @@ public class PanelManager : IPanelManager
     {
         return _repo.ReadPanelWithRepresentationGroup(id);
     }
-
-    // public IEnumerable<PanelMember> GetPanelWithPanelMembersAndCriteria(Guid id)
-    // {
-    //     return _repo.ReadPanelMembersWithCriteriaAndResponsesByPanel(id);
-    // }
-    
-    // public Panel GetPanelWithCriteriaAndOptions(Guid id)
-    // {
-    //     return _repo.ReadPanelWithCriteriaAndAnsweroptions(id);
-    //
-    // }
-    
-    // public PanelMember GetPanelMemberById(Guid memberId)
-    // {
-    //     return _repo.ReadPanelMember(memberId);
-    // }
 
     public PanelMember GetPanelMemberWithCriteriaResponses(Guid id)
     {

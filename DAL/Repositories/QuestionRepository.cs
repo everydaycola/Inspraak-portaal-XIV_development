@@ -2,7 +2,7 @@ using DAL.EF;
 using DAL.Interfaces;
 using Domain.Admin;
 using Domain.Interfaces;
-using Domain.Interfaces.Question;
+using Domain.Question;
 using Microsoft.EntityFrameworkCore;
 
 namespace DAL.Repositories;
