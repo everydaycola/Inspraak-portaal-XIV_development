@@ -36,13 +36,19 @@
                             <strong class="card-text">Gemeente, stad, dorp, organisatie...</strong>
                             <span id="error-subregions" class="text-danger"></span>
 
-                            <div class="mb-2 subRegion subregion-0">
-                                <input id="subregion-0-name" name="SubRegions[0].Name" placeholder="Naam" type="text"
-                                       class="form-control d-inline w-50 me-2" required/>
-                                <input id="subregion-0-size" name="SubRegions[0].Size" placeholder="Grootte" type="number"
-                                       class="form-control d-inline w-25 subregion-size-input" required/>
-                                <span id="subregion-0-name-msg" class="text-danger field-validation-valid"></span>
-                                <span id="subregion-0-size-msg" class="text-danger field-validation-valid"></span>
+                            <div class="mb-2 subRegion subregion-0 d-flex align-items-start flex-column">
+                                <div class="d-flex w-100 mb-1">
+                                    <span id="subregion-0-name-msg" class="text-danger field-validation-valid me-2 flex-grow-1"></span>
+                                    <span id="subregion-0-size-msg" class="text-danger field-validation-valid flex-grow-1"></span>
+                                    <!-- Empty space for the delete button alignment -->
+                                    <span style="width: 40px;"></span>
+                                </div>
+                                <div class="d-flex w-100 align-items-center">
+                                    <input id="subregion-0-name" name="SubRegions[0].Name" placeholder="Naam" type="text"
+                                           class="form-control d-inline me-2 w-50" required/>
+                                    <input id="subregion-0-size" name="SubRegions[0].Size" placeholder="Grootte" type="number"
+                                           class="form-control d-inline w-25 subregion-size-input" required/>
+                                </div>
                             </div>
                         </div>
                         <a id="sub-region-btn" type="button" class="btn btn-primary col-3 my-2">Deelgemeente of Wijk

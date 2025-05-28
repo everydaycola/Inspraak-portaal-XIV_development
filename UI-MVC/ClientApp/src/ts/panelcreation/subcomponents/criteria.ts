@@ -160,14 +160,11 @@ function removeCriteria(criteriaId: number) {
 
 function toggleAnswerOptionPercentageInput(isChecked: boolean, criteriaId: number) {
     let e = event as Event;
-    const ulChildren = (((e.currentTarget as HTMLInputElement)
-        .parentElement as HTMLDivElement)
-        .parentElement as HTMLUListElement)
-        .childNodes;
-    //removing the div form the NodeList
-    const lis: HTMLLIElement[] = [].slice.call(ulChildren, 1);
-
-    lis.forEach((li, index) => {
+    
+    const parentContainer = (((e.currentTarget as HTMLInputElement).parentElement as HTMLDivElement).parentElement as HTMLDivElement).parentElement as HTMLDivElement;
+    const ulChildren = (parentContainer.querySelector("ul") as HTMLUListElement).childNodes;
+    
+    ulChildren.forEach((li, index) => {
         const inputs = li.childNodes;
         const percentageNode = inputs.item(1)
         if (!isChecked) {

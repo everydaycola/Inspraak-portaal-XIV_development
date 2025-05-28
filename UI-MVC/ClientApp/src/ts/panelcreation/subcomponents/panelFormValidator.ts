@@ -104,7 +104,7 @@ export function validateCriteriaPercentages(): boolean {
             isValid = false
 
             error.className = "text-danger distribution-error";
-            error.innerText = `Een standaard criteria moet een verdeling hebben.`;
+            error.innerText = `Een standaard criteria moet een gekende verdeling hebben.`;
         } else if (distKnownCheck.checked) {
             const inputs = criteriaDiv.querySelectorAll<HTMLInputElement>(
                 `input[name^="Distributions[${index}].AnswerOptions"][name$="DistributionPercentage"]`
@@ -126,7 +126,7 @@ export function validateCriteriaPercentages(): boolean {
             }
         }
         // Place below answer list
-        const ul = criteriaDiv.querySelector("ul.list-group");
+        const ul = criteriaDiv.querySelector("ul.answer-list");
         ul?.after(error);
     });
 
