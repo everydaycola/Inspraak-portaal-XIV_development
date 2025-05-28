@@ -4,7 +4,6 @@ import {initAddCriteriaHandler} from "./subcomponents/criteria";
 import {setupPanelsizePreviewHandlers} from "./subcomponents/panelsizePreviewHandler";
 import {setupApiAutoFill} from "./apiAutofill/apiDataFiller";
 
-
 document.addEventListener("DOMContentLoaded",() => {
     addSubregionValidation(
         document.getElementById("subregion-0-name") as HTMLInputElement,

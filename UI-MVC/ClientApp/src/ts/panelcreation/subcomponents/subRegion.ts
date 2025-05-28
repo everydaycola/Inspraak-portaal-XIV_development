@@ -32,8 +32,6 @@ export function addSubRegion() {
 }
 function createSubRegionElement(index: number, removeCallback: (id: string) => void): HTMLDivElement {
     const subRegionId = `subregion-${index}`;
-
-    
     // Main container
     const wrapper = createElementWithClassNames("div", "mb-2", "subRegion", `subregion-${index}`);
     wrapper.id = subRegionId;
