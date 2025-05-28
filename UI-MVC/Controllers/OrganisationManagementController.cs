@@ -85,15 +85,30 @@ public class OrganisationManagementController : Controller
         if (model.File != null)
         {
             uniqueFileName = Guid.NewGuid() + Path.GetExtension(model.File.FileName);
-            await _storageManager.AddFileAsync(uniqueFileName, model.File.ContentType, model.File.OpenReadStream());
+            try
+            {
+                await _storageManager.AddFileAsync(uniqueFileName, model.File.ContentType, model.File.OpenReadStream());
+            }
+            catch (NullReferenceException e)
+            {
+                _logger.Log(LogLevel.Error, e + "");
+                Console.WriteLine(e);
+            }
         }
 
         var uniqueFileNameLogo = "";
         if (model.LogoFile != null)
         {
             uniqueFileNameLogo = Guid.NewGuid() + Path.GetExtension(model.LogoFile.FileName);
-            await _storageManager.AddFileAsync(uniqueFileNameLogo, model.LogoFile.ContentType,
-                model.LogoFile.OpenReadStream());
+            try
+            {
+                await _storageManager.AddFileAsync(uniqueFileNameLogo, model.LogoFile.ContentType,
+                    model.LogoFile.OpenReadStream());
+            }
+            catch (NullReferenceException e)
+            {
+                Console.WriteLine(e);
+            }
         }
 
         var organisation = _organisationManager.UpdateOrganisation(organisationId, model.Name, model.BackgroundColor,

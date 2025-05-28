@@ -15,7 +15,14 @@ public class StorageManager : IStorageManager
     public StorageManager(ILogger<StorageManager> logger, IOptions<GoogleCloudOptions> googleCloudOptions)
     {
         _logger = logger;
-        _storageClient = StorageClient.Create();
+        try
+        {
+            _storageClient = StorageClient.Create();
+        }
+        catch (InvalidOperationException e)
+        {
+            Console.WriteLine("Failed to connect to storage client");
+        }
         _googleCloudOptions = googleCloudOptions.Value;
     }
 

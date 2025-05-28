@@ -24,5 +24,9 @@ public class StorageController : Controller
         {
             return NotFound();
         }
+        catch (NullReferenceException nr)
+        {
+            return NotFound();
+        }
     }
 }
