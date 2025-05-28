@@ -51,10 +51,9 @@
                                 <label asp-for="Input.ConfirmPassword">Bevestig wachtwoord</label>
                                 <span asp-validation-for="Input.ConfirmPassword" class="text-danger"></span>
                             </div>
-                            <div class="form-floating mb-3">
-                                <input type="hidden" asp-for="Input.SelectedRole"
-                                       value="@CustomIdentityConstants.OrganisatieRole">
-                            </div>
+
+                            <input type="hidden" asp-for="Input.SelectedRole"
+                                   value="@CustomIdentityConstants.OrganisatieRole">
                             <button id="registerSubmit" type="submit" class="w-100 btn btn-lg btn-primary">Registreren</button>
                         </form>
                     </section>
