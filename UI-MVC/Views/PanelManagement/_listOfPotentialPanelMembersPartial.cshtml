@@ -20,25 +20,22 @@
                 </tr>
                 </thead>
                 <tbody>
-                @if (!Model.PotentialPanelMembersViewModel.PanelMembers.IsNullOrEmpty())
-                {
-                    @foreach (var panelMember in Model.PotentialPanelMembersViewModel.PanelMembers)
-                    {
-                        <tr>
-                            <td>
-                                @panelMember.Email
-                            </td>
-                        </tr>
-                    }
-                }
-                else
+                @foreach (var panelMember in Model.PotentialPanelMembersViewModel.PanelMembers)
                 {
                     <tr>
-                        <td colspan="1">Nog geen panelmembers aangemeld</td>
+                        <td>
+                            @panelMember.Email
+                        </td>
                     </tr>
                 }
                 </tbody>
             </table>
         </div>
+    </div>
+}
+else
+{
+    <div class="alert alert-warning" role="alert">
+        <small>Nog geen panelmembers aangemeld</small>
     </div>
 }
