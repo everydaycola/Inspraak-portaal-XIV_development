@@ -7,9 +7,10 @@ using Microsoft.AspNetCore.Mvc;
 using UI_MVC.Models;
 using UI_MVC.Models.Dto;
 using UI_MVC.Models.ViewModels;
+using UI_MVC.Tenant.Attribute;
 
 namespace UI_MVC.Controllers;
-[RequiresOrganisation]
+[OnlyAccessibleFromTenant]
 public class PanelManagementController : Controller
 {
     private readonly ILogger<PanelManagementController> _logger;

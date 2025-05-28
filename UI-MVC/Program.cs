@@ -10,9 +10,9 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using UI_MVC;
 using UI_MVC.Models;
-using UI_MVC.TempTenant;
 using StackExchange.Redis;
 using Microsoft.AspNetCore.DataProtection;
+using UI_MVC.Tenant;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -42,7 +42,7 @@ builder.Services.AddScoped<IQuestionManager, QuestionManager>();
 //Tenant specific logic
 builder.Services
     .AddOrganisationContext()
-    .AddScoped<OrganisationMiddleware>();
+    .AddScoped<TenantMiddleware>();
 
 builder.Services.Configure<GoogleCloudOptions>(options =>
 {
@@ -78,13 +78,15 @@ builder.Services
     .AddDefaultIdentity<ApplicationUser>()
     .AddEntityFrameworkStores<CitizenPanelDbContext>()
     .AddUserStore<ApplicationUserStore>()
-    .AddSignInManager<MultiOrganisationSignInManager>()
+    .AddSignInManager<MultiTenantSignInManager>()
     .AddRoles<IdentityRole>()
     .AddEntityFrameworkStores<CitizenPanelDbContext>();
 
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
+app.UseExceptionHandler("/Error");
+app.UseStatusCodePagesWithReExecute("/Error/{0}");
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Error");
@@ -110,12 +112,12 @@ using (var scope = app.Services.CreateScope())
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
-app.UseMiddleware<OrganisationMiddleware>();
 app.UseRouting();
 app.UseSession();
 
 app.UseAuthentication();
 app.UseAuthorization();
+app.UseMiddleware<TenantMiddleware>();
 
 app.MapRazorPages();
 app.MapControllerRoute(

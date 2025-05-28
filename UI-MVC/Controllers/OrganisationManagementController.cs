@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using UI_MVC.Models.Dto;
 using UI_MVC.Models.ViewModels;
+using UI_MVC.Tenant.Attribute;
 
 namespace UI_MVC.Controllers;
 
@@ -52,8 +53,8 @@ public class OrganisationManagementController : Controller
         }
         catch
         {
-            _logger.Log(LogLevel.Critical, "Organisation update failed, no organisation with ID {organisationId}");
-            return NotFound(new { message = "Organisation not found." });
+            _logger.Log(LogLevel.Critical, "Tenant update failed, no organisation with ID {organisationId}");
+            return NotFound(new { message = "Tenant not found." });
         }
     }
 
@@ -66,12 +67,13 @@ public class OrganisationManagementController : Controller
     }
 
     //Onderstaande views behoren tot de pagina voor organisaties zelf
+    [OnlyAccessibleFromTenant]
     public IActionResult Index(string organisationId)
     {
         var organisation = _organisationManager.GetOrganisationById(organisationId);
         return View(organisation);
     }
-
+    [OnlyAccessibleFromTenant]
     public IActionResult Edit(string organisationId)
     {
         var organisation = _organisationManager.GetOrganisationById(organisationId);
@@ -80,6 +82,7 @@ public class OrganisationManagementController : Controller
     }
 
     [HttpPost]
+    [OnlyAccessibleFromTenant]
     public async Task<IActionResult> Update(string organisationId, OrganisationManagementViewModel model)
     {
         var uniqueFileName = "";

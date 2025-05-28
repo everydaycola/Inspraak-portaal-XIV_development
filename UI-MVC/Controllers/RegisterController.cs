@@ -10,9 +10,11 @@ using UI_MVC.Models;
 using UI_MVC.Models.Dto;
 using UI_MVC.Models.Dto.Register;
 using UI_MVC.Models.ViewModels;
+using UI_MVC.Tenant.Attribute;
 
 namespace UI_MVC.Controllers;
 
+[OnlyAccessibleFromTenant]
 public class RegisterController : Controller
 {
     private readonly ILogger<RegisterController> _logger;
