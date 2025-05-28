@@ -1,16 +1,16 @@
-using DAL;
 using Domain.Tenant;
+using UI_MVC.Tenant.Attribute;
 
-namespace UI_MVC.TempTenant;
+namespace UI_MVC.Tenant;
 
-public class OrganisationMiddleware(OrganisationContext organisationContext, AvailableOrganisations availableTenants)
+public class TenantMiddleware(OrganisationContext organisationContext, AvailableTenants availableTenants)
     : IMiddleware
 {
     public async Task InvokeAsync(HttpContext context, RequestDelegate next)
     {
         var subdomain = context.Request.Host.Host.Split('.')[0];
         var endpoint = context.GetEndpoint();
-        var requiresOrg = endpoint?.Metadata.GetMetadata<RequiresOrganisation>();
+        var requiresOrg = endpoint?.Metadata.GetMetadata<OnlyAccessibleFromTenant>();
         
         // If the endpoint requires an organisation, proceed with tenanting logic
         if (requiresOrg != null)

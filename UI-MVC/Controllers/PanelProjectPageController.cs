@@ -8,9 +8,11 @@ using Microsoft.IdentityModel.Tokens;
 using UI_MVC.Models.Dto.PostDtos;
 using UI_MVC.Models.ViewModels;
 using UI_MVC.Models.ViewModels.PostViewModels;
+using UI_MVC.Tenant.Attribute;
 
 namespace UI_MVC.Controllers;
 
+[OnlyAccessibleFromTenant]
 public class PanelProjectPageController : Controller
 {
     private readonly ILogger<PanelProjectPageController> _logger;
