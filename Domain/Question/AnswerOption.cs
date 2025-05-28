@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using Domain.Admin;
 
-namespace Domain.Interfaces.Question;
+namespace Domain.Question;
 
 public class AnswerOption
 {

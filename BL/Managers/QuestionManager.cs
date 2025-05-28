@@ -3,7 +3,7 @@ using DAL.Interfaces;
 using DAL.Repositories;
 using Domain.Admin;
 using Domain.GlobalDtos;
-using Domain.Interfaces.Question;
+using Domain.Question;
 using Microsoft.Extensions.Logging;
 using AnswerOptionImpactsDto = Domain.GlobalDtos.AnswerOptionImpactsDto;
 

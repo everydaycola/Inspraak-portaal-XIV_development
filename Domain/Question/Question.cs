@@ -1,8 +1,8 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Domain.Interfaces.Question;
+namespace Domain.Question;
 
-public class Question : IQuestion
+public class Question
 {
     [Key] public int Id { get; set; }
     [Required] public string QuestionText { get; set; }

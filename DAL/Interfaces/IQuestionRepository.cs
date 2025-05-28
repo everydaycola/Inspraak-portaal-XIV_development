@@ -1,5 +1,5 @@
 using Domain.Admin;
-using Domain.Interfaces.Question;
+using Domain.Question;
 
 namespace DAL.Interfaces;
 

@@ -1,5 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using Domain.Interfaces.Question;
+using Domain.Question;
 
 namespace Domain.Admin;
 
