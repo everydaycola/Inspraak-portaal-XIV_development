@@ -7,132 +7,138 @@
     var buttonClass = Model.IsRegistrationOpen ? "btn-warning" : "btn-success";
 }
 
-
-<div class="container mt-5">
-    <div class="row m-2">
-        <h2>Status</h2>
+<div class="container py-5">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h2 class="mb-0">Status</h2>
+        </div>
     </div>
-    <div class="row mt-4 row-cols-2">
-        <div class="card shadow-sm border-0 col-8 me-4">
-            <div class="card-body">
-                <div class="mb-4">
-                    <h5 class="card-title">Aanmeldstatus</h5>
-                    <p class="card-text">
-                        @Model.ExtraCriteriaViewModel.SuccessfulRegistrationCount /
-                        @(Model.PanelSize + Model.AmountOfReserveInvites) (waarvan @Model.AmountOfReserveInvites reserve)
-                    </p>
-                </div>
-                <div>
-                    <h5 class="card-title">Uitnodigingen</h5>
-                    <p class="card-textPanelSize">
-                        <i class="bi bi-envelope-fill text-info"></i>
-                        <strong>Geschat aantal uitnodigingen benodigd voor @Model.CitizenCount inwoners</strong>
-                        @Model.TotalInvitesNeeded
-                    </p>
+
+    <!-- Status Cards -->
+    <div class="row g-4 row-cols-1 row-cols-md-2 mb-4">
+        <div class="col">
+            <div class="card shadow-sm border-0 h-100">
+                <div class="card-body">
+                    <div class="mb-4">
+                        <h5 class="card-title">Aanmeldstatus</h5>
+                        <p class="card-text">
+                            @Model.ExtraCriteriaViewModel.SuccessfulRegistrationCount /
+                            @(Model.PanelSize + Model.AmountOfReserveInvites)
+                            (waarvan @Model.AmountOfReserveInvites reserve)
+                        </p>
+                    </div>
+                    <div>
+                        <h5 class="card-title">Uitnodigingen</h5>
+                        <p class="card-textPanelSize mb-0">
+                            <i class="bi bi-envelope-fill text-info"></i>
+                            <strong>Geschat aantal uitnodigingen benodigd voor @Model.CitizenCount inwoners:</strong>
+                            @Model.TotalInvitesNeeded
+                        </p>
+                    </div>
                 </div>
             </div>
         </div>
 
-        <div class="card shadow-sm border-0 col-3 me-4">
-            <div class="card-body">
-                <div class="mt-4">
-                    <h5 class="card-title">Inschrijvingen</h5>
-                    @if (Model.IsRegistrationOpen)
+        <div class="col">
+            <div class="card shadow-sm border-0 h-100">
+                <div class="card-body d-flex flex-column justify-content-between">
+                    <div>
+                        <h5 class="card-title">Inschrijvingen</h5>
+                        <p class="card-text">
+                            @(Model.IsRegistrationOpen ? "Inschrijving staat open." : "Inschrijving is gesloten.")
+                        </p>
+                    </div>
+                    <div class="d-flex flex-column flex-sm-row gap-2 mt-4">
+                        <a class="btn @buttonClass flex-fill"
+                           asp-action="ToggleRegistration"
+                           asp-controller="PanelManagement"
+                           asp-route-panelId="@Model.PanelId">
+                            @(Model.IsRegistrationOpen ? "Inschrijving Sluiten" : "Inschrijving Openen")
+                        </a>
+                        <button class="btn btn-danger flex-fill"
+                                data-bs-toggle="modal"
+                                data-bs-target="#FinnishModal"
+                                data-panel-id="@Model.PanelId">
+                            Inschrijving afronden
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Criteria Section -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card shadow-sm border-0 mb-4">
+                <div class="card-body">
+                    @if (Model.AnyCrossCriteria && Model.AnyUnknownCriteria)
                     {
-                        <p class="card-text">Inschrijving staat open.</p>
+                        <div class="accordion" id="criteriaAccordion">
+                            <div class="accordion-item">
+                                <h2 class="accordion-header" id="crossCriteriaHeading">
+                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                            data-bs-target="#crossCriteriaCollapse" aria-expanded="false"
+                                            aria-controls="crossCriteriaCollapse">
+                                        Gekruiste criteria
+                                    </button>
+                                </h2>
+                                <div id="crossCriteriaCollapse" class="accordion-collapse collapse"
+                                     aria-labelledby="crossCriteriaHeading" data-bs-parent="#criteriaAccordion">
+                                    <div class="accordion-body">
+                                        <partial name="_extraCriteriaStatsCrossPartial" model="Model.ExtraCriteriaViewModel"/>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="accordion-item">
+                                <h2 class="accordion-header" id="singleCriteriaHeading">
+                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                            data-bs-target="#singleCriteriaCollapse" aria-expanded="false"
+                                            aria-controls="singleCriteriaCollapse">
+                                        Niet gekruiste / onbekende criteria
+                                    </button>
+                                </h2>
+                                <div id="singleCriteriaCollapse" class="accordion-collapse collapse"
+                                     aria-labelledby="singleCriteriaHeading" data-bs-parent="#criteriaAccordion">
+                                    <div class="accordion-body">
+                                        <partial name="_extraCriteriaStatsPartial" model="Model.ExtraCriteriaViewModel"/>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                    else if (Model.AnyCrossCriteria)
+                    {
+                        <partial name="_extraCriteriaStatsCrossPartial" model="Model.ExtraCriteriaViewModel"/>
+                    }
+                    else if (Model.AnyUnknownCriteria)
+                    {
+                        <partial name="_extraCriteriaStatsPartial" model="Model.ExtraCriteriaViewModel"/>
                     }
                     else
                     {
-                        <p class="card-text">Inschrijving is gesloten.</p>
+                        <div class="alert alert-info mb-0" role="alert">
+                            <h4 class="alert-heading">Geen criteria</h4>
+                            <p class="mb-0">Er zijn geen criteria ingesteld voor dit panel.</p>
+                        </div>
                     }
                 </div>
-                <div class="d-flex gap-2 mt-4">
-                    <a class="btn @buttonClass w-50"
-                       asp-action="ToggleRegistration"
-                       asp-controller="PanelManagement"
-                       asp-route-panelId="@Model.PanelId">
-                        @(Model.IsRegistrationOpen ? "Inschrijving Sluiten" : "Inschrijving Openen")
-                    </a>
-                    <button class="btn btn-danger"
-                            data-bs-toggle="modal"
-                            data-bs-target="#FinnishModal"
-                            data-panel-id="@Model.PanelId">
-                        Inschrijving afronden
-                    </button>
-                </div>
             </div>
-        </div>
-
-    </div>
-
-    <div class="row mt-4 ">
-        <div class="card mt-4 shadow-sm border-0 col-11">
-            @if (Model.AnyCrossCriteria && Model.AnyUnknownCriteria)
-            {
-                <div class="accordion" id="criteriaAccordion">
-                    <div class="accordion-item">
-                        <h2 class="accordion-header" id="crossCriteriaHeading">
-                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
-                                    data-bs-target="#crossCriteriaCollapse" aria-expanded="false"
-                                    aria-controls="crossCriteriaCollapse">
-                                Gekruiste criteria
-                            </button>
-                        </h2>
-                        <div id="crossCriteriaCollapse" class="accordion-collapse collapse"
-                             aria-labelledby="crossCriteriaHeading" data-bs-parent="#criteriaAccordion">
-                            <div class="accordion-body">
-                                <partial name="_extraCriteriaStatsCrossPartial" model="Model.ExtraCriteriaViewModel"/>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="accordion-item">
-                        <h2 class="accordion-header" id="singleCriteriaHeading">
-                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
-                                    data-bs-target="#singleCriteriaCollapse" aria-expanded="false"
-                                    aria-controls="singleCriteriaCollapse">
-                                Niet gekruiste / onbekende criteria
-                            </button>
-                        </h2>
-                        <div id="singleCriteriaCollapse" class="accordion-collapse collapse"
-                             aria-labelledby="singleCriteriaHeading" data-bs-parent="#criteriaAccordion">
-                            <div class="accordion-body">
-                                <partial name="_extraCriteriaStatsPartial" model="Model.ExtraCriteriaViewModel"/>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            }
-            else if (Model.AnyCrossCriteria)
-            {
-                <partial name="_extraCriteriaStatsCrossPartial" model="Model.ExtraCriteriaViewModel"/>
-            }
-            else if (Model.AnyUnknownCriteria)
-            {
-                <partial name="_extraCriteriaStatsPartial" model="Model.ExtraCriteriaViewModel"/>
-            }
-            else
-            {
-                <div class="alert alert-info" role="alert">
-                    <h4 class="alert-heading">Geen criteria</h4>
-                    <p class="mb-0">Er zijn geen criteria ingesteld voor dit panel.</p>
-                </div>
-            }
         </div>
     </div>
 </div>
 
-
+<!-- Modal -->
 <div class="modal fade" id="FinnishModal" tabindex="-1" aria-labelledby="FinnishModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="FinnishModalLabel">Bent u zeker?</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Sluiten"></button>
             </div>
             <div class="modal-body">
                 <div id="FinnishModalContent">
-                    <partial name="_FinishRegistrationPartial" , model="Model"/>
+                    <partial name="_FinishRegistrationPartial" model="Model"/>
                 </div>
             </div>
         </div>
