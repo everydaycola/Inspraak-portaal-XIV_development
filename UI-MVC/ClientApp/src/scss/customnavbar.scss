@@ -31,7 +31,7 @@ $open-animation-time: 2s;
   .large-grid-container {
     display: grid;
     grid-template-columns: 10fr 90fr;
-    grid-template-rows: 18fr 1fr;
+    grid-template-rows: 9fr 1fr;
     min-height: calc(100vh - #{constants.$gap-size});
     grid-gap: #{constants.$gap-size};
     margin-bottom: 0 !important;
