@@ -830,7 +830,7 @@
                                         <div class="mt-2 p-3 bg-light rounded">
                                             @foreach (var suggestion in suggestionPost.Suggestions.OrderBy(s => s.CreatedAt))
                                             {
-                                                {
+                                                if (suggestion.IsGloballyVisible || (User.Identity?.IsAuthenticated ?? false)) {
                                                     <div class="suggestion-item mb-3">
                                                         <div class="d-flex justify-content-between align-items-start">
                                                             <div class="suggestion">
