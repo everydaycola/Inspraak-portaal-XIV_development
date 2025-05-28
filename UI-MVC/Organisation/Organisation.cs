@@ -3,6 +3,7 @@ using BL.Managers;
 using DAL;
 using DAL.Interfaces;
 using DAL.Repositories;
+using Domain.Tenant;
 using Microsoft.Extensions.Options;
 
 namespace UI_MVC.TempTenant;

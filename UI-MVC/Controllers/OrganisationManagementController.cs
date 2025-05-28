@@ -41,7 +41,7 @@ public class OrganisationManagementController : Controller
         try
         {
             var updatedOrg = _organisationManager.UpdateOrganisation(organisationId, name, org.BackgroundColor,
-                org.BackgroundImage, org.LogoImageName);
+                org.BackgroundImage, org.LogoImageName, org.IsTextColorWhite);
             var responseDto = new OrganisationDto
             {
                 Id = updatedOrg.Id,
@@ -112,7 +112,7 @@ public class OrganisationManagementController : Controller
         }
 
         var organisation = _organisationManager.UpdateOrganisation(organisationId, model.Name, model.BackgroundColor,
-            uniqueFileName, uniqueFileNameLogo);
+            uniqueFileName, uniqueFileNameLogo, model.IsTextColorWhite);
 
         ViewBag.IsEditing = false;
         return View("Index", organisation);
