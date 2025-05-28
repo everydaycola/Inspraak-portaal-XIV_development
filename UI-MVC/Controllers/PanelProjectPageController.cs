@@ -121,20 +121,28 @@ public class PanelProjectPageController : Controller
         //Generate a unique filename
         var uniqueFileName = Guid.NewGuid() + Path.GetExtension(newDocumentPost.File.FileName);
         // Save the file
-        await _storageManager.AddFileAsync(uniqueFileName, newDocumentPost.File.ContentType,
-            newDocumentPost.File.OpenReadStream());
-        //SAVE META DATA IN DB
-        _projectPageManager.AddDocumentPost(newDocumentPost.TimeLineId, newDocumentPost.Title, uniqueFileName, newDocumentPost.VisibleForPanelMember, newDocumentPost.IsGloballyVisible);
-        // handle mail sending
-        _ = HandleMailSending(newDocumentPost.InformPeopleViaMail, newDocumentPost.VisibleForPanelMember,
-                newDocumentPost.PanelId)
-            .ContinueWith(task =>
-            {
-                if (task.IsFaulted)
-                {
-                    _logger.Log(LogLevel.Error, task.Exception, "Failed to send email notifications");
-                }
-            });
+        try
+        {
+             await _storageManager.AddFileAsync(uniqueFileName, newDocumentPost.File.ContentType,
+                newDocumentPost.File.OpenReadStream());
+             //SAVE META DATA IN DB
+             _projectPageManager.AddDocumentPost(newDocumentPost.TimeLineId, newDocumentPost.Title, uniqueFileName,
+                 newDocumentPost.VisibleForPanelMember, newDocumentPost.IsGloballyVisible);
+             // handle mail sending
+             _ = HandleMailSending(newDocumentPost.InformPeopleViaMail, newDocumentPost.VisibleForPanelMember,
+                     newDocumentPost.PanelId)
+                 .ContinueWith(task =>
+                 {
+                     if (task.IsFaulted)
+                     {
+                         _logger.Log(LogLevel.Error, task.Exception, "Failed to send email notifications");
+                     }
+                 });
+        }
+        catch (NullReferenceException e)
+        {
+            _logger.LogError("Creating StorageClient Failed" + e.Message);    
+        }
 
 
         return RedirectToAction("Index", new { newDocumentPost.PanelId });
@@ -353,8 +361,15 @@ public class PanelProjectPageController : Controller
         }
 
         var uniqueFileName = Guid.NewGuid() + Path.GetExtension(verslagFile.FileName);
-        await _storageManager.AddFileAsync(uniqueFileName, verslagFile.ContentType, verslagFile.OpenReadStream());
-        _projectPageManager.AddDocumentToPost(meetingId, uniqueFileName);
+        try
+        {
+            await _storageManager.AddFileAsync(uniqueFileName, verslagFile.ContentType, verslagFile.OpenReadStream());
+                _projectPageManager.AddDocumentToPost(meetingId, uniqueFileName);
+        }
+        catch (NullReferenceException e)
+        {
+            _logger.LogError("Failed to add to bucket" + e.Message);
+        }
         return RedirectToAction("Index", new { panelId });
     }
 
