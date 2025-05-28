@@ -25,6 +25,7 @@ builder.Services.AddScoped<ICustomUserManager, CustomUserManager>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IPanelRepository, PanelRepository>();
 builder.Services.AddScoped<IPanelManager, PanelManager>();
+builder.Services.AddScoped<IPanelProjectPageManager, PanelProjectPageManager>();
 builder.Services.AddScoped<QrCodeGenerator, QrCodeGenerator>();
 builder.Services.AddScoped<IFileManager, FileManager>();
 builder.Services.AddScoped<ICriteriaManager, CriteriaManager>();
@@ -34,18 +35,19 @@ builder.Services.AddScoped<ISendMailManager, SendMailManager>();
 builder.Services.AddScoped<IStorageManager, StorageManager>();
 builder.Services.AddScoped<IPinCRepository, PinCRepository>();
 builder.Services.AddScoped<ICommuneManager, CommuneManager>();
+builder.Services.AddScoped<IPanelProjectPageManager, PanelProjectPageManager>();
+builder.Services.AddScoped<IQuestionRepository, QuestionRepository>();
+builder.Services.AddScoped<IQuestionManager, QuestionManager>();
 
 //Tenant specific logic
 builder.Services
     .AddOrganisationContext()
     .AddScoped<OrganisationMiddleware>();
-builder.Services.Configure<AvailableOrganisations>(
-    builder.Configuration.GetSection(AvailableOrganisations.SectionName)
-);
 
 builder.Services.Configure<GoogleCloudOptions>(options =>
 {
-    options.BucketName = builder.Configuration.GetValue<string>("GoogleCloud_BucketName");
+    options.BucketName = Environment.GetEnvironmentVariable("GoogleCloud_BucketName") ??
+                         builder.Configuration.GetValue<string>("GoogleCloud_BucketName");
 });
 var redisConfiguration = builder.Configuration.GetValue<string>("Redis_Configuration");
 var redisInstanceName = builder.Configuration.GetValue<string>("Redis_InstanceName");
@@ -60,7 +62,8 @@ builder.Services.AddStackExchangeRedisCache(options =>
 });
 
 
-var connectionString = Environment.GetEnvironmentVariable("ConnectionStrings__DefaultConnection");
+var connectionString = Environment.GetEnvironmentVariable("ConnectionStrings__DefaultConnection") ??
+                       builder.Configuration.GetValue<string>("ConnectionStrings__DefaultConnection");
 builder.Services.AddDbContext<CitizenPanelDbContext>(options => { options.UseNpgsql(connectionString); });
 
 
@@ -84,7 +87,8 @@ var app = builder.Build();
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
-    app.UseExceptionHandler("/Home/Error");
+    app.UseExceptionHandler("/Error");
+    app.UseStatusCodePagesWithReExecute("/Error/{0}");
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
@@ -114,7 +118,6 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapRazorPages();
-// todo: the /id thing isnt very relevant here, copied from .net project. 
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");

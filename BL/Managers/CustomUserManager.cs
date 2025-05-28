@@ -1,5 +1,7 @@
-﻿using BL.Interfaces;
+﻿using System.Security.Claims;
+using BL.Interfaces;
 using DAL.Interfaces;
+using Domain;
 using Domain.CitizenPanel;
 
 namespace BL.Managers;

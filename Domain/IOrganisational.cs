@@ -1,4 +1,4 @@
-namespace UI_MVC;
+namespace Domain;
 
 public interface IOrganisational
 {

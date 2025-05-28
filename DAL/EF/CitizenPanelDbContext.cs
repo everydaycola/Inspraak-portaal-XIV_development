@@ -1,9 +1,13 @@
 ﻿using System.Linq.Expressions;
 using System.Text.Json;
 using Domain;
+using Domain.Admin;
 using Domain.CitizenPanel;
 using Domain.Interfaces;
 using Domain.Interfaces.Posts;
+using Domain.Interfaces.Posts.PostItems;
+using Domain.Question;
+using Domain.Tenant;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
@@ -11,7 +15,6 @@ using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Microsoft.EntityFrameworkCore.Query;
 using Microsoft.EntityFrameworkCore.ValueGeneration;
-using UI_MVC;
 
 namespace DAL.EF;
 
@@ -27,8 +30,17 @@ public class CitizenPanelDbContext : IdentityDbContext<ApplicationUser>
     public DbSet<CriteriaAnswerOption> CriteriaAnswerOptions { get; set; }
     public DbSet<CriteriaResponse> CriteriaResponses { get; set; }
     public DbSet<PlanningGroupMember> PlanningGroupMembers { get; set; }
+    public DbSet<Suggestion> Suggestions { get; set; }
+    public DbSet<Vote> Votes { get; set; }
+    public DbSet<TimeLine> TimeLines { get; set; }
     public DbSet<Post> Posts { get; set; }
-    
+    //Verkenning van het concept.
+    public DbSet<Question> Questions { get; set; }
+    public DbSet<AnswerOption> AnswerOptions { get; set; }
+    public DbSet<QuestionWeightTips> QuestionWeightTips { get; set; }
+    public DbSet<ParticipationMethod> ParticipationMethods { get; set; }
+    public DbSet<AnswerOptionImpact> AnswerOptionImpacts { get; set; }
+
     public CitizenPanelDbContext(DbContextOptions options, OrganisationContext organisationContext) : base(options)
     {
         _organisationContext = organisationContext;
@@ -37,19 +49,20 @@ public class CitizenPanelDbContext : IdentityDbContext<ApplicationUser>
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         var organisationalModels = modelBuilder.Model.GetEntityTypes()
-                .Where(entity => typeof(IOrganisational).IsAssignableFrom(entity.ClrType)
-                && !typeof(IdentityUser).IsAssignableFrom(entity.ClrType));
+            .Where(entity => typeof(IOrganisational).IsAssignableFrom(entity.ClrType)
+                             && !typeof(IdentityUser).IsAssignableFrom(entity.ClrType));
         foreach (var organisationalModel in organisationalModels)
         {
             modelBuilder.Entity(organisationalModel.ClrType)
-                .HasQueryFilter<IOrganisational>(e => e.OrganisationId == OrganisationId )
+                .HasQueryFilter<IOrganisational>(e => e.OrganisationId == OrganisationId)
                 .HasIndex(nameof(IOrganisational.OrganisationId));
-            
+
             modelBuilder.Entity(organisationalModel.ClrType)
                 .Property(nameof(IOrganisational.OrganisationId))
                 .IsRequired()
                 .HasValueGenerator<TenantIdValueGenerator>();
         }
+
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(CitizenPanelDbContext).Assembly);
         base.OnModelCreating(modelBuilder);
         // panel 1-1 representationgroup
@@ -57,11 +70,11 @@ public class CitizenPanelDbContext : IdentityDbContext<ApplicationUser>
             .HasOne(p => p.Panel)
             .WithOne(p => p.RepresentationGroup)
             .HasForeignKey<RepresentationGroup>("PanelId");
-        
+
         //Criteria * - 1 panels
         modelBuilder.Entity<Panel>()
             .HasMany(p => p.Criteria);
-        
+
         //Criteria 1 - * Answeroptions.
         modelBuilder.Entity<Criteria>()
             .HasMany(c => c.AnswerOptions)
@@ -70,41 +83,77 @@ public class CitizenPanelDbContext : IdentityDbContext<ApplicationUser>
         // CriteriaResponse 1 - * Criteria
         modelBuilder.Entity<CriteriaResponse>()
             .HasOne(c => c.Criteria);
-        
+
         // Panelmember 1 - * CriteriaResponse
         modelBuilder.Entity<PanelMember>()
             .HasMany(pm => pm.Responses);
-        
+
         //Planningroepmember 1..*-* Panel
         modelBuilder.Entity<PlanningGroupMember>()
             .HasOne(pgm => pgm.Panel);
         
-        //Panel 1 - * Posts
+        //Panel 1 - * Timelines 1 - * Posts
         modelBuilder.Entity<Panel>()
-            .HasMany(p => p.Posts);
+            .HasMany(p => p.Timelines);
+        modelBuilder.Entity<TimeLine>()
+            .HasMany(t => t.Posts);
         //Explain EF that we have implements of the abstract Post class.
         modelBuilder.Entity<TextPost>();
         modelBuilder.Entity<DocumentPost>();
         modelBuilder.Entity<EmbeddedVideoPost>();
+        modelBuilder.Entity<YoutubeVideoPost>();
         modelBuilder.Entity<MeetingPost>();
+        modelBuilder.Entity<EmbeddedGoogleFormLink>();
+        // suggestionposts also contain suggestions
+        modelBuilder.Entity<SuggestionPost>()
+            .HasMany(s => s.Suggestions);
+        modelBuilder.Entity<Suggestion>()
+            .HasMany(s => s.Votes)
+            .WithOne(s => s.Suggestion);
+        modelBuilder.Entity<Vote>()
+            .HasOne(v => v.Owner);
         //ENSURE EF KNOWS HOW TO HANDLE DOCUMENTNAMES.
         modelBuilder.Entity<MeetingPost>(b =>
+        {
+            b.Property(p => p.DocumentNames)
+                .HasConversion(
+                    v => JsonSerializer.Serialize(v, (JsonSerializerOptions)null),
+                    v => JsonSerializer.Deserialize<List<string>>(v, (JsonSerializerOptions)null)!);
+        });
+
+        
+        modelBuilder.Entity<SuggestionPost>(b =>
         {
             b.Property(p => p.DocumentNames)
                 .HasConversion(
                     v => JsonSerializer.Serialize(v, (JsonSerializerOptions?)null),
                     v => JsonSerializer.Deserialize<List<string>>(v, (JsonSerializerOptions?)null)!);
         });
+        
+        modelBuilder.Entity<Vote>()
+            .Property("SuggestionId");
+        modelBuilder.Entity<Vote>()
+            .Property("OwnerId");
+        modelBuilder.Entity<Vote>()
+            .HasKey("SuggestionId", "OwnerId");
+        modelBuilder.Entity<Question>()
+            .HasMany(q => q.AnswerOptions)
+            .WithOne(ao => ao.Question);
+        modelBuilder.Entity<AnswerOption>()
+            .HasMany(a => a.Impacts);
     }
+
     public bool CreateDatabase(bool dropDatabase)
     {
         if (dropDatabase)
         {
             Database.EnsureDeleted();
         }
+
         return Database.EnsureCreated();
     }
 }
+
 public static class QueryFilterExtensions
 {
     public static EntityTypeBuilder HasQueryFilter<TInterface>(this EntityTypeBuilder entityTypeBuilder,
@@ -119,6 +168,7 @@ public static class QueryFilterExtensions
         return entityTypeBuilder.HasQueryFilter(lambdaExpression);
     }
 }
+
 public class TenantIdValueGenerator : ValueGenerator<string>
 {
     public override string Next(EntityEntry entry)
@@ -130,6 +180,7 @@ public class TenantIdValueGenerator : ValueGenerator<string>
 
         throw new InvalidOperationException("Could not generate a new TenantId");
     }
+
     public override bool GeneratesTemporaryValues { get; }
         = false;
 }

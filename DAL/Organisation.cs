@@ -1,9 +1,0 @@
-namespace DAL;
-
-public class Organisation
-{
-    public string Id { get; set; }   
-    public string Name { get; set; }
-    public string BackgroundColor { get; set; }
-    public string BackgroundImage { get; set; }
-}

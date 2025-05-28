@@ -3,6 +3,7 @@ using BL.Managers;
 using DAL;
 using DAL.Interfaces;
 using DAL.Repositories;
+using Domain.Tenant;
 using Microsoft.Extensions.Options;
 
 namespace UI_MVC.TempTenant;
@@ -26,7 +27,7 @@ public static class OrganisationExtensions
     {
         services.AddScoped<OrganisationContext>();
         services.AddTransient<Organisation>(p => p.GetRequiredService<OrganisationContext>().Organisation);
-        services.AddSingleton<IConfigureOptions<AvailableOrganisations>, AvailableOrganisationsSetup>();
+        //REMOVE: services.AddSingleton<IConfigureOptions<AvailableOrganisations>, AvailableOrganisationsSetup>();
         
         services.AddScoped(provider =>
         {

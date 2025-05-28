@@ -1,4 +1,4 @@
-﻿@model ExtraCriteriaDto
+﻿@model UI_MVC.Models.ViewModels.ExtraCriteriaViewModel
 @{
     // Extract criteria distribution data
     var criteriaDistribution = Model.Criteria
@@ -66,6 +66,8 @@
 
             @for (var colIndex = 0; colIndex < orderedCriteriaNames.Count; colIndex++)
             {
+                if (rowIndex != 0 && rowIndex % rowSpans[colIndex] == 0) optionIndexes[colIndex]++;
+                
                 var option = criteriaOptions[colIndex][optionIndexes[colIndex] % optionCounts[colIndex]];
 
                 combinedDistribution *= criteriaDistribution[orderedCriteriaNames[colIndex]][option];
@@ -73,13 +75,12 @@
 
                 if (rowIndex % rowSpans[colIndex] != 0) continue;
 
-                <th class="align-middle text-center border-top border-black" rowspan="@rowSpans[colIndex]">
+                <td class="align-middle text-center border-top border-black" rowspan="@rowSpans[colIndex]">
                     @option
-                </th>
-                optionIndexes[colIndex]++;
+                </td> 
             }
 
-            <th class="text-center">
+            <td class="text-center">
                 @{
                     var criteriaKeyString = string.Join("|", criteriaOptionKeys);
                     var hasError = !Model.CriteriaGroupAbsoluteMemberCount.TryGetValue(criteriaKeyString, out var actualCount);
@@ -123,7 +124,7 @@
                         Something went wrong
                     </div>
                 }
-            </th>
+            </td>
         </tr>
     }
     </tbody>

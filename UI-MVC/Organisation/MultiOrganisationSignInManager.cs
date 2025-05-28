@@ -1,5 +1,6 @@
 ﻿using DAL;
 using Domain;
+using Domain.Tenant;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;

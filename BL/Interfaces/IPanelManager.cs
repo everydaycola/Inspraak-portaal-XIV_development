@@ -12,31 +12,25 @@ public interface IPanelManager
     public PanelMember GetPanelMemberWithPanel(Guid id);
     public IEnumerable<PanelMember> GetAllPanelMembersForPanel(Guid panelId);
     public Panel GetPanelWithCriteriaAndCriteriaAnswerOptions(Guid panelId);
-
-    public Panel GetPanelWithPosts(Guid panelId);
     public IEnumerable<PlanningGroupMember> GetAllPlanningGroupMembersWithIdentityUserForPanel(Guid panelId);
-
     public Dictionary<string, int> CalculateCrossDistributionAbsolute(Guid panelId);
+    public IEnumerable<Panel> GetAllPanelsWithPostsAndSuggestions();
 
     //ADD
     public Panel AddPanel(string name, double sampleRate,
         ICollection<Criteria> distribution, int citizenCount, double reservePercentage,
         double responseRate, string userId);
 
-    public void AddTextPost(Guid panelId,string title, string content, bool isVisibleForPanelMembers);
     public void AddPlanningsGroupMember(Guid panelId, string Email, string Naam, string Functie);
-
-    public void AddDocumentPost(Guid panelId, string title, string documentUrl, bool isVisibleForPanelMembers);
-    public void AddMeetingPost(Guid panelId, string title, DateTime meetingDateTime, bool visibleForPanelMember);
     //UPDATE
     public void UpdatePanel(Guid id, bool isRegistrationOpen);
     public void UpdatePanelRegistrationCount(Guid id, bool increase);
     public PanelMember UpdatePanelMember(PanelMember member);
+    public Task UpdatePlanningsGroupMember(Guid planningsGroupMemberId, string email, string naam, string functie);
     //DELETE
     public void DeletePlanningsGroupmember(Guid planningsGroupMemberId);
     //HELPERS
     public void NewPanelPhase(Guid guid, double newResponseRate);
     public void EndRegistration(Guid id, IEnumerable<Criteria> allDesiredCriteriaPercentages, bool sendInvitationMails, string currentBaseUrl);
-    public void AddSummaryToMeetingPost(Guid meetingId, string uniqueFileName);
     
 }
