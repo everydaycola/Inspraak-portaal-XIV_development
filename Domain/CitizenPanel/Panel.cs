@@ -1,6 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using Domain.Interfaces.Posts;
-using UI_MVC;
 
 namespace Domain.CitizenPanel;
 

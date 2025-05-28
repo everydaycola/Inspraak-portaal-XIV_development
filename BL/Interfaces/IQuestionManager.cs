@@ -1,7 +1,7 @@
 using Domain.Admin;
 using Domain.GlobalDtos;
 using Domain.Interfaces;
-using Domain.Interfaces.Question;
+using Domain.Question;
 using AnswerOptionImpactsDto = Domain.GlobalDtos.AnswerOptionImpactsDto;
 
 namespace BL.Interfaces;
