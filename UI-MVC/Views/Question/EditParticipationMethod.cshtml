@@ -1,17 +1,25 @@
 @model UI_MVC.Models.ViewModels.ParticipationViewModel
 
-<form asp-action="EditParticipationMethod" asp-controller="Question" method="post">
-    <input type="hidden" asp-for="Id" />
-    <div class="mb-3">
-        <label asp-for="Name" class="form-label"></label>
-        <input asp-for="Name" class="form-control" required />
-        <span asp-validation-for="Name" class="text-danger"></span>
+<div class="container mt-5">
+    <div class="row g-4 align-items-stretch">
+        <div class="card shadow-sm border-0 mb-4">
+            <div class="card-body">
+                <form asp-action="EditParticipationMethod" asp-controller="Question" method="post">
+                    <input type="hidden" asp-for="Id"/>
+                    <div class="mb-3">
+                        <label asp-for="Name" class="form-label"></label>
+                        <input asp-for="Name" class="form-control" required/>
+                        <span asp-validation-for="Name" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="Description" class="form-label"></label>
+                        <textarea asp-for="Description" class="form-control" rows="3" required></textarea>
+                        <span asp-validation-for="Description" class="text-danger"></span>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Opslaan</button>
+                    <a asp-action="Index" class="btn btn-secondary">Annuleren</a>
+                </form>
+            </div>
+        </div>
     </div>
-    <div class="mb-3">
-        <label asp-for="Description" class="form-label"></label>
-        <textarea asp-for="Description" class="form-control" rows="3" required></textarea>
-        <span asp-validation-for="Description" class="text-danger"></span>
-    </div>
-    <button type="submit" class="btn btn-primary">Opslaan</button>
-    <a asp-action="Index" class="btn btn-secondary">Annuleren</a>
-</form>
+</div>

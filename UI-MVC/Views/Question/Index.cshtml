@@ -1,3 +1,4 @@
+@using Microsoft.EntityFrameworkCore
 @using UI_MVC.Models.ViewModels
 @using UI_MVC.Models.ViewModels.ExploreConceptViewModels.management
 @model QuestionIndexViewModel
@@ -17,8 +18,14 @@
             <h2 class="m-4">Vraagbeheer</h2>
             <div class="card shadow-sm border-0 mb-4">
                 <div class="card-body">
-                    <partial name="_questionFormPartial"
-                             model="@(new QuestionViewModel { ParticipationMethods = Model.ParticipationMethods })" />
+                    @if(Model.ParticipationMethods.Count() != 0){
+                        <partial name="_questionFormPartial"
+                                 model="@(new QuestionViewModel { ParticipationMethods = Model.ParticipationMethods })"/>
+                    }
+                    else
+                    {
+                        <p>Het is niet mogelijk vragen toe te voegen zonder paricipatie methoden</p>
+                        }
                 </div>
             </div>
         </div>
@@ -73,10 +80,13 @@
                                 }
                             </div>
                             <div class="mt-auto d-flex gap-2">
-                                <a asp-action="EditQuestion" asp-route-id="@question.Id"
-                                   class="btn btn-sm btn-outline-primary flex-fill">
-                                    <i class="bi bi-pencil"></i> Bewerken
-                                </a>
+                                @if (Model.ParticipationMethods.Count() != 0)
+                                {
+                                    <a asp-action="EditQuestion" asp-route-id="@question.Id"
+                                       class="btn btn-sm btn-outline-primary flex-fill">
+                                        <i class="bi bi-pencil"></i> Bewerken
+                                    </a>
+                                }
                                 <form asp-action="DeleteQuestionWithAnswerOptions" asp-controller="Question"
                                       method="post" class="flex-fill">
                                     <input type="hidden" name="questionId" value="@question.Id"/>
@@ -156,8 +166,7 @@
                                 <label class="form-label">Vraagtekst</label>
                                 <input type="text" class="form-control"
                                        name="QuestionToEdit.Question"
-                                       value="Over hoeveel maanden beschik je nog voordat de input van de participatie klaar moet
-zijn voor de politieke besluitvorming?" required>
+                                       value="Over hoeveel maanden beschik je nog?" required readonly>
                             </div>
 
                             <div class="mb-3">
@@ -179,66 +188,66 @@ zijn voor de politieke besluitvorming?" required>
                                         <td>
                                             <input type="text"
                                                    class="form-control"
-                                                   placeholder="Meer dan 6 maanden" required>
+                                                   placeholder="Meer dan 6 maanden" required readonly>
                                         </td>
                                         <td>
                                             <input type="number"
                                                    name="QuestionToEdit.AnswerOptions[0].WeightsPerMethod[1].Weight"
-                                                   class="form-control" value="10">
+                                                   class="form-control" value="10" readonly>
                                         </td>
                                         <td>
                                             <input type="number"
                                                    name="QuestionToEdit.AnswerOptions[0].WeightsPerMethod[2].Weight"
-                                                   class="form-control" value="0">
+                                                   class="form-control" value="2" readonly>
                                         </td>
                                         <td>
                                             <input type="number"
                                                    name="QuestionToEdit.AnswerOptions[0].WeightsPerMethod[3].Weight"
-                                                   class="form-control" value="0">
+                                                   class="form-control" value="1" readonly>
                                         </td>
                                     </tr>
                                     <tr>
                                         <td>
                                             <input type="text"
                                                    class="form-control"
-                                                   placeholder="Tussen 3 en 6 maanden" required>
+                                                   placeholder="Tussen 3 en 6 maanden" required readonly>
                                         </td>
                                         <td>
                                             <input type="number"
                                                    name="QuestionToEdit.AnswerOptions[0].WeightsPerMethod[1].Weight"
-                                                   class="form-control" value="0">
+                                                   class="form-control" value="4" readonly>
                                         </td>
                                         <td>
                                             <input type="number"
                                                    name="QuestionToEdit.AnswerOptions[0].WeightsPerMethod[2].Weight"
-                                                   class="form-control" value="10">
+                                                   class="form-control" value="10" readonly>
                                         </td>
                                         <td>
                                             <input type="number"
                                                    name="QuestionToEdit.AnswerOptions[0].WeightsPerMethod[3].Weight"
-                                                   class="form-control" value="0">
+                                                   class="form-control" value="2" readonly>
                                         </td>
                                     </tr>
                                     <tr>
                                         <td>
                                             <input type="text"
                                                    class="form-control"
-                                                   placeholder="1 tot 3 maanden" required>
+                                                   placeholder="1 tot 3 maanden" required readonly>
                                         </td>
                                         <td>
                                             <input type="number"
                                                    name="QuestionToEdit.AnswerOptions[0].WeightsPerMethod[1].Weight"
-                                                   class="form-control" value="0">
+                                                   class="form-control" value="3" readonly>
                                         </td>
                                         <td>
                                             <input type="number"
                                                    name="QuestionToEdit.AnswerOptions[0].WeightsPerMethod[2].Weight"
-                                                   class="form-control" value="0">
+                                                   class="form-control" value="1" readonly>
                                         </td>
                                         <td>
                                             <input type="number"
                                                    name="QuestionToEdit.AnswerOptions[0].WeightsPerMethod[3].Weight"
-                                                   class="form-control" value="10">
+                                                   class="form-control" value="10" readonly>
                                         </td>
                                     </tr>
                                     <tr>
@@ -246,22 +255,22 @@ zijn voor de politieke besluitvorming?" required>
                                             <input type="text"
                                                    name="QuestionToEdit.AnswerOptions[0].AnswerOptionText"
                                                    class="form-control"
-                                                   placeholder="Minder dan 1 maand" required>
+                                                   placeholder="Minder dan 1 maand" required readonly>
                                         </td>
                                         <td>
                                             <input type="number"
                                                    name="QuestionToEdit.AnswerOptions[0].WeightsPerMethod[1].Weight"
-                                                   class="form-control" value="0">
+                                                   class="form-control" value="5" readonly>
                                         </td>
                                         <td>
                                             <input type="number"
                                                    name="QuestionToEdit.AnswerOptions[0].WeightsPerMethod[2].Weight"
-                                                   class="form-control" value="0">
+                                                   class="form-control" value="5" readonly>
                                         </td>
                                         <td>
                                             <input type="number"
                                                    name="QuestionToEdit.AnswerOptions[0].WeightsPerMethod[3].Weight"
-                                                   class="form-control" value="100">
+                                                   class="form-control" value="100" readonly>
                                         </td>
                                     </tr>
                                     </tbody>
@@ -290,7 +299,6 @@ zijn voor de politieke besluitvorming?" required>
                                 <li class="list-group-item d-flex align-items-start">
                                     <div class="ms-2 me-auto">
                                         <div class="fw-bold">Gewichten toekennen</div>
-                                        Gebruik positieve/negatieve waarden (-10 tot +10)
                                     </div>
                                 </li>
                                 <li class="list-group-item d-flex align-items-start">

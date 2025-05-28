@@ -86,7 +86,7 @@ public class QuestionRepository : IQuestionRepository
         foreach (var updatedAnswer in updatedAnswerOptions)
         {
             var existingAnswer = existingQuestion.AnswerOptions
-                .FirstOrDefault(a => a.Id == updatedAnswer.Id);
+                .FirstOrDefault(a => a.Id != 0 && a.Id == updatedAnswer.Id);
             if (existingAnswer != null)
             {
                 existingAnswer.AnswerOptionText = updatedAnswer.AnswerOptionText;
