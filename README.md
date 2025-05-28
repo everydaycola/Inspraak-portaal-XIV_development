@@ -4,10 +4,11 @@
 
 ## Inspraak portaal XIV [IP14]
 
-Op ons platform IP14 kan een organisatie, gemeenschap, club, of eender wie anders, een account aanmaken, Hiermee kan u Panels hosten. 
-Ons platvorm is vooral gemaakt voor het aanmaken van burgerpanels maar kan ook gebruikt worden voor kleinere panels. 
-We bieden U een tool om uw panel samen te stellen, U kan mensen uitnodigen op basis van verschillende criteria. 
-Wanneer de uitgenodigde beslissen deel te nemen aan het panel aan uw panel, zal u via ons een project pagina kunnen samenstellen waar u posts kunt maken en kunt communiceren met het panel. 
+Op ons platform IP14 kan een organisatie, gemeenschap, club, of eender wie anders, een account aanmaken.
+Hiermee kan u Panels hosten. 
+Ons platform is vooral gemaakt voor het aanmaken van burgerpanels maar kan ook gebruikt worden voor kleinere panels. 
+We bieden u een tool om uw panel samen te stellen, u kan mensen uitnodigen op basis van verschillende criteria. 
+Wanneer de uitgenodigde beslissen deel te nemen aan uw panel, zal u via ons een project pagina kunnen samenstellen waar u posts kunt maken en kunt communiceren met de leden van het panel. 
 U kunt hier vergaderingen inplannen en stemming houden.
 
 ## Ons team
@@ -18,18 +19,24 @@ U kunt hier vergaderingen inplannen en stemming houden.
 
 ## Het runnen van ons project
 
+### Requirements
 
-
-
-
+- [**nodejs**](https://nodejs.org/en) with npm
+- [**Git**](https://git-scm.com/downloads)
+- [**.NET SDK 8.0**](https://dotnet.microsoft.com/download)
+- [**Docker (Desktop)**](https://www.docker.com/products/docker-desktop/) with docker compose
 
 ### Running locally
-The project utilizes env. variables for connecting to the database.
 
-Our project uses environment variables for connecting to our data sources, the following config is required
-```
-Key: 'ConnectionStrings__DefaultConnection', Value: '<your local db connection string>'
-// Default for our docker config: 'Host=localhost;Database=CitizenPanel_DB;Username=user;Password=password;'
+- open terminal op een gekozen locatie
+- voer de volgende comando's uit
+- `Git Clone https://gitlab.com/kdg-ti/integratieproject-1/202425/14_team-14/development.git`
+- `cd ./development/IP1_Infrastructure`
+- `docker compose up -d`
+- `cd ../UI-MVC`
+- `dotnet run`
 
-```
-Add 'ConnectionStrings__DefaultConnection' with value '<your local db connection string>' to your systems environment variables.
+Nu zou de applicatie actief moeten staan op uw localhost. De link word in het terminal getoond.
+
+Indien dit niet werkt, probeer het via een IDE zoals Jetbrains rider.
+
