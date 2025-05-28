@@ -125,7 +125,7 @@ public class PanelManagementController : Controller
     {
         if (!ModelState.IsValid)
         {
-            return RedirectToAction("Index", model.PanelId);
+            return RedirectToAction("People", model.PanelId);
         }
         _manager.AddPlanningsGroupMember(model.PanelId,model.Email, model.Naam, model.Functie);
         return RedirectToAction("People", model.PanelId);
