@@ -9,6 +9,9 @@ public class NewDocumentPostViewDto : IValidatableObject
     [Required(ErrorMessage = "Panel ID is required")]
     public Guid PanelId { get; set; }
     
+    [Required(ErrorMessage = "Tijdlijn ID is required")]
+    public Guid TimeLineId { get; set; }
+    
     [Required(ErrorMessage = "Titel is verplicht")]
     [StringLength(300, ErrorMessage = "Titel mag maximaal 300 karakters bevatten")]
     public string Title { get; set; }
