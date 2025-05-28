@@ -141,7 +141,7 @@ public class PanelProjectPageController : Controller
         }
         catch (NullReferenceException e)
         {
-            Console.WriteLine(e);
+            _logger.LogError("Creating StorageClient Failed" + e.Message);    
         }
 
 
