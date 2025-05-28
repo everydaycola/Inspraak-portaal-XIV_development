@@ -43,7 +43,7 @@ public class QuestionController : Controller
             }).ToList()
         }).ToList();
 
-       
+
         var allParticipationMethods = _questionManager.GetAllParticipationMethods()
             .Select(p => new ParticipationViewModel()
             {
@@ -75,8 +75,10 @@ public class QuestionController : Controller
     public IActionResult AddQuestion(QuestionViewModel viewModel)
     {
         if (!ModelState.IsValid)
-            return View(viewModel);
-        
+        {
+            return RedirectToAction("Index", viewModel);
+        }
+
         var question = _questionManager.AddQuestion(viewModel.QuestionText);
         foreach (var option in viewModel.AnswerOptions)
         {
@@ -87,6 +89,7 @@ public class QuestionController : Controller
             }).ToList();
             _questionManager.AddAnswerOptionsWithImpacts(question.Id, option.AnswerText, mappedImpacts);
         }
+
         _logger.Log(LogLevel.Information, "Succesfully added a new question.");
         return RedirectToAction("Index");
     }
@@ -161,7 +164,7 @@ public class QuestionController : Controller
                     ParticipationMethodId = i.ParticipationMethod.Id,
                     ParticipationMethodName = i.ParticipationMethod.Name,
                     ImpactWeight = i.ImpactWeight
-                }).ToList() 
+                }).ToList()
             }).ToList(),
             ParticipationMethods = allParticipationMethods
         };
@@ -174,7 +177,7 @@ public class QuestionController : Controller
     {
         if (!ModelState.IsValid)
         {
-            model.ParticipationMethods =_questionManager.GetAllParticipationMethods()
+            model.ParticipationMethods = _questionManager.GetAllParticipationMethods()
                 .Select(pm => new ParticipationViewModel
                 {
                     Id = pm.Id,
@@ -183,6 +186,7 @@ public class QuestionController : Controller
                 }).ToList();
             return View(model);
         }
+
         _questionManager.UpdateQuestionWithAnswerOptions(
             model.Id,
             model.QuestionText,
