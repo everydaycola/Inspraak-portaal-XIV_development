@@ -10,6 +10,7 @@ public interface ICriteriaManager
 
     public Dictionary<string, Dictionary<int, List<PanelMember>>> GetPanelMembersGroupedByResponsesForDefaultCriteriaGroupedByPhase(
         Guid panelId);
+    public List<PanelMember> GetRegisteredPanelMembersOfPanel(Guid panelId);
     
     //SAVES
     public void SavePanelMemberCriteriaResponses(Guid panelId,Dictionary<string, string> CriteriaAnswers, PanelMember member);
