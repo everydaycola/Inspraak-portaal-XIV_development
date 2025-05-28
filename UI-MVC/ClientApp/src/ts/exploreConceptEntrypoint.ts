@@ -17,6 +17,7 @@ if (form) {
 async function handleSelectedValues() {
     const checkedRadios = document.querySelectorAll<HTMLInputElement>('input[type="radio"]:checked');
     const conclusiefield: HTMLElement | null = document.querySelector("#conclusiefield");
+    const conclusieNamefield: HTMLElement | null = document.querySelector("#conclusieName");
 
     const totalWeightsByMethod: Record<string, number> = {};
     checkedRadios.forEach(radio => {
@@ -44,7 +45,8 @@ async function handleSelectedValues() {
     });
 
     const data = await response.json();
-    if (conclusiefield) {
+    if (conclusiefield && conclusieNamefield) {
+        conclusieNamefield.innerText = data.name;
         conclusiefield.innerText = data.suitability;
     }
     const card = document.getElementById("recommendation-card");
