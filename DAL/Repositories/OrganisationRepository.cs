@@ -1,5 +1,6 @@
 using DAL.EF;
 using DAL.Interfaces;
+using Domain.Tenant;
 
 namespace DAL.Repositories;
 

@@ -2,9 +2,9 @@
 @using UI_MVC.Models.ViewModels
 @model PeopleManagementViewModel
 
-<div class="container mt-4">
-    <table class="table table-striped table-bordered">
-        <thead class="thead-dark">
+<div class="table-responsive">
+    <table class="table table-striped table-bordered align-middle">
+        <thead class="table-light">
         <tr>
             <th>Email</th>
             <th>Naam</th>
@@ -32,26 +32,30 @@
                            value="@member.Functie"/>
                 </td>
                 <td>
-                    <button class="btn btn-info inline-edit-save-btn" type="button"
-                            data-member-id="@member.Id"
-                            data-panel-id="@Model.PanelId"
-                            data-mode="edit">
-                        Bewerken
-                    </button>
-                    <a class="btn btn-danger" asp-action="DeletePlanningsGroupmember" asp-route-panelId="@Model.PanelId"
-                       asp-route-planningsGroupMemberId="@member.Id">Verwijderen</a>
+                    <div class="d-flex flex-column flex-md-row gap-2">
+                        <button class="btn btn-info inline-edit-save-btn" type="button"
+                                data-member-id="@member.Id"
+                                data-panel-id="@Model.PanelId"
+                                data-mode="edit">
+                            Bewerken
+                        </button>
+                        <a class="btn btn-danger"
+                           asp-action="DeletePlanningsGroupmember"
+                           asp-route-panelId="@Model.PanelId"
+                           asp-route-planningsGroupMemberId="@member.Id">Verwijderen</a>
+                    </div>
                 </td>
             </tr>
         }
         </tbody>
     </table>
-    <button class="btn btn-primary mb-3" type="button" data-bs-toggle="collapse" data-bs-target="#createMemberCollapse"
-            aria-expanded="false" aria-controls="createMemberCollapse">
-        Nieuw plannings groepslid aanmaken
-    </button>
+</div>
+<button class="btn btn-primary mb-3" type="button" data-bs-toggle="collapse" data-bs-target="#createMemberCollapse"
+        aria-expanded="false" aria-controls="createMemberCollapse">
+    Nieuw plannings groepslid aanmaken
+</button>
 
-    <div class="collapse" id="createMemberCollapse">
-        <partial name="_planningGroupMemberCreationPartial"
-                 model="new PlanningGroupMemberViewModel { PanelId = Model.PanelId }"/>
-    </div>
+<div class="collapse" id="createMemberCollapse">
+    <partial name="_planningGroupMemberCreationPartial"
+             model="new PlanningGroupMemberViewModel { PanelId = Model.PanelId }"/>
 </div>

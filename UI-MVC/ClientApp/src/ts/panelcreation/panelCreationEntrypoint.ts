@@ -1,6 +1,6 @@
-import {addSubRegion, addSubregionValidation} from "./subcomponents/subRegion";
+import {addSubRegion} from "./subcomponents/subRegion";
 import {addCriteria} from "./subcomponents/criteria";
-import {validateCriteriaPercentages} from "./subcomponents/panelFormValidator";
+import {addSubregionValidation, validateCriteriaPercentages} from "./subcomponents/panelFormValidator";
 import {onSubregionChange, setupPanelsizePreviewHandlers} from "./subcomponents/panelsizePreviewHandler";
 import {setupApiAutoFill} from "./apiAutofill/apiDataFiller";
 
