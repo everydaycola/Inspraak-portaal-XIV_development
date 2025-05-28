@@ -1,6 +1,4 @@
-using Domain.Tenant;
-
-namespace DAL;
+namespace Domain.Tenant;
 
 public class OrganisationContext
 {

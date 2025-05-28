@@ -1,4 +1,6 @@
-﻿function setSessionItem(key: string, value: any): void {
+﻿// functions could be used for saving data on the session, not currently used. 
+
+function setSessionItem(key: string, value: any): void {
     try {
         const serializedValue = JSON.stringify(value);
         sessionStorage.setItem(key, serializedValue);
