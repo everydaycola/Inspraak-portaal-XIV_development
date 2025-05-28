@@ -1,10 +1,21 @@
-﻿import {newSubregionInputAddedHandler} from "../apiAutofill/apiDataFiller";
+﻿import {addSubregionValidation} from "./panelFormValidator";
 import {onSubregionChange} from "./panelsizePreviewHandler";
-import {createElementWithClassNames} from "../../customhelpers/htmlHelper";
-import {addSubregionValidation} from "./panelFormValidator";
-
+import {newSubregionInputAddedHandler} from "../apiAutofill/apiDataFiller";
+import {createElementWithClassNames} from "../../customHelpers/htmlHelper";
 
 let subRegionCount = 1;
+
+export function initAddSubRegionHandler(){
+    const subRegionBtn = document.getElementById("sub-region-btn") as HTMLAnchorElement;
+    subRegionBtn.addEventListener("click", addSubRegion);
+}
+
+export function addEventHandlerToDefaultSubregionInput(){
+    const initialSizeInput = document.querySelector("#subregion-0-size") as HTMLInputElement
+    initialSizeInput.addEventListener("input", (e) => {
+        onSubregionChange()
+    })
+}
 
 export function addSubRegion() {
     const subRegionContainer = document.getElementById("subregions-container") as HTMLDivElement;
@@ -21,12 +32,10 @@ export function addSubRegion() {
 }
 function createSubRegionElement(index: number, removeCallback: (id: string) => void): HTMLDivElement {
     const subRegionId = `subregion-${index}`;
-
     // Main container
     const wrapper = createElementWithClassNames("div", "mb-2", "subRegion", `subregion-${index}`);
     wrapper.id = subRegionId;
-
-    // Error row
+    
     const errorRow = createElementWithClassNames("div", "row", "mb-1");
     const nameErrorCol = createElementWithClassNames("div", "col-6");
     const sizeErrorCol = createElementWithClassNames("div", "col-6");

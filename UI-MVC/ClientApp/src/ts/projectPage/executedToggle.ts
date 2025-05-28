@@ -1,11 +1,13 @@
-import {fetchFromAPI} from "../customhelpers/apihelper";
-import {getCurrentBaseUrl} from "../customhelpers/locationHelper";
+import {fetchFromAPI} from "../customHelpers/apihelper";
+import {getCurrentBaseUrl} from "../customHelpers/locationHelper";
 
-const executedBtns = document.getElementsByClassName("executed-toggle-btn")
-for (let i = 0; i < executedBtns.length; i++) {
-    executedBtns.item(i)!!.addEventListener("click", (event) => {
-        toggleExecuted(event)
-    })
+export function initExecuteToggleHandler() {
+    const executedBtns = document.getElementsByClassName("executed-toggle-btn")
+    for (let i = 0; i < executedBtns.length; i++) {
+        executedBtns.item(i)!!.addEventListener("click", (event) => {
+            toggleExecuted(event)
+        })
+    }
 }
 
 const executedText = "Zet op niet uitgevoerd";

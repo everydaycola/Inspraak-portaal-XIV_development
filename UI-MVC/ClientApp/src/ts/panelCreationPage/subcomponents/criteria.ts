@@ -1,10 +1,16 @@
-import { addAnswerOption, reIndexAnswerOptions, resetAnswerCounters, createPercentageInput } from "./answersOption";
-import { setValidationMessages } from "./panelFormValidator";
-import { criteriaInputUpdateHandler } from "../apiAutofill/apiDataFiller";
-import { createRemoveBtn } from "../../components";
-import { createElementWithClassNames, wrapMultipleElementsWithBootstrapRow } from "../../customhelpers/htmlHelper";
+import {addAnswerOption, createPercentageInput, reIndexAnswerOptions, resetAnswerCounters} from "./answersOption";
+import {setValidationMessages} from "./panelFormValidator";
+import {criteriaInputUpdateHandler} from "../apiAutofill/apiDataFiller";
+import {createElementWithClassNames, wrapMultipleElementsWithBootstrapRow} from "../../customHelpers/htmlHelper";
+import {createRemoveBtn} from "../../components";
+
 
 let criteriaCount = 0;
+
+export function initAddCriteriaHandler(){
+    const addCriteriaBtn = document.getElementById("criteria-btn") as HTMLAnchorElement;
+    addCriteriaBtn.addEventListener("click",addCriteria);
+}
 
 export function addCriteria() {
     const criteriaContainer = document.getElementById("criteria-container") as HTMLDivElement;

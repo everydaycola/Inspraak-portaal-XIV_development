@@ -1,4 +1,4 @@
-document.addEventListener('DOMContentLoaded', (): void => {
+export function initShareHandler() {
     const copyLinkButtons: NodeListOf<HTMLButtonElement> = document.querySelectorAll('.copy-link-btn');
     copyLinkButtons.forEach((button: HTMLButtonElement): void => {
         button.addEventListener('click', function (this: HTMLButtonElement): void {
@@ -20,4 +20,4 @@ document.addEventListener('DOMContentLoaded', (): void => {
             }
         });
     });
-});
+}

@@ -1,5 +1,5 @@
-import {fetchFromAPI} from "../customhelpers/apihelper";
-import {getCurrentBaseUrl} from "../customhelpers/locationHelper";
+import {getCurrentBaseUrl} from "../customHelpers/locationHelper";
+import {fetchFromAPI} from "../customHelpers/apihelper";
 
 interface VoteState {
     [key: string]: {
@@ -9,8 +9,7 @@ interface VoteState {
 
 const voteStates: VoteState = {};
 
-document.addEventListener('DOMContentLoaded', () => {
-
+export function initVoteHandler() {
     const voteButtons = Array.from(document.querySelectorAll('.vote-btn')) as HTMLButtonElement[];
 
     voteButtons.forEach(button => {
@@ -34,7 +33,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         button.addEventListener('click', () => handleVote(button, suggestionId));
     });
-});
+}
 
 async function handleVote(button: HTMLButtonElement, suggestionId: string) {
     const currentState = voteStates[suggestionId];

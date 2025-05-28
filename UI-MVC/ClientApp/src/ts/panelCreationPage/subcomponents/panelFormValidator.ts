@@ -3,6 +3,15 @@
     'rangeOverflow' | 'typeMismatch' | 'patternMismatch',
     string>>;
 
+export function handlePanelFormSubmission(){
+    const panelForm = document.getElementById("new-panel-form") as HTMLFormElement;
+    panelForm.addEventListener("submit", (e) => {
+        if (!validateCriteriaPercentages() || !panelForm.checkValidity()) {
+            e.preventDefault(); // Stop submission
+        }
+    });
+}
+
 export function setValidationMessages(ctrlID: string, msgEleID: string,
     messages: ValidationMessages) {
     let element = document.getElementById(ctrlID) as HTMLInputElement

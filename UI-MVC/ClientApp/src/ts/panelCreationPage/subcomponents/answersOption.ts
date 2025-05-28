@@ -1,7 +1,8 @@
 ﻿import {round} from "@popperjs/core/lib/utils/math";
-import {setValidationMessages} from "./panelFormValidator";
+import {createElementWithClassNames} from "../../customHelpers/htmlHelper";
 import {createRemoveBtn} from "../../components";
-import {createElementWithClassNames} from "../../customhelpers/htmlHelper";
+import {setValidationMessages} from "./panelFormValidator";
+
 
 export let answerOptionCounters: Map<number, number> = new Map()
 
