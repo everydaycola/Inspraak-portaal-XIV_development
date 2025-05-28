@@ -11,7 +11,7 @@ namespace BL.Interfaces;
 public interface IPanelProjectPageManager
 {
     // GET
-    public Panel GetPanelWithPostsAndSuggestionsAndVotesAndDocuments(Guid panelId);
+    public Panel GetPanelWithTimeLinesAndPostsAndSuggestionsAndVotesAndDocuments(Guid panelId);
     public Suggestion GetSuggestion(Guid suggestionId);
     public Post GetPost(Guid postId);
     public SuggestionPost GetSuggestionPostSuggestionsAndWithVotes(Guid suggestionPostId);
@@ -21,17 +21,18 @@ public interface IPanelProjectPageManager
     public void ChangeSuggestionVisibility(Guid suggesionId);
     public void ChangeSuggestionPostVotingStatus(Guid postId);
     public void ChangeExecutedToggle(Guid suggestionId);
+    
     // ADD
-    public void AddTextPost(Guid panelId,string title, string content, bool isVisibleForPanelMembers, bool isGloballyVisible);
-    public void AddDocumentPost(Guid panelId, string title, string documentUrl, bool isVisibleForPanelMembers, bool isGloballyVisible);
-    public void AddMeetingPost(Guid panelId, string title, DateTime meetingDateTime, bool visibleForPanelMember);
-    public void AddEmbedVideoPost(Guid panelId, string title, string videoUrl, bool visibleForPanelMember, bool isGloballyVisible);
-    public void AddYoutubeVideoPost(Guid panelId, string title, string videoId, bool visibleForPanelMember, bool isGloballyVisible);
-    public void AddSuggestionPost(Guid panelId, string title, bool visibleForPanelMember, bool isVotingOpen, double votingMajorityFactor);
-    public void AddSummaryToMeetingPost(Guid meetingId, string uniqueFileName);
-    public void AddSuggestionToPost(Guid PostId, string suggestion, string owner);
-
-    public void AddGoogleFormLink(Guid panelId, string title, string embeddedIframeLink, bool visibleForPanelMember,
-        bool isGloballyVisible);
+    public void AddTimeLine(Guid panelId, string title, DateTime timeLineTime);
+    public void AddTextPost(Guid timeLineId,string title, string content, bool isVisibleForPanelMembers, bool isGloballyVisible );
+    public void AddDocumentPost(Guid timeLineId, string title, string documentUrl, bool isVisibleForPanelMembers, bool isGloballyVisible );
+    public void AddMeetingPost(Guid timeLineId, string title, DateTime meetingDateTime, bool visibleForPanelMember );
+    public void AddEmbedVideoPost(Guid timeLineId, string title, string videoUrl, bool visibleForPanelMember, bool isGloballyVisible );
+    public void AddYoutubeVideoPost(Guid timeLineId, string title, string videoId, bool visibleForPanelMember, bool isGloballyVisible );
+    public void AddSuggestionPost(Guid timeLineId, string title, bool visibleForPanelMember, bool isVotingOpen, double votingMajorityFactor );
+    public void AddGoogleFormLink(Guid timeLineId, string title, string embeddedIframeLink, bool visibleForPanelMember, bool isGloballyVisible);
+    public void AddSuggestionToPost(Guid postId, string suggestion, string owner);
+    public void AddDocumentToPost(Guid meetingId, string uniqueFileName);
+    
     // REMOVE
 }

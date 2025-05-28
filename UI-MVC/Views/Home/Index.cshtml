@@ -40,20 +40,24 @@
 else
 {
     <div class="container mt-5">
-    <h2>Publieke Panels</h2>
-    <div class="card border-0 d-flex flex-column">
-        @foreach (var panel in Model.Panels)
-        {
-            if (
-                panel.Posts.Any(post => post.IsGloballyVisible) ||
-                panel.Posts.Any(post => post is SuggestionPost suggestionPost && suggestionPost.Suggestions.Any(sp => sp.IsGloballyVisible)
-                ))
+        <h2>Publieke Panels</h2>
+        <div class="card border-0 d-flex flex-column">
+            @foreach (var panel in Model.Panels)
             {
-                <a class="card col-5 m-2" href="@Url.Action("Index","PanelProjectPage", new{id = panel.Id})">
-                    <h3 class="card-title p-4">@panel.Name</h3>
-                </a>
+                @foreach (var timeLine in panel.Timelines)
+                {
+                    if (
+                        timeLine.Posts.Any(post => post.IsGloballyVisible) ||
+                        timeLine.Posts.Any(post => post is SuggestionPost suggestionPost && suggestionPost.Suggestions.Any(sp => sp.IsGloballyVisible)
+                        ))
+                    {
+                        <a class="card col-5 m-2"
+                           href="@Url.Action("Index", "PanelProjectPage", new { id = panel.Id })">
+                            <h3 class="card-title p-4">@panel.Name</h3>
+                        </a>
+                    }
+                }
             }
-        }
-    </div>
+        </div>
     </div>
 }
