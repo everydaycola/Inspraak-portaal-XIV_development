@@ -1,7 +1,6 @@
 using BL.Interfaces;
 using DAL.Interfaces;
-using Domain.CitizenPanel;
-using UI_MVC.Models.Dto.communeDtos;
+using Domain.GlobalDtos;
 
 namespace BL.Managers;
 

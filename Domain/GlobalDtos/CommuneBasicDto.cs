@@ -1,4 +1,4 @@
-﻿namespace UI_MVC.Models.Dto.communeDtos;
+﻿namespace Domain.GlobalDtos;
 
 public class CommuneBasicDto
 {

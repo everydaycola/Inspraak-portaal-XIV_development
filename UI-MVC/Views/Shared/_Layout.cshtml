@@ -78,7 +78,12 @@
                                 <img src="~/images/organisation_management.png" class="navbar-icon" alt="User account"/>
                                 <p class="nav-link-description">Organisatie beheer</p>
                             </a>
-
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Question" asp-action="Index">
+                                <img src="~/images/question-sign.png" class="navbar-icon" alt="Questionmark"/>
+                                <p class="nav-link-description l-invisible">Vragen Verkenning Concept</p>
+                            </a>
                         </li>
                     }
                     @if (User.Identity != null && User.Identity.IsAuthenticated &&
