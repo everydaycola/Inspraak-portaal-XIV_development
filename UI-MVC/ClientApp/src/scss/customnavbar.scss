@@ -23,6 +23,7 @@ $open-animation-time: 2s;
   //Don't hold default margin when in big screens.
   body {
     margin-bottom: 0;
+    overflow-y:hidden;
   }
   nav {
     z-index: 10;

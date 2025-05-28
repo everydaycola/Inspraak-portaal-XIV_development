@@ -18,6 +18,7 @@
 @media (min-width: 992px) {
   body {
     margin-bottom: 0;
+    overflow-y: hidden;
   }
   nav {
     z-index: 10;
