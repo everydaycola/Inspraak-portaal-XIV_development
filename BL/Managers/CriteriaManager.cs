@@ -18,11 +18,6 @@ public class CriteriaManager : ICriteriaManager
         _logger = logger;
         _panelManager = panelManager;
     }
-    
-    // public Panel GetAllCriteriaWithValuesForPanel(Guid panelId)
-    // {
-    //     return _repo.ReadAllCriteriaWithValuesForPanel(panelId);
-    // }
 
     public Dictionary<string, Dictionary<string, int>> GetAllCriteriaCountsGroupedByValue(Guid panelId, bool onlyUnknown = false)
     {
@@ -47,47 +42,6 @@ public class CriteriaManager : ICriteriaManager
             )
         );
     }
-    
-    // public IEnumerable<Criteria> GetAllNonDefaultCriteriaWithValuesForPanel(Guid panelId)
-    // {
-    //     return _repo.ReadAllNonDefaultCriteriaWithValuesForPanel(panelId);
-    // }
-    
-    // public Dictionary<string, ICollection<PanelMember>> GetPanelMembersGroupedByResponses(Guid panelId)
-    // {
-    //     var result = new Dictionary<string, ICollection<PanelMember>>();
-    //     var panelMembers = _panelManager.GetAllPanelMembersForPanel(panelId);
-    //     foreach (var member in panelMembers)
-    //     {
-    //         var groupName = string.Join("-", member.Responses.OrderBy(r => r.Criteria.Name).Select(r => r.SelectedOption).ToList());
-    //         if (!result.TryGetValue(groupName, out var value))
-    //         {
-    //             value = new List<PanelMember>();
-    //             result[groupName] = value; 
-    //         }
-    //
-    //         value.Add(member);
-    //     }
-    //     return result;
-    // }
-    
-    // public Dictionary<string, ICollection<PanelMember>> GetPanelMembersWithCompletedCriteriaGroupedByResponse(Guid panelId)
-    // {
-    //     var result = new Dictionary<string, ICollection<PanelMember>>();
-    //     var panelMembers = _panelManager.GetAllPanelMembersWhichAnsweredAllQuestionsWithCriteria(panelId);
-    //     foreach (var member in panelMembers)
-    //     {
-    //         var groupName = string.Join("-", member.Responses.OrderBy(r => r.Criteria.Name).Select(r => r.SelectedOption).ToList());
-    //         if (!result.TryGetValue(groupName, out var value))
-    //         {
-    //             value = new List<PanelMember>();
-    //             result[groupName] = value; 
-    //         }
-    //
-    //         value.Add(member);
-    //     }
-    //     return result;
-    // }
 
     public Dictionary<string, Dictionary<int, List<PanelMember>>> GetPanelMembersGroupedByResponsesForDefaultCriteriaGroupedByPhase(Guid panelId)
     {
@@ -140,12 +94,6 @@ public class CriteriaManager : ICriteriaManager
     {
         return _repo.ReadAllRegisteredPanelMembersOfPanel(panelId);
     }
-
-
-    // public Criteria GetCriteriaByName(Guid panelId,string critName)
-    // {
-    //     return _repo.ReadCriteriaByName(panelId, critName);
-    // }
     
     public IEnumerable<Criteria> GetAllDesiredCriteriaPercentages(Guid panelId,
         bool onlyDefault = false)
