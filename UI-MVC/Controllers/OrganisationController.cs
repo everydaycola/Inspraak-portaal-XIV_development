@@ -20,9 +20,6 @@ public class OrganisationController : Controller
             ModelState.AddModelError("", "De organisatienaam mag alleen letters, cijfers en koppeltekens (-) bevatten, en mag niet beginnen of eindigen met een koppelteken.");
             return View();
         }
-    
-        
-        
         
         if (_organisationManager.GetOrganisationById(name.ToLower()) != null)
         {
@@ -30,7 +27,7 @@ public class OrganisationController : Controller
             return View();
         }
 
-        var organisation = _organisationManager.AddOrganisation(name.ToLower(), name, "#FFFFFF", "","");
+        var organisation = _organisationManager.AddOrganisation(name.ToLower(), name, "#FFFFFF", "","", false);
 
         var subdomain = organisation.Name.ToLowerInvariant();
         var currentHost = HttpContext.Request.Host;

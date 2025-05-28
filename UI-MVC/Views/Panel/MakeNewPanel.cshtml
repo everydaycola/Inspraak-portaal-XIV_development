@@ -5,7 +5,6 @@
     Layout = "_Layout";
 }
 
-<!--TODO: Update this to vite specifics instead of CDNS.-->
 @section Scripts{
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.3/jquery.validate.min.js"></script>
@@ -25,63 +24,129 @@
 
                     <div class="d-flex flex-column">
                         <h5 class="card-title">Informatie</h5>
-                        <div class="d-flex flex-row py-2">
-                            <label class="card-text pe-4" for="name"><strong>Naam:</strong></label>
-                            <input id="name" asp-for="Name" class="border border-1 rounded-2 col-3" type="text"
-                                   placeholder="Panel rond alcoholgebruik"/>
-                            <span class="text-danger" asp-validation-for="Name"></span>
+
+                        <!-- Name Input -->
+                        <div class="row py-2">
+                            <div class="col-12 col-md-6">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <label class="card-text mb-1" for="name"><strong>Naam:</strong></label>
+                                    <span class="text-danger small" asp-validation-for="Name"></span>
+                                </div>
+                                <input id="name" asp-for="Name" class="form-control" type="text"
+                                       placeholder="Panel rond alcoholgebruik" />
+                            </div>
                         </div>
 
-                        <div id="subregions-container" class="d-flex flex-column py-2">
+                        <!-- Subregions -->
+                        <div id="subregions-container" class="py-2">
                             <strong class="card-text">Gemeente, stad, dorp, organisatie...</strong>
                             <span id="error-subregions" class="text-danger"></span>
 
+                            <!-- Initial Subregion (matches dynamic structure) -->
                             <div class="mb-2 subRegion subregion-0">
-                                <input id="subregion-0-name" name="SubRegions[0].Name" placeholder="Naam" type="text"
-                                       class="form-control d-inline w-50 me-2" required/>
-                                <input id="subregion-0-size" name="SubRegions[0].Size" placeholder="Grootte" type="number"
-                                       class="form-control d-inline w-25 subregion-size-input" required/>
-                                <span id="subregion-0-name-msg" class="text-danger field-validation-valid"></span>
-                                <span id="subregion-0-size-msg" class="text-danger field-validation-valid"></span>
+                                <div class="row mb-1">
+                                    <div class="col-6">
+                                        <span id="subregion-0-name-msg"
+                                              class="text-danger field-validation-valid"></span>
+                                    </div>
+                                    <div class="col-6">
+                                        <span id="subregion-0-size-msg"
+                                              class="text-danger field-validation-valid"></span>
+                                    </div>
+                                </div>
+                                <div class="row g-2 align-items-center">
+                                    <div class="col-12 col-md-6 mb-2 mb-md-0">
+                                        <input id="subregion-0-name" name="SubRegions[0].Name"
+                                               placeholder="Naam" type="text"
+                                               class="form-control" required/>
+                                    </div>
+                                    <div class="col-12 col-md-4">
+                                        <input id="subregion-0-size" name="SubRegions[0].Size"
+                                               placeholder="Grootte" type="number"
+                                               class="form-control subregion-size-input" required/>
+                                    </div>
+                                </div>
                             </div>
                         </div>
-                        <a id="sub-region-btn" type="button" class="btn btn-primary col-3 my-2">Deelgemeente of Wijk
-                            Toevoegen</a>
 
-                        <div class="d-flex flex-row py-2">
-                            <label class="card-text pe-4 mx-2" for="reserve"><strong>Reserve Percentage</strong></label>
-                            <input id="reserve" asp-for="ReservePercentage" min="0"
-                                   class="border border-1 rounded-2" type="number" placeholder="5"/>%
-                            <span class="text-danger" asp-validation-for="ReservePercentage"></span>
-
-                            <label class="card-text pe-4 mx-2" for="sample-rate"><strong>Sample rate:</strong></label>
-                            <input id="sample-rate" asp-for="SampleRate" min="0.001" step=".001"
-                                   class="border border-1 rounded-2" type="number" placeholder="0.5"/>%
-                            <span class="text-danger" asp-validation-for="SampleRate"></span>
-
-                            <label class="card-text pe-4 mx-2" for="response-rate"><strong>Response rate:</strong></label>
-                            <input id="response-rate" asp-for="ResponseRate" min="2" max="10"
-                                   class="border border-1 rounded-2" type="number" placeholder="2"/>%
-                            <span class="text-danger" asp-validation-for="ResponseRate"></span>
+                        <!-- Add Subregion Button -->
+                        <div class="row">
+                            <div class="col-12 col-md-4">
+                                <a id="sub-region-btn" type="button"
+                                   class="btn btn-primary w-100 my-2">
+                                    Deelgemeente of Wijk Toevoegen
+                                </a>
+                            </div>
                         </div>
 
-                        <div class="d-flex flex-row py-2">
-                            <!-- TODO: Actualy calculate the expected panel size. -->
-                            <p class="card-text pe-4 panel-size-output">Panelgrootte:</p>
+                        <!-- Rates Section -->
+                        <div class="row py-2 g-3">
+                            <div class="col-12 col-md-4">
+                                <div class="input-group">
+                                    <label class="input-group-text" for="reserve">
+                                        <strong>Reserve %</strong>
+                                    </label>
+                                    <input id="reserve" asp-for="ReservePercentage" min="0"
+                                           class="form-control" type="number" placeholder="5"/>
+                                    <span class="input-group-text">%</span>
+                                </div>
+                                <span class="text-danger" asp-validation-for="ReservePercentage"></span>
+                            </div>
+
+                            <div class="col-12 col-md-4">
+                                <div class="input-group">
+                                    <label class="input-group-text" for="sample-rate">
+                                        <strong>Sample rate</strong>
+                                    </label>
+                                    <input id="sample-rate" asp-for="SampleRate" min="0.001" step=".001"
+                                           class="form-control" type="number" placeholder="0.5"/>
+                                    <span class="input-group-text">%</span>
+                                </div>
+                                <span class="text-danger" asp-validation-for="SampleRate"></span>
+                            </div>
+
+                            <div class="col-12 col-md-4">
+                                <div class="input-group">
+                                    <label class="input-group-text" for="response-rate">
+                                        <strong>Response rate</strong>
+                                    </label>
+                                    <input id="response-rate" asp-for="ResponseRate" min="2" max="10"
+                                           class="form-control" type="number" placeholder="2"/>
+                                    <span class="input-group-text">%</span>
+                                </div>
+                                <span class="text-danger" asp-validation-for="ResponseRate"></span>
+                            </div>
+                        </div>
+
+                        <!-- Panel Size -->
+                        <div class="row py-2">
+                            <div class="col-12">
+                                <p class="card-text panel-size-output">Panelgrootte:</p>
+                            </div>
                         </div>
                     </div>
 
-                    <div class="d-flex flex-column">
+                    <!-- Criteria Section -->
+                    <div class="d-flex flex-column mt-4">
                         <h5 class="card-title">Criteria</h5>
                         <div id="criteria-container">
                             <span id="criteria-warning"></span>
                         </div>
-                        <button id="criteria-btn" type="button" class="btn btn-primary col-2 my-2">Criteria Toevoegen
-                        </button>
+                        <div class="row mt-4">
+                            <div class="col-12 col-md-3">
+                                <button id="criteria-btn" type="button"
+                                        class="btn btn-primary w-100 my-2">
+                                    Criteria Toevoegen
+                                </button>
+                            </div>
+                        </div>
                     </div>
 
-                    <div class="mt-4">
-                        <button class="btn btn-primary" type="submit">Aanmaken</button>
+                    <!-- Submit Button -->
+                    <div class="mt-4 text-center text-md-start">
+                        <button class="btn btn-primary w-100 w-md-auto" type="submit">
+                            Aanmaken
+                        </button>
                     </div>
                 </form>
             </div>

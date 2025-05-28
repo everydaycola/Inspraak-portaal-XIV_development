@@ -1,62 +1,78 @@
-@model DAL.Organisation
-
+@using Domain.Tenant
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@model Domain.Tenant.Organisation
+@inject Organisation Organisation
 @{
     Layout = "_Layout";
     var isEditing = ViewBag.IsEditing as bool? ?? false;
 }
 
 <div class="container mt-5">
-    <h2 class="m-4">Organisation Details</h2>
+    <h2 class="m-4">Organisatie Details</h2>
     <form method="post" asp-action="Update" enctype="multipart/form-data">
         <div class="card col-11 mt-2 p-4">
             <div class="mb-3">
                 <input type="hidden" name="organisationId" value="@Model.Id"/>
             </div>
 
-            <div class="mb-3">
-                <label class="form-label">Name</label>
-                @if (isEditing)
-                {
+            @if (isEditing)
+            {
+                <div class="mb-3">
+                    <label class="form-label">Naam</label>
                     <input type="text" name="Name" class="form-control" value="@Model.Name" required/>
-                }
-                else
-                {
-                    <p class="form-control-plaintext">@Model.Name</p>
-                }
-            </div>
+                </div>
+            }
+            @if (isEditing)
+            {
+                <div class="mb-3">
+                    <label class="form-label">Achtergrondkleur</label>
+                    <input type="color" name="BackgroundColor" class="form-control form-control-color"
+                           value="@Model.BackgroundColor"/>
 
-            <div class="mb-3">
-                @if (isEditing)
-                {
-                <label class="form-label">Background Color</label>
-                <input type="color" name="BackgroundColor" class="form-control form-control-color"
-                       value="@Model.BackgroundColor"/>
-                }
-            </div>
+                </div>
+            }
+            @if (isEditing)
+            {
+                <div class="mb-3">
 
-            <div class="mb-3">
-                @if (isEditing)
-                {
-                    <label class="form-label">Logo Image</label>
+                    <label class="form-label">Witte tekst in de navigatie gebruiken?</label>
+                    <div class="form-check">
+                        <input type="checkbox" name="IsTextColorWhite" class="form-check-input" id="IsTextColorWhite"
+                               value="true" @(Model.IsTextColorWhite ? "checked" : "")/>
+                    </div>
+                    <input type="hidden" name="IsTextColorWhite" value="false"/>
+
+                </div>
+            }
+
+            @if (isEditing)
+            {
+                <div class="mb-3">
+                    <label class="form-label">Foto voor het logo</label>
                     <div class="mb-3">
                         <input type="file" class="form-control" id="imageUpload" name="LogoFile"
                                accept="image/*"/>
                     </div>
-                }
-            </div>
 
-            <div class="mb-3">
-                @if (isEditing)
-                {
-                    <label class="form-label">Background Image</label>
+                </div>
+            }
+
+            @if (isEditing)
+            {
+                <div class="mb-3">
+                    <label class="form-label">Detail foto
+                        <small>deze zal gebruikt worden op bv. de login
+                            pagina.</small></label>
                     <div class="mb-3">
                         <input type="file" class="form-control" id="imageUpload" name="file"
                                accept="image/*"/>
                     </div>
-                }
-            </div>
+
+                </div>
+            }
 
 
+            
             <div class="d-flex justify-content-between">
                 @if (isEditing)
                 {
@@ -65,7 +81,8 @@
                 }
                 else
                 {
-                    <a asp-action="Edit" asp-route-organisationId="@Model.Id" class="btn btn-primary">Edit</a>
+                    <a asp-action="Edit" asp-route-organisationId="@Model.Id" class="btn btn-primary">Organisatie
+                        bewerken</a>
                 }
             </div>
         </div>
@@ -84,14 +101,16 @@
                         }
                         else
                         {
-                            <img src="~/images/icons/inspraak_portaal_light_mode.svg" class="navbar-icon-head" alt="Inspraak portaal logo"/>
+                            <img src="~/images/icons/inspraak_portaal_light_mode.svg" class="navbar-icon-head"
+                                 alt="Inspraak portaal logo" style="@(Organisation.IsTextColorWhite ? "filter: invert(1);" : "")"/>
                         }
                     </div>
                     <div class="main-preview col-11">
                         <div class="card shadow-sm border-0">
                             <div class="card-body">
                                 <div class="row g-0">
-                                    <div class="col-md-5 d-flex align-items-center justify-content-center" style="background:#f8f9fa;">
+                                    <div class="col-md-5 d-flex align-items-center justify-content-center"
+                                         style="background:#f8f9fa;">
                                         @if (@Model.BackgroundImage != null)
                                         {
                                             <img
@@ -100,7 +119,8 @@
                                         }
                                         else
                                         {
-                                            <img src="~/images/icons/inspraak_portaal_light_mode.svg" class="navbar-icon-head" alt="Inspraak portaal logo"/>
+                                            <img src="~/images/icons/inspraak_portaal_light_mode.svg"
+                                                 class="navbar-icon-head" alt="Inspraak portaal logo"/>
                                         }
                                     </div>
 

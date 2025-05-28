@@ -1,7 +1,7 @@
 ﻿import {newSubregionInputAddedHandler} from "../apiAutofill/apiDataFiller";
 import {onSubregionChange} from "./panelsizePreviewHandler";
 import {createElementWithClassNames} from "../../customhelpers/htmlHelper";
-import {setValidationMessages} from "./panelFormValidator";
+import {addSubregionValidation} from "./panelFormValidator";
 
 
 let subRegionCount = 1;
@@ -12,7 +12,7 @@ export function addSubRegion() {
     const nameInput = subRegionElement.querySelectorAll("input")[0];
     const nameError = subRegionElement.querySelectorAll("span")[0];
     const sizeInput = subRegionElement.querySelectorAll("input")[1];
-    const sizeError = subRegionElement.querySelectorAll("span")[0];
+    const sizeError = subRegionElement.querySelectorAll("span")[1];
     subRegionContainer.appendChild(subRegionElement);
     addSubregionValidation(nameInput, nameError, sizeInput, sizeError);
     newSubregionInputAddedHandler();
@@ -22,64 +22,63 @@ export function addSubRegion() {
 function createSubRegionElement(index: number, removeCallback: (id: string) => void): HTMLDivElement {
     const subRegionId = `subregion-${index}`;
 
-    // Create the wrapper div
-    const wrapper = createElementWithClassNames("div", "mb-2","row","subRegion")
+    // Main container
+    const wrapper = createElementWithClassNames("div", "mb-2", "subRegion", `subregion-${index}`);
     wrapper.id = subRegionId;
 
-    // Create the Name input
-    const nameInput = createElementWithClassNames("input","form-control", "col","d-inline", "w-50","me-2");
+    // Error row
+    const errorRow = createElementWithClassNames("div", "row", "mb-1");
+    const nameErrorCol = createElementWithClassNames("div", "col-6");
+    const sizeErrorCol = createElementWithClassNames("div", "col-6");
+
+    const nameError = createElementWithClassNames("span", "text-danger", "field-validation-valid");
+    nameError.id = `subregion-${index}-name-msg`;
+    const sizeError = createElementWithClassNames("span", "text-danger", "field-validation-valid");
+    sizeError.id = `subregion-${index}-size-msg`;
+
+    nameErrorCol.appendChild(nameError);
+    sizeErrorCol.appendChild(sizeError);
+    errorRow.append(nameErrorCol, sizeErrorCol);
+
+    // Input row
+    const inputRow = createElementWithClassNames("div", "row", "g-2", "align-items-center");
+
+    // Name input column
+    const nameCol = createElementWithClassNames("div", "col-12", "col-md-6", "mb-2", "mb-md-0");
+    const nameInput = createElementWithClassNames("input", "form-control") as HTMLInputElement;
     nameInput.id = `subregion-${index}-name`;
     nameInput.name = `SubRegions[${index}].Name`;
     nameInput.placeholder = "Naam";
     nameInput.type = "text";
+    nameInput.required = true;
+    nameCol.appendChild(nameInput);
 
-    // Create the Size input
-    const sizeInput = createElementWithClassNames("input","form-control","d-inline","col","w-25","me-2","subregion-size-input");
+    // Size input column
+    const sizeCol = createElementWithClassNames("div", "col-12", "col-md-4");
+    const sizeInput = createElementWithClassNames("input", "form-control", "subregion-size-input") as HTMLInputElement;
     sizeInput.id = `subregion-${index}-size`;
     sizeInput.name = `SubRegions[${index}].Size`;
     sizeInput.placeholder = "Grootte";
     sizeInput.type = "number";
+    sizeInput.required = true;
+    sizeCol.appendChild(sizeInput);
 
-    sizeInput.addEventListener("input", () => {
-        onSubregionChange();
-    });
-
-    // Create the Remove button
-    const removeButton = createElementWithClassNames("button","btn","btn-danger","btn-sm");
+    // Remove button column
+    const buttonCol = createElementWithClassNames("div", "col-auto", "ms-md-2");
+    const removeButton = createElementWithClassNames("button", "btn", "btn-danger", "btn-sm");
     removeButton.type = "button";
     removeButton.innerHTML = `<i class="bi-trash"></i>`;
     removeButton.addEventListener("click", () => removeCallback(subRegionId));
+    buttonCol.appendChild(removeButton);
 
-    // Error messages
-    const nameError = createElementWithClassNames("span","text-danger","col","field-validation-valid");
-    nameError.id = `${nameInput.id}-msg`;
-    nameError.className = "text-danger field-validation-valid";
-    
-    const sizeError = createElementWithClassNames("span","text-danger","col","field-validation-valid");
-    sizeError.id = `${sizeInput.id}-msg`;
+    inputRow.append(nameCol, sizeCol, buttonCol);
+    wrapper.append(errorRow, inputRow);
 
-    // Append the inputs and button to the wrapper
-    wrapper.append(nameInput, sizeInput, removeButton, nameError, sizeError);
-    
+    sizeInput.addEventListener("input", () => onSubregionChange());
+
     return wrapper;
 }
 
-export function addSubregionValidation(nameInput: HTMLInputElement, nameError: HTMLSpanElement, sizeInput: HTMLInputElement, sizeError: HTMLSpanElement) {
-    //Name
-    if (!nameInput.required){
-        nameInput.required = true;
-    }
-    setValidationMessages(nameInput.id, nameError.id, {
-        valueMissing: "De naam van een (deel)gemeente of wijk is verplicht."
-    })
-    //Size
-    if (!sizeInput.required) {
-        sizeInput.required = true;
-    }
-    setValidationMessages(sizeInput.id, sizeError.id, {
-        valueMissing: "De grootte van een (deel)gemeente of wijk is verplicht."
-    })
-}
 
 function removeSubRegion(id: string) {
     const element = document.getElementById(id);

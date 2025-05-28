@@ -1,29 +1,24 @@
-﻿@use 'constants';
-
-$open-animation-time: 2s;
-
 /*THIS FILE CONTAINS STYLING FOR THE CUSTOM NAVBAR (DESKTOP DASHBOARD)*/
 .navbar-icon {
-  width: #{constants.$navbar-icon-size};
-  height: #{constants.$navbar-icon-size};
+  width: 24px;
+  height: 24px;
 }
 
-//This is the li item element for each of the nav options.
 .nav-link {
-  display:flex !important;
-  flex-direction:row;
-  align-items:center;
-  justify-content:center;
+  display: flex !important;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
 }
-.nav-link-description{
-  margin: 0 0 0 #{constants.$gap-size/4};
+
+.nav-link-description {
+  margin: 0 0 0 7.5px;
 }
 
 @media (min-width: 992px) {
-  //Don't hold default margin when in big screens.
   body {
     margin-bottom: 0;
-    overflow-y:hidden;
+    overflow-y: hidden;
   }
   nav {
     z-index: 10;
@@ -33,12 +28,11 @@ $open-animation-time: 2s;
     display: grid;
     grid-template-columns: 10fr 90fr;
     grid-template-rows: 9fr 1fr;
-    min-height: calc(100vh - #{constants.$gap-size});
-    grid-gap: #{constants.$gap-size};
+    min-height: calc(100vh - 30px);
+    grid-gap: 30px;
     margin-bottom: 0 !important;
     transition: grid-template-columns 0.3s ease-in-out;
   }
-
   .navbar {
     grid-column: 1/2;
     grid-row: 1/3;
@@ -49,14 +43,12 @@ $open-animation-time: 2s;
     z-index: 10;
     background: white;
   }
-
   .navbar > .container-fluid {
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
   }
-
   .navbar-collapse {
     display: flex;
     flex-direction: column;
@@ -64,7 +56,6 @@ $open-animation-time: 2s;
     justify-content: center;
     height: 80vh;
   }
-
   .navbar-nav {
     display: flex;
     flex-direction: column !important;
@@ -74,58 +65,53 @@ $open-animation-time: 2s;
   .main-container {
     grid-column: 2/3;
     grid-row: 1/2;
-    overflow-x:hidden;
-    max-height:calc(95vh -  #{constants.$gap-size});
+    overflow-x: hidden;
+    max-height: calc(95vh - 30px);
   }
-  #main{
-    width:100%;
-    min-height:90vh;
-    max-height:calc(95vh -  #{constants.$gap-size});
-    overflow-y:scroll;
+  #main {
+    width: 100%;
+    min-height: 90vh;
+    max-height: calc(95vh - 30px);
+    overflow-y: scroll;
   }
-
   footer {
     grid-column: 2/3;
     grid-row: 2/3;
     height: 5vh;
   }
-  .navbar-icon-head{
-    width:50px;
-    height:50px;
+  .navbar-icon-head {
+    width: 50px;
+    height: 50px;
   }
-  .expand-navbar{
-    display:initial;
-    visibility:visible;
+  .expand-navbar {
+    display: initial;
+    visibility: visible;
   }
   .h-lg-100 {
     height: 100% !important;
   }
-  
-  //ANIMATION CLASSES
   .enlargeGridAnimation {
-    animation: expandGridCol1 $open-animation-time forwards;
+    animation: expandGridCol1 2s forwards;
   }
-
   .closeGridAnimation {
-    animation: closeGridCol1 $open-animation-time forwards;
+    animation: closeGridCol1 2s forwards;
   }
 }
-
 @keyframes expandGridCol1 {
   0% {
-    grid-template-columns:5fr 95fr
+    grid-template-columns: 5fr 95fr;
   }
   100% {
-    grid-template-columns:10fr 90fr
+    grid-template-columns: 10fr 90fr;
   }
 }
-
 @keyframes closeGridCol1 {
   0% {
-    grid-template-columns:10fr 95fr
+    grid-template-columns: 10fr 95fr;
   }
   100% {
-    grid-template-columns:5fr 90fr
+    grid-template-columns: 5fr 90fr;
   }
 }
 
+/*# sourceMappingURL=customnavbar.css.map */

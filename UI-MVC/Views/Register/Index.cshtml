@@ -1,9 +1,12 @@
-﻿@using UI_MVC.TempTenant
+﻿@using Domain.Tenant
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@using UI_MVC.TempTenant
 @model UI_MVC.Models.ViewModels.NewPanelMemberViewModel
 @{
     ViewBag.Title = "Welkom";
     Layout = "_Layout";
 }
+@inject Organisation Organisation
 
 @section Scripts{
     <script src="~/dist/register.entry.js" type="module"></script>
@@ -54,7 +57,7 @@
                 <div class="row g-0">
                     <div class="col-md-5 d-flex align-items-center justify-content-center" style="background:#f8f9fa;">
                         <img
-                            src="https://media.istockphoto.com/id/1393370540/nl/foto/architecture-in-antwerp-city.jpg?s=612x612&w=0&k=20&c=qsEVkQCLeB2ob-oAMVfIXeex69ZQJqo64L33nSZqqqQ="
+                            src="~/images/default-detail-image.jpg"
                             alt="Vragen" class="img-fluid w-100 h-100" style="object-fit:cover;">
                     </div>
 
