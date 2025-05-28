@@ -55,49 +55,42 @@ export function initEditPlanningGroupHandler(){
                     const updatedEmail = emailEdit.value.trim();
                     const updatedUserName = usernameEdit.value.trim();
                     const updatedFunctie = functieEdit.value.trim();
-
-                    if (!updatedEmail || !updatedUserName || !updatedFunctie) {
-                        alert("Alle velden moeten ingevuld zijn.");
+                    
+                    const response: Response = await fetchFromAPI(
+                        `${baseUrl}/api/PanelManagements/UpdatePlanningsGroupMember`, {
+                            method: "POST",
+                            headers: {
+                                "Content-Type": "application/json"
+                            },
+                            body: JSON.stringify({
+                                userId: memberId,
+                                email: updatedEmail,
+                                naam: updatedUserName,
+                                functie: updatedFunctie
+                            })
+                        }
+                    );
+                    
+                    if (!response.ok) {
+                        alert("Er zijn velden niet correct ingevuld. Probeer het opnieuw.");
                         return;
                     }
-                    if (!updatedEmail.includes('@') || !updatedEmail.includes('.')) {
-                        alert("Voer een geldig emailadres in.");
-                        return;
-                    }
+                    
+                    emailDisplay.innerText = updatedEmail;
+                    usernameDisplay.innerText = updatedUserName;
+                    functieDisplay.innerText = updatedFunctie;
 
-                    try {
-                        const response = await fetchFromAPI(
-                            `${baseUrl}/api/PanelManagements/UpdatePlanningsGroupMember`, {
-                                method: "POST",
-                                headers: {
-                                    "Content-Type": "application/json"
-                                },
-                                body: JSON.stringify({
-                                    userId: memberId,
-                                    email: updatedEmail,
-                                    naam: updatedUserName,
-                                    functie: updatedFunctie
-                                })
-                            }
-                        );
-                        emailDisplay.innerText = updatedEmail;
-                        usernameDisplay.innerText = updatedUserName;
-                        functieDisplay.innerText = updatedFunctie;
+                    emailDisplay.classList.remove("d-none");
+                    emailEdit.classList.add("d-none");
+                    usernameDisplay.classList.remove("d-none");
+                    usernameEdit.classList.add("d-none");
+                    functieDisplay.classList.remove("d-none");
+                    functieEdit.classList.add("d-none");
 
-                        emailDisplay.classList.remove("d-none");
-                        emailEdit.classList.add("d-none");
-                        usernameDisplay.classList.remove("d-none");
-                        usernameEdit.classList.add("d-none");
-                        functieDisplay.classList.remove("d-none");
-                        functieEdit.classList.add("d-none");
-
-                        clickedButton.innerText = "Bewerken";
-                        clickedButton.classList.remove("btn-success");
-                        clickedButton.classList.add("btn-info");
-                        clickedButton.dataset.mode = "edit";
-                    } catch (error) {
-                        console.error("Fout bij het bijwerken van lid:", error);
-                    }
+                    clickedButton.innerText = "Bewerken";
+                    clickedButton.classList.remove("btn-success");
+                    clickedButton.classList.add("btn-info");
+                    clickedButton.dataset.mode = "edit";
                 }
             });
         });

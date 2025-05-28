@@ -112,7 +112,7 @@ public class PanelProjectPageManager : IPanelProjectPageManager
                 _repo.UpdatePost(sp);
                 break;
             default:
-                throw new Exception("Post with document support not found");
+                throw new InvalidOperationException($"Post type {post.GetType().Name} does not support document attachments");
         }
     }
     

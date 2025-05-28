@@ -311,10 +311,10 @@ public class PanelManager : IPanelManager
             combinations[key] = panelMembers
                 // count how many panelmembers have the same reponses as the key
                 .Count(pm => string.Join('|', pm.Responses
-                        .OrderBy(r => r.Criteria.Name)
                         .Where(r => r.Criteria.IsDistributionKnown)
+                        .OrderBy(r => r.Criteria.Name)
                         .Select(r => r.SelectedOption))
-                        .Equals(key));
+                        == key);
         }
         
         return combinations;
