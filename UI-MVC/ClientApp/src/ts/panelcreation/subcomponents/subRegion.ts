@@ -3,7 +3,6 @@ import {onSubregionChange} from "./panelsizePreviewHandler";
 import {newSubregionInputAddedHandler} from "../apiAutofill/apiDataFiller";
 import {createElementWithClassNames} from "../../customHelpers/htmlHelper";
 
-
 let subRegionCount = 1;
 
 export function initAddSubRegionHandler(){
@@ -34,11 +33,11 @@ export function addSubRegion() {
 function createSubRegionElement(index: number, removeCallback: (id: string) => void): HTMLDivElement {
     const subRegionId = `subregion-${index}`;
 
+    
     // Main container
     const wrapper = createElementWithClassNames("div", "mb-2", "subRegion", `subregion-${index}`);
     wrapper.id = subRegionId;
-
-    // Error row
+    
     const errorRow = createElementWithClassNames("div", "row", "mb-1");
     const nameErrorCol = createElementWithClassNames("div", "col-6");
     const sizeErrorCol = createElementWithClassNames("div", "col-6");
