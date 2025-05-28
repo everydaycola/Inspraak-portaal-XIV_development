@@ -6,6 +6,18 @@ import {addSubregionValidation} from "./panelFormValidator";
 
 let subRegionCount = 1;
 
+export function initAddSubRegionHandler(){
+    const subRegionBtn = document.getElementById("sub-region-btn") as HTMLAnchorElement;
+    subRegionBtn.addEventListener("click", addSubRegion);
+}
+
+export function addEventHandlerToDefaultSubregionInput(){
+    const initialSizeInput = document.querySelector("#subregion-0-size") as HTMLInputElement
+    initialSizeInput.addEventListener("input", (e) => {
+        onSubregionChange()
+    })
+}
+
 export function addSubRegion() {
     const subRegionContainer = document.getElementById("subregions-container") as HTMLDivElement;
     const subRegionElement = createSubRegionElement(subRegionCount, removeSubRegion);

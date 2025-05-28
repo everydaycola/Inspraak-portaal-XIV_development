@@ -9,8 +9,7 @@ interface VoteState {
 
 const voteStates: VoteState = {};
 
-document.addEventListener('DOMContentLoaded', () => {
-
+export function initVoteHandler() {
     const voteButtons = Array.from(document.querySelectorAll('.vote-btn')) as HTMLButtonElement[];
 
     voteButtons.forEach(button => {
@@ -34,7 +33,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         button.addEventListener('click', () => handleVote(button, suggestionId));
     });
-});
+}
 
 async function handleVote(button: HTMLButtonElement, suggestionId: string) {
     const currentState = voteStates[suggestionId];

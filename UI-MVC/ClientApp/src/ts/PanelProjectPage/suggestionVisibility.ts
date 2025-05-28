@@ -1,12 +1,18 @@
 ﻿import {fetchFromAPI} from "../customhelpers/apihelper";
 import {getCurrentBaseUrl} from "../customhelpers/locationHelper";
 
-const suggestionVisibilityBtns = document.getElementsByClassName("suggestion-visibility-toggle-btn")
-for (let i = 0; i < suggestionVisibilityBtns.length; i++) {
-    suggestionVisibilityBtns.item(i)!!.addEventListener("click",(event) => {toggleVisibility(event)})
-}
 const privateText = "Maak publiek"
 const publicText = "Maak privé"
+
+export function initSuggestionVisiblityHandler() {
+    const suggestionVisibilityBtns = document.getElementsByClassName("suggestion-visibility-toggle-btn")
+    for (let i = 0; i < suggestionVisibilityBtns.length; i++) {
+        suggestionVisibilityBtns.item(i)!!.addEventListener("click", (event) => {
+            toggleVisibility(event)
+        })
+    }
+}
+
 
 async function toggleVisibility(event: Event) {
     const button = event.currentTarget as HTMLButtonElement
@@ -21,9 +27,9 @@ async function toggleVisibility(event: Event) {
             method: "POST"
         }
     )
-    
-    
-    if (!visibility){
+
+
+    if (!visibility) {
         button.innerText = publicText
     } else {
         button.innerText = privateText

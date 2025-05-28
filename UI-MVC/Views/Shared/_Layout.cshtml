@@ -3,6 +3,7 @@
 @using Domain.Tenant
 @using Microsoft.AspNetCore.Identity
 @using Microsoft.AspNetCore.Mvc.TagHelpers
+@using Microsoft.IdentityModel.Tokens
 @using UI_MVC.TempTenant
 @inject Organisation Organisation
 <!DOCTYPE html>
@@ -21,7 +22,7 @@
     <nav class="navbar navbar-expand-sm navbar-toggleable-sm border-bottom box-shadow mb-4 mb-lg-0" style="background-color:@Organisation.BackgroundColor">
         <div class="container-fluid mb-2">
             <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">
-                @if (Organisation != null && Organisation.LogoImageName != null)
+                @if (Organisation != null &&  !Organisation.LogoImageName.IsNullOrEmpty())
                 {
                     <img src="@Url.Action("GetFile", "Storage", new { fileName = Organisation.LogoImageName })" class="img-fluid mt-2" style="max-width: 100px; height: auto;"/>
                 }

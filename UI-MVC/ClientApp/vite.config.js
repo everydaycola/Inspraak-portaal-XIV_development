@@ -14,16 +14,11 @@ export default defineConfig({
         rollupOptions: {
             input: {
                 site: resolve(__dirname, 'src/ts/siteEntrypoint.ts'),
-                register: resolve(__dirname, 'src/ts/register/registerEntrypoint.ts'),
                 panelCreation: resolve(__dirname, 'src/ts/panelcreation/panelCreationEntrypoint.ts'),
-                adminOrgMan: resolve(__dirname, 'src/ts/organisationmanagement/adminOrgManEntrypoint.ts'),
+                organisationManagement: resolve(__dirname, 'src/ts/organisationmanagement/OrganisationManagementEntrypoint.ts'),
                 accountSettings: resolve(__dirname, 'src/ts/accountSettings/accountSettingsEntrypoint.ts'),
-                shareButtonPartial: resolve(__dirname, 'src/ts/panelProjectPage/share.ts'),
-                suggestionVoting: resolve(__dirname, 'src/ts/PanelProjectPage/suggestionVoting.ts'),
-                suggestionVisibility: resolve(__dirname, 'src/ts/PanelProjectPage/suggestionVisibility.ts'),
-                people: resolve(__dirname, 'src/ts/peoplePage/peoplePageEntrypoint.ts'),
-                executedToggle: resolve(__dirname, 'src/ts/PanelProjectPage/executedToggle.ts'),
-                exploreConcept: resolve(__dirname, 'src/ts/exploreConceptEntrypoint.ts')
+                projectPage: resolve(__dirname, 'src/ts/panelProjectPage/projectPageEntrypoint.ts'),
+                people: resolve(__dirname, 'src/ts/peoplePage/peoplePageEntrypoint.ts')
             },
             output: {
                 entryFileNames: '[name].entry.js',
