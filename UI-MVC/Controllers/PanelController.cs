@@ -6,10 +6,11 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using UI_MVC.Models.Dto;
 using UI_MVC.Models.ViewModels;
+using UI_MVC.Tenant.Attribute;
 
 namespace UI_MVC.Controllers;
 
-[RequiresOrganisation]
+[OnlyAccessibleFromTenant]
 public class PanelController : Controller
 {
     private readonly IPanelManager _manager;
@@ -48,44 +49,7 @@ public class PanelController : Controller
 
         return RedirectToAction("Index", "PanelManagement", new { id = createdPanel.Id });
     }
-
-    [HttpPost]
-    public IActionResult AddDefaultPanel()
-    {
-        string userId = _userManager.GetUserId(User);
-        var createdPanel = _manager.AddPanel(
-            "Panel rond alcoholgebruik",
-            0.01,
-            new List<Criteria>
-            {
-                _criteriaManager.AddCriteria(
-                    "sex",
-                    "Identificeert u zich als man of vrouw?",
-                    true,
-                    new List<CriteriaAnswerOption>
-                    {
-                        _criteriaManager.AddCriteriaAnswerOption("Man", 40),
-                        _criteriaManager.AddCriteriaAnswerOption("Vrouw", 60)
-                    }, true),
-                _criteriaManager.AddCriteria(
-                    "leeftijd",
-                    "Tot welke leeftijdscategorie behoort u?",
-                    true,
-                    new List<CriteriaAnswerOption>
-                    {
-                        _criteriaManager.AddCriteriaAnswerOption("20-29", 20),
-                        _criteriaManager.AddCriteriaAnswerOption("30-39", 60),
-                        _criteriaManager.AddCriteriaAnswerOption("40-49", 20),
-                    }, true)
-            },
-            7463,
-            0.2,
-            0.1,
-            userId
-        );
-        return RedirectToAction("Index", "PanelManagement", new { id = createdPanel.Id });
-    }
-
+    
     private ICollection<Criteria> CriteriaDtoCriteriaConverter(ICollection<CriteriaViewModel> criteriaDtos)
     {
         var distributionList = new List<Criteria>();

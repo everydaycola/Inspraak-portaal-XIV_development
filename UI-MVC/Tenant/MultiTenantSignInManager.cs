@@ -1,13 +1,12 @@
-﻿using DAL;
-using Domain;
+﻿using Domain;
 using Domain.Tenant;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
 
-namespace UI_MVC.Models;
+namespace UI_MVC.Tenant;
 
-public class MultiOrganisationSignInManager(
+public class MultiTenantSignInManager(
     UserManager<ApplicationUser> userManager,
     IHttpContextAccessor contextAccessor,
     IUserClaimsPrincipalFactory<ApplicationUser> claimsFactory,
