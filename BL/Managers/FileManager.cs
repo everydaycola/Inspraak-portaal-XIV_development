@@ -23,7 +23,7 @@ public class FileManager : IFileManager
         {
             return _qrCodeGenerator.GenerateQrCode(qrCodeData);
         }
-        catch (Exception e)
+        catch (ArgumentNullException e)
         {
             _logger.Log(LogLevel.Critical, "QRCode generator was called with empty data");
             return null;

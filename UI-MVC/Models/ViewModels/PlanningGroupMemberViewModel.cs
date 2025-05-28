@@ -4,13 +4,14 @@ namespace UI_MVC.Models.ViewModels;
 
 public class PlanningGroupMemberViewModel
 {
-    [Required]
+    
+    [Required(ErrorMessage = "Panel ID is verplicht")]
     public Guid PanelId { get; set; }
-    [Required]
-    [EmailAddress]
+    [Required(ErrorMessage = "E-mailadres is verplicht")]
+    [EmailAddress(ErrorMessage = "Voer een geldig e-mailadres in")]
     public string Email { get; set; }
-    [Required]
+    [Required(ErrorMessage = "Naam is verplicht")]
     public string Naam { get; set; }
-    [Required]
+    [Required(ErrorMessage = "Functie is verplicht")]
     public string Functie { get; set; }
 }
