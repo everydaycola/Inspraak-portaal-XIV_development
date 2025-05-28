@@ -21,47 +21,60 @@ export function addSubRegion() {
 }
 function createSubRegionElement(index: number, removeCallback: (id: string) => void): HTMLDivElement {
     const subRegionId = `subregion-${index}`;
-    
-    const wrapper = createElementWithClassNames("div", "mb-2", "subRegion", `subregion-${index}`, "d-flex", "align-items-start");
+
+    // Main container
+    const wrapper = createElementWithClassNames("div", "mb-2", "subRegion", `subregion-${index}`);
     wrapper.id = subRegionId;
-    
-    const innerWrapper = createElementWithClassNames("div", "w-100");
-    
-    const nameError = createElementWithClassNames("span", "text-danger", "field-validation-valid", "me-2", "flex-grow-1");
+
+    // Error row
+    const errorRow = createElementWithClassNames("div", "row", "mb-1");
+    const nameErrorCol = createElementWithClassNames("div", "col-6");
+    const sizeErrorCol = createElementWithClassNames("div", "col-6");
+
+    const nameError = createElementWithClassNames("span", "text-danger", "field-validation-valid");
     nameError.id = `subregion-${index}-name-msg`;
-    const sizeError = createElementWithClassNames("span", "text-danger", "field-validation-valid", "flex-grow-1");
+    const sizeError = createElementWithClassNames("span", "text-danger", "field-validation-valid");
     sizeError.id = `subregion-${index}-size-msg`;
-    
-    const inputRow = createElementWithClassNames("div", "d-flex", "align-items-center");
-    
-    const nameInput = createElementWithClassNames("input", "form-control", "d-inline", "w-50", "me-2") as HTMLInputElement;
+
+    nameErrorCol.appendChild(nameError);
+    sizeErrorCol.appendChild(sizeError);
+    errorRow.append(nameErrorCol, sizeErrorCol);
+
+    // Input row
+    const inputRow = createElementWithClassNames("div", "row", "g-2", "align-items-center");
+
+    // Name input column
+    const nameCol = createElementWithClassNames("div", "col-12", "col-md-6", "mb-2", "mb-md-0");
+    const nameInput = createElementWithClassNames("input", "form-control") as HTMLInputElement;
     nameInput.id = `subregion-${index}-name`;
     nameInput.name = `SubRegions[${index}].Name`;
     nameInput.placeholder = "Naam";
     nameInput.type = "text";
     nameInput.required = true;
-    
-    const sizeInput = createElementWithClassNames("input", "form-control", "d-inline", "w-25", "subregion-size-input") as HTMLInputElement;
+    nameCol.appendChild(nameInput);
+
+    // Size input column
+    const sizeCol = createElementWithClassNames("div", "col-12", "col-md-4");
+    const sizeInput = createElementWithClassNames("input", "form-control", "subregion-size-input") as HTMLInputElement;
     sizeInput.id = `subregion-${index}-size`;
     sizeInput.name = `SubRegions[${index}].Size`;
     sizeInput.placeholder = "Grootte";
     sizeInput.type = "number";
     sizeInput.required = true;
+    sizeCol.appendChild(sizeInput);
 
-    sizeInput.addEventListener("input", () => {
-        onSubregionChange();
-    });
-    
-    const removeButton = createElementWithClassNames("button", "btn", "btn-danger", "btn-sm", "ms-2");
+    // Remove button column
+    const buttonCol = createElementWithClassNames("div", "col-auto", "ms-md-2");
+    const removeButton = createElementWithClassNames("button", "btn", "btn-danger", "btn-sm");
     removeButton.type = "button";
     removeButton.innerHTML = `<i class="bi-trash"></i>`;
     removeButton.addEventListener("click", () => removeCallback(subRegionId));
-    
-    inputRow.append(nameInput, sizeInput, removeButton);
-    
-    innerWrapper.append(nameError, sizeError, inputRow);
-    
-    wrapper.append(innerWrapper);
+    buttonCol.appendChild(removeButton);
+
+    inputRow.append(nameCol, sizeCol, buttonCol);
+    wrapper.append(errorRow, inputRow);
+
+    sizeInput.addEventListener("input", () => onSubregionChange());
 
     return wrapper;
 }
