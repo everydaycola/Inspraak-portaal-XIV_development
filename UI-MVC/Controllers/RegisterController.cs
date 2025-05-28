@@ -60,13 +60,12 @@ public class RegisterController : Controller
     {
         if (ModelState.IsValid)
         {
-            var email = formData.Email;
-            PanelMember member = _manager.GetPanelMemberWithCriteriaResponses(formData.UserId);
-            member.Email = email;
+            var member = _manager.GetPanelMemberWithCriteriaResponses(formData.UserId);
+            member.Email = formData.Email;
             member.HasRegistered = true;
             _manager.UpdatePanelRegistrationCount(formData.PanelId, true);
             _critManager.SavePanelMemberCriteriaResponses(formData.PanelId, formData.CriteriaAnswers,member);
-            PanelMember updatedMember = _manager.UpdatePanelMember(member);
+            var updatedMember = _manager.UpdatePanelMember(member);
             
             return View("Index", new NewPanelMemberViewModel
             {

@@ -32,6 +32,7 @@ public class CitizenPanelDbContext : IdentityDbContext<ApplicationUser>
     public DbSet<PlanningGroupMember> PlanningGroupMembers { get; set; }
     public DbSet<Suggestion> Suggestions { get; set; }
     public DbSet<Vote> Votes { get; set; }
+    public DbSet<TimeLine> TimeLines { get; set; }
     public DbSet<Post> Posts { get; set; }
     //Verkenning van het concept.
     public DbSet<Question> Questions { get; set; }
@@ -90,10 +91,12 @@ public class CitizenPanelDbContext : IdentityDbContext<ApplicationUser>
         //Planningroepmember 1..*-* Panel
         modelBuilder.Entity<PlanningGroupMember>()
             .HasOne(pgm => pgm.Panel);
-
-        //Panel 1 - * Posts
+        
+        //Panel 1 - * Timelines 1 - * Posts
         modelBuilder.Entity<Panel>()
-            .HasMany(p => p.Posts);
+            .HasMany(p => p.Timelines);
+        modelBuilder.Entity<TimeLine>()
+            .HasMany(t => t.Posts);
         //Explain EF that we have implements of the abstract Post class.
         modelBuilder.Entity<TextPost>();
         modelBuilder.Entity<DocumentPost>();

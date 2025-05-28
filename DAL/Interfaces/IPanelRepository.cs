@@ -14,7 +14,7 @@ public interface IPanelRepository
     public Panel ReadPanel(Guid panelId);
     public Panel ReadPanelWithRepresentationGroup(Guid panelId);
     public Panel ReadPanelWithCriteriaAndAnswerOptions(Guid panelId);
-    public Panel ReadPanelWithPostsAndSuggestionsAndVotes(Guid panelId);
+    public Panel ReadPanelWithTimeLinesAndPostsAndSuggestionsAndVotesAndDocuments(Guid panelId);
     public IEnumerable<Panel> ReadAllPanels();
     public IEnumerable<Panel> ReadAllPanelsWithPostsAndSuggestions();
     public PanelMember ReadPanelMemberWithCriteriaResponses(Guid panelMemberId);
@@ -29,10 +29,10 @@ public interface IPanelRepository
     public Vote ReadVoteByPanelMemberAndSuggestionOrDefault(ApplicationUser user, Guid suggestionId);
     public Suggestion ReadSuggestion(Guid suggestionId);
     
-    
     // CREATE
     public void CreatePanelMembers(ICollection<PanelMember> panelMembers);
-    public void CreatePost<T>(Guid panelId, T post) where T : Post;
+    public void CreateTimeLine(Guid panelId, TimeLine timeLine);
+    public void CreatePost<T>(Guid timeLineId, T post) where T : Post;
     public void CreatePlanningsGroupMember(PlanningGroupMember member);
     public void CreateVote(Vote vote);
     
