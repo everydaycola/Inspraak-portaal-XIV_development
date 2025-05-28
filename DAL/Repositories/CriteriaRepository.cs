@@ -61,4 +61,9 @@ public class CriteriaRepository : ICriteriaRepository
             .SelectMany(p => p.Criteria)
             .FirstOrDefault(c => c.Name == critName);
     }
+
+    public List<PanelMember> ReadAllRegisteredPanelMembersOfPanel(Guid panelId)
+    {
+        return _context.PanelMembers.Where(panelMember => panelMember.HasRegistered == true && panelMember.Panel.Id == panelId).ToList();
+    }
 }
