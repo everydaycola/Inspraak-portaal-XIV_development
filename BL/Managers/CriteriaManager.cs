@@ -89,6 +89,11 @@ public class CriteriaManager : ICriteriaManager
             .ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
 
     }
+
+    public List<PanelMember> GetRegisteredPanelMembersOfPanel(Guid panelId)
+    {
+        return _repo.ReadAllRegisteredPanelMembersOfPanel(panelId);
+    }
     
     public IEnumerable<Criteria> GetAllDesiredCriteriaPercentages(Guid panelId,
         bool onlyDefault = false)
