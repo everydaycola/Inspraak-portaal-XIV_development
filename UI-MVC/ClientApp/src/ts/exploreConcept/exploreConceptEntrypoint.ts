@@ -1,5 +1,5 @@
-﻿import {getCurrentBaseUrl} from "./customHelpers/locationHelper";
-import {initQuestionCreationFormController} from "./exploreConcept/questionCreationFormController";
+﻿import {getCurrentBaseUrl} from "../customHelpers/locationHelper";
+import {initQuestionCreationFormController} from "./questionCreationFormController";
 
 console.log("Explore concept entrypoint loaded");
 

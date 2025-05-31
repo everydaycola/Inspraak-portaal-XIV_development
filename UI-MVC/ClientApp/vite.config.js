@@ -19,6 +19,7 @@ export default defineConfig({
                 projectPage: resolve(__dirname, 'src/ts/projectPage/projectPageEntrypoint.ts'),
                 people: resolve(__dirname, 'src/ts/peoplePage/peoplePageEntrypoint.ts'),
                 site: resolve(__dirname, 'src/ts/siteEntrypoint.ts'),
+                exploreConcept: resolve(__dirname, 'src/ts/exploreConcept/exploreConceptEntrypoint.ts')
             },
             output: {
                 entryFileNames: '[name].entry.js',
