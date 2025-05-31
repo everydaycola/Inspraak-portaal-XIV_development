@@ -53,6 +53,7 @@ public static class DataSeeder
             Owner = context.Users.Single(user => user.Email == "user@antwerpen.be"),
             IsRegistrationOpen = true,
             OrganisationId = "antwerpen",
+            SuccessfulRegistrationCount = 95,
             RepresentationGroup = new RepresentationGroup
             {
                 CitizenCount = 20000,
