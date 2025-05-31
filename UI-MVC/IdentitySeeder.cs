@@ -21,8 +21,8 @@ public class IdentitySeeder
         
         var admin = new ApplicationUser
         {
-            Email = "admin@ip14.com",
-            UserName = "admin@ip14.com"
+            Email = "admin@ip14.be",
+            UserName = "admin@ip14.be"
         };
         await _userManager.CreateAsync(admin, "Admin123!");
         await _userManager.AddToRoleAsync(admin, CustomIdentityConstants.AdminRole);
