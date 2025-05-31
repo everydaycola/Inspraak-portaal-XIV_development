@@ -21,16 +21,16 @@ public class IdentitySeeder
         
         var admin = new ApplicationUser
         {
-            Email = "admin@test.com",
-            UserName = "admin@test.com"
+            Email = "admin@ip14.com",
+            UserName = "admin@ip14.com"
         };
         await _userManager.CreateAsync(admin, "Admin123!");
         await _userManager.AddToRoleAsync(admin, CustomIdentityConstants.AdminRole);
 
         var organisatie1 = new ApplicationUser
         {
-            Email = "user@antwerpen.be",
-            UserName = "user@antwerpen.be",
+            Email = "panels@antwerpen.be",
+            UserName = "panels@antwerpen.be",
             OrganisationId = "antwerpen"
         };
         await _userManager.CreateAsync(organisatie1, "Antwerpen123!");
