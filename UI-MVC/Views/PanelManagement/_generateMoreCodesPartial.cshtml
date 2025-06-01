@@ -14,9 +14,7 @@
         {
             <p>U mist nog <strong>@(Model.PanelSize + Model.AmountOfReserveInvites - Model.ExtraCriteriaViewModel.SuccessfulRegistrationCount)</strong> inschrijvingen</p>
         }
-        <button class="btn btn-primary my-3" type="button" data-bs-toggle="collapse" data-bs-target="#newphase">
-            Toon criteria statistieken
-        </button>
+        
     </div>
 
     @if (Model.AnyCrossCriteria || Model.AnyUnknownCriteria)
@@ -68,7 +66,7 @@
             <p class="mb-0">Er zijn geen criteria ingesteld voor dit panel.</p>
         </div>
     }
-
+    
     <p>Dit panel heeft een actuele response rate van <strong>@((double)100 * Model.ExtraCriteriaViewModel.SuccessfulRegistrationCount / Model.TotalInvitesNeeded)%</strong> (@Model.ExtraCriteriaViewModel.SuccessfulRegistrationCount van de @Model.TotalInvitesNeeded)</p>
     <!-- New Phase Form -->
     <div class="d-flex justify-content-center my-4">
