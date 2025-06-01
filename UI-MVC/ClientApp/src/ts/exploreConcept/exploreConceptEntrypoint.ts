@@ -17,6 +17,11 @@ async function handleSelectedValues() {
     const checkedRadios = document.querySelectorAll<HTMLInputElement>('input[type="radio"]:checked');
     const conclusiefield: HTMLElement | null = document.querySelector("#conclusiefield");
     const conclusieNamefield: HTMLElement | null = document.querySelector("#conclusieName");
+    const aanmeldButton: HTMLAnchorElement | null = document.querySelector("#aanmeldbutton");
+    
+    if(aanmeldButton){
+        aanmeldButton.classList.add("d-none");
+    }
 
     const totalWeightsByMethod: Record<string, number> = {};
     checkedRadios.forEach(radio => {
@@ -44,7 +49,10 @@ async function handleSelectedValues() {
     });
 
     const data = await response.json();
-    if (conclusiefield && conclusieNamefield) {
+    if (conclusiefield && conclusieNamefield && aanmeldButton) {
+        if(data.name.toLowerCase() == "burgerpanel"){
+            aanmeldButton.classList.remove("d-none");
+        }
         conclusieNamefield.innerText = data.name;
         conclusiefield.innerText = data.suitability;
     }
