@@ -50,9 +50,10 @@ public static class DataSeeder
         {
             Name = "Verkeersveiligheid in en rond Antwerpen.",
             SampleRate = 0.005,
-            Owner = context.Users.Single(user => user.Email == "user@antwerpen.be"),
+            Owner = context.Users.Single(user => user.Email == "panels@antwerpen.be"),
             IsRegistrationOpen = true,
             OrganisationId = "antwerpen",
+            SuccessfulRegistrationCount = 95,
             RepresentationGroup = new RepresentationGroup
             {
                 CitizenCount = 20000,
