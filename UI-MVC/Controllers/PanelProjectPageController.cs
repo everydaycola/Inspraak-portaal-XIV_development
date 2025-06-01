@@ -432,7 +432,7 @@ public class PanelProjectPageController : Controller
         _projectPageManager.AddTimeLine(
             newTimeLine.PanelId,
             newTimeLine.Title,
-            TimeZoneInfo.ConvertTimeToUtc(newTimeLine.SessionDate.Date)
+            TimeZoneInfo.ConvertTimeToUtc(newTimeLine.SessionDate.Date.AddDays(1))
             );
         
         return RedirectToAction("Index", new { newTimeLine.PanelId });
