@@ -1,5 +1,6 @@
 @using Domain.Tenant
 @using Microsoft.AspNetCore.Mvc.TagHelpers
+@using Microsoft.IdentityModel.Tokens
 @model Domain.Tenant.Organisation
 @inject Organisation Organisation
 @{
@@ -94,7 +95,7 @@
             <div class="card border-0">
                 <div class="row">
                     <div class="nav-preview col-1" style="background-color:@Model.BackgroundColor">
-                        @if (@Model.LogoImageName != null)
+                        @if (!@Model.LogoImageName.IsNullOrEmpty())
                         {
                             <img
                                 src="@Url.Action("GetFile", "Storage", new { fileName = @Model.LogoImageName })"
@@ -112,7 +113,7 @@
                                 <div class="row g-0">
                                     <div class="col-md-5 d-flex align-items-center justify-content-center"
                                          style="background:#f8f9fa;">
-                                        @if (@Model.BackgroundImage != null)
+                                        @if (!@Model.BackgroundImage.IsNullOrEmpty())
                                         {
                                             <img
                                                 src="@Url.Action("GetFile", "Storage", new { fileName = @Model.BackgroundImage })"
@@ -120,8 +121,9 @@
                                         }
                                         else
                                         {
-                                            <img src="~/images/icons/inspraak_portaal_light_mode.svg"
-                                                 class="navbar-icon-head" alt="Inspraak portaal logo"/>
+                                            <img src="~/images/burgerpanel.jpg"
+                                                 class="img-fluid w-100 h-100" style="object-fit:cover;"
+                                                 alt="Inspraak portaal logo"/>
                                         }
                                     </div>
 
