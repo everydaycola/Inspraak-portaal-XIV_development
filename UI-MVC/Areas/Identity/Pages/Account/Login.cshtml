@@ -70,8 +70,7 @@
                                                 password?</a>
                                         </p>-->
                                         <a class="w-100 btn btn-lg btn-secondary mt-4" asp-page="./Register"
-                                           asp-route-returnUrl="@Model.ReturnUrl">Register as
-                                            a new user</a>
+                                           asp-route-returnUrl="@Model.ReturnUrl">Nieuwe gebruiker registreren</a>
                                         <!--Currently we don't confirm emails.<p>
                                             <a id="resend-confirmation" asp-page="./ResendEmailConfirmation">Resend
                                                 email
@@ -106,7 +105,7 @@
                 <td>admin</td>
                 <td>
                     <input type="text" class="form-control form-control-sm"
-                           value="admin@test.com" readonly
+                           value="admin@ip14.be" readonly
                            onclick="this.select()"></td>
                 <td>
                     <input type="text" class="form-control form-control-sm" value="Admin123!"
@@ -115,7 +114,7 @@
                 <td>Admin</td>
                 <th>
                     <form method="post">
-                        <input asp-for="Input.Email" value="admin@test.com" type="hidden"/>
+                        <input asp-for="Input.Email" value="admin@ip14.be" type="hidden"/>
                         <input asp-for="Input.Password" value="Admin123!" type="hidden"/>
                         <button type="submit" class="btn btn-primary">Log in</button>
                     </form>
@@ -125,7 +124,7 @@
                 <td>antwerpen</td>
                 <td>
                     <input type="text" class="form-control form-control-sm"
-                           value="user@antwerpen.be" readonly
+                           value="panels@antwerpen.be" readonly
                            onclick="this.select()"></td>
                 <td>
                     <input type="text" class="form-control form-control-sm"
@@ -134,7 +133,7 @@
                 <td>Organisatie</td>
                 <th>
                     <form method="post">
-                        <input asp-for="Input.Email" value="user@antwerpen.be" type="hidden"/>
+                        <input asp-for="Input.Email" value="panels@antwerpen.be" type="hidden"/>
                         <input asp-for="Input.Password" value="Antwerpen123!" type="hidden"/>
                         <button type="submit" class="btn btn-primary">Log in</button>
                     </form>
