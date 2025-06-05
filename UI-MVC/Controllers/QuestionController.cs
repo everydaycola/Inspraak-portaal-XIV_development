@@ -70,6 +70,12 @@ public class QuestionController : Controller
             _logger.LogInformation("Controleer de ingevoerde gegevens voor de score-tip. Er zijn fouten opgetreden.");
             return View("Index");
         }
+
+        if (viewModel.Image == null)
+        {
+            _logger.LogInformation("Er werd geprobeerd een participatie methode toe te voegen zonder foto.");
+            return View("Index");
+        }
         
         var uniqueFileName = Guid.NewGuid() + Path.GetExtension(viewModel.Image.FileName);
         try
