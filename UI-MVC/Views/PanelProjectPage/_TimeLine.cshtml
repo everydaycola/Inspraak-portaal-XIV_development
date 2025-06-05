@@ -315,7 +315,26 @@
                                    placeholder="Voer een onderwerp in." required/>
                             <div class="form-text">Voer een duidelijk onderwerp in voor de aanbeveling</div>
                         </div>
+                        <div class="form-check mb-3">
+                            <input class="form-check-input" type="checkbox" id="isNeutralVoteAllowed"
+                                   value="true"
+                                   name="isNeutralVoteAllowed" checked/>
+                            <label class="form-check-label" for="isNeutralVoteAllowed"
+                                   title="Wanneer dit vakje is aangevinkt worden de betreffende personen op de hoogte gebracht.">
+                                Is neutraal stemmen toegelaten?
+                            </label>
+                        </div>
 
+                        <div class="mb-4">
+                            <label for="suggestionMajorityFactorInput" class="form-label">Meerderheid Factor</label>
+                            <div class="input-group">
+                                <input type="number" class="form-control" id="suggestionMajorityFactorInput"
+                                       name="VotingMajorityFactor"
+                                       placeholder="0" value="0" required/>
+                                <span class="input-group-text">%</span>
+                            </div>
+                        </div>
+                        
                         @* suggestion post is always visible for panelmembers *@
                         <input type="hidden" name="visibleForPanelMember" value="true"/>
 
@@ -328,15 +347,6 @@
                                    title="Wanneer dit vakje is aangevinkt worden de betreffende personen op de hoogte gebracht.">
                                 Iedereen op de hoogte brengen via mail?
                             </label>
-                        </div>
-                        <div class="mb-4">
-                            <label for="suggestionMajorityFactorInput" class="form-label">Meerderheid Factor</label>
-                            <div class="input-group">
-                                <input type="number" class="form-control" id="suggestionMajorityFactorInput"
-                                       name="VotingMajorityFactor"
-                                       placeholder="0" value="0" required/>
-                                <span class="input-group-text">%</span>
-                            </div>
                         </div>
 
                         <div class="d-flex justify-content-end gap-2 mt-4">
@@ -861,19 +871,21 @@
                                                                                 style="outline: none !important; box-shadow: none !important;">
                                                                             <i class="bi bi-hand-thumbs-up"></i>
                                                                             <span class="vote-count">
-                                                                            @suggestion.Votes.Count(v => v.VoteType == VoteType.Up)
-                                                                        </span>
+                                                                                @suggestion.Votes.Count(v => v.VoteType == VoteType.Up)
+                                                                            </span>
                                                                         </button>
-                                                                        <button type="button"
-                                                                                class="btn btn-outline-secondary vote-btn @(suggestion.Votes.Any(v => v.VoteType == VoteType.Neutral && v.Owner == Model.CurrentUser) ? "active" : "")"
-                                                                                data-vote-type="Neutral"
-                                                                                data-suggestion-id="@suggestion.Id"
-                                                                                style="outline: none !important; box-shadow: none !important;">
-                                                                            <i class="bi bi-dash-circle"></i>
-                                                                            <span class="vote-count">
-                                                                            @suggestion.Votes.Count(v => v.VoteType == VoteType.Neutral)
-                                                                        </span>
-                                                                        </button>
+                                                                        @if(suggestionPost.IsNeutralVoteAllowed){
+                                                                            <button type="button"
+                                                                                    class="btn btn-outline-secondary vote-btn @(suggestion.Votes.Any(v => v.VoteType == VoteType.Neutral && v.Owner == Model.CurrentUser) ? "active" : "")"
+                                                                                    data-vote-type="Neutral"
+                                                                                    data-suggestion-id="@suggestion.Id"
+                                                                                    style="outline: none !important; box-shadow: none !important;">
+                                                                                <i class="bi bi-dash-circle"></i>
+                                                                                <span class="vote-count">
+                                                                                @suggestion.Votes.Count(v => v.VoteType == VoteType.Neutral)
+                                                                            </span>
+                                                                            </button>
+                                                                        }
                                                                         <button type="button"
                                                                                 class="btn btn-outline-danger vote-btn @(suggestion.Votes.Any(v => v.VoteType == VoteType.Down && v.Owner == Model.CurrentUser) ? "active" : "")"
                                                                                 data-vote-type="Down"
@@ -907,15 +919,18 @@
                                                                         <div class="p-2">
                                                                             <i class="bi bi-hand-thumbs-up"></i>
                                                                             <span class="vote-count">
-                                                                            @suggestion.Votes.Count(v => v.VoteType == VoteType.Up)
-                                                                        </span>
+                                                                                @suggestion.Votes.Count(v => v.VoteType == VoteType.Up)
+                                                                            </span>
                                                                         </div>
-                                                                        <div class="p-2">
-                                                                            <i class="bi bi-dash-circle"></i>
-                                                                            <span class="vote-count">
-                                                                            @suggestion.Votes.Count(v => v.VoteType == VoteType.Neutral)
-                                                                        </span>
-                                                                        </div>
+                                                                        @if (suggestionPost.IsNeutralVoteAllowed)
+                                                                        {
+                                                                            <div class="p-2">
+                                                                                <i class="bi bi-dash-circle"></i>
+                                                                                <span class="vote-count">
+                                                                                    @suggestion.Votes.Count(v => v.VoteType == VoteType.Neutral)
+                                                                                </span>
+                                                                            </div>
+                                                                        }
                                                                         <div class="p-2">
                                                                             <i class="bi bi-hand-thumbs-down"></i>
                                                                             <span class="vote-count">
