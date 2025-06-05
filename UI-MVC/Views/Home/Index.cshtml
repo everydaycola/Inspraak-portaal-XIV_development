@@ -1,24 +1,55 @@
-﻿@using Domain.Interfaces.Posts
+﻿@using Domain
+@using Domain.Interfaces.Posts
 @using Domain.Tenant
+@using Microsoft.IdentityModel.Tokens
 @{
     ViewData["Title"] = "Home Page";
+    var isEditing = ViewBag.IsEditing as bool? ?? false;
 }
 @inject Organisation Organisation
 @model UI_MVC.Models.ViewModels.HomePanelsViewModel
 
 @if (Organisation.Id == null)
 {
+    @if (User.IsInRole(CustomIdentityConstants.AdminRole))
+    {
+        @if (!isEditing)
+        {
+            <a asp-action="Edit" class="btn btn-primary">bewerken</a>
+        }
+        else
+        {
+            <a asp-action="Index" class="btn btn-primary">annuleer</a>
+        }
+    }
+
     <div class="card p-0 mt-5 m-4">
         <div class="row flex-row g-0 h-100 flex-column flex-lg-row">
             <div class="col-12 col-lg-6 d-flex align-items-start h-50 h-lg-100">
                 <div class="card-body h-25">
                     <div class="row mx-2 m-4">
-                        <h2>Welkom!</h2>
                         <h2>Nieuw bij burgerpanels?</h2>
-                        <p>Het Inspraak Portaal vereenvoudigt het organiseren van burgerpanels. Ben je nog niet zeker of een
-                            burgerpanel iets voor jouw initiatief is?</p>
-                        <p>Beantwoord dan enkele korte vragen om te ontdekken hoe een burgerpanel jou kan helpen!</p>
-                        <a href="./ExploreConcept" class="btn btn-primary">Ontdek of het iets voor jou is</a>
+                        @if (User.IsInRole(CustomIdentityConstants.AdminRole) && isEditing)
+                        {
+                            //TODO add edit field for this text.
+                        }
+                        else
+                        {
+                            @if (!Model.DiscoverConceptText.IsNullOrEmpty())
+                            {
+                                <p>@Model.DiscoverConceptText</p>
+                            }
+                            else
+                            {
+                                <p>
+                                    Het Inspraak Portaal vereenvoudigt het organiseren van burgerpanels. Ben je nog niet
+                                    zeker of een burgerpanel iets voor jouw initiatief is?<br/>
+                                    Beantwoord dan enkele korte vragen om te ontdekken hoe een burgerpanel jou kan
+                                    helpen!
+                                </p>
+                            }
+                        }
+                        <a href="./ExploreConcept" class="btn btn-primary" >Ontdek of het iets voor jou is</a>
                     </div>
                 </div>
             </div>
@@ -46,8 +77,23 @@
                 <div class="card-body">
                     <div class="row mx-2 m-4">
                         <h2>Wat doet het inspraak portaal?</h2>
-                        <p>Het Inspraak Portaal is een platform die het organiseren van burgerpanels vereenvoudigd.</p>
-                        <p>Zelf interesse in een burgerpanel? Meld je dan aan voor jouw organisatie!</p>
+                        @if (User.IsInRole(CustomIdentityConstants.AdminRole) && isEditing)
+                        {
+                            //TODO add edit field for this text.
+                        }
+                        else
+                        {
+                            @if (!Model.AboutInspraakPortaalText.IsNullOrEmpty())
+                            {
+                                <p>@Model.AboutInspraakPortaalText</p>
+                            }
+                            else
+                            {
+                                <p>Het Inspraak Portaal is een platform die het organiseren van burgerpanels
+                                    vereenvoudigd.<br/>
+                                    Zelf interesse in een burgerpanel? Meld je dan aan voor jouw organisatie!</p>
+                            }
+                        }
                         <a href="./Organisation/OrganisationCreation" class="btn btn-primary">Mijn organisatie
                             aanmelden</a>
                     </div>

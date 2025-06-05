@@ -709,8 +709,17 @@ public static class DataSeeder
                 context.Questions.Add(question3);
             }
         }
-        
 
+        GeneralSetting setting = new GeneralSetting()
+        {
+            DiscoverConceptText =
+                "Het Inspraak Portaal vereenvoudigt het organiseren van burgerpanels. Ben je nog niet zeker of een burgerpanel iets voor jouw initiatief is?\n\nBeantwoord dan enkele korte vragen om te ontdekken hoe een burgerpanel jou kan helpen!",
+            AboutInspraakPortaalText =
+                "Het Inspraak Portaal is een platform die het organiseren van burgerpanels vereenvoudigd.\n\nZelf interesse in een burgerpanel? Meld je dan aan voor jouw organisatie!"
+        };
+
+        context.GeneralSettings.Add(setting);
+        
         AddMultipleEntities(panelMembersMen);
         AddMultipleEntities(panelMembersWomen);
         AddMultipleEntities(panelMembersToSeed);
