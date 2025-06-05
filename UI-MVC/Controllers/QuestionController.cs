@@ -50,6 +50,7 @@ public class QuestionController : Controller
                 Id = p.Id,
                 Name = p.Name,
                 Description = p.Description,
+                ImageUri = p.ImageUri
             });
         var model = new QuestionIndexViewModel()
         {
@@ -122,7 +123,8 @@ public class QuestionController : Controller
         {
             Id = method.Id,
             Name = method.Name,
-            Description = method.Description
+            Description = method.Description,
+            ImageUri = method.ImageUri
         };
         return View(viewModel);
     }
@@ -148,7 +150,8 @@ public class QuestionController : Controller
             {
                 Id = pm.Id,
                 Name = pm.Name,
-                Description = pm.Description
+                Description = pm.Description,
+                ImageUri = pm.ImageUri
             }).ToList();
 
         var viewModel = new QuestionViewModel
@@ -182,7 +185,8 @@ public class QuestionController : Controller
                 {
                     Id = pm.Id,
                     Name = pm.Name,
-                    Description = pm.Description
+                    Description = pm.Description,
+                    ImageUri = pm.ImageUri
                 }).ToList();
             return View(model);
         }

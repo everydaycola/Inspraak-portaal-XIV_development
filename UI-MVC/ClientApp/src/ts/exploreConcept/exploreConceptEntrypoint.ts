@@ -18,6 +18,7 @@ async function handleSelectedValues() {
     const conclusiefield: HTMLElement | null = document.querySelector("#conclusiefield");
     const conclusieNamefield: HTMLElement | null = document.querySelector("#conclusieName");
     const aanmeldButton: HTMLAnchorElement | null = document.querySelector("#aanmeldbutton");
+    const aanbevelingImage: HTMLImageElement | null = document.querySelector("#aanbeveling-image");
     
     if(aanmeldButton){
         aanmeldButton.classList.add("d-none");
@@ -49,12 +50,13 @@ async function handleSelectedValues() {
     });
 
     const data = await response.json();
-    if (conclusiefield && conclusieNamefield && aanmeldButton) {
+    if (conclusiefield && conclusieNamefield && aanmeldButton && aanbevelingImage) {
         if(data.name.toLowerCase() == "burgerpanel"){
             aanmeldButton.classList.remove("d-none");
         }
         conclusieNamefield.innerText = data.name;
         conclusiefield.innerText = data.suitability;
+        aanbevelingImage.src = data.imageUri;
     }
     const card = document.getElementById("recommendation-card");
     const exploreConceptForm = document.getElementById("explore-concept-form");
@@ -62,7 +64,7 @@ async function handleSelectedValues() {
     if (exploreConceptForm) {
         exploreConceptForm.classList.remove("col-lg-12")
         exploreConceptForm.classList.add("col-lg-7")
-    };
+    }
 }
 
 initQuestionCreationFormController();
