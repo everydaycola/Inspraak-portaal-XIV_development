@@ -10,4 +10,7 @@ public class ParticipationViewModel
     [MaxLength(500)]
     public string Description { get; set; }
     public string ImageUri { get; set; }
+    
+    //This file is only used on creation and or update of the participation method.
+    public IFormFile Image { get; set; }
 }

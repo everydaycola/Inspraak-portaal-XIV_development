@@ -19,8 +19,8 @@ async function handleSelectedValues() {
     const conclusieNamefield: HTMLElement | null = document.querySelector("#conclusieName");
     const aanmeldButton: HTMLAnchorElement | null = document.querySelector("#aanmeldbutton");
     const aanbevelingImage: HTMLImageElement | null = document.querySelector("#aanbeveling-image");
-    
-    if(aanmeldButton){
+
+    if (aanmeldButton) {
         aanmeldButton.classList.add("d-none");
     }
 
@@ -51,13 +51,18 @@ async function handleSelectedValues() {
 
     const data = await response.json();
     if (conclusiefield && conclusieNamefield && aanmeldButton && aanbevelingImage) {
-        if(data.name.toLowerCase() == "burgerpanel"){
+        if (data.name.toLowerCase() == "burgerpanel") {
             aanmeldButton.classList.remove("d-none");
         }
         conclusieNamefield.innerText = data.name;
         conclusiefield.innerText = data.suitability;
-        aanbevelingImage.src = data.imageUri;
+        if (data.imageUri.startsWith("images/")) {
+            aanbevelingImage.src = data.imageUri;
+        } else {
+            aanbevelingImage.src = `/Storage/GetFile?fileName=${data.imageUri}`;
+        }
     }
+
     const card = document.getElementById("recommendation-card");
     const exploreConceptForm = document.getElementById("explore-concept-form");
     if (card) card.classList.remove("d-none");

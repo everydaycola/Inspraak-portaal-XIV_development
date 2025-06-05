@@ -17,10 +17,10 @@ public interface IQuestionManager
     //ADD
     public Question AddQuestion(string question);
     public void AddAnswerOptionsWithImpacts(int questionId, string answerText,List<AnswerOptionImpactsDto> answerOptionImpacts);
-    void AddParticipationMethod(string viewModelName, string viewModelDescription);
+    void AddParticipationMethod(string viewModelName, string viewModelDescription, string imageFileName);
     //UPDATE
     public void UpdateQuestionWithAnswerOptions(int modelId, string modelQuestionText, List<AnswerOptionDto> toList);
-    public void UpdateParticipationMethod(Guid viewModelId, string viewModelName, string viewModelDescription);
+    public void UpdateParticipationMethod(Guid viewModelId, string viewModelName, string viewModelDescription,string imageUri);
     //DELETE
     public void DeleteQuestionWithAnswerOptionsAndImpacts(int questionId);
     public void DeleteParticipationMethod(Guid id);

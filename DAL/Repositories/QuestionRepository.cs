@@ -144,6 +144,7 @@ public class QuestionRepository : IQuestionRepository
         {
             existingMethod.Name = updatedParticipationMethod.Name;
             existingMethod.Description = updatedParticipationMethod.Description;
+            existingMethod.ImageUri = updatedParticipationMethod.ImageUri;
             _context.SaveChanges();
         }
     }
