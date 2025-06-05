@@ -965,7 +965,7 @@
                                                     </div>
                                                 </form>
                                             }
-                                            @if (User.IsInRole(CustomIdentityConstants.OrganisatieRole) && suggestionPost.Suggestions.Count > 1)
+                                            @if (User.IsInRole(CustomIdentityConstants.OrganisatieRole))
                                             {
                                                 <form class="mt-3 end-vote-form">
                                                     <input type="hidden" name="panelId" value="@Model.PanelId"/>

@@ -480,7 +480,7 @@ public static class DataSeeder
             User = AddOrUpdateUser(context, $"member{memberCount - 1}@example.com"),
             Selected = false
         }));
-        
+        newPanel.SuccessfulRegistrationCount = memberCount;
         
         var participationMethod = new ParticipationMethod
         {

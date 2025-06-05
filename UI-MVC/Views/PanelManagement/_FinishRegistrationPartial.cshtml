@@ -16,9 +16,7 @@
         {
             <p>U mist nog <strong>@(Model.PanelSize + Model.AmountOfReserveInvites - Model.ExtraCriteriaViewModel.SuccessfulRegistrationCount)</strong> inschrijvingen</p>
         }
-        <button class="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#newphase">
-            Toon criteria statistieken
-        </button>
+        
 
         @if (Model.AnyCrossCriteria || Model.AnyUnknownCriteria)
         {
