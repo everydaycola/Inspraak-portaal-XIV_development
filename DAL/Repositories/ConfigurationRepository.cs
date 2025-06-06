@@ -17,7 +17,23 @@ public class ConfigurationRepository : IConfigurationRepository
     {
         return _context.GeneralSettings.FirstOrDefault();
     }
+    
     //CREATE
     //UPDATE
+    public void UpdatePlatformSettings(GeneralSetting updatedPlatformSettings)
+    {
+        var existingSetting = _context.GeneralSettings.FirstOrDefault();
+        if (existingSetting == null)
+        {
+            _context.GeneralSettings.Add(updatedPlatformSettings);
+        }
+        else
+        {
+            existingSetting.AboutInspraakPortaalText = updatedPlatformSettings.AboutInspraakPortaalText;
+            existingSetting.DiscoverConceptText = updatedPlatformSettings.DiscoverConceptText;
+            
+        }
+        _context.SaveChanges();
+    }
     //DELETE
 }

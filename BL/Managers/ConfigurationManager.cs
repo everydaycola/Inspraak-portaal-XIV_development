@@ -17,4 +17,15 @@ public class ConfigurationManager : IConfigurationManager
     {
         return _configurationRepository.ReadPlatformSettings();
     }
+
+    public void SavePlatformSettings(string discoverConceptText, string aboutInspraakPortaalText)
+    {
+        var updatedPlatformSettings = new GeneralSetting
+        {
+            DiscoverConceptText = discoverConceptText,
+            AboutInspraakPortaalText = aboutInspraakPortaalText
+        };
+
+        _configurationRepository.UpdatePlatformSettings(updatedPlatformSettings);
+    }
 }

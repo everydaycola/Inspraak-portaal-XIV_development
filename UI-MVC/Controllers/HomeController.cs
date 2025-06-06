@@ -1,5 +1,7 @@
 using System.Diagnostics;
 using BL.Interfaces;
+using Domain;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using UI_MVC.Models;
 using UI_MVC.Models.ViewModels;
@@ -49,9 +51,35 @@ public class HomeController : Controller
         return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
     }
 
+    [Authorize(Roles=CustomIdentityConstants.AdminRole)]
     public IActionResult Edit()
     {
-        ViewBag.IsEditing = true;
-        return View("Index");
+        var data = _configurationManager.GetPlatformSettings();
+        if(data != null){
+            return View("EditHomepage", new HomePageContentViewModel()
+            {
+                AboutInspraakPortaalText = data.AboutInspraakPortaalText,
+                DiscoverConceptText = data.DiscoverConceptText
+            });
+        }
+
+        return RedirectToAction("Error");
     }
+    
+    [HttpPost]
+    [Authorize(Roles = CustomIdentityConstants.AdminRole)]
+    //[ValidateAntiForgeryToken]
+    public IActionResult Edit(HomePageContentViewModel model)
+    {
+        if (!ModelState.IsValid)
+        {
+            return View("EditHomepage", model);
+        }
+        _configurationManager.SavePlatformSettings(
+            model.DiscoverConceptText,
+            model.AboutInspraakPortaalText
+        );
+        return RedirectToAction("Index");
+    }
+    
 }

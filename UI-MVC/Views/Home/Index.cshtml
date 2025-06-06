@@ -4,7 +4,6 @@
 @using Microsoft.IdentityModel.Tokens
 @{
     ViewData["Title"] = "Home Page";
-    var isEditing = ViewBag.IsEditing as bool? ?? false;
 }
 @inject Organisation Organisation
 @model UI_MVC.Models.ViewModels.HomePanelsViewModel
@@ -13,14 +12,14 @@
 {
     @if (User.IsInRole(CustomIdentityConstants.AdminRole))
     {
-        @if (!isEditing)
-        {
-            <a asp-action="Edit" class="btn btn-primary">bewerken</a>
-        }
-        else
-        {
-            <a asp-action="Index" class="btn btn-primary">annuleer</a>
-        }
+        <div class="row m-2 mt-4">
+            <div class="col-12">
+                <div class="alert alert-info d-flex align-items-center justify-content-between">
+                    <strong>Beheerder instellingen</strong>
+                    <a asp-action="Edit" class="btn btn-primary ms-3">Teksten bewerken</a>
+                </div>
+            </div>
+        </div>
     }
 
     <div class="card p-0 mt-5 m-4">
@@ -29,27 +28,21 @@
                 <div class="card-body h-25">
                     <div class="row mx-2 m-4">
                         <h2>Nieuw bij burgerpanels?</h2>
-                        @if (User.IsInRole(CustomIdentityConstants.AdminRole) && isEditing)
+                        
+                        @if (!Model.DiscoverConceptText.IsNullOrEmpty())
                         {
-                            //TODO add edit field for this text.
+                            <p>@Model.DiscoverConceptText</p>
                         }
                         else
                         {
-                            @if (!Model.DiscoverConceptText.IsNullOrEmpty())
-                            {
-                                <p>@Model.DiscoverConceptText</p>
-                            }
-                            else
-                            {
-                                <p>
-                                    Het Inspraak Portaal vereenvoudigt het organiseren van burgerpanels. Ben je nog niet
-                                    zeker of een burgerpanel iets voor jouw initiatief is?<br/>
-                                    Beantwoord dan enkele korte vragen om te ontdekken hoe een burgerpanel jou kan
-                                    helpen!
-                                </p>
-                            }
+                            <p>
+                                Het Inspraak Portaal vereenvoudigt het organiseren van burgerpanels. Ben je nog niet
+                                zeker of een burgerpanel iets voor jouw initiatief is?<br/>
+                                Beantwoord dan enkele korte vragen om te ontdekken hoe een burgerpanel jou kan
+                                helpen!
+                            </p>
                         }
-                        <a href="./ExploreConcept" class="btn btn-primary" >Ontdek of het iets voor jou is</a>
+                        <a href="./ExploreConcept" class="btn btn-primary">Ontdek of het iets voor jou is</a>
                     </div>
                 </div>
             </div>
@@ -77,22 +70,15 @@
                 <div class="card-body">
                     <div class="row mx-2 m-4">
                         <h2>Wat doet het inspraak portaal?</h2>
-                        @if (User.IsInRole(CustomIdentityConstants.AdminRole) && isEditing)
+                        @if (!Model.AboutInspraakPortaalText.IsNullOrEmpty())
                         {
-                            //TODO add edit field for this text.
+                            <p>@Model.AboutInspraakPortaalText</p>
                         }
                         else
                         {
-                            @if (!Model.AboutInspraakPortaalText.IsNullOrEmpty())
-                            {
-                                <p>@Model.AboutInspraakPortaalText</p>
-                            }
-                            else
-                            {
-                                <p>Het Inspraak Portaal is een platform die het organiseren van burgerpanels
-                                    vereenvoudigd.<br/>
-                                    Zelf interesse in een burgerpanel? Meld je dan aan voor jouw organisatie!</p>
-                            }
+                            <p>Het Inspraak Portaal is een platform die het organiseren van burgerpanels
+                                vereenvoudigd.<br/>
+                                Zelf interesse in een burgerpanel? Meld je dan aan voor jouw organisatie!</p>
                         }
                         <a href="./Organisation/OrganisationCreation" class="btn btn-primary">Mijn organisatie
                             aanmelden</a>

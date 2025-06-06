@@ -8,5 +8,6 @@ public interface IConfigurationRepository
     public GeneralSetting ReadPlatformSettings();
     //CREATE
     //UPDATE
+    void UpdatePlatformSettings(GeneralSetting updatedPlatformSettings);
     //DELETE
 }
