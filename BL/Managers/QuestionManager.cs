@@ -76,12 +76,13 @@ public class QuestionManager : IQuestionManager
         _questionRepository.CreateAnswerOptionsWithImpacts(newAnswerOption);
     }
 
-    public void AddParticipationMethod(string viewModelName, string viewModelDescription)
+    public void AddParticipationMethod(string viewModelName, string viewModelDescription, string imageFileName)
     {
         var method = new ParticipationMethod()
         {
             Name = viewModelName,
-            Description = viewModelDescription
+            Description = viewModelDescription,
+            ImageUri = imageFileName
         };
         _questionRepository.CreateParticipationMethod(method);
     }
@@ -109,13 +110,15 @@ public class QuestionManager : IQuestionManager
         _questionRepository.UpdateQuestionWithAnswerOptionsAndImpacts(updatedQuestion);
     }
 
-    public void UpdateParticipationMethod(Guid viewModelId, string viewModelName, string viewModelDescription)
+    public void UpdateParticipationMethod(Guid viewModelId,string viewModelName,
+        string viewModelDescription, string imageUri)
     {
         ParticipationMethod updatedParticipationMethod = new ParticipationMethod()
         {
             Id = viewModelId,
             Name = viewModelName,
-            Description = viewModelDescription
+            Description = viewModelDescription,
+            ImageUri = imageUri
         };
         _questionRepository.UpdateParticipationMethod(updatedParticipationMethod);
     }

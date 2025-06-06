@@ -30,7 +30,8 @@ public class ExploreConceptsController : ControllerBase
         return Ok(new
         {
             Name = applicableParticipationMethod.Name,
-            Suitability = suitabilityMessage
+            Suitability = suitabilityMessage,
+            ImageUri = applicableParticipationMethod.ImageUri
         });
     }
 }
