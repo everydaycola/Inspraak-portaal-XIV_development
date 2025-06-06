@@ -33,6 +33,7 @@ public class CitizenPanelDbContext : IdentityDbContext<ApplicationUser>
     public DbSet<Suggestion> Suggestions { get; set; }
     public DbSet<Vote> Votes { get; set; }
     public DbSet<TimeLine> TimeLines { get; set; }
+    public DbSet<GeneralSetting> GeneralSettings { get; set; }
     public DbSet<Post> Posts { get; set; }
     //Verkenning van het concept.
     public DbSet<Question> Questions { get; set; }

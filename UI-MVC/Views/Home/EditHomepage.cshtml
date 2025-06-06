@@ -1,0 +1,27 @@
+@model UI_MVC.Models.ViewModels.HomePageContentViewModel
+
+@{
+    Layout = "_layout";
+    ViewData["Title"] = "Edit home page";
+}
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
+
+<div class="container mt-5">
+    <h2>Teksten bewerken</h2>
+    <form asp-action="Edit" method="post">
+        <div class="mb-4">
+            <label asp-for="DiscoverConceptText" class="form-label">Introductietekst voor burgerpanels</label>
+            <textarea asp-for="DiscoverConceptText" class="form-control" rows="5">@Model.DiscoverConceptText</textarea>
+            <span asp-validation-for="DiscoverConceptText" class="text-danger"></span>
+        </div>
+        <div class="mb-4">
+            <label asp-for="AboutInspraakPortaalText" class="form-label">Tekst over het Inspraak Portaal</label>
+            <textarea asp-for="AboutInspraakPortaalText" class="form-control" rows="5">@Model.AboutInspraakPortaalText</textarea>
+            <span asp-validation-for="AboutInspraakPortaalText" class="text-danger"></span>
+        </div>
+        <button type="submit" class="btn btn-primary">Opslaan</button>
+        <a asp-action="Index" class="btn btn-secondary ms-2">Annuleren</a>
+    </form>
+</div>
