@@ -16,11 +16,13 @@ public class QuestionController : Controller
 {
     private readonly IQuestionManager _questionManager;
     private readonly ILogger<QuestionController> _logger;
+    private readonly IStorageManager _storageManager;
 
-    public QuestionController(IQuestionManager questionManager, ILogger<QuestionController> logger)
+    public QuestionController(IQuestionManager questionManager, ILogger<QuestionController> logger, IStorageManager storageManager)
     {
         _questionManager = questionManager;
         _logger = logger;
+        _storageManager = storageManager;
     }
 
     [HttpGet]
@@ -50,6 +52,7 @@ public class QuestionController : Controller
                 Id = p.Id,
                 Name = p.Name,
                 Description = p.Description,
+                ImageUri = p.ImageUri
             });
         var model = new QuestionIndexViewModel()
         {
@@ -60,7 +63,7 @@ public class QuestionController : Controller
     }
 
     [HttpPost]
-    public IActionResult AddParticipationMethod(ParticipationViewModel viewModel)
+    public async Task<IActionResult> AddParticipationMethod(ParticipationViewModel viewModel)
     {
         if (!ModelState.IsValid)
         {
@@ -68,7 +71,25 @@ public class QuestionController : Controller
             return View("Index");
         }
 
-        _questionManager.AddParticipationMethod(viewModel.Name, viewModel.Description);
+        if (viewModel.Image == null)
+        {
+            _logger.LogInformation("Er werd geprobeerd een participatie methode toe te voegen zonder foto.");
+            return View("Index");
+        }
+        
+        var uniqueFileName = Guid.NewGuid() + Path.GetExtension(viewModel.Image.FileName);
+        try
+        {
+            await _storageManager.AddFileAsync(uniqueFileName, viewModel.Image.ContentType,
+                viewModel.Image.OpenReadStream());
+            _questionManager.AddParticipationMethod(viewModel.Name, viewModel.Description, uniqueFileName);
+            
+        }
+        catch (NullReferenceException e)
+        {
+            _logger.LogError("Creating StorageClient Failed" + e.Message);    
+        }
+        
         return RedirectToAction("Index");
     }
 
@@ -122,18 +143,33 @@ public class QuestionController : Controller
         {
             Id = method.Id,
             Name = method.Name,
-            Description = method.Description
+            Description = method.Description,
+            ImageUri = method.ImageUri
         };
         return View(viewModel);
     }
 
     [HttpPost]
-    public IActionResult EditParticipationMethod(ParticipationViewModel viewModel)
+    public async Task<IActionResult> EditParticipationMethod(ParticipationViewModel viewModel)
     {
         if (!ModelState.IsValid)
             return View(viewModel);
 
-        _questionManager.UpdateParticipationMethod(viewModel.Id, viewModel.Name, viewModel.Description);
+        if (viewModel.Image != null)
+        {
+            var uniqueFileName = Guid.NewGuid() + Path.GetExtension(viewModel.Image.FileName);
+            try
+            {
+                await _storageManager.AddFileAsync(uniqueFileName, viewModel.Image.ContentType,
+                    viewModel.Image.OpenReadStream());
+                viewModel.ImageUri = uniqueFileName;
+            }
+            catch (NullReferenceException e)
+            {
+                _logger.LogError("Creating StorageClient Failed" + e.Message);    
+            }
+        }
+        _questionManager.UpdateParticipationMethod(viewModel.Id, viewModel.Name, viewModel.Description, viewModel.ImageUri);
         return RedirectToAction("Index");
     }
 
@@ -148,7 +184,8 @@ public class QuestionController : Controller
             {
                 Id = pm.Id,
                 Name = pm.Name,
-                Description = pm.Description
+                Description = pm.Description,
+                ImageUri = pm.ImageUri
             }).ToList();
 
         var viewModel = new QuestionViewModel
@@ -182,7 +219,8 @@ public class QuestionController : Controller
                 {
                     Id = pm.Id,
                     Name = pm.Name,
-                    Description = pm.Description
+                    Description = pm.Description,
+                    ImageUri = pm.ImageUri
                 }).ToList();
             return View(model);
         }

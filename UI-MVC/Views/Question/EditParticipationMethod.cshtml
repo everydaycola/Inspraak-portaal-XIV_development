@@ -4,8 +4,9 @@
     <div class="row g-4 align-items-stretch">
         <div class="card shadow-sm border-0 mb-4">
             <div class="card-body">
-                <form asp-action="EditParticipationMethod" asp-controller="Question" method="post">
+                <form asp-action="EditParticipationMethod" asp-controller="Question" method="post" enctype="multipart/form-data">
                     <input type="hidden" asp-for="Id"/>
+                    <input type="hidden" asp-for="ImageUri" value="@Model.ImageUri"/>
                     <div class="mb-3">
                         <label asp-for="Name" class="form-label"></label>
                         <input asp-for="Name" class="form-control" required/>
@@ -15,6 +16,10 @@
                         <label asp-for="Description" class="form-label"></label>
                         <textarea asp-for="Description" class="form-control" rows="3" required></textarea>
                         <span asp-validation-for="Description" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label for="image" class="form-label">Afbeelding</label>
+                        <input type="file" class="form-control" id="image" name="Image" accept="image/*">
                     </div>
                     <button type="submit" class="btn btn-primary">Opslaan</button>
                     <a asp-action="Index" class="btn btn-secondary">Annuleren</a>

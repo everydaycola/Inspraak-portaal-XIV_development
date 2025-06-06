@@ -97,6 +97,7 @@ public static class DataSeeder
                             Title = "Suggesties na Bijeenkomst #1: Wat zou jij graag meer/beter zien in Antwerpen?",
                             CreatedAt = DateTime.UtcNow - TimeSpan.FromDays(5) + TimeSpan.FromHours(1),
                             IsVisibleForPanelMembers = true,
+                            IsNeutralVoteAllowed = true,
                             VotingMajorityFactor = 80,
                             Suggestions = new List<Suggestion>
                             {
@@ -486,19 +487,22 @@ public static class DataSeeder
         {
             Name = "Burgerpanel",
             Description =
-                "Op basis van je gegeven antwoorden lijkt een burgerpanel het meest geschikte instrument. "
+                "Op basis van je gegeven antwoorden lijkt een burgerpanel het meest geschikte instrument. ",
+            ImageUri = "images/dataseeder/burgerpanel.jpg"
         };
         var participationMethod2 = new ParticipationMethod
         {
             Name = "Enquête",
             Description =
-                "Je werkt best niet met een burgerpanel maar met een online enquête die je breed uitstuurt. "
+                "Je werkt best niet met een burgerpanel maar met een online enquête die je breed uitstuurt. ",
+            ImageUri = "images/dataseeder/enquete.jpg"
         };
         var participationMethod3 = new ParticipationMethod
         {
             Name = "Informatieve campagne",
             Description =
-                "Je werkt best niet met een burgerpanel maar zet een informatieve campagne op."
+                "Je werkt best niet met een burgerpanel maar zet een informatieve campagne op.",
+            ImageUri = "images/dataseeder/informatieve_campagne.jpg"
         };
 
         AddMultipleEntities([participationMethod, participationMethod2, participationMethod3]);
