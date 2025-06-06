@@ -13,6 +13,8 @@ using UI_MVC.Models;
 using StackExchange.Redis;
 using Microsoft.AspNetCore.DataProtection;
 using UI_MVC.Tenant;
+using ConfigurationManager = BL.Managers.ConfigurationManager;
+using IConfigurationManager = BL.Interfaces.IConfigurationManager;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -38,6 +40,8 @@ builder.Services.AddScoped<ICommuneManager, CommuneManager>();
 builder.Services.AddScoped<IPanelProjectPageManager, PanelProjectPageManager>();
 builder.Services.AddScoped<IQuestionRepository, QuestionRepository>();
 builder.Services.AddScoped<IQuestionManager, QuestionManager>();
+builder.Services.AddScoped<IConfigurationRepository, ConfigurationRepository>();
+builder.Services.AddScoped<IConfigurationManager, ConfigurationManager>();
 
 //Tenant specific logic
 builder.Services
