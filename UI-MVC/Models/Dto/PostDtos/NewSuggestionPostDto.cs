@@ -21,4 +21,5 @@ public class NewSuggestionPostDto
     [Required(ErrorMessage = "Meerderheids factor is verplicht")]
     [Range(0, 100, ErrorMessage = "Meerderheids factor moet tussen 0 en 100% zijn.")]
     public double VotingMajorityFactor { get; set; }
+    public bool IsNeutralVoteAllowed { get; set; }
 }

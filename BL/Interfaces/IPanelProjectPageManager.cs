@@ -29,7 +29,7 @@ public interface IPanelProjectPageManager
     public void AddMeetingPost(Guid timeLineId, string title, DateTime meetingDateTime, bool visibleForPanelMember );
     public void AddEmbedVideoPost(Guid timeLineId, string title, string videoUrl, bool visibleForPanelMember, bool isGloballyVisible );
     public void AddYoutubeVideoPost(Guid timeLineId, string title, string videoId, bool visibleForPanelMember, bool isGloballyVisible );
-    public void AddSuggestionPost(Guid timeLineId, string title, bool visibleForPanelMember, bool isVotingOpen, double votingMajorityFactor );
+    public void AddSuggestionPost(Guid timeLineId, string title, bool visibleForPanelMember,bool isNeutralVoteAllowed, bool isVotingOpen, double votingMajorityFactor );
     public void AddGoogleFormLink(Guid timeLineId, string title, string embeddedIframeLink, bool visibleForPanelMember, bool isGloballyVisible);
     public void AddSuggestionToPost(Guid postId, string suggestion, string owner);
     public void AddDocumentToPost(Guid meetingId, string uniqueFileName);

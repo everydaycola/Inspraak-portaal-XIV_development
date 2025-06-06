@@ -187,13 +187,14 @@ public class PanelProjectPageManager : IPanelProjectPageManager
         });
     }
 
-    public void AddSuggestionPost(Guid timeLineId, string title, bool visibleForPanelMember, bool isVotingOpen, double votingMajorityFactor )
+    public void AddSuggestionPost(Guid timeLineId, string title, bool visibleForPanelMember,bool isNeutralVoteAllowed, bool isVotingOpen, double votingMajorityFactor )
     {
         AddPost(timeLineId, new SuggestionPost
         {
             Title = title,
             CreatedAt = DateTime.UtcNow,
             IsVisibleForPanelMembers = visibleForPanelMember,
+            IsNeutralVoteAllowed = isNeutralVoteAllowed,
             Suggestions = [],
             IsVotingOpen = isVotingOpen,
             VotingMajorityFactor = votingMajorityFactor
