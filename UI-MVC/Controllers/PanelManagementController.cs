@@ -59,6 +59,8 @@ public class PanelManagementController : Controller
                 SuccessfulRegistrationCount = panel.SuccessfulRegistrationCount,
                 DesiredRegistrationCount = panelSize,
             },
+            CurrentPanelphase = panel.LastPhase,
+            IsCurrentPhaseOpened = panel.IsLastPhaseOpen
         });
     }
     public IActionResult People(Guid id)
@@ -168,7 +170,7 @@ public class PanelManagementController : Controller
 
         var baseUrl = $"{Request.Scheme}://{Request.Host}{Request.PathBase}";
         _manager.EndRegistration(panelId, allDesiredCriteriaPercentages, true,baseUrl);
-
+        
         return RedirectToAction("Index", new { id = panelId });
     }
 }

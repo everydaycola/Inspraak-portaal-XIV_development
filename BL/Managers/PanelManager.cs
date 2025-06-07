@@ -608,6 +608,8 @@ public class PanelManager : IPanelManager
             }
             _logger.LogInformation("Emails have been send out for panel " + panel.Id);
         }
+
+        panel.IsLastPhaseOpen = false;
         _repo.UpdatePanel(panel);
     }
 
