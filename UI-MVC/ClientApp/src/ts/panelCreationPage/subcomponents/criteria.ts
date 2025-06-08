@@ -1,15 +1,87 @@
 import {addAnswerOption, createPercentageInput, reIndexAnswerOptions, resetAnswerCounters} from "./answersOption";
 import {setValidationMessages} from "./panelFormValidator";
-import {criteriaInputUpdateHandler} from "../apiAutofill/apiDataFiller";
+import {basicApiData} from "../apiAutofill/apiDataFiller";
 import {createElementWithClassNames, wrapMultipleElementsWithBootstrapRow} from "../../customHelpers/htmlHelper";
 import {createRemoveBtn} from "../../components";
-
+import {handleSelectedCriteriaFromHelper} from "../apiAutofill/criteriaHandler";
+import {getAllSubRegions} from "../apiAutofill/subRegionHandler";
 
 let criteriaCount = 0;
 
-export function initAddCriteriaHandler(){
+function resetCreationForm() {
+    const showDataCriteriaBtn: HTMLButtonElement | null = document.querySelector('#show-data-criteria');
+    const criteriaOptions = document.getElementById('criteria-options');
+    const criteriaDataView = document.getElementById('criteria-data-view');
+    const backToOptionsBtn: HTMLButtonElement | null = document.querySelector('#back-to-options');
+    const dropdown: HTMLSelectElement | null = document.querySelector('#data-dropdown');
+    const confirmBtn: HTMLButtonElement | null = document.querySelector('#select-existing-datasource');
+    if (showDataCriteriaBtn && criteriaOptions && criteriaDataView && backToOptionsBtn && dropdown && confirmBtn) {
+        criteriaOptions.classList.remove('d-none');
+        criteriaDataView.classList.add('d-none');
+        dropdown.value = "";
+        confirmBtn.classList.add('d-none');
+    }
+}
+
+export function handleCreationFormPageSwitch() {
+    const showDataCriteriaBtn: HTMLButtonElement | null = document.querySelector('#show-data-criteria');
+    const criteriaOptions = document.getElementById('criteria-options');
+    const criteriaDataView = document.getElementById('criteria-data-view');
+    const backToOptionsBtn: HTMLButtonElement | null = document.querySelector('#back-to-options');
+    const modalCloseBtn: HTMLButtonElement | null = document.querySelector('#criteriacreation-close-modal-btn');
+
+    if(modalCloseBtn){
+        modalCloseBtn.addEventListener("click",function(e){
+            resetCreationForm();
+        })
+    }
+    
+    if (showDataCriteriaBtn && criteriaOptions && criteriaDataView && backToOptionsBtn) {
+        showDataCriteriaBtn.addEventListener('click', function () {
+            criteriaOptions.classList.add('d-none');
+            criteriaDataView.classList.remove('d-none');
+        });
+
+        backToOptionsBtn.addEventListener('click', function () {
+            criteriaDataView.classList.add('d-none');
+            criteriaOptions.classList.remove('d-none');
+        });
+    }
+
+    //hide the bevestig button of the showDataCriteriaUntilSomethingIsSelected
+    const dropdown: HTMLSelectElement | null = document.querySelector('#data-dropdown');
+    const confirmBtn: HTMLButtonElement | null = document.querySelector('#select-existing-datasource');
+    if (dropdown && confirmBtn) {
+        if (!dropdown.value) {
+            confirmBtn.classList.add('d-none');
+        }
+        dropdown.addEventListener('change', function () {
+            if (dropdown.value) {
+                confirmBtn.classList.remove('d-none');
+            } else {
+                confirmBtn.classList.add('d-none');
+            }
+        });
+
+        confirmBtn.addEventListener('click', function () {
+            addCriteria();
+            console.log(dropdown.value);
+            const allCriteriaContainers = document.querySelectorAll(".criteria");
+            const lastCriteriaContainer = allCriteriaContainers[allCriteriaContainers.length - 1];
+            var currentlyUsedSubregions = getAllSubRegions(basicApiData);
+            handleSelectedCriteriaFromHelper(dropdown.value, lastCriteriaContainer as HTMLDivElement, currentlyUsedSubregions);
+            resetCreationForm();
+        })
+    }
+
+}
+
+export function initAddCriteriaHandler() {
     const addCriteriaBtn = document.getElementById("criteria-btn") as HTMLAnchorElement;
-    addCriteriaBtn.addEventListener("click",addCriteria);
+    addCriteriaBtn.addEventListener("click", () => {
+        addCriteria()
+        resetCreationForm();
+    });
 }
 
 export function addCriteria() {
@@ -47,8 +119,7 @@ export function addCriteria() {
         tooShort: "Criteria vraag moet minimaal 6 karakters lang zijn.",
         tooLong: "Criteria vraag mag maximaal 100 karakters lang zijn."
     });
-
-    criteriaInputUpdateHandler();
+    
 }
 
 function createCriteriaElement(currentCount: number): HTMLDivElement {
@@ -65,7 +136,7 @@ function createCriteriaElement(currentCount: number): HTMLDivElement {
     const nameLabel = createElementWithClassNames("label", "card-text", "pe-4");
     nameLabel.htmlFor = `criteria-name-${currentCount}`;
     nameLabel.innerHTML = `<strong>Naam:</strong>`;
-    const nameInput = createElementWithClassNames("input", "border", "border-1", "rounded-2", "form-control");
+    const nameInput = createElementWithClassNames("input", "border", "border-1", "rounded-2", "form-control", "criteria-name-element");
     nameInput.id = `criteria-name-${currentCount}`;
     nameInput.type = "text";
     nameInput.placeholder = `Criteria ${currentCount + 1}`;
@@ -154,7 +225,6 @@ function removeCriteria(criteriaId: number) {
     wrapper.remove();
     reIndexCriteria();
     resetAnswerCounters(criteriaId);
-    criteriaInputUpdateHandler();
 }
 
 function toggleAnswerOptionPercentageInput(isChecked: boolean, criteriaId: number) {
