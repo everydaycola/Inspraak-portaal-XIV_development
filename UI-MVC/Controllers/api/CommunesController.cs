@@ -14,7 +14,7 @@ namespace UI_MVC.Controllers.api
         {
             _communeManager = communeManager;
         }
-
+        
         // GET: api/Communes
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Commune>>> GetCommunes()
