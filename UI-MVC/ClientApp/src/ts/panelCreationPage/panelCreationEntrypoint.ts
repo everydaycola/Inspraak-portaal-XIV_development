@@ -1,6 +1,6 @@
 import {addSubregionValidation, handlePanelFormSubmission} from "./subcomponents/panelFormValidator";
 import {addEventHandlerToDefaultSubregionInput, initAddSubRegionHandler} from "./subcomponents/subRegion";
-import {initAddCriteriaHandler} from "./subcomponents/criteria";
+import {handleCreationFormPageSwitch, initAddCriteriaHandler} from "./subcomponents/criteria";
 import {setupPanelsizePreviewHandlers} from "./subcomponents/panelsizePreviewHandler";
 import {setupApiAutoFill} from "./apiAutofill/apiDataFiller";
 
@@ -12,6 +12,7 @@ document.addEventListener("DOMContentLoaded",() => {
         document.getElementById("subregion-0-size") as HTMLInputElement,
         document.getElementById("subregion-0-size-msg") as HTMLSpanElement)
 initAddSubRegionHandler();
+handleCreationFormPageSwitch();
 initAddCriteriaHandler();
 handlePanelFormSubmission();
 setupPanelsizePreviewHandlers();

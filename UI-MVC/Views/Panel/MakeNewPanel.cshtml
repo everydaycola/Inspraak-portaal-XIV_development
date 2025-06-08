@@ -29,11 +29,13 @@
                         <div class="row py-2">
                             <div class="col-12 col-md-6">
                                 <div class="d-flex justify-content-between align-items-center">
-                                    <label class="card-text mb-1" for="name"><strong>Naam:</strong></label>
+                                    <label class="card-text mb-1" for="name">
+                                        <strong>Naam:</strong>
+                                    </label>
                                     <span class="text-danger small" asp-validation-for="Name"></span>
                                 </div>
                                 <input id="name" asp-for="Name" class="form-control" type="text"
-                                       placeholder="Panel rond alcoholgebruik" />
+                                       placeholder="Panel rond alcoholgebruik"/>
                             </div>
                         </div>
 
@@ -47,11 +49,13 @@
                                 <div class="row mb-1">
                                     <div class="col-6">
                                         <span id="subregion-0-name-msg"
-                                              class="text-danger field-validation-valid"></span>
+                                              class="text-danger field-validation-valid">
+                                        </span>
                                     </div>
                                     <div class="col-6">
                                         <span id="subregion-0-size-msg"
-                                              class="text-danger field-validation-valid"></span>
+                                              class="text-danger field-validation-valid">
+                                        </span>
                                     </div>
                                 </div>
                                 <div class="row g-2 align-items-center">
@@ -134,10 +138,18 @@
                         </div>
                         <div class="row mt-4">
                             <div class="col-12 col-md-3">
+                                <button id="criteria-selection-modal-btn"
+                                        type="button"
+                                        class="btn btn-primary w-100 my-2"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#criteriaModal">
+                                    Criteria Toevoegen
+                                </button>
+                                <!--
                                 <button id="criteria-btn" type="button"
                                         class="btn btn-primary w-100 my-2">
                                     Criteria Toevoegen
-                                </button>
+                                </button>-->
                             </div>
                         </div>
                     </div>
@@ -149,6 +161,41 @@
                         </button>
                     </div>
                 </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="criteriaModal" tabindex="-1" aria-labelledby="criteriaModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content shadow">
+            <div class="modal-header">
+                <h5 class="modal-title" id="criteriaModalLabel">Kies een optie</h5>
+                <button type="button" id="criteriacreation-close-modal-btn" class="btn-close" data-bs-dismiss="modal" aria-label="Sluiten"></button>
+            </div>
+            <div class="modal-body">
+                <div id="criteria-options">
+                    <button id="criteria-btn" class="btn btn-primary w-100 mb-2" data-bs-dismiss="modal">
+                        Lege criteria toevoegen
+                    </button>
+                    <button id="show-data-criteria" class="btn btn-outline-secondary w-100">
+                        Criteria aanmaken op basis van regionale gegevens
+                    </button>
+                </div>
+
+                <div id="criteria-data-view" class="d-none">
+                    <label for="data-dropdown" class="form-label">Selecteer gegevensbron:</label>
+                    <select id="data-dropdown" class="form-select mb-3">
+                        <option value="" disabled selected>Kies een gegevensnaam</option>
+                        <option>Geslacht</option>
+                        <option>Opleidingsgraad</option>
+                        <option>Werkstatus</option>
+                    </select>
+                    <div class="d-flex justify-content-between">
+                        <button id="back-to-options" class="btn btn-secondary">← Ga terug</button>
+                        <button id="select-existing-datasource" class="btn btn-primary d-none" data-bs-dismiss="modal">Bevestig</button>
+                    </div>
+                </div>
             </div>
         </div>
     </div>

@@ -1,9 +1,7 @@
 ﻿import {fetchCommunes} from "./apiConnection";
 import {attachEventHandlersToSubregionInput} from "./subRegionHandler";
-import {attachEventHandlersToCriteriaInput} from "./criteriaHandler";
 
-
-let basicApiData: any[] = [];
+export let basicApiData: any[] = [];
 const outerDiv = document.querySelector("#subregions-container") as HTMLDivElement;
 let subregionInnerDiv = outerDiv.querySelectorAll(".subRegion") as NodeListOf<HTMLDivElement>;
 
@@ -24,12 +22,3 @@ export function newSubregionInputAddedHandler() {
     attachEventHandlersToSubregionInput(outerDiv, subregionInnerDiv, basicApiData);
 }
 
-//CRITERIA AUTO FILLING USING API
-const criteriaOuterDiv = document.querySelector("#criteria-container") as HTMLDivElement;
-let criteriaInnerDivs = criteriaOuterDiv.querySelectorAll(".criteria") as NodeListOf<HTMLDivElement>;
-
-export function criteriaInputUpdateHandler() {
-    criteriaInnerDivs = criteriaOuterDiv.querySelectorAll(".criteria") as NodeListOf<HTMLDivElement>
-    attachEventHandlersToCriteriaInput(criteriaInnerDivs, basicApiData);
-    console.log("criteriaInputChanged");
-}

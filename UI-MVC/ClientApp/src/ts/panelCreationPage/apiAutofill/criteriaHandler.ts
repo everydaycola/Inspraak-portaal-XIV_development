@@ -1,59 +1,10 @@
-import {getAllSubRegions} from "./subRegionHandler";
-import {createSuggestionBox, wrapElementWithBootstrapRow} from "../../customHelpers/htmlHelper";
+
+const available_criteria_categories : string[] = ["Geslacht","Werkstatus", "Opleidingsgraad"]
 
 
-const available_criteria_categories : string[] = ["Geslacht","Werkend", "Opleidingsgraad"]
-
-export function attachEventHandlersToCriteriaInput(subregionInnerDiv: NodeListOf<HTMLDivElement>, basicApiData : any[]) {
-    var currentlyUsedSubregions = getAllSubRegions(basicApiData);
-    subregionInnerDiv.forEach(innerDiv => {
-        const inputs = innerDiv.querySelectorAll("input") as NodeListOf<HTMLInputElement>;
-        const nameInput = inputs[0];
-        const suggestionBox = createSuggestionBox();
-        const suggestionBoxWithRow= wrapElementWithBootstrapRow(suggestionBox);
-        const firstRowOfInnerDiv = innerDiv.children[0]
-        innerDiv.insertBefore(suggestionBoxWithRow, firstRowOfInnerDiv);
-        nameInput.addEventListener("input", () => {
-            const inputValue = nameInput.value.toLowerCase();
-            const matches = available_criteria_categories.filter(category =>
-                category.toLowerCase().includes(inputValue)
-            ).slice(0, 5);
-            if (matches.length === 0) {
-                suggestionBox.style.display = "none";
-                return;
-            }
-            suggestionBox.innerHTML = "";
-            matches.forEach(match => {
-                const item = document.createElement("div");
-                item.textContent = match;
-                item.style.cursor = "pointer";
-                item.style.padding = "2px 4px";
-
-                item.addEventListener("click", () => {
-                    nameInput.value = match;
-                    suggestionBox.style.display = "none";
-                    handleSelectedCriteriaFromHelper(match,innerDiv,currentlyUsedSubregions);
-                });
-                suggestionBox.appendChild(item);
-            });
-
-            const inputRect = nameInput.getBoundingClientRect();
-            const scrollTop = window.scrollY || document.documentElement.scrollTop;
-            suggestionBox.style.left = `${inputRect.left}px`;
-            suggestionBox.style.top = `${inputRect.top - suggestionBox.offsetHeight + scrollTop - 4}px`;
-            suggestionBox.style.width = `${inputRect.width}px`;
-            suggestionBox.style.display = "block";
-        });
-        document.addEventListener("click", (e) => {
-            if (!(e.target as HTMLElement).closest(".suggestion-box")) {
-                suggestionBox.style.display = "none";
-            }
-        });
-    });
-}
-
-function handleSelectedCriteriaFromHelper(selectedItem: string, innerDiv : HTMLDivElement, usedData : any[]) {
+export function handleSelectedCriteriaFromHelper(selectedItem: string, innerDiv : HTMLDivElement, usedData : any[]) {
     const mogelijkheidToevoegenButton : HTMLButtonElement | null = innerDiv.querySelector(".add-option-button");
+    const naamInput : HTMLInputElement | null = innerDiv.querySelector<HTMLInputElement>(".criteria-name-element");
     const vraagInput : HTMLInputElement | null = innerDiv.querySelector<HTMLInputElement>(".criteria-question");
     let answerOption = innerDiv.querySelectorAll<HTMLInputElement>(".answer-option");
     let antwoord1Input : HTMLInputElement = answerOption[0];
@@ -76,8 +27,9 @@ function handleSelectedCriteriaFromHelper(selectedItem: string, innerDiv : HTMLD
         distributionInput2 = answerOptionInputs[1];
     }
     
-    if(vraagInput){
+    if(naamInput && vraagInput){
         if(selectedItem === available_criteria_categories[0]){
+            naamInput.value = available_criteria_categories[0];
             vraagInput.value = "Wat is uw geslacht?";
             antwoord1Input.value = "Man";
             antwoord2Input.value = "Vrouw";
@@ -95,6 +47,7 @@ function handleSelectedCriteriaFromHelper(selectedItem: string, innerDiv : HTMLD
             distributionInput2 = answerOptionInputs[1];
             const antwoord3Input = answerOption[2];
             const distributionInput3 = answerOptionInputs[2];
+            naamInput.value = available_criteria_categories[1];
             vraagInput.value = "Welke staat beschrijft u bet beste?";
             antwoord1Input.value = "Niet werkend";
             antwoord2Input.value = "Werkzoekend";
@@ -120,6 +73,7 @@ function handleSelectedCriteriaFromHelper(selectedItem: string, innerDiv : HTMLD
             distributionInput2 = answerOptionInputs[1];
             const antwoord3Input = answerOption[2];
             const distributionInput3 = answerOptionInputs[2];
+            naamInput.value = available_criteria_categories[2];
             vraagInput.value = "Studeerd u momenteel?";
             antwoord1Input.value = "Secundair onderwijs";
             antwoord2Input.value = "Hoger onderwijs";
