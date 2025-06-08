@@ -166,15 +166,15 @@ deploy:
   script:
     - gcloud auth activate-service-account --key-file="gcp_sa_key.json" --project="$PROJECT_ID"
     - |
-      if gcloud compute instance-groups managed describe "$MIG_NAME" --region="REGION" > /dev/null 2>&1; then
+      if gcloud compute instance-groups managed describe "$MIG_NAME" --region="$REGION" > /dev/null 2>&1; then
         echo "Instance group exists. Proceeding with rolling replace..."
         gcloud compute instance-groups managed rolling-action replace "$MIG_NAME" \
           --max-surge=2 \
           --max-unavailable=1 \
           --replacement-method=substitute \
-          --region="REGION"
+          --region="$REGION"
       else
-        echo "Instance group '$MIG_NAME' not found in region 'REGION'. Skipping deployment."
+        echo "Instance group '$MIG_NAME' not found in region '$REGION'. Skipping deployment."
         exit 0
       fi
   after_script:
