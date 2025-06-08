@@ -448,6 +448,9 @@ public class PanelManager : IPanelManager
         // get all default criteria with answer option and thus distribution percentages for the panel
         var criteriaList = _criteriaRepo.ReadAllCriteriaForPanelWithAnswerOptions(panelId, onlyDefault: true).ToList();
         
+        //Open the new phase.
+        panel.IsLastPhaseOpen = true;
+        
         // Create a dictionary with string keys of criteria groups, and value the ammount of
         // like key:"Man|30-39", value:60
         // !! criteriaList only has default criteria in it
