@@ -88,17 +88,18 @@
     }
 </div>
 
-@for (var i = 1; i <= Model.Phases; i++)
+@if (Model.IsCurrentPhaseOpen)
 {
     <div class="d-grid gap-2 d-md-flex justify-content-md-start mb-3">
         <a asp-controller="QRCode"
            asp-action="DownloadQrCodesForAllPanelMembers"
            asp-route-panelId="@Model.panelId"
-           asp-route-phase="@i"
+           asp-route-phase="@Model.CurrentPhase"
            class="btn btn-success btn-lg">
             <i class="bi bi-file-earmark-zip me-2"></i>
             Download QR codes voor alle panelleden
-            @(Model.Phases > 1 ? $" (Phase {i})" : "")
+            (Phase @Model.CurrentPhase)
         </a>
     </div>
 }
+

@@ -82,7 +82,9 @@ public class PanelManagementController : Controller
             {
                 panelId = panel.Id,
                 panelMembers = _criteriaManager.GetPanelMembersGroupedByResponsesForDefaultCriteriaGroupedByPhase(panel.Id),
-                Phases = panel.LastPhase
+                Phases = panel.LastPhase,
+                CurrentPhase = panel.LastPhase,
+                IsCurrentPhaseOpen = panel.IsLastPhaseOpen
             },
             PlanningGroupMembers = _manager.GetAllPlanningGroupMembersWithIdentityUserForPanel(panel.Id),
             ExtraCriteriaViewModel = new ExtraCriteriaViewModel
