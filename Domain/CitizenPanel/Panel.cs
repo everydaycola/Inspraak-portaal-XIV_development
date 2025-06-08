@@ -31,6 +31,8 @@ public class Panel : IOrganisational,IValidatableObject
     public ICollection<TimeLine> Timelines { get; set; }
     [Range(1, int.MaxValue, ErrorMessage = "Fase moet een positief getal zijn.")]
     public int LastPhase { get; set; } = 1;
+
+    public bool IsLastPhaseOpen { get; set; } = true;
     
     IEnumerable<ValidationResult> IValidatableObject.Validate(ValidationContext validationContext)
     {

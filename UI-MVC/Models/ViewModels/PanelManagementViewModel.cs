@@ -14,4 +14,6 @@ public class PanelManagementViewModel
     public bool AnyCrossCriteria { get; set; }
     public bool AnyUnknownCriteria { get; set; }
     public ExtraCriteriaViewModel ExtraCriteriaViewModel { get; set; } 
+    public int CurrentPanelphase { get; set; }
+    public bool IsCurrentPhaseOpened { get; set; }
 }

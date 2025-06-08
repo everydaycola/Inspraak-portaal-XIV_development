@@ -1,10 +1,11 @@
-﻿using Domain.CitizenPanel;
+using Microsoft.Build.Framework;
 
 namespace UI_MVC.Models.ViewModels;
 
-public class HomePanelsViewModel
+public class HomePageContentViewModel
 {
-    public IEnumerable<Panel> Panels { get; set; }
+    [Required]
     public string DiscoverConceptText { get; set; }
+    [Required]
     public string AboutInspraakPortaalText { get; set; }
 }

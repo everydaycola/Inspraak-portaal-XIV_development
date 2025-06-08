@@ -4,7 +4,7 @@
 
 <div class="container mt-5">
     <div class="alert alert-warning text-center" role="alert">
-        <h4 class="alert-heading">U gaat de inschrijvingsfase afronden</h4>
+        <h4 class="alert-heading">U gaat de huidige inschrijvingsfase afronden</h4>
         <p> Er zijn <strong>@Model.ExtraCriteriaViewModel.SuccessfulRegistrationCount</strong> van de <strong>@(Model.PanelSize + Model.AmountOfReserveInvites)</strong>
             inschrijvingen gelukt.</p>
         @if (Model.ExtraCriteriaViewModel.SuccessfulRegistrationCount > Model.PanelSize + Model.AmountOfReserveInvites)
@@ -81,7 +81,7 @@
 
                     <div class="alert alert-warning mb-3">
                         <i class="bi bi-exclamation-triangle me-2"></i>
-                        Let op: Deze actie kan niet ongedaan worden gemaakt.
+                        Het uitvoeren van deze actie zal resulteren in het selecteren alsook het uitzenden van emails naar geselecteerde panelleden. En kan niet ongedaan gemaakt worden.
                     </div>
 
                     <div class="d-grid">

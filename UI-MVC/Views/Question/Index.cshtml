@@ -118,6 +118,19 @@
             {
                 <div class="col">
                     <div class="card shadow-sm h-100 border-0">
+                        @*images/ indicates a local (default) file*@
+                        @if (method.ImageUri.StartsWith("images/"))
+                        {
+                            <img src="@method.ImageUri"
+                                 class="card-img-top object-fit-cover custom-card-img"
+                                 alt="participatie methode foto">
+                        }
+                        else
+                        {
+                            <img src="@Url.Action("GetFile", "Storage", new { fileName = @method.ImageUri })"
+                                 class="card-img-top object-fit-cover custom-card-img"
+                                 alt="participatie methode foto">
+                        }
                         <div class="card-body d-flex flex-column">
                             <h5 class="card-title">@method.Name</h5>
                             <p class="card-text text-muted flex-grow-1">@method.Description</p>

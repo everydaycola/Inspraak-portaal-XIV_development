@@ -385,7 +385,7 @@ public class PanelProjectPageController : Controller
         }
 
         _projectPageManager.AddSuggestionPost(suggestionPostDto.TimeLineId, suggestionPostDto.Title,
-            suggestionPostDto.VisibleForPanelMember, true, suggestionPostDto.VotingMajorityFactor);
+            suggestionPostDto.VisibleForPanelMember,suggestionPostDto.IsNeutralVoteAllowed, true, suggestionPostDto.VotingMajorityFactor);
 
         _ = HandleMailSending(suggestionPostDto.InformPeopleViaMail, true, suggestionPostDto.PanelId)
             .ContinueWith(task =>

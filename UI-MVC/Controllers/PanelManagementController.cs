@@ -59,6 +59,8 @@ public class PanelManagementController : Controller
                 SuccessfulRegistrationCount = panel.SuccessfulRegistrationCount,
                 DesiredRegistrationCount = panelSize,
             },
+            CurrentPanelphase = panel.LastPhase,
+            IsCurrentPhaseOpened = panel.IsLastPhaseOpen
         });
     }
     public IActionResult People(Guid id)
@@ -80,7 +82,9 @@ public class PanelManagementController : Controller
             {
                 panelId = panel.Id,
                 panelMembers = _criteriaManager.GetPanelMembersGroupedByResponsesForDefaultCriteriaGroupedByPhase(panel.Id),
-                Phases = panel.LastPhase
+                Phases = panel.LastPhase,
+                CurrentPhase = panel.LastPhase,
+                IsCurrentPhaseOpen = panel.IsLastPhaseOpen
             },
             PlanningGroupMembers = _manager.GetAllPlanningGroupMembersWithIdentityUserForPanel(panel.Id),
             ExtraCriteriaViewModel = new ExtraCriteriaViewModel
@@ -168,7 +172,7 @@ public class PanelManagementController : Controller
 
         var baseUrl = $"{Request.Scheme}://{Request.Host}{Request.PathBase}";
         _manager.EndRegistration(panelId, allDesiredCriteriaPercentages, true,baseUrl);
-
+        
         return RedirectToAction("Index", new { id = panelId });
     }
 }

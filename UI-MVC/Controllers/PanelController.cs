@@ -1,3 +1,4 @@
+using System.Globalization;
 using BL.Interfaces;
 using Domain;
 using Domain.CitizenPanel;
@@ -62,7 +63,7 @@ public class PanelController : Controller
                 if (crit.IsDistributionKnown)
                 {
                     answerOptionsList.Add(_criteriaManager.AddCriteriaAnswerOption(answerOption.Option,
-                        double.Parse(answerOption.DistributionPercentage.Replace(".", ","))));
+                        double.Parse(answerOption.DistributionPercentage.Replace(",", "."), CultureInfo.InvariantCulture)));
                 }
                 else
                 {
