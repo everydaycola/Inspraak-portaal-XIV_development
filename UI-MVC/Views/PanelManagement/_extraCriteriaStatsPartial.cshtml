@@ -33,11 +33,7 @@
                         @(Model.SuccessfulRegistrationCount == 0 ? 0 : (innerKpv.Value * 100) / Model.SuccessfulRegistrationCount)%
                     </div>
                 </div>
-                <p><strong>@innerKpv.Value</strong> out of
-                    <strong>@((int)(desiredCriteriaCountDictionary[kpv.Key][innerKpv.Key] * Model.DesiredRegistrationCount))</strong>
-                    (<strong>@(desiredCriteriaCountDictionary[kpv.Key][innerKpv.Key] * 100)%</strong> of
-                    <strong>@(Model.DesiredRegistrationCount))</strong></p>
-
+                <p><strong>@innerKpv.Value</strong></p>
             </div>
         }
     }
