@@ -23,7 +23,7 @@
                             <span class="badge bg-primary">
                                 @if (Model.Phases > 1)
                                 {
-                                    <span>Phase @phaseGroup.Key: </span>
+                                    <span>Fase @phaseGroup.Key: </span>
                                 }
                                 @phaseGroup.Value.Count codes
                             </span>
@@ -44,7 +44,7 @@
                                 <th>QR Code</th>
                                 @if (Model.Phases > 1)
                                 {
-                                    <th>Phase</th>
+                                    <th>Fase</th>
                                 }
                                 <th>via E-mail</th>
                             </tr>
@@ -98,7 +98,7 @@
            class="btn btn-success btn-lg">
             <i class="bi bi-file-earmark-zip me-2"></i>
             Download QR codes voor alle panelleden
-            (Phase @Model.CurrentPhase)
+            (Fase @Model.CurrentPhase)
         </a>
     </div>
 }
