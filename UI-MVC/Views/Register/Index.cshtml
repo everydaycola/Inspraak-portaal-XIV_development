@@ -35,13 +35,15 @@
 
                         <div class="alert alert-secondary d-flex align-items-center" role="alert">
                             <div class="text-primary fw-bold">
-                                @Model.Email
+                                <a href="@($"/Register/AccountCreation?UserId={Model.UserId}")" >
+                                    @Model.Email
+                                </a>
                             </div>
                         </div>
 
-                        <a href="@($"/Register/AccountCreation?UserId={Model.UserId}")" class="btn btn-warning">
+                        <!--<a href="@($"/Register/AccountCreation?UserId={Model.UserId}")" >
                             Ga naar account aanmaken (DEV BUTTON, REMOVE!!!!)
-                        </a>
+                        </a>-->
                         
                     </div>
                 </div>
